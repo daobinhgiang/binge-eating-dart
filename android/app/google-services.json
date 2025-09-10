@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "169581897180",
+    "project_id": "bed-app-ef8f8",
+    "storage_bucket": "bed-app-ef8f8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:169581897180:android:32ec53345bd411f51a9b19",
+        "android_client_info": {
+          "package_name": "com.example.bed_app_1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "169581897180-tb7d2v40dir6d6vk1hn8kfoj1r7r2ed6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuyhAr21DfK0DAjNdYyPoLDHn5GAE6Hok"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "169581897180-tb7d2v40dir6d6vk1hn8kfoj1r7r2ed6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "169581897180-7qgjh3sfoc95qhm72laduhg752teila6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.bedApp1"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
