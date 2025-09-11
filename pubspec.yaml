@@ -41,9 +41,14 @@ dependencies:
   cloud_firestore: ^5.4.3
   firebase_storage: ^12.3.2
   
+  # Google Sign-In
+  google_sign_in: ^6.2.1
+  
   # UI and navigation
   go_router: ^14.6.1
   flutter_riverpod: ^2.6.1
+  flutter_web_plugins:
+    sdk: flutter
   
   # Additional utilities
   intl: ^0.19.0

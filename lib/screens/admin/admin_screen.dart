@@ -50,7 +50,7 @@ class _AdminScreenState extends ConsumerState<AdminScreen> {
                               height: 16,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Icon(Icons.database),
+                          : const Icon(Icons.storage),
                       label: Text(_isLoading ? 'Populating...' : 'Populate Database'),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),

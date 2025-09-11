@@ -8,7 +8,7 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authStateProvider);
+    final authState = ref.watch(authNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -29,11 +29,11 @@ class HomeScreen extends ConsumerWidget {
                       ),
                     ],
                     child: CircleAvatar(
-                      backgroundImage: user.photoURL != null
-                          ? NetworkImage(user.photoURL!)
+                      backgroundImage: user.photoUrl != null
+                          ? NetworkImage(user.photoUrl!)
                           : null,
-                      child: user.photoURL == null
-                          ? Text(user.displayName?.substring(0, 1).toUpperCase() ?? 'U')
+                      child: user.photoUrl == null
+                          ? Text(user.displayName.substring(0, 1).toUpperCase())
                           : null,
                     ),
                   )

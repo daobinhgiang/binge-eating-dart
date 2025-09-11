@@ -1,118 +1,178 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/user.dart' as app_user;
+import '../core/services/auth_service.dart';
+import '../models/user_model.dart';
 
-final authProvider = Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
-final firestoreProvider = Provider<FirebaseFirestore>((ref) => FirebaseFirestore.instance);
+// Auth service provider
+final authServiceProvider = Provider<AuthService>((ref) => AuthService());
 
-final authStateProvider = StreamProvider<User?>((ref) {
-  return ref.watch(authProvider).authStateChanges();
+// Current user stream provider
+final currentUserProvider = StreamProvider<UserModel?>((ref) {
+  return ref.watch(authServiceProvider).currentUserStream;
 });
 
-final userProvider = StreamProvider<app_user.User?>((ref) {
-  final authState = ref.watch(authStateProvider);
-  
-  return authState.when(
-    data: (user) {
-      if (user == null) return Stream.value(null);
-      
-      return ref.watch(firestoreProvider)
-          .collection('users')
-          .doc(user.uid)
-          .snapshots()
-          .map((snapshot) {
-        if (!snapshot.exists) return null;
-        return app_user.User.fromMap(snapshot.data()!, snapshot.id);
-      });
-    },
-    loading: () => Stream.value(null),
-    error: (_, __) => Stream.value(null),
-  );
-});
+// Auth state provider for managing authentication state
+class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
+  AuthNotifier(this._authService) : super(const AsyncValue.data(null));
 
-class AuthNotifier extends StateNotifier<AsyncValue<void>> {
-  AuthNotifier(this._auth, this._firestore) : super(const AsyncValue.data(null));
+  final AuthService _authService;
 
-  final FirebaseAuth _auth;
-  final FirebaseFirestore _firestore;
-
-  Future<void> signInWithEmailAndPassword(String email, String password) async {
+  // Initialize auth state
+  Future<void> initialize() async {
     state = const AsyncValue.loading();
     try {
-      final credential = await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      
-      if (credential.user != null) {
-        await _createUserIfNotExists(credential.user!);
-        state = const AsyncValue.data(null);
-      }
+      final user = await _authService.currentUser;
+      state = AsyncValue.data(user);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
   }
 
-  Future<void> createUserWithEmailAndPassword(
-    String email, 
-    String password, 
-    String displayName,
-  ) async {
+  // Sign in with email and password
+  Future<void> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
     state = const AsyncValue.loading();
     try {
-      final credential = await _auth.createUserWithEmailAndPassword(
+      final user = await _authService.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      
-      if (credential.user != null) {
-        await credential.user!.updateDisplayName(displayName);
-        await _createUserIfNotExists(credential.user!);
-        state = const AsyncValue.data(null);
-      }
+      state = AsyncValue.data(user);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
   }
 
+  // Sign up with email and password
+  Future<void> signUpWithEmailAndPassword({
+    required String email,
+    required String password,
+    required String firstName,
+    required String lastName,
+    required UserRole role,
+  }) async {
+    state = const AsyncValue.loading();
+    try {
+      final user = await _authService.signUpWithEmailAndPassword(
+        email: email,
+        password: password,
+        firstName: firstName,
+        lastName: lastName,
+        role: role,
+      );
+      state = AsyncValue.data(user);
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
+    }
+  }
+
+  // Sign in with Google
+  Future<void> signInWithGoogle() async {
+    state = const AsyncValue.loading();
+    try {
+      final user = await _authService.signInWithGoogle();
+      state = AsyncValue.data(user);
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
+    }
+  }
+
+  // Sign out
   Future<void> signOut() async {
     state = const AsyncValue.loading();
     try {
-      await _auth.signOut();
+      await _authService.signOut();
       state = const AsyncValue.data(null);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
   }
 
-  Future<void> _createUserIfNotExists(User firebaseUser) async {
-    final userDoc = await _firestore.collection('users').doc(firebaseUser.uid).get();
-    
-    if (!userDoc.exists) {
-      final user = app_user.User(
-        id: firebaseUser.uid,
-        email: firebaseUser.email ?? '',
-        displayName: firebaseUser.displayName,
-        photoUrl: firebaseUser.photoURL,
-        createdAt: DateTime.now(),
-        lastLoginAt: DateTime.now(),
+  // Reset password
+  Future<void> resetPassword({required String email}) async {
+    try {
+      await _authService.resetPassword(email: email);
+    } catch (e) {
+      // Handle error in UI
+      rethrow;
+    }
+  }
+
+  // Update user profile
+  Future<void> updateUserProfile({
+    String? firstName,
+    String? lastName,
+    String? photoUrl,
+  }) async {
+    try {
+      await _authService.updateUserProfile(
+        firstName: firstName,
+        lastName: lastName,
+        photoUrl: photoUrl,
       );
-      
-      await _firestore.collection('users').doc(firebaseUser.uid).set(user.toMap());
-    } else {
-      // Update last login time
-      await _firestore.collection('users').doc(firebaseUser.uid).update({
-        'lastLoginAt': DateTime.now().millisecondsSinceEpoch,
-      });
+      // Refresh current user data
+      final user = await _authService.currentUser;
+      state = AsyncValue.data(user);
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
+    }
+  }
+
+  // Delete account
+  Future<void> deleteAccount() async {
+    state = const AsyncValue.loading();
+    try {
+      await _authService.deleteAccount();
+      state = const AsyncValue.data(null);
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
+    }
+  }
+
+  // Clear error state
+  void clearError() {
+    if (state.hasError) {
+      state = AsyncValue.data(state.value);
     }
   }
 }
 
-final authNotifierProvider = StateNotifierProvider<AuthNotifier, AsyncValue<void>>((ref) {
-  return AuthNotifier(
-    ref.watch(authProvider),
-    ref.watch(firestoreProvider),
+// Auth notifier provider
+final authNotifierProvider = StateNotifierProvider<AuthNotifier, AsyncValue<UserModel?>>((ref) {
+  return AuthNotifier(ref.watch(authServiceProvider));
+});
+
+// Convenience providers for common auth states
+final isAuthenticatedProvider = Provider<bool>((ref) {
+  final authState = ref.watch(authNotifierProvider);
+  return authState.when(
+    data: (user) => user != null,
+    loading: () => false,
+    error: (_, __) => false,
+  );
+});
+
+final currentUserDataProvider = Provider<UserModel?>((ref) {
+  final authState = ref.watch(authNotifierProvider);
+  return authState.when(
+    data: (user) => user,
+    loading: () => null,
+    error: (_, __) => null,
+  );
+});
+
+final isLoadingProvider = Provider<bool>((ref) {
+  final authState = ref.watch(authNotifierProvider);
+  return authState.isLoading;
+});
+
+final authErrorProvider = Provider<String?>((ref) {
+  final authState = ref.watch(authNotifierProvider);
+  return authState.when(
+    data: (_) => null,
+    loading: () => null,
+    error: (error, _) => error.toString(),
   );
 });
 
