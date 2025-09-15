@@ -144,6 +144,7 @@ class AuthService {
         print('Checking if user exists in Firestore...');
         final userDoc = await _firestore.collection('users').doc(userCredential.user!.uid).get();
         
+        
         if (!userDoc.exists) {
           print('User does not exist, creating new user...');
           // Extract name parts from display name
