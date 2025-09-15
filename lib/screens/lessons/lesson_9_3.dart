@@ -1,0 +1,23 @@
+import 'package:flutter/material.dart';
+
+class Lesson93Screen extends StatelessWidget {
+  const Lesson93Screen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Lesson 9.3: The Gold Standard: Cognitive Behavior Therapy (CBT)'),
+      ),
+      body: const Center(
+        child: Text(
+          'Content coming soon...',
+          style: TextStyle(
+            fontSize: 18,
+            color: Colors.grey,
+          ),
+        ),
+      ),
+    );
+  }
+}
