@@ -103,38 +103,41 @@ class _EducationScreenState extends ConsumerState<EducationScreen>
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Colors.red[400],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Failed to load articles',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: Colors.red[600],
+      error: (error, stackTrace) {
+        print('❌ Education Screen Error: $error');
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error_outline,
+                size: 64,
+                color: Colors.red[400],
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              error.toString(),
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.red[500],
+              const SizedBox(height: 16),
+              Text(
+                'Failed to load articles',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  color: Colors.red[600],
+                ),
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => ref.invalidate(articlesProvider),
-              child: const Text('Retry'),
-            ),
-          ],
-        ),
-      ),
+              const SizedBox(height: 8),
+              Text(
+                error.toString(),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.red[500],
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => ref.invalidate(articlesProvider),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

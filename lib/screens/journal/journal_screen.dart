@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../ema_survey/ema_survey_screen.dart';
+import 'package:go_router/go_router.dart';
 import '../../providers/ema_survey_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../models/ema_survey.dart';
@@ -14,20 +14,7 @@ class JournalScreen extends ConsumerStatefulWidget {
 
 class _JournalScreenState extends ConsumerState<JournalScreen> {
   final TextEditingController _journalController = TextEditingController();
-  final List<JournalEntry> _journalEntries = [
-    JournalEntry(
-      date: DateTime(2025, 9, 11),
-      content: "Today's been a real challenge but things will get better!",
-    ),
-    JournalEntry(
-      date: DateTime(2025, 9, 10),
-      content: "Today's been shit but things will get better!",
-    ),
-    JournalEntry(
-      date: DateTime(2025, 9, 9),
-      content: "Fucking hell.",
-    ),
-  ];
+  final List<JournalEntry> _journalEntries = [];
 
   @override
   void initState() {
@@ -163,7 +150,12 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                     }
                   },
                   loading: () => const CircularProgressIndicator(),
-                  error: (error, _) => Text('Error: $error'),
+                  error: (error, _) {
+                    print('❌ Journal Screen Error (todaySurveyProvider): $error');
+                    print('🔗  ');
+                    print('   https://console.firebase.google.com/v1/r/project/bed-app-ef8f8/firestore/indexes');
+                    return Text('Error: $error');
+                  },
                 ),
                 
                 const SizedBox(height: 16),
@@ -205,57 +197,6 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
     );
   }
 
-  Widget _buildJournalEntryCard(BuildContext context, JournalEntry entry) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            // Date box
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey[300]!),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    _getDayAbbreviation(entry.date.weekday),
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Text(
-                    '${entry.date.day}',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 16),
-            // Content
-            Expanded(
-              child: Text(
-                entry.content,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   void _showAddEntryDialog() {
     showDialog(
@@ -322,11 +263,6 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
     return '${months[date.month - 1]} ${date.year}';
   }
 
-  String _getDayAbbreviation(int weekday) {
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return days[weekday - 1];
-  }
-
   // EMA Survey methods
   void _startEMASurvey() async {
     final user = ref.read(currentUserDataProvider);
@@ -336,43 +272,19 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
         .createOrGetTodaySurvey(user.id);
 
     if (mounted) {
-      final result = await Navigator.of(context).push<bool>(
-        MaterialPageRoute(
-          builder: (context) => const EMASurveyScreen(),
-        ),
-      );
-
-      if (result == true) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('EMA Survey completed successfully!')),
-        );
-      }
+      context.go('/ema-survey');
     }
   }
 
   void _continueEMASurvey() async {
     if (mounted) {
-      final result = await Navigator.of(context).push<bool>(
-        MaterialPageRoute(
-          builder: (context) => const EMASurveyScreen(isResuming: true),
-        ),
-      );
-
-      if (result == true) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('EMA Survey completed successfully!')),
-        );
-      }
+      context.go('/ema-survey/resume');
     }
   }
 
   void _viewEMASurvey() async {
     if (mounted) {
-      await Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const EMASurveyScreen(isResuming: true),
-        ),
-      );
+      context.go('/ema-survey/resume');
     }
   }
 
@@ -424,7 +336,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
         
         // Add journal entries
         for (final entry in _journalEntries) {
-          allItems.add(_buildJournalEntryCard(context, entry));
+          allItems.add(_JournalEntryCard(entry: entry));
         }
         
         // Sort by date (most recent first)
@@ -433,14 +345,20 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
           
           if (a is _SurveyCard) {
             dateA = a.survey.surveyDate;
+          } else if (a is _JournalEntryCard) {
+            dateA = a.entry.date;
           } else {
-            dateA = (a as _JournalEntryCard).entry.date;
+            // Fallback for other widget types
+            dateA = DateTime.now();
           }
           
           if (b is _SurveyCard) {
             dateB = b.survey.surveyDate;
+          } else if (b is _JournalEntryCard) {
+            dateB = b.entry.date;
           } else {
-            dateB = (b as _JournalEntryCard).entry.date;
+            // Fallback for other widget types
+            dateB = DateTime.now();
           }
           
           return dateB.compareTo(dateA);
@@ -481,9 +399,12 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, _) => Center(
-        child: Text('Error loading content: $error'),
-      ),
+      error: (error, _) {
+        print('❌ Journal Screen Error (userSurveysProvider): $error');
+        return Center(
+          child: Text('Error loading content: $error'),
+        );
+      },
     );
   }
 

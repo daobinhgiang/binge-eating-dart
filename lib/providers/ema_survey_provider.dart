@@ -7,11 +7,17 @@ final emaSurveyServiceProvider = Provider<EMASurveyService>((ref) => EMASurveySe
 
 // Current user's surveys provider
 final userSurveysProvider = StreamProvider.family<List<EMASurvey>, String>((ref, userId) {
+  if (userId.isEmpty) {
+    return Stream.value([]);
+  }
   return ref.watch(emaSurveyServiceProvider).getUserSurveysStream(userId);
 });
 
 // Today's survey provider
 final todaySurveyProvider = StreamProvider.family<EMASurvey?, String>((ref, userId) {
+  if (userId.isEmpty) {
+    return Stream.value(null);
+  }
   return ref.watch(emaSurveyServiceProvider).getTodaySurveyStream(userId);
 });
 

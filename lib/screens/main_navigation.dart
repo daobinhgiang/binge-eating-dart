@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'home_screen.dart';
 import 'education/education_screen.dart';
 import 'journal/journal_screen.dart';
@@ -20,7 +21,7 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
       icon: Icons.home_outlined,
       activeIcon: Icons.home,
       label: 'Home',
-      route: '/',
+      route: '/home',
     ),
     NavigationItem(
       icon: Icons.school_outlined,
@@ -42,8 +43,30 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
     ),
   ];
 
+  void _updateCurrentIndex(String location) {
+    switch (location) {
+      case '/':
+      case '/home':
+        _currentIndex = 0;
+        break;
+      case '/education':
+        _currentIndex = 1;
+        break;
+      case '/journal':
+        _currentIndex = 2;
+        break;
+      case '/profile':
+        _currentIndex = 3;
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Get current location and update index
+    final location = GoRouterState.of(context).uri.path;
+    _updateCurrentIndex(location);
+    
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
@@ -77,9 +100,7 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
                 return Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      setState(() {
-                        _currentIndex = index;
-                      });
+                      context.go(item.route);
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),

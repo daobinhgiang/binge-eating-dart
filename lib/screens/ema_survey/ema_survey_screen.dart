@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../models/ema_survey.dart';
 import '../../providers/ema_survey_provider.dart';
 import '../../providers/auth_provider.dart';
@@ -278,7 +279,11 @@ class _EMASurveyScreenState extends ConsumerState<EMASurveyScreen> {
     }
 
     if (mounted) {
-      Navigator.of(context).pop(true); // Return true to indicate completion
+      // Show success message and navigate back
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('EMA Survey completed successfully!')),
+      );
+      context.go('/journal');
     }
   }
 
@@ -286,7 +291,7 @@ class _EMASurveyScreenState extends ConsumerState<EMASurveyScreen> {
     await _saveToFirebase();
     
     if (mounted) {
-      Navigator.of(context).pop(false); // Return false to indicate not completed
+      context.go('/journal');
     }
   }
 
@@ -441,25 +446,29 @@ class _EMASurveyScreenState extends ConsumerState<EMASurveyScreen> {
   Widget _buildSingleChoiceWidget(EMAQuestion question) {
     final currentAnswer = _answers[question.id.name] as String?;
     
-    return Column(
-      children: question.options!.map((option) {
-        final isSelected = currentAnswer == option;
-        return RadioListTile<String>(
-          title: Text(option),
-          value: option,
-          groupValue: currentAnswer,
-          onChanged: (value) {
-            if (value != null) {
-              _saveAnswer(question.id.name, value);
-            }
-          },
-        );
-      }).toList(),
+    return RadioGroup<String>(
+      groupValue: currentAnswer,
+      onChanged: (value) {
+        if (value != null) {
+          _saveAnswer(question.id.name, value);
+        }
+      },
+      child: Column(
+        children: question.options!.map((option) {
+          return RadioListTile<String>(
+            title: Text(option),
+            value: option,
+          );
+        }).toList(),
+      ),
     );
   }
 
   Widget _buildMultipleChoiceWidget(EMAQuestion question) {
-    final currentAnswers = (_answers[question.id.name] as List<String>?) ?? [];
+    final rawAnswers = _answers[question.id.name];
+    final currentAnswers = rawAnswers is List
+        ? rawAnswers.cast<String>()
+        : <String>[];
     
     return Column(
       children: question.options!.map((option) {
@@ -482,8 +491,10 @@ class _EMASurveyScreenState extends ConsumerState<EMASurveyScreen> {
   }
 
   Widget _buildSliderWidget(EMAQuestion question) {
-    final currentValue = (_answers[question.id.name] as double?) ?? 
-        (question.minValue ?? 0).toDouble();
+    final rawValue = _answers[question.id.name];
+    final currentValue = rawValue is num 
+        ? rawValue.toDouble()
+        : (question.minValue ?? 0).toDouble();
     
     return Column(
       children: [

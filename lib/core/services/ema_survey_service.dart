@@ -55,6 +55,7 @@ class EMASurveyService {
       }
       return null;
     } catch (e) {
+      print('❌ EMA Survey Service Error (getTodaySurvey): $e');
       throw 'Failed to get today\'s EMA survey: $e';
     }
   }
@@ -72,6 +73,9 @@ class EMASurveyService {
           .map((doc) => EMASurvey.fromFirestore(doc))
           .toList();
     } catch (e) {
+      print('❌ EMA Survey Service Error: $e');
+      print('🔗  ');
+      print('   https://console.firebase.google.com/v1/r/project/bed-app-ef8f8/firestore/indexes');
       throw 'Failed to get user surveys: $e';
     }
   }
@@ -150,6 +154,12 @@ class EMASurveyService {
         .where('userId', isEqualTo: userId)
         .orderBy('surveyDate', descending: true)
         .snapshots()
+        .handleError((error) {
+          print('❌ EMA Survey Service Stream Error (getUserSurveysStream): $error');
+          print('🔗  ');
+          print('   https://console.firebase.google.com/v1/r/project/bed-app-ef8f8/firestore/indexes');
+          throw error;
+        })
         .map((snapshot) => snapshot.docs
             .map((doc) => EMASurvey.fromFirestore(doc))
             .toList());
@@ -166,6 +176,12 @@ class EMASurveyService {
         .where('surveyDate', isEqualTo: surveyDate.millisecondsSinceEpoch)
         .limit(1)
         .snapshots()
+        .handleError((error) {
+          print('❌ EMA Survey Service Stream Error (getTodaySurveyStream): $error');
+          print('🔗  ');
+          print('   https://console.firebase.google.com/v1/r/project/bed-app-ef8f8/firestore/indexes');
+          throw error;
+        })
         .map((snapshot) {
           if (snapshot.docs.isNotEmpty) {
             return EMASurvey.fromFirestore(snapshot.docs.first);

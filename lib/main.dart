@@ -11,6 +11,7 @@ import 'screens/auth/register_screen.dart';
 import 'screens/admin/admin_screen.dart';
 import 'screens/onboarding/onboarding_screen.dart';
 import 'screens/onboarding/onboarding_review_screen.dart';
+import 'screens/ema_survey/ema_survey_screen.dart';
 import 'providers/auth_provider.dart';
 import 'models/user_model.dart';
 
@@ -101,6 +102,24 @@ final _router = GoRouter(
     GoRoute(
       path: '/',
       builder: (context, state) => const AuthGuard(child: MainNavigation()),
+      routes: [
+        GoRoute(
+          path: 'home',
+          builder: (context, state) => const AuthGuard(child: MainNavigation()),
+        ),
+        GoRoute(
+          path: 'education',
+          builder: (context, state) => const AuthGuard(child: MainNavigation()),
+        ),
+        GoRoute(
+          path: 'journal',
+          builder: (context, state) => const AuthGuard(child: MainNavigation()),
+        ),
+        GoRoute(
+          path: 'profile',
+          builder: (context, state) => const AuthGuard(child: MainNavigation()),
+        ),
+      ],
     ),
     GoRoute(
       path: '/login',
@@ -131,6 +150,23 @@ final _router = GoRouter(
         requiredRole: UserRole.clinician,
         child: AdminScreen(),
       ),
+    ),
+    GoRoute(
+      path: '/ema-survey',
+      builder: (context, state) {
+        final isResuming = state.uri.queryParameters['resuming'] == 'true';
+        return AuthGuard(
+          child: EMASurveyScreen(isResuming: isResuming),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/ema-survey/resume',
+      builder: (context, state) {
+        return AuthGuard(
+          child: EMASurveyScreen(isResuming: true),
+        );
+      },
     ),
   ],
 );
@@ -202,6 +238,7 @@ class AuthGuard extends ConsumerWidget {
         ),
       ),
       error: (error, stackTrace) {
+        print('❌ Main App Error: $error');
         // On error, redirect to login
         WidgetsBinding.instance.addPostFrameCallback((_) {
           context.go('/login');

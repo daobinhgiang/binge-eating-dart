@@ -11,6 +11,11 @@ final articlesProvider = StreamProvider<List<Article>>((ref) {
       .collection('articles')
       .orderBy('publishedAt', descending: true)
       .snapshots()
+      .handleError((error) {
+        print('❌ Education Provider Error (articlesProvider): $error');
+        // Return empty list instead of throwing error to prevent app crash
+        return Stream.value(<Article>[]);
+      })
       .map((snapshot) {
     return snapshot.docs.map((doc) {
       return Article.fromMap(doc.data(), doc.id);
@@ -40,6 +45,10 @@ final featuredArticlesProvider = StreamProvider<List<Article>>((ref) {
       .orderBy('publishedAt', descending: true)
       .limit(5)
       .snapshots()
+      .handleError((error) {
+        print('❌ Education Provider Error (featuredArticlesProvider): $error');
+        throw error;
+      })
       .map((snapshot) {
     return snapshot.docs.map((doc) {
       return Article.fromMap(doc.data(), doc.id);
@@ -55,6 +64,10 @@ final articlesByCategoryProvider = StreamProvider.family<List<Article>, String>(
       .where('category', isEqualTo: category)
       .orderBy('publishedAt', descending: true)
       .snapshots()
+      .handleError((error) {
+        print('❌ Education Provider Error (articlesByCategoryProvider): $error');
+        throw error;
+      })
       .map((snapshot) {
     return snapshot.docs.map((doc) {
       return Article.fromMap(doc.data(), doc.id);
@@ -73,6 +86,9 @@ class EducationNotifier extends StateNotifier<AsyncValue<void>> {
       await _firestore.collection('articles').add(article.toMap());
       state = const AsyncValue.data(null);
     } catch (e, stackTrace) {
+      print('❌ Education Notifier Error (addArticle): $e');
+      print('🔗  ');
+      print('   https://console.firebase.google.com/v1/r/project/bed-app-ef8f8/firestore/indexes');
       state = AsyncValue.error(e, stackTrace);
     }
   }
@@ -83,6 +99,9 @@ class EducationNotifier extends StateNotifier<AsyncValue<void>> {
       await _firestore.collection('articles').doc(articleId).update(article.toMap());
       state = const AsyncValue.data(null);
     } catch (e, stackTrace) {
+      print('❌ Education Notifier Error (updateArticle): $e');
+      print('🔗  ');
+      print('   https://console.firebase.google.com/v1/r/project/bed-app-ef8f8/firestore/indexes');
       state = AsyncValue.error(e, stackTrace);
     }
   }
@@ -93,6 +112,9 @@ class EducationNotifier extends StateNotifier<AsyncValue<void>> {
       await _firestore.collection('articles').doc(articleId).delete();
       state = const AsyncValue.data(null);
     } catch (e, stackTrace) {
+      print('❌ Education Notifier Error (deleteArticle): $e');
+      print('🔗  ');
+      print('   https://console.firebase.google.com/v1/r/project/bed-app-ef8f8/firestore/indexes');
       state = AsyncValue.error(e, stackTrace);
     }
   }
