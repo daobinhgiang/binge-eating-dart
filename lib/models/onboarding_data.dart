@@ -19,10 +19,22 @@ class OnboardingData {
         .map((answer) => OnboardingAnswer.fromMap(answer as Map<String, dynamic>))
         .toList();
 
+    // Handle both Timestamp and int for completedAt
+    DateTime completedAt;
+    final completedAtValue = map['completedAt'];
+    if (completedAtValue == null) {
+      completedAt = DateTime.now();
+    } else if (completedAtValue is int) {
+      completedAt = DateTime.fromMillisecondsSinceEpoch(completedAtValue);
+    } else {
+      // Handle Firestore Timestamp
+      completedAt = completedAtValue.toDate();
+    }
+
     return OnboardingData(
       userId: map['userId'] ?? '',
       answers: answers,
-      completedAt: DateTime.fromMillisecondsSinceEpoch(map['completedAt'] ?? 0),
+      completedAt: completedAt,
       totalScore: map['totalScore'] ?? 0,
     );
   }

@@ -10,6 +10,7 @@ import 'screens/auth/login_screen.dart';
 import 'screens/auth/register_screen.dart';
 import 'screens/admin/admin_screen.dart';
 import 'screens/onboarding/onboarding_screen.dart';
+import 'screens/onboarding/onboarding_review_screen.dart';
 import 'providers/auth_provider.dart';
 import 'models/user_model.dart';
 
@@ -112,6 +113,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/onboarding',
       builder: (context, state) => const OnboardingScreen(),
+    ),
+    GoRoute(
+      path: '/onboarding/review',
+      builder: (context, state) => const AuthGuard(child: OnboardingReviewScreen()),
     ),
     GoRoute(
       path: '/education/article/:id',

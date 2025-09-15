@@ -14,12 +14,24 @@ class OnboardingAnswer {
   });
 
   factory OnboardingAnswer.fromMap(Map<String, dynamic> map) {
+    // Handle both Timestamp and int for answeredAt
+    DateTime answeredAt;
+    final answeredAtValue = map['answeredAt'];
+    if (answeredAtValue == null) {
+      answeredAt = DateTime.now();
+    } else if (answeredAtValue is int) {
+      answeredAt = DateTime.fromMillisecondsSinceEpoch(answeredAtValue);
+    } else {
+      // Handle Firestore Timestamp
+      answeredAt = answeredAtValue.toDate();
+    }
+
     return OnboardingAnswer(
       questionNumber: map['questionNumber'] ?? 0,
       question: map['question'] ?? '',
       selectedOption: map['selectedOption'] ?? 0,
       selectedText: map['selectedText'] ?? '',
-      answeredAt: DateTime.fromMillisecondsSinceEpoch(map['answeredAt'] ?? 0),
+      answeredAt: answeredAt,
     );
   }
 

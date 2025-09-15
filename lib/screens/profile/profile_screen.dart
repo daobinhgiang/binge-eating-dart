@@ -103,6 +103,16 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                       const Divider(height: 1),
                       ListTile(
+                        leading: const Icon(Icons.quiz_outlined),
+                        title: const Text('Review Assessment'),
+                        subtitle: const Text('Update your onboarding responses'),
+                        trailing: const Icon(Icons.arrow_forward_ios),
+                        onTap: () {
+                          context.go('/onboarding/review');
+                        },
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
                         leading: const Icon(Icons.settings_outlined),
                         title: const Text('Settings'),
                         trailing: const Icon(Icons.arrow_forward_ios),
