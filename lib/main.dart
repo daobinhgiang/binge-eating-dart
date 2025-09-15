@@ -164,8 +164,8 @@ class AuthGuard extends ConsumerWidget {
           );
         }
 
-        // Check if user has completed onboarding
-        if (!user.onboardingCompleted) {
+        // Check if user has completed or partially completed onboarding
+        if (!user.onboardingCompleted && !user.onboardingPartiallyCompleted) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             context.go('/onboarding');
           });

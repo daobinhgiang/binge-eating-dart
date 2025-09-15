@@ -27,6 +27,7 @@ class UserModel {
   final String? photoUrl;
   final Map<String, dynamic> preferences;
   final bool onboardingCompleted;
+  final bool onboardingPartiallyCompleted;
 
   const UserModel({
     required this.id,
@@ -39,6 +40,7 @@ class UserModel {
     this.photoUrl,
     this.preferences = const {},
     this.onboardingCompleted = false,
+    this.onboardingPartiallyCompleted = false,
   });
 
   String get fullName => '$firstName $lastName';
@@ -62,6 +64,7 @@ class UserModel {
       photoUrl: data['photoUrl'],
       preferences: Map<String, dynamic>.from(data['preferences'] ?? {}),
       onboardingCompleted: data['onboardingCompleted'] ?? false,
+      onboardingPartiallyCompleted: data['onboardingPartiallyCompleted'] ?? false,
     );
   }
 
@@ -76,6 +79,7 @@ class UserModel {
       'photoUrl': photoUrl,
       'preferences': preferences,
       'onboardingCompleted': onboardingCompleted,
+      'onboardingPartiallyCompleted': onboardingPartiallyCompleted,
     };
   }
 
@@ -90,6 +94,7 @@ class UserModel {
     String? photoUrl,
     Map<String, dynamic>? preferences,
     bool? onboardingCompleted,
+    bool? onboardingPartiallyCompleted,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -102,6 +107,7 @@ class UserModel {
       photoUrl: photoUrl ?? this.photoUrl,
       preferences: preferences ?? this.preferences,
       onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
+      onboardingPartiallyCompleted: onboardingPartiallyCompleted ?? this.onboardingPartiallyCompleted,
     );
   }
 
@@ -117,7 +123,8 @@ class UserModel {
         other.createdAt == createdAt &&
         other.lastLoginAt == lastLoginAt &&
         other.photoUrl == photoUrl &&
-        other.onboardingCompleted == onboardingCompleted;
+        other.onboardingCompleted == onboardingCompleted &&
+        other.onboardingPartiallyCompleted == onboardingPartiallyCompleted;
   }
 
   @override
@@ -132,6 +139,7 @@ class UserModel {
       lastLoginAt,
       photoUrl,
       onboardingCompleted,
+      onboardingPartiallyCompleted,
     );
   }
 

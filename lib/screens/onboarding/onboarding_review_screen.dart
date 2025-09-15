@@ -21,6 +21,7 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
   List<OnboardingAnswer> _answers = [];
 
   final List<OnboardingQuestion> _questions = [
+    // First 4 questions (required) - reordered to 1, 4, 8, 16
     OnboardingQuestion(
       number: 1,
       question: "How self-conscious do you feel about your weight or body size around others?",
@@ -33,26 +34,6 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
     ),
     OnboardingQuestion(
       number: 2,
-      question: "How would you describe your eating speed and fullness?",
-      options: [
-        "I don't have any difficulty eating slowly in the proper manner.",
-        "Although I seem to \"gobble down\" foods, I don't end up feeling stuffed.",
-        "At times, I tend to eat quickly and then feel uncomfortably full afterwards.",
-        "I bolt down food without really chewing, and usually feel stuffed afterwards.",
-      ],
-    ),
-    OnboardingQuestion(
-      number: 3,
-      question: "How capable do you feel in controlling your eating urges?",
-      options: [
-        "I feel capable of controlling my eating urges when I want to.",
-        "I feel like I have failed to control my eating more than the average person.",
-        "I feel utterly helpless when it comes to controlling my eating urges.",
-        "I feel so helpless about controlling eating that I have become desperate about it.",
-      ],
-    ),
-    OnboardingQuestion(
-      number: 4,
       question: "How often do you eat when you are bored?",
       options: [
         "I don't have the habit of eating when I'm bored.",
@@ -62,36 +43,7 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
       ],
     ),
     OnboardingQuestion(
-      number: 5,
-      question: "Do you eat when you are not physically hungry?",
-      options: [
-        "I'm usually physically hungry when I eat.",
-        "Occasionally, I eat on impulse when I'm not hungry.",
-        "I regularly eat foods I may not enjoy, just to satisfy a hungry feeling even when I don't need it.",
-        "I get \"mouth hunger\" when not physically hungry and eat foods to fill it. Sometimes I spit the food out afterward.",
-      ],
-    ),
-    OnboardingQuestion(
-      number: 6,
-      question: "How do you feel after overeating?",
-      options: [
-        "I don't feel any guilt or self-hate after I overeat.",
-        "Occasionally, I feel guilt or self-hate after overeating.",
-        "Almost always, I feel strong guilt or self-hate after overeating.",
-      ],
-    ),
-    OnboardingQuestion(
-      number: 7,
-      question: "How do you react when dieting and overeating occurs?",
-      options: [
-        "I don't lose control when dieting even after overeating.",
-        "Sometimes, after eating a \"forbidden food,\" I feel I blew it and eat more.",
-        "Frequently, I say \"I've blown it, might as well go all the way\" and binge.",
-        "I often start strict diets but break them with binges. My life feels like \"feast or famine.\"",
-      ],
-    ),
-    OnboardingQuestion(
-      number: 8,
+      number: 3,
       question: "How often do you eat until uncomfortably stuffed?",
       options: [
         "Rarely.",
@@ -101,7 +53,66 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
       ],
     ),
     OnboardingQuestion(
+      number: 4,
+      question: "How certain are you about recognizing physical hunger?",
+      options: [
+        "I usually know when I'm physically hungry and eat the right portion.",
+        "Occasionally I'm uncertain and don't know how much food I need.",
+        "Even if I know the calories, I don't know what's a \"normal\" amount for me.",
+      ],
+    ),
+    // Remaining questions (optional) - 2, 3, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15
+    OnboardingQuestion(
+      number: 5,
+      question: "How would you describe your eating speed and fullness?",
+      options: [
+        "I don't have any difficulty eating slowly in the proper manner.",
+        "Although I seem to \"gobble down\" foods, I don't end up feeling stuffed.",
+        "At times, I tend to eat quickly and then feel uncomfortably full afterwards.",
+        "I bolt down food without really chewing, and usually feel stuffed afterwards.",
+      ],
+    ),
+    OnboardingQuestion(
+      number: 6,
+      question: "How capable do you feel in controlling your eating urges?",
+      options: [
+        "I feel capable of controlling my eating urges when I want to.",
+        "I feel like I have failed to control my eating more than the average person.",
+        "I feel utterly helpless when it comes to controlling my eating urges.",
+        "I feel so helpless about controlling eating that I have become desperate about it.",
+      ],
+    ),
+    OnboardingQuestion(
+      number: 7,
+      question: "Do you eat when you are not physically hungry?",
+      options: [
+        "I'm usually physically hungry when I eat.",
+        "Occasionally, I eat on impulse when I'm not hungry.",
+        "I regularly eat foods I may not enjoy, just to satisfy a hungry feeling even when I don't need it.",
+        "I get \"mouth hunger\" when not physically hungry and eat foods to fill it. Sometimes I spit the food out afterward.",
+      ],
+    ),
+    OnboardingQuestion(
+      number: 8,
+      question: "How do you feel after overeating?",
+      options: [
+        "I don't feel any guilt or self-hate after I overeat.",
+        "Occasionally, I feel guilt or self-hate after overeating.",
+        "Almost always, I feel strong guilt or self-hate after overeating.",
+      ],
+    ),
+    OnboardingQuestion(
       number: 9,
+      question: "How do you react when dieting and overeating occurs?",
+      options: [
+        "I don't lose control when dieting even after overeating.",
+        "Sometimes, after eating a \"forbidden food,\" I feel I blew it and eat more.",
+        "Frequently, I say \"I've blown it, might as well go all the way\" and binge.",
+        "I often start strict diets but break them with binges. My life feels like \"feast or famine.\"",
+      ],
+    ),
+    OnboardingQuestion(
+      number: 10,
       question: "How does your calorie intake fluctuate?",
       options: [
         "My calorie intake doesn't fluctuate much.",
@@ -111,7 +122,7 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
       ],
     ),
     OnboardingQuestion(
-      number: 10,
+      number: 11,
       question: "How well can you stop eating once you've started?",
       options: [
         "I usually stop when I've had enough.",
@@ -121,7 +132,7 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
       ],
     ),
     OnboardingQuestion(
-      number: 11,
+      number: 12,
       question: "Do you stop eating when full?",
       options: [
         "I stop eating when full.",
@@ -131,7 +142,7 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
       ],
     ),
     OnboardingQuestion(
-      number: 12,
+      number: 13,
       question: "How do you eat when with others compared to being alone?",
       options: [
         "I eat the same with others as when alone.",
@@ -141,7 +152,7 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
       ],
     ),
     OnboardingQuestion(
-      number: 13,
+      number: 14,
       question: "What is your eating pattern during the day?",
       options: [
         "I eat 3 meals a day with only occasional snacks.",
@@ -151,7 +162,7 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
       ],
     ),
     OnboardingQuestion(
-      number: 14,
+      number: 15,
       question: "How preoccupied are you with controlling your eating?",
       options: [
         "I don't think much about controlling eating.",
@@ -161,22 +172,13 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
       ],
     ),
     OnboardingQuestion(
-      number: 15,
+      number: 16,
       question: "How much do you think about food in general?",
       options: [
         "I don't think about food much.",
         "I have strong cravings but they're brief.",
         "I have days when I can't think about anything but food.",
         "Most days, I feel like I live to eat.",
-      ],
-    ),
-    OnboardingQuestion(
-      number: 16,
-      question: "How certain are you about recognizing physical hunger?",
-      options: [
-        "I usually know when I'm physically hungry and eat the right portion.",
-        "Occasionally I'm uncertain and don't know how much food I need.",
-        "Even if I know the calories, I don't know what's a \"normal\" amount for me.",
       ],
     ),
   ];
