@@ -4,8 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'firebase_options.dart';
-import 'screens/home_screen.dart';
-import 'screens/education/education_screen.dart';
+import 'screens/main_navigation.dart';
 import 'screens/education/article_detail_screen.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/register_screen.dart';
@@ -99,7 +98,7 @@ final _router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const AuthGuard(child: HomeScreen()),
+      builder: (context, state) => const AuthGuard(child: MainNavigation()),
     ),
     GoRoute(
       path: '/login',
@@ -108,10 +107,6 @@ final _router = GoRouter(
     GoRoute(
       path: '/register',
       builder: (context, state) => const RegisterScreen(),
-    ),
-    GoRoute(
-      path: '/education',
-      builder: (context, state) => const AuthGuard(child: EducationScreen()),
     ),
     GoRoute(
       path: '/education/article/:id',

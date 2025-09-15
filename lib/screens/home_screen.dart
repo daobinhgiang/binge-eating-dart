@@ -13,6 +13,7 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('BED Support App'),
+        centerTitle: true,
         actions: [
           authState.when(
             data: (user) => user != null
