@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/services/ema_survey_service.dart';
 import '../models/ema_survey.dart';
+import 'auth_provider.dart';
 
 // EMA Survey service provider
 final emaSurveyServiceProvider = Provider<EMASurveyService>((ref) => EMASurveyService());
@@ -10,6 +11,13 @@ final userSurveysProvider = StreamProvider.family<List<EMASurvey>, String>((ref,
   if (userId.isEmpty) {
     return Stream.value([]);
   }
+  
+  // Check if user is authenticated
+  final isAuthenticated = ref.watch(isAuthenticatedProvider);
+  if (!isAuthenticated) {
+    return Stream.value([]);
+  }
+  
   return ref.watch(emaSurveyServiceProvider).getUserSurveysStream(userId);
 });
 
@@ -18,6 +26,13 @@ final todaySurveyProvider = StreamProvider.family<EMASurvey?, String>((ref, user
   if (userId.isEmpty) {
     return Stream.value(null);
   }
+  
+  // Check if user is authenticated
+  final isAuthenticated = ref.watch(isAuthenticatedProvider);
+  if (!isAuthenticated) {
+    return Stream.value(null);
+  }
+  
   return ref.watch(emaSurveyServiceProvider).getTodaySurveyStream(userId);
 });
 

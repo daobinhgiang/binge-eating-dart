@@ -1,10 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/article.dart';
+import 'auth_provider.dart';
 
 final firestoreProvider = Provider<FirebaseFirestore>((ref) => FirebaseFirestore.instance);
 
 final articlesProvider = StreamProvider<List<Article>>((ref) {
+  // Check if user is authenticated
+  final isAuthenticated = ref.watch(isAuthenticatedProvider);
+  if (!isAuthenticated) {
+    return Stream.value(<Article>[]);
+  }
+  
   final firestore = ref.watch(firestoreProvider);
   
   return firestore
@@ -24,6 +31,12 @@ final articlesProvider = StreamProvider<List<Article>>((ref) {
 });
 
 final articleProvider = StreamProvider.family<Article?, String>((ref, articleId) {
+  // Check if user is authenticated
+  final isAuthenticated = ref.watch(isAuthenticatedProvider);
+  if (!isAuthenticated) {
+    return Stream.value(null);
+  }
+  
   final firestore = ref.watch(firestoreProvider);
   
   return firestore
@@ -37,6 +50,12 @@ final articleProvider = StreamProvider.family<Article?, String>((ref, articleId)
 });
 
 final featuredArticlesProvider = StreamProvider<List<Article>>((ref) {
+  // Check if user is authenticated
+  final isAuthenticated = ref.watch(isAuthenticatedProvider);
+  if (!isAuthenticated) {
+    return Stream.value(<Article>[]);
+  }
+  
   final firestore = ref.watch(firestoreProvider);
   
   return firestore
@@ -57,6 +76,12 @@ final featuredArticlesProvider = StreamProvider<List<Article>>((ref) {
 });
 
 final articlesByCategoryProvider = StreamProvider.family<List<Article>, String>((ref, category) {
+  // Check if user is authenticated
+  final isAuthenticated = ref.watch(isAuthenticatedProvider);
+  if (!isAuthenticated) {
+    return Stream.value(<Article>[]);
+  }
+  
   final firestore = ref.watch(firestoreProvider);
   
   return firestore

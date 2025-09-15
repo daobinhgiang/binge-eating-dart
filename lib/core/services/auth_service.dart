@@ -107,8 +107,14 @@ class AuthService {
     try {
       print('Starting Google Sign-in...');
       
-      // Trigger the authentication flow
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      // Try silent sign-in first (recommended for web)
+      GoogleSignInAccount? googleUser = await _googleSignIn.signInSilently();
+      
+      // If silent sign-in fails, try interactive sign-in
+      if (googleUser == null) {
+        print('Silent sign-in failed, trying interactive sign-in...');
+        googleUser = await _googleSignIn.signIn();
+      }
       
       if (googleUser == null) {
         print('User cancelled Google Sign-in');
@@ -197,6 +203,16 @@ class AuthService {
       await _googleSignIn.signOut();
     } catch (e) {
       throw 'Failed to sign out. Please try again.';
+    }
+  }
+
+  // Check if user is already signed in with Google
+  Future<bool> isSignedInWithGoogle() async {
+    try {
+      final user = await _googleSignIn.signInSilently();
+      return user != null;
+    } catch (e) {
+      return false;
     }
   }
 
