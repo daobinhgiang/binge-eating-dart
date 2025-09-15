@@ -55,6 +55,7 @@ A Flutter web application designed to support patients with Binge Eating Disorde
 4. **Run the application**
    ```bash
    flutter run -d web-server --web-port 8080
+   flutter run -d chrome
    ```
 
 5. **Access the app**

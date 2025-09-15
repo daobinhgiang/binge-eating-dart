@@ -26,6 +26,7 @@ class UserModel {
   final DateTime? lastLoginAt;
   final String? photoUrl;
   final Map<String, dynamic> preferences;
+  final bool onboardingCompleted;
 
   const UserModel({
     required this.id,
@@ -37,6 +38,7 @@ class UserModel {
     this.lastLoginAt,
     this.photoUrl,
     this.preferences = const {},
+    this.onboardingCompleted = false,
   });
 
   String get fullName => '$firstName $lastName';
@@ -59,6 +61,7 @@ class UserModel {
           : null,
       photoUrl: data['photoUrl'],
       preferences: Map<String, dynamic>.from(data['preferences'] ?? {}),
+      onboardingCompleted: data['onboardingCompleted'] ?? false,
     );
   }
 
@@ -72,6 +75,7 @@ class UserModel {
       'lastLoginAt': lastLoginAt?.millisecondsSinceEpoch,
       'photoUrl': photoUrl,
       'preferences': preferences,
+      'onboardingCompleted': onboardingCompleted,
     };
   }
 
@@ -85,6 +89,7 @@ class UserModel {
     DateTime? lastLoginAt,
     String? photoUrl,
     Map<String, dynamic>? preferences,
+    bool? onboardingCompleted,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -96,6 +101,7 @@ class UserModel {
       lastLoginAt: lastLoginAt ?? this.lastLoginAt,
       photoUrl: photoUrl ?? this.photoUrl,
       preferences: preferences ?? this.preferences,
+      onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
     );
   }
 
@@ -110,7 +116,8 @@ class UserModel {
         other.role == role &&
         other.createdAt == createdAt &&
         other.lastLoginAt == lastLoginAt &&
-        other.photoUrl == photoUrl;
+        other.photoUrl == photoUrl &&
+        other.onboardingCompleted == onboardingCompleted;
   }
 
   @override
@@ -124,6 +131,7 @@ class UserModel {
       createdAt,
       lastLoginAt,
       photoUrl,
+      onboardingCompleted,
     );
   }
 

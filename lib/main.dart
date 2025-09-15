@@ -9,6 +9,7 @@ import 'screens/education/article_detail_screen.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/register_screen.dart';
 import 'screens/admin/admin_screen.dart';
+import 'screens/onboarding/onboarding_screen.dart';
 import 'providers/auth_provider.dart';
 import 'models/user_model.dart';
 
@@ -109,6 +110,10 @@ final _router = GoRouter(
       builder: (context, state) => const RegisterScreen(),
     ),
     GoRoute(
+      path: '/onboarding',
+      builder: (context, state) => const OnboardingScreen(),
+    ),
+    GoRoute(
       path: '/education/article/:id',
       builder: (context, state) {
         final articleId = state.pathParameters['id']!;
@@ -146,6 +151,18 @@ class AuthGuard extends ConsumerWidget {
           // User not authenticated, redirect to login
           WidgetsBinding.instance.addPostFrameCallback((_) {
             context.go('/login');
+          });
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        // Check if user has completed onboarding
+        if (!user.onboardingCompleted) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context.go('/onboarding');
           });
           return const Scaffold(
             body: Center(
