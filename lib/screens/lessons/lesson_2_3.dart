@@ -1,146 +1,139 @@
 import 'package:flutter/material.dart';
+import '../../core/services/lesson_service.dart';
+import '../../models/lesson.dart';
+import '../../widgets/lesson_slide_widget.dart';
 
-class Lesson23Screen extends StatelessWidget {
+class Lesson23Screen extends StatefulWidget {
   const Lesson23Screen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Lesson 2.3: The "What" and "How" of Bingeing'),
-      ),
-      body: const SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'The "What" and "How" of Bingeing',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            SizedBox(height: 24),
-            Text(
-              'Understanding both what you eat during a binge and how you eat it provides crucial insights into the nature of binge eating:',
-              style: TextStyle(
-                fontSize: 16,
-                height: 1.6,
-                color: Colors.black87,
-              ),
-            ),
-            SizedBox(height: 20),
-            _SectionCard(
-              title: 'The "What" - Types of Foods',
-              content: [
-                'Often high-calorie, "forbidden" foods',
-                'Foods typically avoided during normal eating',
-                'Comfort foods or "trigger" foods',
-                'Large quantities of any available food',
-                'Sometimes unusual food combinations',
-              ],
-            ),
-            _SectionCard(
-              title: 'The "How" - Eating Behaviors',
-              content: [
-                'Eating rapidly without chewing properly',
-                'Eating until uncomfortably full',
-                'Continuing to eat despite feeling full',
-                'Eating without awareness or mindfulness',
-                'Mechanical, automatic eating patterns',
-              ],
-            ),
-            _SectionCard(
-              title: 'Common Patterns',
-              content: [
-                'Starting with "just a little" and escalating',
-                'Eating in a trance-like state',
-                'Feeling disconnected from the eating process',
-                'Unable to stop despite wanting to',
-                'Eating past the point of physical comfort',
-              ],
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Recognizing these patterns helps in developing strategies to interrupt the binge cycle and build healthier eating behaviors.',
-              style: TextStyle(
-                fontSize: 16,
-                height: 1.6,
-                color: Colors.black87,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  State<Lesson23Screen> createState() => _Lesson23ScreenState();
 }
 
-class _SectionCard extends StatelessWidget {
-  final String title;
-  final List<String> content;
+class _Lesson23ScreenState extends State<Lesson23Screen> {
+  final LessonService _lessonService = LessonService();
+  Lesson? _lesson;
+  int _currentSlideIndex = 0;
+  bool _isLoading = true;
 
-  const _SectionCard({
-    required this.title,
-    required this.content,
-  });
+  @override
+  void initState() {
+    super.initState();
+    _loadLesson();
+  }
+
+  Future<void> _loadLesson() async {
+    try {
+      final lesson = await _lessonService.getLessonByChapterAndNumber(2, 3);
+      if (lesson != null) {
+        setState(() {
+          _lesson = lesson;
+          _isLoading = false;
+        });
+        return;
+      }
+
+      // Initialize default lessons if not found
+      try {
+        await _lessonService.initializeDefaultLessons();
+        final lesson = await _lessonService.getLessonByChapterAndNumber(2, 3);
+        if (lesson != null) {
+          setState(() {
+            _lesson = lesson;
+            _isLoading = false;
+          });
+          return;
+        }
+      } catch (initError) {
+        print('Warning: Could not initialize lessons: $initError');
+      }
+
+      // If still no lesson found, show error
+      setState(() {
+        _isLoading = false;
+      });
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Lesson not found'),
+            duration: Duration(seconds: 5),
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error loading lesson: $e'),
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    }
+  }
+
+  void _goToNextSlide() {
+    if (_lesson != null && _currentSlideIndex < _lesson!.slides.length - 1) {
+      setState(() {
+        _currentSlideIndex++;
+      });
+    }
+  }
+
+  void _goToPreviousSlide() {
+    if (_currentSlideIndex > 0) {
+      setState(() {
+        _currentSlideIndex--;
+      });
+    }
+  }
+
+  void _finishLesson() {
+    // Mark lesson as completed
+    if (_lesson != null) {
+      _lessonService.markLessonCompleted(_lesson!.id);
+    }
+    
+    // Navigate back to education screen
+    Navigator.of(context).pop();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.purple.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.purple.withOpacity(0.2),
-          width: 1,
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.purple,
-            ),
-          ),
-          const SizedBox(height: 12),
-          ...content.map((item) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 6, right: 12),
-                  width: 6,
-                  height: 6,
-                  decoration: const BoxDecoration(
-                    color: Colors.purple,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    item,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      height: 1.5,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          )),
-        ],
-      ),
+      );
+    }
+
+    if (_lesson == null || _lesson!.slides.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Lesson 2.3: The Binge-Restrict Cycle'),
+        ),
+        body: const Center(
+          child: Text('Lesson not found'),
+        ),
+      );
+    }
+
+    final currentSlide = _lesson!.slides[_currentSlideIndex];
+    final isFirstSlide = _currentSlideIndex == 0;
+    final isLastSlide = _currentSlideIndex == _lesson!.slides.length - 1;
+
+    return LessonSlideWidget(
+      slide: currentSlide,
+      isFirstSlide: isFirstSlide,
+      isLastSlide: isLastSlide,
+      onPrevious: isFirstSlide ? null : _goToPreviousSlide,
+      onNext: isLastSlide ? null : _goToNextSlide,
+      onFinish: isLastSlide ? _finishLesson : null,
     );
   }
 }

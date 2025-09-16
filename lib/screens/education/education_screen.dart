@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/services/lesson_service.dart';
 import '../lessons/lesson_1_1.dart';
 import '../lessons/lesson_1_2.dart';
 import '../lessons/lesson_1_3.dart';
@@ -112,8 +113,15 @@ class Lesson {
   });
 }
 
-class EducationScreen extends StatelessWidget {
+class EducationScreen extends StatefulWidget {
   const EducationScreen({super.key});
+
+  @override
+  State<EducationScreen> createState() => _EducationScreenState();
+}
+
+class _EducationScreenState extends State<EducationScreen> {
+  final LessonService _lessonService = LessonService();
 
   // Define all 22 chapters with their titles and lessons
   static const List<Chapter> chapters = [
@@ -746,40 +754,117 @@ class EducationScreen extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       child: Card(
-        child: ListTile(
-          leading: Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              Icons.play_circle_outline,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ),
-          title: Text(
-            lesson.title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          subtitle: Text(
-            '${lesson.description} | ${lesson.duration}',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.grey[600],
-            ),
-          ),
-            onTap: () {
-              _navigateToLesson(context, chapter, lesson);
-            },
+        child: FutureBuilder<bool>(
+          future: _checkLessonUnlock(chapter, lesson),
+          builder: (context, snapshot) {
+            final isUnlocked = snapshot.data ?? false;
+            final isLoading = snapshot.connectionState == ConnectionState.waiting;
+            
+            return ListTile(
+              leading: Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: isUnlocked 
+                      ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+                      : Colors.grey.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Icon(
+                        isUnlocked ? Icons.play_circle_outline : Icons.lock_outline,
+                        color: isUnlocked 
+                            ? Theme.of(context).colorScheme.primary
+                            : Colors.grey,
+                      ),
+              ),
+              title: Text(
+                lesson.title,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: isUnlocked ? null : Colors.grey,
+                ),
+              ),
+              subtitle: Text(
+                '${lesson.description} | ${lesson.duration}',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: isUnlocked ? Colors.grey[600] : Colors.grey[400],
+                ),
+              ),
+              trailing: isUnlocked ? null : Icon(
+                Icons.lock,
+                color: Colors.grey[400],
+                size: 16,
+              ),
+              onTap: isUnlocked ? () async {
+                await _navigateToLesson(context, chapter, lesson);
+              } : () {
+                _showLockedLessonDialog(context);
+              },
+            );
+          },
         ),
       ),
     );
   }
 
-  void _navigateToLesson(BuildContext context, Chapter chapter, Lesson lesson) {
+  Future<bool> _checkLessonUnlock(Chapter chapter, Lesson lesson) async {
+    try {
+      final lessonNumber = lesson.description.replaceAll('Lesson ', '');
+      
+      // Map appendix chapters (19-22) to their special navigation numbers (101-104)
+      int chapterNumber = chapter.number;
+      if (chapter.number >= 19 && chapter.number <= 22) {
+        chapterNumber = 100 + (chapter.number - 18);
+      }
+      
+      final lessonId = _getLessonId(chapterNumber, lessonNumber);
+      if (lessonId == null) return false;
+      
+      return await _lessonService.isLessonUnlocked(lessonId);
+    } catch (e) {
+      print('Error checking lesson unlock: $e');
+      return false;
+    }
+  }
+
+  String? _getLessonId(int chapterNumber, String lessonNumber) {
+    if (chapterNumber >= 101 && chapterNumber <= 104) {
+      // Appendix lessons
+      final appendixNumber = chapterNumber - 100;
+      return 'appendix_${appendixNumber}_$lessonNumber';
+    } else {
+      // Regular lessons
+      return 'lesson_${chapterNumber}_$lessonNumber';
+    }
+  }
+
+  void _showLockedLessonDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Lesson Locked'),
+          content: const Text(
+            'This lesson is locked. Complete the previous lesson in this chapter to unlock it.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _navigateToLesson(BuildContext context, Chapter chapter, Lesson lesson) async {
     final lessonNumber = lesson.description.replaceAll('Lesson ', '');
     
     // Map appendix chapters (19-22) to their special navigation numbers (101-104)
@@ -791,10 +876,15 @@ class EducationScreen extends StatelessWidget {
     final lessonScreen = _getLessonScreen(chapterNumber, lessonNumber);
     
     if (lessonScreen != null) {
-      Navigator.push(
+      await Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => lessonScreen),
       );
+      
+      // Refresh the UI to show updated lock status after returning from lesson
+      if (mounted) {
+        setState(() {});
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
