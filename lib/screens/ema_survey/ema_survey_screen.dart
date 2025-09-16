@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../models/ema_survey.dart';
 import '../../providers/ema_survey_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../urge_event/urge_event_form_screen.dart';
 
 class EMASurveyScreen extends ConsumerStatefulWidget {
   final String? surveyId;
@@ -100,26 +101,46 @@ class _EMASurveyScreenState extends ConsumerState<EMASurveyScreen> {
     EMAQuestion(
       id: EMAQuestionId.emotions,
       text: "Emotions right now (rate each 0-100)",
-      type: EMAQuestionType.slider,
+      type: EMAQuestionType.multiSlider,
       minValue: 0,
       maxValue: 100,
-      hintText: "Rate: Sad, Anxious, Stressed, Ashamed, Angry, Lonely, Positive, Calm",
+      hintText: "Select all the emotions you're experiencing and rate each one 0-100",
+      options: [
+        "Sad",
+        "Anxious", 
+        "Stressed",
+        "Ashamed",
+        "Angry",
+        "Lonely",
+        "Positive",
+        "Calm"
+      ],
     ),
     EMAQuestion(
       id: EMAQuestionId.bodyThoughts,
       text: "Body/shape thoughts (rate each 0-100)",
-      type: EMAQuestionType.slider,
+      type: EMAQuestionType.multiSlider,
       minValue: 0,
       maxValue: 100,
-      hintText: "Rate: 'I feel dissatisfied with my body', 'I feel fat', 'I'm preoccupied with weight/shape'",
+      hintText: "Select all the thoughts you're having and rate each one 0-100",
+      options: [
+        "I feel dissatisfied with my body",
+        "I feel fat",
+        "I'm preoccupied with weight/shape"
+      ],
     ),
     EMAQuestion(
       id: EMAQuestionId.eatingThoughts,
       text: "Eating-related thoughts (rate each 0-100)",
-      type: EMAQuestionType.slider,
+      type: EMAQuestionType.multiSlider,
       minValue: 0,
       maxValue: 100,
-      hintText: "Rate: 'I must restrict later', 'I've already blown it today', 'I can't control eating'",
+      hintText: "Select all the thoughts you're having and rate each one 0-100",
+      options: [
+        "I must restrict later",
+        "I've already blown it today",
+        "I can't control eating"
+      ],
     ),
     EMAQuestion(
       id: EMAQuestionId.triggers,
@@ -252,6 +273,16 @@ class _EMASurveyScreenState extends ConsumerState<EMASurveyScreen> {
   }
 
   void _nextPage() {
+    // Check if current question is urge to binge and value is >= 50
+    final currentQuestion = _questions[_currentPage];
+    if (currentQuestion.id == EMAQuestionId.urgeToBinge) {
+      final urgeLevel = _answers[EMAQuestionId.urgeToBinge.name] as num?;
+      if (urgeLevel != null && urgeLevel >= 50) {
+        _showUrgeEventDialog();
+        return; // Don't proceed to next page yet
+      }
+    }
+    
     if (_currentPage < _questions.length - 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
@@ -293,6 +324,65 @@ class _EMASurveyScreenState extends ConsumerState<EMASurveyScreen> {
     if (mounted) {
       context.go('/journal');
     }
+  }
+
+  void _showUrgeEventDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Log an URGE event?'),
+          content: const Text(
+            'You indicated a high urge to binge (≥50). Would you like to log this as an URGE event?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+                _proceedToNextPage(); // Continue to next question
+              },
+              child: const Text('No'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+                _openUrgeForm();
+              },
+              child: const Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _proceedToNextPage() {
+    if (_currentPage < _questions.length - 1) {
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  void _openUrgeForm() {
+    // Get the current urge level from the answers
+    final urgeLevel = _answers[EMAQuestionId.urgeToBinge.name] as num?;
+    final currentUrgeLevel = urgeLevel?.toInt() ?? 50;
+    
+    // Navigate to URGE form
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => UrgeEventFormScreen(
+          initialUrgeLevel: currentUrgeLevel,
+          returnRoute: null, // Will return to current survey
+        ),
+      ),
+    ).then((_) {
+      // After returning from URGE form, proceed to next page
+      _proceedToNextPage();
+    });
   }
 
   @override
@@ -400,7 +490,7 @@ class _EMASurveyScreenState extends ConsumerState<EMASurveyScreen> {
   }
 
   Widget _buildQuestionPage(EMAQuestion question) {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -422,9 +512,7 @@ class _EMASurveyScreenState extends ConsumerState<EMASurveyScreen> {
           ],
           const SizedBox(height: 24),
           
-          Expanded(
-            child: _buildQuestionWidget(question),
-          ),
+          _buildQuestionWidget(question),
         ],
       ),
     );
@@ -438,6 +526,8 @@ class _EMASurveyScreenState extends ConsumerState<EMASurveyScreen> {
         return _buildMultipleChoiceWidget(question);
       case EMAQuestionType.slider:
         return _buildSliderWidget(question);
+      case EMAQuestionType.multiSlider:
+        return _buildMultiSliderWidget(question);
       case EMAQuestionType.text:
         return _buildTextWidget(question);
     }
@@ -540,6 +630,105 @@ class _EMASurveyScreenState extends ConsumerState<EMASurveyScreen> {
         hintText: 'Enter your response...',
         border: OutlineInputBorder(),
       ),
+    );
+  }
+
+  Widget _buildMultiSliderWidget(EMAQuestion question) {
+    final rawAnswers = _answers[question.id.name];
+    final currentAnswers = rawAnswers is Map<String, dynamic>
+        ? Map<String, dynamic>.from(rawAnswers)
+        : <String, dynamic>{};
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+          // Instructions
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.blue[50],
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.blue[200]!),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'You can select multiple options and rate each one 0-100',
+                    style: TextStyle(
+                      color: Colors.blue[700],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          
+          // Checkboxes for options
+          ...question.options!.map((option) {
+            final isSelected = currentAnswers.containsKey(option);
+            final currentValue = currentAnswers[option] as num? ?? 0.0;
+            
+            return Column(
+              children: [
+                CheckboxListTile(
+                  title: Text(option),
+                  value: isSelected,
+                  onChanged: (value) {
+                    final newAnswers = Map<String, dynamic>.from(currentAnswers);
+                    if (value == true) {
+                      newAnswers[option] = 0.0; // Default value
+                    } else {
+                      newAnswers.remove(option);
+                    }
+                    _saveAnswer(question.id.name, newAnswers);
+                  },
+                ),
+                
+                // Show slider only if option is selected
+                if (isSelected) ...[
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                    child: Column(
+                      children: [
+                        Text(
+                          '${currentValue.round()}',
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Slider(
+                          value: currentValue.toDouble(),
+                          min: (question.minValue ?? 0).toDouble(),
+                          max: (question.maxValue ?? 100).toDouble(),
+                          divisions: (question.maxValue ?? 100) - (question.minValue ?? 0),
+                          onChanged: (value) {
+                            final newAnswers = Map<String, dynamic>.from(currentAnswers);
+                            newAnswers[option] = value;
+                            _saveAnswer(question.id.name, newAnswers);
+                          },
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('${question.minValue ?? 0}'),
+                            Text('${question.maxValue ?? 100}'),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            );
+          }).toList(),
+      ],
     );
   }
 }

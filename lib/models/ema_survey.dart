@@ -154,6 +154,7 @@ enum EMAQuestionType {
   singleChoice,
   multipleChoice,
   slider,
+  multiSlider,
   text,
 }
 
