@@ -10,6 +10,37 @@ class LessonService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  // Chapter titles mapping
+  static const Map<int, String> _chapterTitles = {
+    1: "Introduction to Binge Eating Recovery",
+    2: "Understanding Binge Eating Disorder", 
+    3: "Emotional Foundations",
+    4: "Mindful Eating Basics",
+    5: "Breaking Binge Patterns",
+    6: "Body Image and Self-Compassion",
+    7: "Nutrition Without Obsession",
+    8: "Stress and Emotional Regulation",
+    9: "Social and Environmental Factors",
+    10: "Building Sustainable Habits",
+    11: "Advanced Recovery Strategies",
+    12: "Relapse Prevention",
+    13: "Relationship with Food",
+    14: "Body Acceptance Journey",
+    15: "Mindfulness and Meditation",
+    16: "Social Support Systems",
+    17: "Life Balance and Wellness",
+    18: "Maintaining Long-term Recovery",
+    101: "Emergency Resources", // Appendix I
+    102: "Meal Planning Resources", // Appendix II
+    103: "Body Image Resources", // Appendix III
+    104: "Supporting Others", // Appendix IV
+  };
+
+  // Get chapter title by number
+  static String getChapterTitle(int chapterNumber) {
+    return _chapterTitles[chapterNumber] ?? 'Chapter $chapterNumber';
+  }
+
   // Get all lessons
   Future<List<Lesson>> getAllLessons() async {
     try {
@@ -236,6 +267,187 @@ class LessonService {
     }
   }
 
+  // Get the last completed lesson for the current user
+  Future<UserProgress?> getLastCompletedLesson() async {
+    try {
+      final User? user = _auth.currentUser;
+      if (user == null) {
+        return null;
+      }
+
+      // Get all completed lessons for this user
+      final progressQuery = await _firestore
+          .collection(_userProgressCollectionName)
+          .where('userId', isEqualTo: user.uid)
+          .where('isCompleted', isEqualTo: true)
+          .get();
+          
+      if (progressQuery.docs.isEmpty) {
+        return null;
+      }
+      
+      // Sort by completedAt in memory to avoid needing a composite index
+      final sortedDocs = progressQuery.docs.toList();
+      sortedDocs.sort((a, b) {
+        final aCompletedAt = a.data()['completedAt'] as int? ?? 0;
+        final bCompletedAt = b.data()['completedAt'] as int? ?? 0;
+        return bCompletedAt.compareTo(aCompletedAt); // Descending order
+      });
+      
+      final mostRecentDoc = sortedDocs.first;
+      return UserProgress.fromMap(mostRecentDoc.data(), mostRecentDoc.id);
+    } catch (e) {
+      print('Error getting last completed lesson: $e');
+      return null;
+    }
+  }
+
+  // Get the next suggested lesson based on the last completed lesson
+  Future<Lesson?> getNextSuggestedLesson() async {
+    try {
+      final User? user = _auth.currentUser;
+      if (user == null) {
+        return null;
+      }
+
+      final lastCompleted = await getLastCompletedLesson();
+      
+      // If no lessons completed, suggest the first lesson of Chapter 1
+      if (lastCompleted == null) {
+        return await getLessonById('lesson_1_1');
+      }
+
+      // Determine the next lesson based on the last completed lesson
+      String? nextLessonId = _getNextLessonId(lastCompleted);
+      
+      if (nextLessonId != null) {
+        final nextLesson = await getLessonById(nextLessonId);
+        
+        if (nextLesson != null) {
+          // Verify the next lesson is unlocked
+          final isUnlocked = await isLessonUnlocked(nextLessonId);
+          
+          if (isUnlocked) {
+            return nextLesson;
+          }
+        }
+      }
+
+      // If no logical next lesson, find the first unlocked lesson
+      return await _findFirstUnlockedLesson();
+    } catch (e) {
+      print('Error getting next suggested lesson: $e');
+      return null;
+    }
+  }
+
+  // Helper method to determine the next lesson ID based on completed lesson
+  String? _getNextLessonId(UserProgress lastCompleted) {
+    final chapterNumber = lastCompleted.chapterNumber;
+    final lessonNumber = lastCompleted.lessonNumber;
+    
+    // For appendices (101-104)
+    if (chapterNumber >= 101 && chapterNumber <= 104) {
+      final appendixNumber = chapterNumber - 100;
+      final appendixLessonsCount = _getAppendixLessonsCount(appendixNumber);
+      
+      if (lessonNumber < appendixLessonsCount) {
+        // Next lesson in same appendix
+        return 'appendix_${appendixNumber}_${lessonNumber + 1}';
+      } else {
+        // Move to next appendix if available
+        if (appendixNumber < 4) {
+          return 'appendix_${appendixNumber + 1}_1';
+        }
+      }
+      return null;
+    }
+    
+    // For regular chapters (1-18)
+    final chapterLessonsCount = _getChapterLessonsCount(chapterNumber);
+    
+    if (lessonNumber < chapterLessonsCount) {
+      // Next lesson in same chapter
+      return 'lesson_${chapterNumber}_${lessonNumber + 1}';
+    } else {
+      // Move to next chapter if available
+      if (chapterNumber < 18) {
+        return 'lesson_${chapterNumber + 1}_1';
+      } else {
+        // After chapter 18, suggest first appendix
+        return 'appendix_1_1';
+      }
+    }
+  }
+
+  // Helper method to get the number of lessons in a chapter
+  int _getChapterLessonsCount(int chapterNumber) {
+    switch (chapterNumber) {
+      case 1: return 6;
+      case 2: return 6;
+      case 3: return 4;
+      case 4: return 5;
+      case 5: return 4;
+      case 6: return 6;
+      case 7: return 5;
+      case 8: return 4;
+      case 9: return 4;
+      case 10: return 5;
+      case 11: return 4;
+      case 12: return 4;
+      case 13: return 4;
+      case 14: return 4;
+      case 15: return 4;
+      case 16: return 4;
+      case 17: return 4;
+      case 18: return 4;
+      default: return 1;
+    }
+  }
+
+  // Helper method to get the number of lessons in an appendix
+  int _getAppendixLessonsCount(int appendixNumber) {
+    switch (appendixNumber) {
+      case 1: return 3; // Appendix I
+      case 2: return 4; // Appendix II
+      case 3: return 2; // Appendix III
+      case 4: return 2; // Appendix IV
+      default: return 1;
+    }
+  }
+
+  // Helper method to find the first unlocked lesson if logical progression fails
+  Future<Lesson?> _findFirstUnlockedLesson() async {
+    try {
+      // Check chapters 1-18 first
+      for (int chapter = 1; chapter <= 18; chapter++) {
+        final lessonsCount = _getChapterLessonsCount(chapter);
+        for (int lesson = 1; lesson <= lessonsCount; lesson++) {
+          final lessonId = 'lesson_${chapter}_$lesson';
+          if (await isLessonUnlocked(lessonId)) {
+            return await getLessonById(lessonId);
+          }
+        }
+      }
+      
+      // Check appendices if no main chapter lessons available
+      for (int appendix = 1; appendix <= 4; appendix++) {
+        final lessonsCount = _getAppendixLessonsCount(appendix);
+        for (int lesson = 1; lesson <= lessonsCount; lesson++) {
+          final lessonId = 'appendix_${appendix}_$lesson';
+          if (await isLessonUnlocked(lessonId)) {
+            return await getLessonById(lessonId);
+          }
+        }
+      }
+      
+      return null;
+    } catch (e) {
+      print('Error finding first unlocked lesson: $e');
+      return null;
+    }
+  }
+
   // Get all user progress for a specific chapter
   Future<List<UserProgress>> getUserProgressForChapter(int chapterNumber) async {
     try {
@@ -277,6 +489,37 @@ class LessonService {
       return lessons;
     } catch (e) {
       throw Exception('Failed to fetch lessons for chapter: $e');
+    }
+  }
+
+  // Get all lessons organized by chapters
+  Future<Map<int, List<Lesson>>> getAllLessonsGroupedByChapter() async {
+    try {
+      final QuerySnapshot snapshot = await _firestore
+          .collection(_collectionName)
+          .get();
+
+      final lessons = snapshot.docs
+          .map((doc) => Lesson.fromMap(doc.data() as Map<String, dynamic>, doc.id))
+          .toList();
+
+      // Group lessons by chapter number
+      final Map<int, List<Lesson>> lessonsByChapter = {};
+      for (final lesson in lessons) {
+        if (!lessonsByChapter.containsKey(lesson.chapterNumber)) {
+          lessonsByChapter[lesson.chapterNumber] = [];
+        }
+        lessonsByChapter[lesson.chapterNumber]!.add(lesson);
+      }
+
+      // Sort lessons within each chapter by lesson number
+      for (final chapterLessons in lessonsByChapter.values) {
+        chapterLessons.sort((a, b) => a.lessonNumber.compareTo(b.lessonNumber));
+      }
+
+      return lessonsByChapter;
+    } catch (e) {
+      throw Exception('Failed to fetch lessons grouped by chapter: $e');
     }
   }
 
