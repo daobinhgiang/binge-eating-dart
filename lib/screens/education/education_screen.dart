@@ -226,6 +226,7 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
           ...lessons.map((lesson) => _buildLessonCard(context, lesson)).toList(),
         ],
       ),
+
     );
   }
 

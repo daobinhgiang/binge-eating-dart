@@ -616,7 +616,7 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              context.go('/');
+              context.go('/profile');
             },
             child: const Text('Exit'),
           ),

@@ -201,33 +201,38 @@ class ProfileScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.error_outline,
-                size: 64,
-                color: Colors.red[400],
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Error loading profile',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: Colors.red[600],
+        error: (error, stackTrace) {
+          print('❌ Profile Screen Error: $error');
+          print('🔗  ');
+          print('   https://console.firebase.google.com/v1/r/project/bed-app-ef8f8/firestore/indexes');
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  size: 64,
+                  color: Colors.red[400],
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                error.toString(),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.red[500],
+                const SizedBox(height: 16),
+                Text(
+                  'Error loading profile',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: Colors.red[600],
+                  ),
                 ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
+                const SizedBox(height: 8),
+                Text(
+                  error.toString(),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.red[500],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
