@@ -5,6 +5,7 @@ import 'home_screen.dart';
 import 'education/education_screen.dart';
 import 'journal/journal_screen.dart';
 import 'profile/profile_screen.dart';
+import '../core/utils/page_transitions.dart';
 
 class MainNavigation extends ConsumerStatefulWidget {
   const MainNavigation({super.key});
@@ -13,8 +14,10 @@ class MainNavigation extends ConsumerStatefulWidget {
   ConsumerState<MainNavigation> createState() => _MainNavigationState();
 }
 
-class _MainNavigationState extends ConsumerState<MainNavigation> {
+class _MainNavigationState extends ConsumerState<MainNavigation>
+    with TickerProviderStateMixin {
   int _currentIndex = 0;
+  late AnimationController _tabAnimationController;
 
   final List<NavigationItem> _navigationItems = [
     NavigationItem(
@@ -43,21 +46,58 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
     ),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _tabAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _tabAnimationController.dispose();
+    super.dispose();
+  }
+
   void _updateCurrentIndex(String location) {
+    int newIndex = _currentIndex;
     switch (location) {
       case '/':
       case '/home':
-        _currentIndex = 0;
+        newIndex = 0;
         break;
       case '/education':
-        _currentIndex = 1;
+        newIndex = 1;
         break;
       case '/journal':
-        _currentIndex = 2;
+        newIndex = 2;
         break;
       case '/profile':
-        _currentIndex = 3;
+        newIndex = 3;
         break;
+    }
+    
+    if (newIndex != _currentIndex) {
+      setState(() {
+        _currentIndex = newIndex;
+      });
+      _tabAnimationController.forward().then((_) {
+        _tabAnimationController.reset();
+      });
+    }
+  }
+
+  void _onTabTapped(int index) {
+    if (index != _currentIndex) {
+      setState(() {
+        _currentIndex = index;
+      });
+      _tabAnimationController.forward().then((_) {
+        _tabAnimationController.reset();
+      });
+      context.go(_navigationItems[index].route);
     }
   }
 
@@ -68,14 +108,26 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
     _updateCurrentIndex(location);
     
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: const [
-          HomeScreen(),
-          EducationScreen(),
-          JournalScreen(),
-          ProfileScreen(),
-        ],
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        transitionBuilder: (Widget child, Animation<double> animation) {
+          return PageTransitions.bottomNavTransition(
+            context,
+            animation,
+            animation,
+            child,
+          );
+        },
+        child: IndexedStack(
+          key: ValueKey<int>(_currentIndex),
+          index: _currentIndex,
+          children: const [
+            HomeScreen(),
+            EducationScreen(),
+            JournalScreen(),
+            ProfileScreen(),
+          ],
+        ),
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -99,30 +151,41 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
                 
                 return Expanded(
                   child: GestureDetector(
-                    onTap: () {
-                      context.go(item.route);
-                    },
-                    child: Container(
+                    onTap: () => _onTabTapped(index),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeInOutCubic,
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            isSelected ? item.activeIcon : item.icon,
-                            color: isSelected 
-                                ? Theme.of(context).colorScheme.primary
-                                : Colors.grey[600],
-                            size: 24,
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 200),
+                            transitionBuilder: (Widget child, Animation<double> animation) {
+                              return ScaleTransition(
+                                scale: animation,
+                                child: child,
+                              );
+                            },
+                            child: Icon(
+                              isSelected ? item.activeIcon : item.icon,
+                              key: ValueKey('${item.label}_${isSelected}'),
+                              color: isSelected 
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Colors.grey[600],
+                              size: 24,
+                            ),
                           ),
                           const SizedBox(height: 4),
-                          Text(
-                            item.label,
+                          AnimatedDefaultTextStyle(
+                            duration: const Duration(milliseconds: 200),
                             style: Theme.of(context).textTheme.labelSmall?.copyWith(
                               color: isSelected 
                                   ? Theme.of(context).colorScheme.primary
                                   : Colors.grey[600],
                               fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                            ),
+                            ) ?? const TextStyle(),
+                            child: Text(item.label),
                           ),
                         ],
                       ),
