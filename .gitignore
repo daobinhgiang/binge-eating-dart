@@ -44,3 +44,9 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 .env
+# Ignore sensitive files
+.env
+api-keys.txt
+bfg.jar
+backup/
+binge-eating-dart-mirror.git/

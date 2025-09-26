@@ -10,9 +10,7 @@ class AuthService {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    clientId: '169581897180-tb7d2v40dir6d6vk1hn8kfoj1r7r2ed6.apps.googleusercontent.com',
-  );
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   // Current user stream
   Stream<UserModel?> get currentUserStream {
