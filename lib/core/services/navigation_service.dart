@@ -96,13 +96,14 @@ class NavigationService {
     }
     
     // If no activity data, try to parse from activity ID (from AI recommendations)
-    if (lessonScreen == null) {
-      lessonScreen = _getLessonScreenByActivityId(todo.activityId);
-    }
+    lessonScreen ??= _getLessonScreenByActivityId(todo.activityId);
     
     if (lessonScreen != null) {
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => lessonScreen!),
+        MaterialPageRoute(
+          builder: (context) => lessonScreen!,
+          settings: const RouteSettings(name: '/lesson'),
+        ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -127,13 +128,14 @@ class NavigationService {
     }
     
     // If no activity data, try to parse from activity ID
-    if (lessonScreen == null) {
-      lessonScreen = _getLessonScreenByActivityId(activityId);
-    }
+    lessonScreen ??= _getLessonScreenByActivityId(activityId);
     
     if (lessonScreen != null) {
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => lessonScreen!),
+        MaterialPageRoute(
+          builder: (context) => lessonScreen!,
+          settings: const RouteSettings(name: '/lesson'),
+        ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

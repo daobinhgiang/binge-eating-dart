@@ -108,6 +108,7 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
       appBar: AppBar(
         title: const Text('Education'),
         centerTitle: true,
+        automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: FutureBuilder<Map<int, List<lesson_model.Lesson>>>(
@@ -223,7 +224,7 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
           ),
           const SizedBox(height: 12),
           // Lessons List
-          ...lessons.map((lesson) => _buildLessonCard(context, lesson)).toList(),
+          ...lessons.map((lesson) => _buildLessonCard(context, lesson)),
         ],
       ),
 
@@ -306,9 +307,11 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
     final lessonScreen = _getLessonScreen(lesson.chapterNumber, lesson.lessonNumber);
     
     if (lessonScreen != null) {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => lessonScreen),
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => lessonScreen,
+          settings: const RouteSettings(name: '/lesson'),
+        ),
       );
       
       // Refresh the UI to show updated lock status after returning from lesson

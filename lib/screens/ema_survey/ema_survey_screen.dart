@@ -378,6 +378,7 @@ class _EMASurveyScreenState extends ConsumerState<EMASurveyScreen> {
           initialUrgeLevel: currentUrgeLevel,
           returnRoute: null, // Will return to current survey
         ),
+        settings: const RouteSettings(name: '/urge-form'),
       ),
     ).then((_) {
       // After returning from URGE form, proceed to next page
@@ -727,7 +728,7 @@ class _EMASurveyScreenState extends ConsumerState<EMASurveyScreen> {
                 ],
               ],
             );
-          }).toList(),
+          }),
       ],
     );
   }

@@ -113,6 +113,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: AppBar(
         title: const Text('BED Support App'),
         centerTitle: true,
+        automaticallyImplyLeading: false,
         actions: [
           authState.when(
             data: (user) => user != null
@@ -495,9 +496,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final lessonScreen = _getLessonScreen(lesson);
     
     if (lessonScreen != null) {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => lessonScreen),
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => lessonScreen,
+          settings: const RouteSettings(name: '/lesson'),
+        ),
       );
       
       // Trigger refresh of next lesson recommendation
@@ -1482,16 +1485,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
   
   void _navigateToLesson131() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const Lesson131Screen()),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const Lesson131Screen(),
+        settings: const RouteSettings(name: '/lesson'),
+      ),
     );
   }
   
   void _navigateToLesson132() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const Lesson132Screen()),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const Lesson132Screen(),
+        settings: const RouteSettings(name: '/lesson'),
+      ),
     );
   }
   

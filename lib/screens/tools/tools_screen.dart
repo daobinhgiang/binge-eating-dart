@@ -80,6 +80,7 @@ class ToolsScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Tools'),
         centerTitle: true,
+        automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

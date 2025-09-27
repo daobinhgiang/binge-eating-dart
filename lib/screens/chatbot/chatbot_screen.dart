@@ -4,8 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../models/chat_message.dart';
 import '../../providers/chatbot_provider.dart';
 import '../../providers/auth_provider.dart';
-import '../../screens/lessons/lesson_13_1.dart';
-import '../../screens/lessons/lesson_13_2.dart';
 import '../../core/services/navigation_service.dart';
 
 class ChatbotScreen extends ConsumerStatefulWidget {

@@ -37,6 +37,7 @@ class JournalScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Journal'),
         centerTitle: true,
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
             onPressed: () {
