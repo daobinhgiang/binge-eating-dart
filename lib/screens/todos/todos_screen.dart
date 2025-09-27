@@ -353,10 +353,6 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
     IconData icon;
     
     switch (type) {
-      case TodoType.lesson:
-        color = Colors.blue;
-        icon = Icons.school;
-        break;
       case TodoType.tool:
         color = Colors.green;
         icon = Icons.build;
@@ -442,14 +438,13 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
   }
 
   Widget _buildTasksByType(BuildContext context, List<TodoItem> todos) {
-    final lessonTodos = todos.where((todo) => todo.type == TodoType.lesson).toList();
+    // Lessons are no longer available
     final toolTodos = todos.where((todo) => todo.type == TodoType.tool).toList();
     final journalTodos = todos.where((todo) => todo.type == TodoType.journal).toList();
 
     return Column(
       children: [
-        _buildTypeStatCard(context, 'Lessons', lessonTodos.length, Icons.school, Colors.blue),
-        const SizedBox(height: 12),
+        // Lessons are no longer available
         _buildTypeStatCard(context, 'Tools', toolTodos.length, Icons.build, Colors.green),
         const SizedBox(height: 12),
         _buildTypeStatCard(context, 'Journal', journalTodos.length, Icons.edit_note, Colors.purple),
@@ -598,8 +593,6 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
 
   IconData _getActivityIcon(TodoType type) {
     switch (type) {
-      case TodoType.lesson:
-        return Icons.school;
       case TodoType.tool:
         return Icons.build;
       case TodoType.journal:

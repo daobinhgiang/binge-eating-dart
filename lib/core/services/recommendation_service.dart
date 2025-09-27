@@ -195,7 +195,7 @@ class RecommendationService {
         return TodoType.journal;
       case 'lesson':
       default:
-        return TodoType.lesson;
+        return TodoType.tool; // Default to tool since lessons are not available
     }
   }
   

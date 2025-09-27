@@ -3,11 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/todo_provider.dart';
-import '../../providers/lesson_provider.dart';
 import '../../models/todo_item.dart';
-import '../../models/lesson.dart';
-import '../../core/services/lesson_service.dart';
-import '../../screens/tools/tools_screen.dart';
 
 class AddTodoScreen extends ConsumerStatefulWidget {
   const AddTodoScreen({super.key});
@@ -32,7 +28,7 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> with TickerProvid
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this); // Reduced from 3 to 2 (removed lessons)
   }
 
   @override
@@ -49,467 +45,313 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> with TickerProvid
 
     if (user == null) {
       return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Task'),
-        centerTitle: true,
-        actions: [
-          TextButton(
-            onPressed: _canSubmit() ? _submitTodo : null,
-            child: _isSubmitting 
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('Save'),
-          ),
-        ],
+        title: const Text('Add New Task'),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: 'Tools', icon: Icon(Icons.build)),
+            Tab(text: 'Journal', icon: Icon(Icons.edit_note)),
+          ],
+        ),
       ),
       body: Column(
         children: [
-          // Activity Selection Tabs
-          Container(
-            color: Theme.of(context).colorScheme.surface,
-            child: TabBar(
-              controller: _tabController,
-              onTap: (index) {
-                setState(() {
-                  _selectedType = TodoType.values[index];
-                  _selectedActivityId = null;
-                  _selectedActivityData = null;
-                  _titleController.clear();
-                  _descriptionController.clear();
-                });
-              },
-              tabs: const [
-                Tab(icon: Icon(Icons.school), text: 'Lessons'),
-                Tab(icon: Icon(Icons.build), text: 'Tools'),
-                Tab(icon: Icon(Icons.edit_note), text: 'Journal'),
-              ],
-            ),
-          ),
-          
-          // Tab Content
           Expanded(
             child: TabBarView(
               controller: _tabController,
               children: [
-                _buildLessonsTab(),
                 _buildToolsTab(),
                 _buildJournalTab(),
               ],
             ),
           ),
-          
-          // Task Details Section
-          if (_selectedActivityId != null)
-            Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                border: Border(
-                  top: BorderSide(color: Colors.grey[300]!),
-                ),
-              ),
-              child: _buildTaskDetailsSection(),
-            ),
+          if (_selectedType != null) _buildSelectedActivityCard(),
+          _buildSubmitSection(),
         ],
-      ),
-    );
-  }
-
-  Widget _buildLessonsTab() {
-    final lessonsAsync = ref.watch(allLessonsProvider);
-    
-    return lessonsAsync.when(
-      data: (lessons) {
-        if (lessons.isEmpty) {
-          return _buildEmptyState(
-            icon: Icons.school,
-            title: 'No lessons available',
-            subtitle: 'Lessons will appear here when they are available.',
-          );
-        }
-
-        // Group lessons by chapter
-        final groupedLessons = <int, List<Lesson>>{};
-        for (final lesson in lessons) {
-          groupedLessons.putIfAbsent(lesson.chapterNumber, () => []).add(lesson);
-        }
-
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: groupedLessons.keys.length,
-          itemBuilder: (context, index) {
-            final chapterNumber = groupedLessons.keys.elementAt(index);
-            final chapterLessons = groupedLessons[chapterNumber]!;
-            
-            return _buildChapterSection(chapterNumber, chapterLessons);
-          },
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => _buildErrorState('Failed to load lessons: $error'),
-    );
-  }
-
-  Widget _buildChapterSection(int chapterNumber, List<Lesson> lessons) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Text(
-            'Chapter $chapterNumber: ${LessonService.getChapterTitle(chapterNumber)}',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ),
-        ),
-        ...lessons.map((lesson) => _buildLessonCard(lesson)),
-        const SizedBox(height: 16),
-      ],
-    );
-  }
-
-  Widget _buildLessonCard(Lesson lesson) {
-    final isSelected = _selectedActivityId == lesson.id;
-    
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        selected: isSelected,
-        leading: CircleAvatar(
-          backgroundColor: isSelected 
-              ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.primary.withOpacity(0.1),
-          child: Icon(
-            Icons.play_lesson,
-            color: isSelected ? Colors.white : Theme.of(context).colorScheme.primary,
-          ),
-        ),
-        title: Text(lesson.title),
-        subtitle: Text(
-          lesson.description,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
-        trailing: isSelected ? const Icon(Icons.check_circle, color: Colors.green) : null,
-        onTap: () => _selectActivity(
-          type: TodoType.lesson,
-          activityId: lesson.id,
-          title: lesson.title,
-          description: lesson.description,
-          activityData: {
-            'chapterNumber': lesson.chapterNumber,
-            'lessonNumber': lesson.lessonNumber,
-          },
-        ),
       ),
     );
   }
 
   Widget _buildToolsTab() {
-    return ListView.builder(
+    return ListView(
       padding: const EdgeInsets.all(16),
-      itemCount: ToolsScreen.exercises.length,
-      itemBuilder: (context, index) {
-        final exercise = ToolsScreen.exercises[index];
-        final isSelected = _selectedActivityId == exercise.title;
-        
-        return Card(
-          margin: const EdgeInsets.only(bottom: 12),
-          child: ListTile(
-            selected: isSelected,
-            leading: CircleAvatar(
-              backgroundColor: isSelected 
-                  ? exercise.color
-                  : exercise.color.withValues(alpha: 0.1),
-              child: Icon(
-                exercise.icon,
-                color: isSelected ? Colors.white : exercise.color,
-              ),
-            ),
-            title: Text(exercise.title),
-            subtitle: Text(exercise.description),
-            trailing: isSelected ? const Icon(Icons.check_circle, color: Colors.green) : null,
-            onTap: () => _selectActivity(
-              type: TodoType.tool,
-              activityId: exercise.title,
-              title: exercise.title,
-              description: exercise.description,
-              activityData: {
-                'toolType': exercise.title,
-                'icon': exercise.icon.codePoint,
-                'color': exercise.color.toARGB32(),
-              },
-            ),
-          ),
-        );
-      },
+      children: [
+        _buildToolCard(
+          'Urge Surfing',
+          'Practice riding out urges without acting on them',
+          'urge_surfing',
+          Icons.waves,
+        ),
+        _buildToolCard(
+          'Problem Solving',
+          'Work through challenges with structured problem-solving',
+          'problem_solving',
+          Icons.psychology,
+        ),
+        _buildToolCard(
+          'Addressing Setbacks',
+          'Learn how to handle and recover from setbacks',
+          'addressing_setbacks',
+          Icons.trending_up,
+        ),
+        _buildToolCard(
+          'Addressing Overconcern',
+          'Manage excessive worry about body image and eating',
+          'addressing_overconcern',
+          Icons.self_improvement,
+        ),
+        _buildToolCard(
+          'Meal Planning',
+          'Plan balanced and satisfying meals',
+          'meal_planning',
+          Icons.restaurant_menu,
+        ),
+      ],
     );
   }
 
   Widget _buildJournalTab() {
-    final journalActivities = [
-      {
-        'id': 'food_diary',
-        'title': 'Food Diary Entry',
-        'description': 'Track your meals and eating patterns',
-        'icon': Icons.restaurant,
-        'color': Colors.orange,
-      },
-      {
-        'id': 'weight_diary',
-        'title': 'Weight Diary Entry',
-        'description': 'Record your weight and body measurements',
-        'icon': Icons.monitor_weight,
-        'color': Colors.blue,
-      },
-      {
-        'id': 'body_image_diary',
-        'title': 'Body Image Diary Entry',
-        'description': 'Reflect on your body image and feelings',
-        'icon': Icons.psychology,
-        'color': Colors.purple,
-      },
-    ];
-
-    return ListView.builder(
+    return ListView(
       padding: const EdgeInsets.all(16),
-      itemCount: journalActivities.length,
-      itemBuilder: (context, index) {
-        final activity = journalActivities[index];
-        final isSelected = _selectedActivityId == activity['id'];
-        
-        return Card(
-          margin: const EdgeInsets.only(bottom: 12),
-          child: ListTile(
-            selected: isSelected,
-            leading: CircleAvatar(
-              backgroundColor: isSelected 
-                  ? activity['color'] as Color
-                  : (activity['color'] as Color).withValues(alpha: 0.1),
-              child: Icon(
-                activity['icon'] as IconData,
-                color: isSelected ? Colors.white : activity['color'] as Color,
-              ),
-            ),
-            title: Text(activity['title'] as String),
-            subtitle: Text(activity['description'] as String),
-            trailing: isSelected ? const Icon(Icons.check_circle, color: Colors.green) : null,
-            onTap: () => _selectActivity(
-              type: TodoType.journal,
-              activityId: activity['id'] as String,
-              title: activity['title'] as String,
-              description: activity['description'] as String,
-              activityData: {
-                'journalType': activity['id'],
-                'icon': (activity['icon'] as IconData).codePoint,
-                'color': (activity['color'] as Color).toARGB32(),
-              },
-            ),
-          ),
-        );
-      },
+      children: [
+        _buildJournalCard(
+          'Food Diary',
+          'Track your meals and eating patterns',
+          'food_diary',
+          Icons.restaurant,
+        ),
+        _buildJournalCard(
+          'Body Image Diary',
+          'Reflect on body image thoughts and feelings',
+          'body_image_diary',
+          Icons.favorite,
+        ),
+        _buildJournalCard(
+          'Weight Diary',
+          'Monitor weight changes mindfully',
+          'weight_diary',
+          Icons.monitor_weight,
+        ),
+      ],
     );
   }
 
-  Widget _buildTaskDetailsSection() {
+  Widget _buildToolCard(String title, String description, String activityId, IconData icon) {
+    final isSelected = _selectedActivityId == activityId && _selectedType == TodoType.tool;
+    
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: isSelected 
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            color: isSelected ? Colors.white : Theme.of(context).colorScheme.primary,
+          ),
+        ),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+          ),
+        ),
+        subtitle: Text(description),
+        trailing: isSelected 
+            ? Icon(Icons.check_circle, color: Theme.of(context).colorScheme.primary)
+            : null,
+        onTap: () {
+          setState(() {
+            _selectedType = TodoType.tool;
+            _selectedActivityId = activityId;
+            _selectedActivityData = {'toolType': activityId};
+            _titleController.text = title;
+            _descriptionController.text = description;
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildJournalCard(String title, String description, String activityId, IconData icon) {
+    final isSelected = _selectedActivityId == activityId && _selectedType == TodoType.journal;
+    
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: isSelected 
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            color: isSelected ? Colors.white : Theme.of(context).colorScheme.primary,
+          ),
+        ),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+          ),
+        ),
+        subtitle: Text(description),
+        trailing: isSelected 
+            ? Icon(Icons.check_circle, color: Theme.of(context).colorScheme.primary)
+            : null,
+        onTap: () {
+          setState(() {
+            _selectedType = TodoType.journal;
+            _selectedActivityId = activityId;
+            _selectedActivityData = {'journalType': activityId};
+            _titleController.text = title;
+            _descriptionController.text = description;
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildSelectedActivityCard() {
     return Container(
+      margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary,
+          width: 2,
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            'Task Details',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            children: [
+              Icon(
+                Icons.check_circle,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Selected Activity',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-          
-          // Title Field
+          const SizedBox(height: 8),
           TextField(
             controller: _titleController,
             decoration: const InputDecoration(
               labelText: 'Task Title',
-              hintText: 'Enter a custom title or use the default',
               border: OutlineInputBorder(),
             ),
-            maxLines: 1,
           ),
-          const SizedBox(height: 16),
-          
-          // Description Field
+          const SizedBox(height: 12),
           TextField(
             controller: _descriptionController,
             decoration: const InputDecoration(
-              labelText: 'Description (Optional)',
-              hintText: 'Add any additional notes or details',
+              labelText: 'Description',
               border: OutlineInputBorder(),
             ),
             maxLines: 2,
           ),
-          const SizedBox(height: 16),
-          
-          // Due Date Picker
+          const SizedBox(height: 12),
           Row(
             children: [
-              Expanded(
-                child: Text(
-                  'Due Date: ${_formatDate(_selectedDueDate)}',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-              ),
-              TextButton.icon(
+              const Icon(Icons.calendar_today, size: 20),
+              const SizedBox(width: 8),
+              Text('Due: ${_selectedDueDate.day}/${_selectedDueDate.month}/${_selectedDueDate.year}'),
+              const Spacer(),
+              TextButton(
                 onPressed: _selectDueDate,
-                icon: const Icon(Icons.calendar_today),
-                label: const Text('Change'),
+                child: const Text('Change'),
               ),
             ],
-          ),
-          const SizedBox(height: 16),
-          
-          // Submit Button
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _canSubmit() ? _submitTodo : null,
-              child: _isSubmitting
-                  ? const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                        SizedBox(width: 8),
-                        Text('Creating...'),
-                      ],
-                    )
-                  : const Text('Create Task'),
-            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildEmptyState({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-  }) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 64, color: Colors.grey[400]),
-            const SizedBox(height: 16),
-            Text(
-              title,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: Colors.grey[600],
-              ),
-              textAlign: TextAlign.center,
+  Widget _buildSubmitSection() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withValues(alpha: 0.2),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: _selectedType != null && !_isSubmitting ? _submitTodo : null,
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Colors.white,
             ),
-            const SizedBox(height: 8),
-            Text(
-              subtitle,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey[500],
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+            child: _isSubmitting
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : const Text(
+                    'Add Task',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildErrorState(String error) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.error_outline, size: 64, color: Colors.red),
-          const SizedBox(height: 16),
-          Text(
-            'Error',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            error,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _selectActivity({
-    required TodoType type,
-    required String activityId,
-    required String title,
-    required String description,
-    Map<String, dynamic>? activityData,
-  }) {
-    setState(() {
-      _selectedType = type;
-      _selectedActivityId = activityId;
-      _selectedActivityData = activityData;
-      
-      // Set default title if empty
-      if (_titleController.text.isEmpty) {
-        _titleController.text = title;
-      }
-      
-      // Set default description if empty
-      if (_descriptionController.text.isEmpty) {
-        _descriptionController.text = description;
-      }
-    });
-  }
-
   Future<void> _selectDueDate() async {
-    final date = await showDatePicker(
+    final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _selectedDueDate,
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );
-    
-    if (date != null) {
+    if (picked != null && picked != _selectedDueDate) {
       setState(() {
-        _selectedDueDate = date;
+        _selectedDueDate = picked;
       });
     }
   }
 
-  bool _canSubmit() {
-    return _selectedActivityId != null && 
-           _titleController.text.trim().isNotEmpty &&
-           !_isSubmitting;
-  }
-
   Future<void> _submitTodo() async {
-    if (!_canSubmit()) return;
+    if (_selectedType == null || _selectedActivityId == null) return;
 
     setState(() {
       _isSubmitting = true;
@@ -517,9 +359,9 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> with TickerProvid
 
     try {
       final user = ref.read(currentUserDataProvider);
-      if (user == null) throw 'User not authenticated';
+      if (user == null) throw Exception('User not found');
 
-      final todo = await ref.read(userTodosProvider(user.id).notifier).createTodo(
+      await ref.read(userTodosProvider(user.id).notifier).createTodo(
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
         type: _selectedType!,
@@ -528,27 +370,20 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> with TickerProvid
         dueDate: _selectedDueDate,
       );
 
-      if (todo != null && mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Task created successfully!'),
+            content: Text('Task added successfully!'),
             backgroundColor: Colors.green,
           ),
         );
-        context.go('/todos');
-      } else if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to create task. Please try again.'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        context.pop();
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: $e'),
+            content: Text('Error adding task: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -559,20 +394,6 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> with TickerProvid
           _isSubmitting = false;
         });
       }
-    }
-  }
-
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final selectedDate = DateTime(date.year, date.month, date.day);
-    
-    if (selectedDate.isAtSameMomentAs(today)) {
-      return 'Today';
-    } else if (selectedDate.isAtSameMomentAs(today.add(const Duration(days: 1)))) {
-      return 'Tomorrow';
-    } else {
-      return '${date.day}/${date.month}/${date.year}';
     }
   }
 }

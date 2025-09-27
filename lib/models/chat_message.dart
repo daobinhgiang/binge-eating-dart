@@ -116,7 +116,7 @@ class ResourceRecommendation {
       case 'exercise':
         return ResourceType.tool;
       case 'lesson':
-        return ResourceType.lesson;
+        return ResourceType.other;
       default:
         return ResourceType.other;
     }
@@ -125,7 +125,6 @@ class ResourceRecommendation {
 
 /// Types of resources that can be recommended
 enum ResourceType {
-  lesson,
   tool,
   other,
 }

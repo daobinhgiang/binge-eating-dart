@@ -155,7 +155,7 @@ Remember that you're not a substitute for professional help, so encourage users 
       case 'exercise':
         return ResourceType.tool;
       case 'lesson':
-        return ResourceType.lesson;
+        return ResourceType.other;
       default:
         return ResourceType.other;
     }

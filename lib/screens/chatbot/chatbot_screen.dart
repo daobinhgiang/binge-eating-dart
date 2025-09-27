@@ -4,8 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../models/chat_message.dart';
 import '../../providers/chatbot_provider.dart';
 import '../../providers/auth_provider.dart';
-import '../../screens/lessons/lesson_13_1.dart';
-import '../../screens/lessons/lesson_13_2.dart';
+// Lesson imports removed - lessons are no longer available
 import '../../core/services/navigation_service.dart';
 
 class ChatbotScreen extends ConsumerStatefulWidget {
@@ -56,32 +55,9 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
   // Handle resource recommendation navigation
   void _navigateToResource(ResourceRecommendation resource) {
     switch (resource.type) {
-      case ResourceType.lesson:
-        // Extract chapter and lesson number from lesson ID (e.g., lesson_13_1)
-        final parts = resource.id.split('_');
-        if (parts.length >= 3) {
-          try {
-            final chapterNumber = int.parse(parts[1]);
-            final lessonNumber = int.parse(parts[2]);
-            
-            // Create activity data for navigation
-            final activityData = {
-              'chapterNumber': chapterNumber,
-              'lessonNumber': lessonNumber,
-            };
-
-            // Navigate to lesson using NavigationService
-            _navigationService.navigateToLesson(
-              context,
-              activityData: activityData,
-              activityId: resource.id,
-            );
-          } catch (e) {
-            _showErrorSnackbar('Unable to navigate to lesson: $e');
-          }
-        } else {
-          _showErrorSnackbar('Invalid lesson ID format');
-        }
+      case ResourceType.other:
+        // Lessons are no longer available
+        _showErrorSnackbar('This resource is not available at this time');
         break;
         
       case ResourceType.tool:
@@ -407,12 +383,12 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
 
   // Build a button for a resource recommendation
   Widget _buildResourceButton(ResourceRecommendation resource) {
-    final Color buttonColor = resource.type == ResourceType.lesson
-        ? Colors.blue
+    final Color buttonColor = resource.type == ResourceType.other
+        ? Colors.grey
         : Colors.teal;
 
-    final IconData iconData = resource.type == ResourceType.lesson
-        ? Icons.book
+    final IconData iconData = resource.type == ResourceType.other
+        ? Icons.help_outline
         : Icons.fitness_center;
 
     return Padding(

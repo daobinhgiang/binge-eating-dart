@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum TodoType {
-  lesson,
   tool,
   journal,
 }
@@ -12,8 +11,8 @@ class TodoItem {
   final String title;
   final String description;
   final TodoType type;
-  final String activityId; // ID or identifier for the specific lesson/tool/journal activity
-  final Map<String, dynamic>? activityData; // Additional data about the activity (e.g., chapter/lesson numbers, tool type)
+  final String activityId; // ID or identifier for the specific tool/journal activity
+  final Map<String, dynamic>? activityData; // Additional data about the activity (e.g., tool type)
   final DateTime dueDate;
   final bool isCompleted;
   final DateTime? completedAt;
@@ -55,7 +54,7 @@ class TodoItem {
       description: data['description'] ?? '',
       type: TodoType.values.firstWhere(
         (e) => e.toString() == 'TodoType.${data['type']}',
-        orElse: () => TodoType.lesson,
+        orElse: () => TodoType.tool,
       ),
       activityId: data['activityId'] ?? '',
       activityData: data['activityData'] != null 
@@ -149,8 +148,6 @@ class TodoItem {
   // Helper methods
   String get typeDisplayName {
     switch (type) {
-      case TodoType.lesson:
-        return 'Lesson';
       case TodoType.tool:
         return 'Tool';
       case TodoType.journal:
