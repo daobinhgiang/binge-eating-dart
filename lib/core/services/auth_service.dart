@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../models/user_model.dart';
 
 class AuthService {
@@ -10,7 +12,13 @@ class AuthService {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  
+  // Configure GoogleSignIn with platform-specific client IDs
+  late final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId: kIsWeb 
+        ? dotenv.env['GOOGLE_CLIENT_ID_WEB'] 
+        : null, // For mobile platforms, client ID is handled by platform configuration
+  );
 
   // Current user stream
   Stream<UserModel?> get currentUserStream {
