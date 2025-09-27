@@ -109,7 +109,7 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
                 const SizedBox(width: 16),
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    value: _selectedUnit,
+                    initialValue: _selectedUnit,
                     decoration: const InputDecoration(
                       labelText: 'Unit',
                       border: OutlineInputBorder(),

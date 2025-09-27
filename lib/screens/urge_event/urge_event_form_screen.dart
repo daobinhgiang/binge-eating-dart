@@ -169,7 +169,7 @@ class _UrgeEventFormScreenState extends ConsumerState<UrgeEventFormScreen> {
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
-                value: _location,
+                initialValue: _location,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: 'Select location',
@@ -210,7 +210,7 @@ class _UrgeEventFormScreenState extends ConsumerState<UrgeEventFormScreen> {
                     });
                   },
                 );
-              }).toList(),
+              }),
               const SizedBox(height: 24),
 
               // Coping Strategies
@@ -235,7 +235,7 @@ class _UrgeEventFormScreenState extends ConsumerState<UrgeEventFormScreen> {
                     });
                   },
                 );
-              }).toList(),
+              }),
               const SizedBox(height: 24),
 
               // Was Resisted

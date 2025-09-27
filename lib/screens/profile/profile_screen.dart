@@ -14,6 +14,7 @@ class ProfileScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Profile'),
         centerTitle: true,
+        automaticallyImplyLeading: false,
       ),
       body: authState.when(
         data: (user) {

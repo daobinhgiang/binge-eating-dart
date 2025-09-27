@@ -45,11 +45,31 @@ class NavigationService {
     );
   }
 
-  // Navigate to tool based on activity ID
-  void _navigateToTool(BuildContext context, TodoItem todo) {
-    final toolRoute = _getToolRoute(todo.activityId);
-    if (toolRoute != null) {
-      context.go(toolRoute);
+
+  // Navigate to lesson based on activity ID
+  void _navigateToLesson(BuildContext context, TodoItem todo) {
+    Widget? lessonScreen;
+    
+    // Try to get lesson from activity data first (from manually created todos)
+    final activityData = todo.activityData;
+    if (activityData != null && 
+        activityData.containsKey('chapterNumber') && 
+        activityData.containsKey('lessonNumber')) {
+      final chapterNumber = activityData['chapterNumber'] as int;
+      final lessonNumber = activityData['lessonNumber'] as int;
+      lessonScreen = _getLessonScreenByChapterAndNumber(chapterNumber, lessonNumber);
+    }
+    
+    // If no activity data, try to parse from activity ID (from AI recommendations)
+    lessonScreen ??= _getLessonScreenByActivityId(todo.activityId);
+    
+    if (lessonScreen != null) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => lessonScreen!,
+          settings: const RouteSettings(name: '/lesson'),
+        ),
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -60,12 +80,29 @@ class NavigationService {
     }
   }
 
-  // Navigate to journal
-  void _navigateToJournal(BuildContext context, TodoItem todo) {
-    // Navigate to the appropriate journal section based on activity ID
-    final journalRoute = _getJournalRoute(todo.activityId);
-    if (journalRoute != null) {
-      context.go(journalRoute);
+  
+  // Public method to navigate to lesson from chatbot or other sources
+  void navigateToLesson(BuildContext context, {required Map<String, dynamic> activityData, required String activityId}) {
+    Widget? lessonScreen;
+    
+    // Try to get lesson from activity data first
+    if (activityData.containsKey('chapterNumber') && 
+        activityData.containsKey('lessonNumber')) {
+      final chapterNumber = activityData['chapterNumber'] as int;
+      final lessonNumber = activityData['lessonNumber'] as int;
+      lessonScreen = _getLessonScreenByChapterAndNumber(chapterNumber, lessonNumber);
+    }
+    
+    // If no activity data, try to parse from activity ID
+    lessonScreen ??= _getLessonScreenByActivityId(activityId);
+    
+    if (lessonScreen != null) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => lessonScreen!,
+          settings: const RouteSettings(name: '/lesson'),
+        ),
+      );
     } else {
       // Default to main journal screen
       context.go('/journal');

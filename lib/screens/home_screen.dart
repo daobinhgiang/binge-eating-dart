@@ -20,7 +20,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: AppBar(
         title: const Text('Home'),
         centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -106,7 +106,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ],
     );
   }
-
+  
   Widget _buildAnalyticsSection() {
     return Consumer(
       builder: (context, ref, child) {
@@ -372,5 +372,4 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
     );
   }
-  
-}
+ 

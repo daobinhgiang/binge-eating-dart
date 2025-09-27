@@ -15,6 +15,7 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
       appBar: AppBar(
         title: const Text('Education'),
         centerTitle: true,
+        automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: const Center(
@@ -33,6 +34,7 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Colors.grey,
+
               ),
             ),
             SizedBox(height: 12),
