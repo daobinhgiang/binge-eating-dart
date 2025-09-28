@@ -107,12 +107,14 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStateMixin {
   AnimationController? _fadeController;
   AnimationController? _scaleController;
+  ScrollController? _scrollController;
   Animation<double>? _fadeAnimation;
   Animation<double>? _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
     _fadeController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -144,6 +146,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
   @override
   void dispose() {
+    _scrollController?.dispose();
     _fadeController?.dispose();
     _scaleController?.dispose();
     super.dispose();
@@ -155,7 +158,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
     return Scaffold(
       body: ScrollAwareComfortingBackground(
+        scrollController: _scrollController,
         child: CustomScrollView(
+          controller: _scrollController,
               slivers: [
             // Beautiful translucent app bar with comforting background
             SliverAppBar(
