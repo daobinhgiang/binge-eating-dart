@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/todo_item.dart';
 import '../core/services/todo_service.dart';
+import '../core/services/firebase_analytics_service.dart';
 
 // Todo service provider
 final todoServiceProvider = Provider<TodoService>((ref) => TodoService());
@@ -61,6 +62,7 @@ final userTodosStreamProvider = StreamProvider.family<List<TodoItem>, String>((r
 class TodoNotifier extends StateNotifier<AsyncValue<List<TodoItem>>> {
   final TodoService _todoService;
   final String _userId;
+  final FirebaseAnalyticsService _analytics = FirebaseAnalyticsService();
 
   TodoNotifier(this._todoService, this._userId) : super(const AsyncValue.loading()) {
     loadTodos();
@@ -122,6 +124,9 @@ class TodoNotifier extends StateNotifier<AsyncValue<List<TodoItem>>> {
   Future<bool> markCompleted(String todoId) async {
     try {
       await _todoService.markTodoCompletedForUser(_userId, todoId);
+      
+      // Track todo completion
+      await _analytics.trackTodoCompletion();
       
       // Refresh current state
       await loadTodos();

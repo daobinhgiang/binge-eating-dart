@@ -9,8 +9,8 @@ class Stage1Data {
     
     return Stage(
       stageNumber: 1,
-      title: 'Introduction',
-      chapters: [
+      title: 'Starting Well',
+      chapters: [   
         Chapter(
           chapterNumber: 1,
           title: 'Introduction',
@@ -31,44 +31,43 @@ class Stage1Data {
                   bulletPoints: [
                     'Focus on the "Here and Now": We will concentrate on the things that are keeping the problem going right now, rather than dwelling on the past.',
                     'Tailored to You: This isn\'t a one-size-fits-all approach. The treatment will be personalized to your specific challenges and needs.',
-                    'Focus on sustainable, long-term change',
-                    'Personalized support throughout your journey'
+                    'Becoming an Expert: Together, we\'ll work to make you an expert on your own eating patterns and what helps you move forward.',
+                    'A Team Effort: You and your therapist (or this app guide) will work as a team. You are an active participant in your recovery.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_1_1_2',
-                  title: 'What to Expect in Treatment',
-                  content: 'Your treatment will involve learning new skills, understanding your eating patterns, and developing healthier coping strategies.',
+                  title: 'What to Expect',
+                  content: 'Your recovery journey is organized into four main stages to give you a clear roadmap. Having a structure helps us focus our efforts and ensures we cover all the important steps for a lasting recovery.',
                   slideNumber: 2,
                   bulletPoints: [
-                    'Self-monitoring and awareness building',
-                    'Regular eating pattern establishment',
-                    'Cognitive and behavioral skill development',
-                    'Relapse prevention strategies'
+                    'Stage 1 (Starting Well): We\'ll begin by getting a clear picture of your current habits. The key goals are to introduce regular eating and start using your Journal for self-monitoring.',
+                    'Stage 2 (Taking Stock): After the first few weeks, we\'ll pause to review your progress, identify what\'s working, and plan the main body of your treatment.',
+                    'Stage 3 (The Core Work): This is where we will work together to address the key mechanisms that maintain the eating problem, such as concerns about shape and weight, dieting, and how events and moods affect your eating.',
+                    'Stage 4 (Ending Well): The final stage focuses on the future. We\'ll create a plan to help you maintain your progress and minimize the risk of setbacks long-term.',
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_1_1_3',
-                  title: 'The Prospect of Change',
-                  content: 'Recovery from binge eating is absolutely possible. Many people have successfully overcome these challenges and built fulfilling lives.',
+                  title: 'Using Nurtra for Success',
+                  content: 'Nurtra is designed to support you through every stage of your treatment. The three main sections—Lessons, Tools, and your Journal—are the core components of your therapy.',
                   slideNumber: 3,
                   bulletPoints: [
-                    'Recovery is achievable with the right support',
-                    'Small changes lead to significant improvements',
-                    'You have the strength to overcome this challenge',
-                    'Each step forward is progress worth celebrating'
+                    'Lessons (You are here!): These will provide you with crucial information and psychoeducation, guiding you through the treatment process one step at a time.',
+                    'Tools (Exercises): In the "Tools" tab, you\'ll find practical exercises and strategies. These are your "homework" tasks—what you do between sessions is essential for making progress.',
+                    'Journal (Monitoring): Your Journal is one of the most powerful tools for change. Recording your food, drinks, context, and feelings as they happen helps you become more aware of your patterns and gives you back a sense of control.',
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_1_1_4',
-                  title: 'Your Commitment to Change',
-                  content: 'Success in this program requires your active participation and commitment to the process, even when it feels challenging.',
+                  title: 'The Real Prospect of Change',
+                  content: 'It\'s completely normal to feel a mix of hope and apprehension when starting treatment. Overcoming an eating problem is hard work, but it is absolutely worth it. Lasting change is not just a vague hope; it\'s a very real possibility.',
                   slideNumber: 4,
                   bulletPoints: [
-                    'Engage fully with all program components',
-                    'Practice new skills consistently',
-                    'Be patient and compassionate with yourself',
-                    'Trust the process and stay committed to your goals'
+                    'You Can Make a Full Recovery: Research and clinical experience show that the great majority of people can be helped, and many make a full and lasting recovery. There is no reason why you shouldn\'t be one of them.',
+                    'Progress Continues: Many people find that they continue to improve even after the formal treatment program ends. As long as we disrupt the main things keeping the problem going, your mind will have time to "catch up" with your new, healthier behaviors.',
+                    'It\'s Your Commitment: This is your opportunity to change. Since you\'ve likely had the eating problem for a while, it\'s important to make the most of this treatment. The more you put in, the more you\'ll get out.',
+                    'A Fresh Start: This treatment is an opportunity to make a "fresh start" and build a life that isn\'t dominated by the eating disorder.'
                   ],
                 ),
               ],
@@ -76,60 +75,62 @@ class Stage1Data {
               updatedAt: now,
             ),
             
-            // Lesson 1.2: Establishing real-time self-monitoring and assign patient to start monitoring (for everything)
+            // Lesson 1.2: Monitoring, Your Path to Awareness
             Lesson(
               id: 'lesson_1_2',
-              title: '1.2 Establishing real-time self-monitoring and assign patient to start monitoring (for everything)',
+              title: 'Monitoring, Your Path to Awareness',
               description: 'Learning to track your eating patterns, emotions, and triggers in real-time',
               chapterNumber: 1,
               lessonNumber: 2,
               slides: [
                 LessonSlide(
                   id: 'slide_1_2_1',
-                  title: 'The Power of Self-Monitoring',
-                  content: 'Self-monitoring is one of the most effective tools for understanding and changing your eating patterns.',
+                  title: 'Module 1: Why Monitoring is Your Superpower',
+                  content: 'Welcome to one of the most important parts of your treatment! Self-monitoring is central to your recovery—it\'s your personal tool for becoming an expert on your eating problem and, ultimately, overcoming it. At first, it might feel a bit strange, but it will soon become an incredibly valuable habit.',
                   slideNumber: 1,
                   bulletPoints: [
-                    'Increases awareness of eating behaviors',
-                    'Helps identify triggers and patterns',
-                    'Provides objective data about your progress',
-                    'Empowers you to make informed decisions'
+                    'It Reveals Your Patterns: Monitoring helps you see exactly what\'s happening on a day-to-day basis. We need to know the details of what you\'re doing, thinking, and feeling at the moment these things happen. This clarity is the first step to making changes.',
+                    'It Empowers You to Change: By becoming aware of your behaviors and thoughts in real-time, you\'ll start to see that you have choices. Things that felt automatic or out of your control can be changed with attention and practice.',
+                    'A Quick Note: You might find that monitoring makes you more aware of your eating at first. This is normal and actually a good thing! This heightened awareness is constructive, and the feeling of preoccupation usually fades within a week or so.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_1_2_2',
-                  title: 'What to Monitor',
-                  content: 'We\'ll track various aspects of your daily experience to get a complete picture of your relationship with food.',
+                  title: 'Module 2: Your Food Diary - How It Works',
+                  content: 'Your Food Diary is more than just a list of what you eat. It\'s a space to observe the connections between food, situations, thoughts, and feelings. The most important rule is to fill it out in real-time—that means recording things as soon as possible after they happen.',
                   slideNumber: 2,
                   bulletPoints: [
-                    'All food and drink consumption',
-                    'Emotions before, during, and after eating',
-                    'Physical sensations and hunger levels',
-                    'Environmental factors and triggers'
+                    'What to Record: For everything you eat or drink, log the following:',
+                    'Time: When you ate or drank.',
+                    'Food & Drink: A simple description of what you had. No need for calorie counting!',
+                    'Place: Where you were (e.g., kitchen, car, work desk).',
+                    'Context & Comments: This is key! Note down any thoughts, feelings, or events that happened. Were you arguing with someone? Feeling lonely? Feeling out of control?'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_1_2_3',
-                  title: 'How to Monitor Effectively',
-                  content: 'Real-time monitoring means recording information as close to the moment it happens as possible.',
+                  title: 'Module 3: Your Weight & Body Image Diaries',
+                  content: 'These diaries help us address two other important areas: your relationship with your weight and how you feel about your body shape. Like the food diary, the goal is awareness, not judgment.',
                   slideNumber: 3,
                   bulletPoints: [
-                    'Record immediately after eating or drinking',
-                    'Be honest and non-judgmental in your entries',
-                    'Include details about context and circumstances',
-                    'Use the app\'s monitoring tools consistently'
+                    'The Weight Diary: The goal is to weigh yourself just once a week. Weighing yourself too often makes you focus on normal daily fluctuations, which can be misleading and upsetting.',
+                    'Choose one day and time of the week to weigh yourself.',
+                    'Record the number in your Weight Diary.',
+                    'Most importantly, use the "comments" section to note your thoughts and feelings about the number. This helps us work on reinterpreting your weight in a healthier way.',
+                    'The Body Image Diary: This is a space to track moments when thoughts about your shape and weight are particularly strong.',
+                    'Log "Feeling Fat" Moments: Note down when you have an intense feeling of "feeling fat." What was happening at that moment? What were you really feeling (e.g., sad, angry, bored)?',
+                    'Log Body Checking: Record any instances of body checking (e.g., repeatedly looking in the mirror, pinching parts of your body, comparing yourself to others). What triggered it? How did it make you feel?'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_1_2_4',
-                  title: 'Starting Your Monitoring Journey',
-                  content: 'Beginning today, you\'ll start monitoring all aspects of your eating and emotional experiences.',
+                  title: 'Module 4: Your First Assignment: Let\'s Begin!',
+                  content: 'You\'re all set! Your first task is to start using the Journal tab today. Don\'t worry about getting it perfect right away. The simple act of starting is a huge step forward.',
                   slideNumber: 4,
                   bulletPoints: [
-                    'Start monitoring immediately after this lesson',
-                    'Set reminders to help build the habit',
-                    'Don\'t worry about being perfect - just be consistent',
-                    'Review your entries regularly to identify patterns'
+                    'Your Goal: Start monitoring everything in your Food, Weight, and Body Image diaries as it happens.',
+                    'Carry it With You: Keep your phone handy so you can record things in real-time.',
+                    'Be Curious: Approach this task with a sense of curiosity. You are a detective learning about yourself. Every entry, good or bad, is just a clue that will help you solve the puzzle. You\'ve got this!'
                   ],
                 ),
               ],
@@ -137,60 +138,59 @@ class Stage1Data {
               updatedAt: now,
             ),
             
-            // Lesson 1.3: Establishing "regular eating" and activate notification
+            // Lesson 1.3: The Foundation of Change - Regular Eating
             Lesson(
               id: 'lesson_1_3',
-              title: '1.3 Establishing "regular eating" and activate notification',
+              title: 'The Foundation of Change - Regular Eating',
               description: 'Creating a structured eating schedule to support recovery and prevent binge episodes',
               chapterNumber: 1,
               lessonNumber: 3,
               slides: [
                 LessonSlide(
                   id: 'slide_1_3_1',
-                  title: 'Understanding Regular Eating',
-                  content: 'Regular eating involves consuming meals and snacks at consistent times throughout the day to maintain stable blood sugar and reduce binge urges.',
+                  title: 'Module 1: Why Regular Eating is a Game-Changer',
+                  content: 'It\'s time to begin making the first major change to your eating, and it\'s a powerful one. This lesson is about when you eat, not what you eat. Establishing a pattern of regular eating is the foundation upon which all other changes will be built. It\'s one of the most effective ways to reduce binge eating and regain a sense of control.',
                   slideNumber: 1,
                   bulletPoints: [
-                    'Prevents extreme hunger that triggers binges',
-                    'Stabilizes blood sugar and energy levels',
-                    'Reduces preoccupation with food',
-                    'Creates structure and predictability'
+                    'It Breaks the Binge Cycle: For most people, eating at regular intervals rapidly decreases the frequency of binge eating. This happens because it prevents you from getting overly hungry and helps stabilize your body\'s signals.',
+                    'It Provides Structure and Control: When eating feels chaotic, a regular pattern provides predictability and puts you back in the driver\'s seat.',
+                    'It Boosts Your Mood: Regaining control over your eating pattern often leads to a significant improvement in your mood and overall sense of well-being.',
+                    'It\'s the First Step to Freedom: This simple change helps reduce the constant preoccupation with food and frees up mental space for other things in your life.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_1_3_2',
-                  title: 'The Regular Eating Pattern',
-                  content: 'A typical regular eating pattern includes three meals and 2-3 snacks, spaced evenly throughout the day.',
+                  title: 'Module 2: Your Regular Eating Plan',
+                  content: 'The goal is to create a simple, consistent, and predictable pattern of eating throughout your day. This pattern will become your new normal and will help you feel more stable and in control.\n\nHere is the plan:',
                   slideNumber: 2,
                   bulletPoints: [
-                    'Breakfast within 1-2 hours of waking',
-                    'Lunch 4-5 hours after breakfast',
-                    'Dinner 4-5 hours after lunch',
-                    'Planned snacks between meals as needed'
+                    'Three Meals + Two or Three Snacks: Aim to eat breakfast, lunch, and an evening meal, plus a mid-morning snack, a mid-afternoon snack, and an optional evening snack.',
+                    'No More Than 4 Hours Apart: Don\'t let more than four hours go by without eating. This prevents the intense hunger that can trigger a binge.',
+                    'Plan Ahead: This is crucial! Each morning (or the night before), plan what and when you will eat for the day. Knowing your plan removes uncertainty and makes it easier to stick to your goals.',
+                    'Don\'t Skip: Adhere to your plan even if you don\'t feel hungry. Your body\'s hunger and fullness signals are likely unreliable right now. We are retraining them by eating based on the clock, not on confusing internal feelings.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_1_3_3',
-                  title: 'Setting Up Meal Notifications',
-                  content: 'Notifications will help you remember to eat regularly, especially when you\'re not feeling hungry or are distracted.',
+                  title: 'Module 3: Tackling Common Worries',
+                  content: 'It\'s completely normal to have concerns when changing your eating habits. Let\'s address the most common ones head-on so you can feel confident moving forward.',
                   slideNumber: 3,
                   bulletPoints: [
-                    'Gentle reminders for meal and snack times',
-                    'Customizable timing based on your schedule',
-                    'Helps establish new eating rhythms',
-                    'Reduces the mental load of meal planning'
+                    '"Will I gain weight?" This is a very common fear. Because regular eating drastically reduces binge eating, most people find that their overall calorie intake actually goes down. We are not asking you to eat more, just to distribute your eating differently throughout the day.',
+                    '"I don\'t like eating breakfast." Many people feel this way, often fearing it will "open the floodgates" for the rest of the day. This is an opportunity to test that belief. You will likely find that starting your day with food actually gives you more control, not less.',
+                    '"What if I feel uncomfortably full?" Feeling full can be a trigger. It\'s important to remember that this sensation is temporary and usually passes within an hour. As your body adjusts to regular eating, this feeling will lessen.',
+                    '"I don\'t like planning so much." Spontaneity is great, but for the next few weeks, structure is your best friend. Think of this planning as a temporary tool that is essential for overcoming the eating problem and achieving long-term freedom.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_1_3_4',
-                  title: 'Implementing Regular Eating',
-                  content: 'Starting today, you\'ll begin following a regular eating schedule with the support of app notifications.',
+                  title: 'Module 4: Set Your Reminders and Get Started!',
+                  content: 'Now it\'s time to put your plan into action. A great way to support yourself is by using this app\'s notification feature as your personal mealtime reminder.',
                   slideNumber: 4,
                   bulletPoints: [
-                    'Set up your personalized meal schedule',
-                    'Enable notifications for all meals and snacks',
-                    'Eat according to the schedule, regardless of hunger',
-                    'Trust that hunger cues will normalize over time'
+                    'Activate Your Notifications: Go to the "Tools" or "Settings" tab now and set up reminders for your planned meals and snacks. This is like having a friendly coach who gently nudges you to stay on track throughout the day.',
+                    'Your Goal For This Week: Your assignment is to follow your regular eating plan every day. Plan your meals and snacks, and do your best not to eat in between them.',
+                    'Be Patient with Yourself: It can take a few weeks to master this new pattern. If you have a slip-up, don\'t see it as a failure. Just get back on track with your next planned meal or snack. You can do this!'
                   ],
                 ),
               ],
