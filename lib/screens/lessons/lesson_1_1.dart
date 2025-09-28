@@ -5,6 +5,7 @@ import '../../core/services/navigation_service.dart';
 import '../../models/lesson.dart';
 import '../../models/todo_item.dart';
 import '../../widgets/lesson_slide_widget.dart';
+import '../../data/stage_1_data.dart';
 
 class Lesson11Screen extends ConsumerStatefulWidget {
   const Lesson11Screen({super.key});
@@ -33,42 +34,14 @@ class _Lesson11ScreenState extends ConsumerState<Lesson11Screen> {
 
   Future<void> _loadLesson() async {
     try {
-      final lesson = await _lessonService.getLessonByChapterAndNumber(1, 1);
-      if (lesson != null) {
-        setState(() {
-          _lesson = lesson;
-          _isLoading = false;
-        });
-        return;
-      }
-
-      // Initialize default lessons if not found
-      try {
-        await _lessonService.initializeDefaultLessons();
-        final lesson = await _lessonService.getLessonByChapterAndNumber(1, 1);
-        if (lesson != null) {
-          setState(() {
-            _lesson = lesson;
-            _isLoading = false;
-          });
-          return;
-        }
-      } catch (initError) {
-        print('Warning: Could not initialize lessons: $initError');
-      }
-
-      // If all else fails, show error
+      // Load from the new Stage 1 data structure
+      final stage1 = Stage1Data.getStage1();
+      final lesson11 = stage1.chapters.first.lessons.first;
+      
       setState(() {
+        _lesson = lesson11;
         _isLoading = false;
       });
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Unable to load lesson. Please check your internet connection and try again.'),
-            duration: Duration(seconds: 5),
-          ),
-        );
-      }
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -123,7 +96,7 @@ class _Lesson11ScreenState extends ConsumerState<Lesson11Screen> {
     if (_lesson == null || _lesson!.slides.isEmpty) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Lesson 1.1: Who Is Nurtra For?'),
+          title: const Text('Lesson 1.1'),
         ),
         body: const Center(
           child: Text('Lesson not found'),

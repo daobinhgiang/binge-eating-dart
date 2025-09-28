@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/services/lesson_service.dart';
 import '../../models/lesson.dart';
 import '../../widgets/lesson_slide_widget.dart';
+import '../../data/stage_1_data.dart';
 
 class Lesson23Screen extends StatefulWidget {
   const Lesson23Screen({super.key});
@@ -24,53 +25,21 @@ class _Lesson23ScreenState extends State<Lesson23Screen> {
 
   Future<void> _loadLesson() async {
     try {
-      final lesson = await _lessonService.getLessonByChapterAndNumber(2, 3);
-      if (lesson != null) {
-        setState(() {
-          _lesson = lesson;
-          _isLoading = false;
-        });
-        return;
-      }
-
-      // Initialize default lessons if not found
-      try {
-        await _lessonService.initializeDefaultLessons();
-        final lesson = await _lessonService.getLessonByChapterAndNumber(2, 3);
-        if (lesson != null) {
-          setState(() {
-            _lesson = lesson;
-            _isLoading = false;
-          });
-          return;
-        }
-      } catch (initError) {
-        print('Warning: Could not initialize lessons: $initError');
-      }
-
-      // If still no lesson found, show error
+      // Load from the new Stage 1 data structure
+      final stage1 = Stage1Data.getStage1();
+      final lesson23 = stage1.chapters[1].lessons[2]; // Chapter 2 (index 1), Lesson 3 (index 2)
+      
       setState(() {
+        _lesson = lesson23;
         _isLoading = false;
       });
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Lesson not found'),
-            duration: Duration(seconds: 5),
-          ),
-        );
-      }
     } catch (e) {
       setState(() {
         _isLoading = false;
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error loading lesson: $e'),
-            duration: const Duration(seconds: 5),
-          ),
+          SnackBar(content: Text('Error loading lesson: $e')),
         );
       }
     }
@@ -115,7 +84,7 @@ class _Lesson23ScreenState extends State<Lesson23Screen> {
     if (_lesson == null || _lesson!.slides.isEmpty) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Lesson 2.3: The Binge-Restrict Cycle'),
+          title: const Text('Lesson 2.3'),
         ),
         body: const Center(
           child: Text('Lesson not found'),

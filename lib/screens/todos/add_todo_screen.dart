@@ -3,10 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/todo_provider.dart';
-import '../../providers/lesson_provider.dart';
 import '../../models/todo_item.dart';
 import '../../models/lesson.dart';
-import '../../core/services/lesson_service.dart';
+import '../../data/stage_1_data.dart';
 import '../../screens/tools/tools_screen.dart';
 
 class AddTodoScreen extends ConsumerStatefulWidget {
@@ -125,38 +124,43 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> with TickerProvid
   }
 
   Widget _buildLessonsTab() {
-    final lessonsAsync = ref.watch(allLessonsProvider);
-    
-    return lessonsAsync.when(
-      data: (lessons) {
-        if (lessons.isEmpty) {
-          return _buildEmptyState(
-            icon: Icons.school,
-            title: 'No lessons available',
-            subtitle: 'Lessons will appear here when they are available.',
-          );
-        }
+    try {
+      // Load Stage 1 lessons
+      final stage1 = Stage1Data.getStage1();
+      final allLessons = <Lesson>[];
+      
+      // Flatten all lessons from all chapters in Stage 1
+      for (final chapter in stage1.chapters) {
+        allLessons.addAll(chapter.lessons);
+      }
 
-        // Group lessons by chapter
-        final groupedLessons = <int, List<Lesson>>{};
-        for (final lesson in lessons) {
-          groupedLessons.putIfAbsent(lesson.chapterNumber, () => []).add(lesson);
-        }
-
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: groupedLessons.keys.length,
-          itemBuilder: (context, index) {
-            final chapterNumber = groupedLessons.keys.elementAt(index);
-            final chapterLessons = groupedLessons[chapterNumber]!;
-            
-            return _buildChapterSection(chapterNumber, chapterLessons);
-          },
+      if (allLessons.isEmpty) {
+        return _buildEmptyState(
+          icon: Icons.school,
+          title: 'No lessons available',
+          subtitle: 'Lessons will appear here when they are available.',
         );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => _buildErrorState('Failed to load lessons: $error'),
-    );
+      }
+
+      // Group lessons by chapter
+      final groupedLessons = <int, List<Lesson>>{};
+      for (final lesson in allLessons) {
+        groupedLessons.putIfAbsent(lesson.chapterNumber, () => []).add(lesson);
+      }
+
+      return ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: groupedLessons.keys.length,
+        itemBuilder: (context, index) {
+          final chapterNumber = groupedLessons.keys.elementAt(index);
+          final chapterLessons = groupedLessons[chapterNumber]!;
+          
+          return _buildChapterSection(chapterNumber, chapterLessons);
+        },
+      );
+    } catch (e) {
+      return _buildErrorState('Failed to load lessons: $e');
+    }
   }
 
   Widget _buildChapterSection(int chapterNumber, List<Lesson> lessons) {
@@ -166,7 +170,7 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> with TickerProvid
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(
-            'Chapter $chapterNumber: ${LessonService.getChapterTitle(chapterNumber)}',
+            'Chapter $chapterNumber',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.primary,

@@ -10,21 +10,65 @@ import '../../screens/lessons/lesson_1_3.dart';
 import '../../screens/lessons/lesson_2_1.dart';
 import '../../screens/lessons/lesson_2_2.dart';
 import '../../screens/lessons/lesson_2_3.dart';
-import '../../screens/lessons/lesson_2_4.dart';
-import '../../screens/lessons/lesson_2_5.dart';
 import '../../screens/lessons/lesson_3_1.dart';
 import '../../screens/lessons/lesson_3_2.dart';
 import '../../screens/lessons/lesson_3_3.dart';
-import '../../screens/lessons/lesson_4_1.dart';
-import '../../screens/lessons/lesson_4_2.dart';
-import '../../screens/lessons/lesson_4_3.dart';
-import '../../screens/lessons/lesson_4_4.dart';
-import '../../screens/lessons/lesson_5_1.dart';
-import '../../screens/lessons/lesson_5_2.dart';
-import '../../screens/lessons/lesson_5_3.dart';
-import '../../screens/lessons/lesson_6_1.dart';
-import '../../screens/lessons/lesson_6_2.dart';
-import '../../screens/lessons/lesson_6_3.dart';
+import '../../screens/lessons/lesson_3_4.dart';
+import '../../screens/lessons/lesson_3_5.dart';
+import '../../screens/lessons/lesson_3_6.dart';
+import '../../screens/lessons/lesson_3_7.dart';
+import '../../screens/lessons/lesson_3_8.dart';
+import '../../screens/lessons/lesson_3_9.dart';
+import '../../screens/lessons/lesson_3_10.dart';
+// Stage 2 lesson imports
+import '../../screens/lessons/lesson_s2_0_1.dart';
+import '../../screens/lessons/lesson_s2_0_2.dart';
+import '../../screens/lessons/lesson_s2_0_3.dart';
+import '../../screens/lessons/lesson_s2_0_4.dart';
+import '../../screens/lessons/lesson_s2_0_5.dart';
+import '../../screens/lessons/lesson_s2_0_6.dart';
+import '../../screens/lessons/lesson_s2_1_1.dart';
+import '../../screens/lessons/lesson_s2_1_2.dart';
+import '../../screens/lessons/lesson_s2_1_3.dart';
+import '../../screens/lessons/lesson_s2_2_1.dart';
+import '../../screens/lessons/lesson_s2_2_2.dart';
+import '../../screens/lessons/lesson_s2_2_3.dart';
+import '../../screens/lessons/lesson_s2_2_4.dart';
+import '../../screens/lessons/lesson_s2_2_5.dart';
+import '../../screens/lessons/lesson_s2_2_6.dart';
+import '../../screens/lessons/lesson_s2_3_1.dart';
+import '../../screens/lessons/lesson_s2_3_2.dart';
+import '../../screens/lessons/lesson_s2_3_3.dart';
+import '../../screens/lessons/lesson_s2_3_4.dart';
+import '../../screens/lessons/lesson_s2_4_1.dart';
+import '../../screens/lessons/lesson_s2_4_2.dart';
+import '../../screens/lessons/lesson_s2_4_3.dart';
+import '../../screens/lessons/lesson_s2_2_7.dart';
+import '../../screens/lessons/lesson_s2_3_5.dart';
+import '../../screens/lessons/lesson_s2_7_2_1.dart';
+import '../../screens/lessons/lesson_s3_0_2_1.dart';
+import '../../screens/lessons/lesson_s2_5_1.dart';
+import '../../screens/lessons/lesson_s2_5_2.dart';
+import '../../screens/lessons/lesson_s2_6_1.dart';
+import '../../screens/lessons/lesson_s2_6_2.dart';
+import '../../screens/lessons/lesson_s2_6_3.dart';
+import '../../screens/lessons/lesson_s2_7_1.dart';
+import '../../screens/lessons/lesson_s2_7_2.dart';
+import '../../screens/lessons/lesson_s2_7_3.dart';
+import '../../screens/lessons/lesson_s2_7_4.dart';
+import '../../screens/lessons/lesson_s2_7_5.dart';
+import '../../screens/lessons/lesson_s2_7_6.dart';
+import '../../screens/lessons/lesson_s2_7_7.dart';
+import '../../screens/lessons/lesson_s2_7_8.dart';
+// Stage 3 lesson imports
+import '../../screens/lessons/lesson_s3_0_1.dart';
+import '../../screens/lessons/lesson_s3_0_2.dart';
+// Assessment imports
+import '../../screens/assessments/assessment_2_1_screen.dart';
+import '../../screens/assessments/assessment_2_2_screen.dart';
+import '../../screens/assessments/assessment_2_3_screen.dart';
+import '../../screens/assessments/assessment_s3_0_3_screen.dart';
+import '../../screens/assessments/assessment_s3_0_4_screen.dart';
 
 class NavigationService {
   static final NavigationService _instance = NavigationService._internal();
@@ -201,7 +245,7 @@ class NavigationService {
     context.go('/journal');
   }
 
-  // Get lesson screen by chapter and lesson number
+  // Get lesson screen by chapter and lesson number (only Stage 1 lessons)
   Widget? _getLessonScreenByChapterAndNumber(int chapterNumber, int lessonNumber) {
     switch (chapterNumber) {
       case 1:
@@ -213,11 +257,9 @@ class NavigationService {
         break;
       case 2:
         switch (lessonNumber) {
-          case 1: return const Lesson21Screen();
-          case 2: return const Lesson22Screen();
-          case 3: return const Lesson23Screen();
-          case 4: return const Lesson24Screen();
-          case 5: return const Lesson25Screen();
+          case 1: return const Assessment21Screen();
+          case 2: return const Assessment22Screen();
+          case 3: return const Assessment23Screen();
         }
         break;
       case 3:
@@ -225,28 +267,18 @@ class NavigationService {
           case 1: return const Lesson31Screen();
           case 2: return const Lesson32Screen();
           case 3: return const Lesson33Screen();
+          case 4: return const Lesson34Screen();
+          case 5: return const Lesson35Screen();
+          case 6: return const Lesson36Screen();
+          case 7: return const Lesson37Screen();
+          case 8: return const Lesson38Screen();
+          case 9: return const Lesson39Screen();
+          case 10: return const Lesson310Screen();
         }
         break;
       case 4:
         switch (lessonNumber) {
-          case 1: return const Lesson41Screen();
-          case 2: return const Lesson42Screen();
-          case 3: return const Lesson43Screen();
-          case 4: return const Lesson44Screen();
-        }
-        break;
-      case 5:
-        switch (lessonNumber) {
-          case 1: return const Lesson51Screen();
-          case 2: return const Lesson52Screen();
-          case 3: return const Lesson53Screen();
-        }
-        break;
-      case 6:
-        switch (lessonNumber) {
-          case 1: return const Lesson61Screen();
-          case 2: return const Lesson62Screen();
-          case 3: return const Lesson63Screen();
+          case 3: return const LessonS243Screen();
         }
         break;
     }
@@ -256,9 +288,33 @@ class NavigationService {
   // Get lesson screen by activity ID (fallback method)
   Widget? _getLessonScreenByActivityId(String activityId) {
     // This is a fallback method that tries to map activity IDs to lesson screens
-    // The activity ID might be in the format "lesson_X_Y" or similar
+    // The activity ID might be in the format "lesson_X_Y" or "lesson_sX_Y_Z"
     
-    // Try to parse lesson from activity ID
+    // Handle Stage 2 lesson IDs (e.g., "lesson_s2_2_7")
+    if (activityId.startsWith('lesson_s2_')) {
+      switch (activityId) {
+        case 'lesson_s2_2_7':
+          return const LessonS227Screen();
+        case 'lesson_s2_3_5':
+          return const LessonS235Screen();
+        case 'lesson_s2_4_3':
+          return const LessonS243Screen();
+        case 'lesson_s2_7_2_1':
+          return const LessonS2721Screen();
+        // Add more Stage 2 lessons as needed
+      }
+    }
+    
+    // Handle Stage 3 lesson IDs (e.g., "lesson_s3_0_2_1")
+    if (activityId.startsWith('lesson_s3_')) {
+      switch (activityId) {
+        case 'lesson_s3_0_2_1':
+          return const LessonS3021Screen();
+        // Add more Stage 3 lessons as needed
+      }
+    }
+    
+    // Try to parse Stage 1 lesson from activity ID
     final parts = activityId.split('_');
     if (parts.length >= 3 && parts[0] == 'lesson') {
       try {
