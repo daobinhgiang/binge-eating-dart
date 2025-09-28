@@ -9,6 +9,7 @@ import '../models/lesson.dart';
 import '../models/todo_item.dart';
 import '../screens/lessons/lesson_1_1.dart';
 import '../screens/lessons/lesson_1_2.dart';
+import '../screens/lessons/lesson_1_2_1.dart';
 import '../screens/lessons/lesson_1_3.dart';
 import '../screens/lessons/lesson_2_1.dart';
 import '../screens/lessons/lesson_2_2.dart';
@@ -32,6 +33,12 @@ import '../screens/lessons/lesson_s2_0_6.dart';
 import '../screens/lessons/lesson_s2_1_1.dart';
 import '../screens/lessons/lesson_s2_1_2.dart';
 import '../screens/lessons/lesson_s2_1_3.dart';
+import '../screens/lessons/lesson_s2_2_1.dart';
+import '../screens/lessons/lesson_s2_2_2.dart';
+import '../screens/lessons/lesson_s2_2_3.dart';
+import '../screens/lessons/lesson_s2_2_4.dart';
+import '../screens/lessons/lesson_s2_2_5.dart';
+import '../screens/lessons/lesson_s2_2_5_1.dart';
 import '../screens/lessons/lesson_s3_0_1.dart';
 import '../screens/lessons/lesson_s3_0_2.dart';
 import '../screens/assessments/assessment_2_1_screen.dart';
@@ -39,9 +46,31 @@ import '../screens/assessments/assessment_2_2_screen.dart';
 import '../screens/assessments/assessment_2_3_screen.dart';
 import '../screens/assessments/assessment_s3_0_3_screen.dart';
 import '../screens/assessments/assessment_s3_0_4_screen.dart';
-import '../screens/lessons/lesson_s2_4_3.dart';
-import '../screens/lessons/lesson_s2_2_7.dart';
+import '../screens/lessons/lesson_s2_3_1.dart';
+import '../screens/lessons/lesson_s2_3_2.dart';
+import '../screens/lessons/lesson_s2_3_2_1.dart';
+import '../screens/lessons/lesson_s2_3_3.dart';
+import '../screens/lessons/lesson_s2_3_4.dart';
 import '../screens/lessons/lesson_s2_3_5.dart';
+import '../screens/lessons/lesson_s2_4_1.dart';
+import '../screens/lessons/lesson_s2_4_2.dart';
+import '../screens/lessons/lesson_s2_4_2_1.dart';
+import '../screens/lessons/lesson_s2_4_3.dart';
+import '../screens/lessons/lesson_s2_5_1.dart';
+import '../screens/lessons/lesson_s2_5_2.dart';
+import '../screens/lessons/lesson_s2_6_1.dart';
+import '../screens/lessons/lesson_s2_6_2.dart';
+import '../screens/lessons/lesson_s2_6_3.dart';
+import '../screens/lessons/lesson_s2_7_1.dart';
+import '../screens/lessons/lesson_s2_7_1_1.dart';
+import '../screens/lessons/lesson_s2_7_2.dart';
+import '../screens/lessons/lesson_s2_7_3.dart';
+import '../screens/lessons/lesson_s2_7_4.dart';
+import '../screens/lessons/lesson_s2_7_5.dart';
+import '../screens/lessons/lesson_s2_7_6.dart';
+import '../screens/lessons/lesson_s2_7_7.dart';
+import '../screens/lessons/lesson_s2_7_8.dart';
+import '../screens/lessons/lesson_s2_2_7.dart';
 import '../screens/lessons/lesson_s2_7_2_1.dart';
 import '../screens/lessons/lesson_s3_0_2_1.dart';
 
@@ -1105,6 +1134,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
       // Stage 1 lessons
       case 'lesson_1_1': return const Lesson11Screen();
       case 'lesson_1_2': return const Lesson12Screen();
+      case 'lesson_1_2_1': return const Lesson121Screen();
       case 'lesson_1_3': return const Lesson13Screen();
       case 'lesson_2_1': return const Assessment21Screen();
       case 'lesson_2_2': return const Assessment22Screen();
@@ -1130,10 +1160,47 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
       case 'lesson_s2_1_1': return const LessonS211Screen();
       case 'lesson_s2_1_2': return const LessonS212Screen();
       case 'lesson_s2_1_3': return const LessonS213Screen();
+      case 'lesson_s2_2_1': return const LessonS221Screen();
+      case 'lesson_s2_2_2': return const LessonS222Screen();
+      case 'lesson_s2_2_3': return const LessonS223Screen();
+      case 'lesson_s2_2_4': return const LessonS224Screen();
+      case 'lesson_s2_2_5': return const LessonS225Screen();
+      case 'lesson_s2_2_5_1': return const LessonS2251Screen();
       case 'lesson_s2_2_7': return const LessonS227Screen();
+      
+      // Chapter 3 lessons
+      case 'lesson_s2_3_1': return const LessonS231Screen();
+      case 'lesson_s2_3_2': return const LessonS232Screen();
+      case 'lesson_s2_3_2_1': return const LessonS2321Screen();
+      case 'lesson_s2_3_3': return const LessonS233Screen();
+      case 'lesson_s2_3_4': return const LessonS234Screen();
       case 'lesson_s2_3_5': return const LessonS235Screen();
+      
+      // Chapter 4 lessons
+      case 'lesson_s2_4_1': return const LessonS241Screen();
+      case 'lesson_s2_4_2': return const LessonS242Screen();
+      case 'lesson_s2_4_2_1': return const LessonS2421Screen();
       case 'lesson_s2_4_3': return const LessonS243Screen();
-      case 'lesson_s2_7_3': return const LessonS2721Screen();
+      
+      // Chapter 5 lessons
+      case 'lesson_s2_5_1': return const LessonS251Screen();
+      case 'lesson_s2_5_2': return const LessonS252Screen();
+      
+      // Chapter 6 lessons
+      case 'lesson_s2_6_1': return const LessonS261Screen();
+      case 'lesson_s2_6_2': return const LessonS262Screen();
+      case 'lesson_s2_6_3': return const LessonS263Screen();
+      
+      // Chapter 7 lessons
+      case 'lesson_s2_7_1': return const LessonS271Screen();
+      case 'lesson_s2_7_1_1': return const LessonS2711Screen();
+      case 'lesson_s2_7_2': return const LessonS272Screen();
+      case 'lesson_s2_7_3': return const LessonS273Screen();
+      case 'lesson_s2_7_4': return const LessonS274Screen();
+      case 'lesson_s2_7_5': return const LessonS275Screen();
+      case 'lesson_s2_7_6': return const LessonS276Screen();
+      case 'lesson_s2_7_7': return const LessonS277Screen();
+      case 'lesson_s2_7_8': return const LessonS278Screen();
       
       // Stage 3 lessons
       case 'lesson_s3_0_1': return const LessonS301Screen();

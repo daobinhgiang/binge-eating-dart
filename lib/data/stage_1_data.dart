@@ -138,6 +138,67 @@ class Stage1Data {
               updatedAt: now,
             ),
             
+            // Lesson 1.2.1: Journal Practice Exercise
+            Lesson(
+              id: 'lesson_1_2_1',
+              title: 'Journal Practice Exercise',
+              description: 'Practice your monitoring and journaling skills with structured exercises and real-world scenarios',
+              chapterNumber: 1,
+              lessonNumber: 21, // Using 21 to represent 2.1
+              slides: [
+                LessonSlide(
+                  id: 'slide_1_2_1_1',
+                  title: 'Ready to Practice Journaling?',
+                  content: 'This lesson will take you directly to the Journal section where you can practice your monitoring and journaling skills with structured exercises and real-world scenarios.',
+                  slideNumber: 1,
+                  bulletPoints: [
+                    'The Journal provides hands-on practice with real monitoring scenarios',
+                    'You can work through journaling step-by-step using the structured approach',
+                    'Practice makes the journaling process more natural and automatic',
+                    'You can return to this exercise anytime to continue building your skills'
+                  ],
+                ),
+                LessonSlide(
+                  id: 'slide_1_2_1_2',
+                  title: 'What You\'ll Practice',
+                  content: 'In the Journal section, you\'ll work through various scenarios that help you practice monitoring your eating patterns, emotions, and triggers in real-time.',
+                  slideNumber: 2,
+                  bulletPoints: [
+                    'Learn to track your eating patterns and behaviors',
+                    'Practice recording your emotions and triggers',
+                    'Develop your food diary skills',
+                    'Build confidence in your monitoring abilities'
+                  ],
+                ),
+                LessonSlide(
+                  id: 'slide_1_2_1_3',
+                  title: 'Getting Started',
+                  content: 'When you\'re ready, tap "Start Exercise" to go directly to the Journal section. You can work through as many scenarios as you like and return anytime.',
+                  slideNumber: 3,
+                  bulletPoints: [
+                    'The Journal will guide you through each step of the monitoring process',
+                    'Take your time with each entry - there\'s no rush',
+                    'The more you practice, the more natural this approach will become',
+                    'Remember: monitoring is your superpower for understanding your eating patterns'
+                  ],
+                ),
+                LessonSlide(
+                  id: 'slide_1_2_1_4',
+                  title: 'Ready to Begin?',
+                  content: 'You\'re about to access the Journal section. This hands-on practice will help you master the monitoring and journaling skills you\'ve learned.',
+                  slideNumber: 4,
+                  bulletPoints: [
+                    'Tap "Start Exercise" to go to the Journal section',
+                    'Work through the scenarios at your own pace',
+                    'Return to this lesson anytime to access the Journal again',
+                    'Remember: practice makes perfect!'
+                  ],
+                ),
+              ],
+              createdAt: now,
+              updatedAt: now,
+            ),
+            
             // Lesson 1.3: The Foundation of Change - Regular Eating
             Lesson(
               id: 'lesson_1_3',
@@ -405,50 +466,47 @@ class Stage1Data {
               slides: [
                 LessonSlide(
                   id: 'slide_3_1_1',
-                  title: 'The Dieting Paradox',
-                  content: 'Contrary to popular belief, dieting often triggers and maintains binge eating behaviors rather than preventing them.',
+                  title: 'Module 1: The Diet-Binge Trap Cycle',
+                  content: 'Hey there! It\'s super common to think that dieting is the answer to binge eating, but it often works the other way around. For many people, strict dieting is the very thing that triggers and fuels the binge eating cycle. It\'s a tough trap to be in, but understanding how it works is the first step to getting out.',
                   slideNumber: 1,
                   bulletPoints: [
-                    'Dieting creates physical and psychological deprivation',
-                    'Restriction leads to preoccupation with food',
-                    'The body responds to dieting as a threat to survival',
-                    'Binge eating is often a biological response to restriction'
+                    'Pressure Builds: You start a strict diet, which creates intense physical and psychological pressure to eat.',
+                    'A Rule Is Broken: You eat something "off-limits," go over a calorie goal, or eat at the "wrong" time.',
+                    'The Binge Happens: That small slip makes you feel like you\'ve failed completely, so you give up and binge.',
+                    'Guilt and More Dieting: After the binge, you feel incredibly guilty and scared of gaining weight, so you decide to start an even stricter diet tomorrow, which just starts the cycle all over again.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_1_2',
-                  title: 'The Restrict-Binge Cycle',
-                  content: 'Dieting creates a vicious cycle where restriction leads to binge eating, which then leads to more restriction.',
+                  title: 'Module 2: The Three Faces of Problematic Dieting',
+                  content: 'When we talk about "dieting" that causes binges, it\'s usually not a casual, flexible plan. It\'s often a combination of extreme strategies that set you up for a fall. See if you recognize any of these common patterns.',
                   slideNumber: 2,
                   bulletPoints: [
-                    'Restriction → Increased hunger and cravings',
-                    'Deprivation → Loss of control around food',
-                    'Binge eating → Guilt and shame',
-                    'Guilt → More restrictive dieting'
+                    'Delaying Eating: You might skip meals or try to go as long as possible without eating, often not having your first real food until the evening. This leads to intense hunger, making it very hard to control your eating once you start.',
+                    'Drastic Restriction: You might try to stick to a very low and rigid calorie limit, like 1,000 or even 600 calories a day, which is far below what your body actually needs to function well.',
+                    'Avoiding "Forbidden" Foods: You create a mental list of "bad," "dangerous," or "fattening" foods that you\'re not allowed to eat. Ironically, these are often the exact foods that show up during a binge.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_1_3',
-                  title: 'Why Diets Fail',
-                  content: 'Research shows that diets are not sustainable long-term and often lead to weight regain and disordered eating patterns.',
+                  title: 'Module 3: The "All-or-Nothing" Mindset',
+                  content: 'The way you think about dieting is just as important as the rules you follow. Many people who binge have an "all-or-nothing" (or "black-and-white") thinking style that turns a tiny slip-up into a total catastrophe.',
                   slideNumber: 3,
                   bulletPoints: [
-                    'Only 5% of diets result in long-term weight loss',
-                    'Dieting slows metabolism and increases hunger hormones',
-                    'Psychological effects include food obsession and guilt',
-                    'Repeated dieting increases risk of eating disorders'
+                    'No Middle Ground: With this mindset, you\'re either following your diet perfectly or you\'ve failed completely. Foods are either "good" or "bad".',
+                    'One Small Slip Feels Like Total Failure: Breaking a minor rule, like eating one cookie you planned to avoid, can trigger the thought, "Well, I\'ve blown it now, I might as well eat everything".',
+                    'It Feeds the Cycle: This way of thinking is what creates the direct link between dieting and bingeing. A small, normal deviation from your plan is viewed as a total failure, which gives you "permission" to abandon all control.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_1_4',
-                  title: 'Breaking Free from Diet Culture',
-                  content: 'Recovery involves rejecting diet mentality and learning to trust your body\'s natural hunger and fullness cues.',
+                  title: 'Module 4: Your Body\'s Natural Rebellion',
+                  content: 'It\'s so important to remember this: your body is not your enemy! When you restrict food severely, your body has no idea you\'re trying to lose weight; it just thinks it\'s starving and kicks into survival mode. The urge to binge is often your body\'s powerful, predictable rebellion against what it perceives as a famine.',
                   slideNumber: 4,
                   bulletPoints: [
-                    'Recognize diet culture messages in media and society',
-                    'Challenge thoughts about "good" and "bad" foods',
-                    'Focus on nourishment rather than restriction',
-                    'Trust your body\'s wisdom and natural regulation'
+                    'Psychological Obsession: Dieting makes your brain become preoccupied with thoughts of food and eating. It can become almost impossible to concentrate on anything else, because your brain is trying to get you to find food.',
+                    'Physical Pressure: Extreme restriction creates a mounting physiological pressure to eat. When you finally allow yourself to eat, that pent-up pressure can feel like a "dam bursting," making a binge feel inevitable.',
+                    'It\'s a Response, Not a Weakness: These powerful urges are not a sign that you have no willpower. They are a normal and predictable biological response to being deprived of food.'
                   ],
                 ),
               ],
@@ -466,50 +524,57 @@ class Stage1Data {
               slides: [
                 LessonSlide(
                   id: 'slide_3_2_1',
-                  title: 'Weight-Based Self-Worth',
-                  content: 'When we tie our value as a person to our weight or appearance, it creates an unstable foundation for self-esteem.',
+                  title: 'Module 1: What Does "Overevaluation" Mean? (The Pie Chart Test)',
+                  content: 'For most people, self-worth is a mix of many things—like being a good friend, excelling at work, or pursuing hobbies. But for someone with a binge eating problem, the "pie chart" of self-worth often gets taken over by one giant slice: shape and weight. This is called the "overevaluation of shape and weight," and it\'s seen as the core engine of the disorder.',
                   slideNumber: 1,
                   bulletPoints: [
-                    'Self-worth becomes dependent on external factors',
-                    'Weight fluctuations cause emotional distress',
-                    'Creates pressure to control weight at any cost',
-                    'Leads to shame and self-criticism'
+                    'People with this core belief judge their self-worth largely, or even exclusively, in terms of their shape, weight, and their ability to control them.',
+                    'In a healthy self-esteem pie chart, life is balanced with slices for family, friends, work, values, and hobbies.',
+                    'In an eating disorder pie chart, the slice for "Shape, Weight, and Eating" can dominate everything else, leaving little room for other sources of confidence and happiness.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_2_2',
-                  title: 'The Thin Ideal Myth',
-                  content: 'Society promotes the false belief that thinness equals happiness, success, and worth, but research shows this isn\'t true.',
+                  title: 'Module 2: How It Shows Up: Constant Body Checking',
+                  content: 'When your value as a person feels tied to your body, you\'re driven to constantly monitor it for changes or "flaws." This is called body checking. It\'s a direct expression of the core fear, and it\'s a habit that almost always makes you feel worse.',
                   slideNumber: 2,
                   bulletPoints: [
-                    'Media promotes unrealistic body standards',
-                    'Thin people are not automatically happier or healthier',
-                    'Body diversity is natural and normal',
-                    'Health exists at many different sizes'
+                    'Weight Checking: This involves weighing yourself frequently, sometimes up to 15 times a day. This makes you react to normal daily water weight fluctuations, which in turn fuels more dieting.',
+                    'Shape Checking: This can include pinching areas to check for fat, repeatedly measuring your body, obsessing over how clothes fit, or spending excessive time studying yourself in mirrors.',
+                    'The Magnifying Glass Effect: Scrutinizing your body is prone to magnify any apparent defects. Remember, if you go looking for fatness, you will find it.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_2_3',
-                  title: 'Identifying Weight-Based Thoughts',
-                  content: 'Learning to recognize when your thoughts about yourself are influenced by weight or appearance concerns.',
+                  title: 'Module 3: How It Shows Up: Body Avoidance',
+                  content: 'The flip side of constant checking is complete avoidance. This happens when you dislike your body so much that you can\'t bear to look at it or even acknowledge it. This is just as harmful as checking because it allows negative beliefs to grow stronger without ever being challenged.',
                   slideNumber: 3,
                   bulletPoints: [
-                    'Notice "I feel fat" thoughts and emotions',
-                    'Identify body-checking behaviors',
-                    'Recognize appearance-based comparisons',
-                    'Challenge weight-related self-criticism'
+                    'Body avoidance is any behavior designed to prevent you from seeing or being aware of your body.',
+                    'This can look like avoiding mirrors completely, only wearing baggy clothes, or avoiding situations that involve body exposure, like swimming or intimacy.',
+                    'The problem is that this avoidance allows your fears and negative assumptions about your body to persist and feel even more real because you never give yourself a chance to question them.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_2_4',
-                  title: 'Building Unconditional Self-Worth',
-                  content: 'Developing a sense of worth that isn\'t dependent on weight, appearance, or external validation.',
+                  title: 'Module 4: The Rigged Game of Comparison',
+                  content: 'Another way this core problem shows up is through constant comparison making. You might find yourself always measuring your body against others, but it\'s a game you can never win because the rules are rigged to make you feel inadequate every time.',
                   slideNumber: 4,
                   bulletPoints: [
-                    'Focus on personal values and character traits',
-                    'Appreciate your body for what it does, not how it looks',
-                    'Practice self-compassion and kindness',
-                    'Cultivate interests and relationships beyond appearance'
+                    'The comparison is biased because you critically scrutinize your own body while making a much more superficial assessment of others.',
+                    'You also tend to selectively compare yourself with a very specific group of people who are thin and good-looking, while failing to notice everyone else.',
+                    'Many people also compare themselves to manipulated images in magazines and on the internet, which sets an unrealistic and unattainable standard.'
+                  ],
+                ),
+                LessonSlide(
+                  id: 'slide_3_2_5',
+                  title: 'Module 5: The Engine That Drives the Entire Cycle',
+                  content: 'This core belief isn\'t just a passive thought—it\'s the active engine that powers the entire eating disorder. It directly causes the other behaviors that keep you stuck in the cycle.',
+                  slideNumber: 5,
+                  bulletPoints: [
+                    'This "overevaluation of shape and weight" is the primary driver behind the strict dieting that so often leads to binges.',
+                    'It also accounts for extreme weight-control behaviors like self-induced vomiting and laxative misuse.',
+                    'The binge eating itself then reinforces your negative beliefs about your body, creating a powerful vicious circle where the core belief drives the behavior, and the behavior strengthens the core belief.'
                   ],
                 ),
               ],
@@ -527,50 +592,48 @@ class Stage1Data {
               slides: [
                 LessonSlide(
                   id: 'slide_3_3_1',
-                  title: 'Defining Binge Eating',
-                  content: 'A binge episode is primarily defined by the feeling of loss of control, not necessarily by the amount of food consumed.',
+                  title: 'Module 1: The Two Key Ingredients of a Binge',
+                  content: 'Hey there! Many people say they "binged" after having a big meal, but a true binge is more specific. It isn\'t just about overindulging; it has two essential ingredients that must both be present to separate it from simple overeating.',
                   slideNumber: 1,
                   bulletPoints: [
-                    'Loss of control is the key defining feature',
-                    'Amount of food may vary between episodes',
-                    'Feeling unable to stop or control eating',
-                    'Eating continues despite feeling uncomfortably full'
+                    'The Amount is Excessive: The amount of food eaten is viewed by the person as being too much.',
+                    'The Feeling of Lost Control: Crucially, there is a distinct sense of being out of control while eating.',
+                    'Both Are Required: This feeling of lost control is what truly distinguishes a binge from everyday overeating.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_3_2',
-                  title: 'Subjective vs. Objective Binges',
-                  content: 'Both large amounts of food and smaller amounts can feel like binges if there\'s a loss of control present.',
+                  title: 'Module 2: What "Loss of Control" Actually Feels Like',
+                  content: 'That feeling of being "out of control" is the heart of a binge, but it can feel a bit different for everyone. It\'s often more than just a passing thought; it can be an intense and almost automatic experience.',
                   slideNumber: 2,
                   bulletPoints: [
-                    'Objective binge: Large amount + loss of control',
-                    'Subjective binge: Any amount + loss of control',
-                    'Both types are valid and distressing experiences',
-                    'Treatment addresses the loss of control, not food amount'
+                    'A Trance-Like State: People often describe feeling as if they are in a trance during a binge, with their behavior seeming almost automatic, "as if it is not really you who is eating".',
+                    'A Powerful Urge: The craving for food can feel like a powerful force that drives you to eat, which is why the term "compulsive eating" is sometimes used.',
+                    'It Can Sneak Up on You: The feeling might emerge long before you eat, or it might come on suddenly as you realize you\'ve broken a diet rule or eaten too much.',
+                    'It\'s Persistent: Even if a binge is interrupted by something like a phone call, it\'s very common for the binge to restart as soon as the interruption ends, showing just how persistent that loss of control is.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_3_3',
-                  title: 'Recognizing Loss of Control',
-                  content: 'Learning to identify the signs and feelings that indicate a loss of control around food.',
+                  title: 'Module 3: It\'s Not Always About the Amount (Objective vs. Subjective)',
+                  content: 'It\'s a huge myth that a binge has to involve a massive, Hollywood-movie amount of food. The feeling of being completely out of control is what truly matters, and that can happen with any quantity of food. The book makes a very helpful distinction between two types of binges.',
                   slideNumber: 3,
                   bulletPoints: [
-                    'Eating rapidly without tasting food',
-                    'Feeling disconnected or "zoned out" while eating',
-                    'Continuing to eat despite physical discomfort',
-                    'Feeling unable to make conscious food choices'
+                    'Objective Binge: This is what most people picture. It\'s an episode where you eat a definitively large amount of food—more than what most people would eat under similar circumstances.',
+                    'Subjective Binge: This is an episode where you eat a normal or even small amount of food (like a few cookies) but experience the exact same distressing sense of complete loss of control.',
+                    'Both Are Valid: Subjective binges can cause considerable distress and are just as real and important as objective ones. They are especially common in people who are trying to stick to a very strict diet.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_3_4',
-                  title: 'Regaining Control',
-                  content: 'Recovery focuses on developing skills to maintain a sense of control and choice around food.',
+                  title: 'Module 4: The Sneaky Side of Losing Control',
+                  content: 'This might sound like a contradiction, but sometimes a "loss of control" can actually look like a plan. For people who have been bingeing for a long time, the episodes can start to feel so unavoidable that they actually prepare for them.',
                   slideNumber: 4,
                   bulletPoints: [
-                    'Practice mindful eating techniques',
-                    'Develop awareness of hunger and fullness cues',
-                    'Create structured eating patterns',
-                    'Build coping skills for emotional triggers'
+                    'Fading Resistance: Over many years, the sense of being out of control can fade because experience teaches the person that binges are inevitable, so they stop trying to resist them.',
+                    '"Planned" Binges: Some people even plan for what they see as unavoidable binges by buying special foods ahead of time.',
+                    'Still a Loss of Control: This is still considered a loss of control because while they might manage the when and where of a binge, they feel unable to prevent the episode from happening in the first place.',
+                    'Unable to Stop: Furthermore, even within a so-called "planned" binge, many people report that they are unable to stop eating once they have started.'
                   ],
                 ),
               ],
@@ -588,50 +651,45 @@ class Stage1Data {
               slides: [
                 LessonSlide(
                   id: 'slide_3_4_1',
-                  title: 'The Forbidden Fruit Effect',
-                  content: 'When we label foods as "forbidden" or "bad," they become more appealing and trigger binge behaviors.',
+                  title: 'Module 1: Debunking the "Carb Craving" Myth',
+                  content: 'You\'ve probably heard the term "carb craving" a lot, but it\'s time to set the record straight. The idea that binges are driven by a biological need for carbohydrates is a widespread myth that isn\'t supported by the facts. It\'s a catchy phrase, but it\'s not what\'s actually happening.',
                   slideNumber: 1,
                   bulletPoints: [
-                    'Restriction increases desire for forbidden foods',
-                    'Mental deprivation creates psychological pressure',
-                    'All-or-nothing thinking drives binge episodes',
-                    'Food rules create anxiety and preoccupation'
+                    '"Carbohydrate craving" is a myth, despite being a popular belief.',
+                    'Research shows that the proportion of carbohydrates in binges is not particularly high and is no higher than what\'s found in ordinary meals.',
+                    'What really defines a binge is the overall amount of food eaten, not its specific nutritional makeup in terms of carbs, fats, or proteins.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_4_2',
-                  title: 'Debunking Carb Cravings',
-                  content: 'Binge episodes aren\'t caused by carbohydrate cravings, but by the restriction and rules around these foods.',
+                  title: 'Module 2: The Real Driver: Your List of "Forbidden" Foods',
+                  content: 'So, if it\'s not a carb craving, what is it? The answer lies in your own personal food rules. Binges are almost always composed of the very foods you are trying your hardest to avoid—the ones you\'ve labeled as "off-limits."',
                   slideNumber: 2,
                   bulletPoints: [
-                    'Carbohydrates are not inherently addictive',
-                    'Cravings increase when foods are restricted',
-                    'Body needs carbohydrates for energy and brain function',
-                    'Fear of carbs creates unhealthy relationship with food'
+                    'When asked what they eat during a binge, people often use terms that reflect their attitude toward the food, like "forbidden food," "dangerous food," or "fattening food".',
+                    'This is a crucial point: most binges are composed of foods that the person is trying to avoid.',
+                    'This connection between avoidance and bingeing is central to understanding why many binges happen and is key to learning how to overcome them.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_4_3',
-                  title: 'Food Rules and Mental Restrictions',
-                  content: 'Even thinking about avoiding certain foods can trigger the same psychological effects as physical restriction.',
+                  title: 'Module 3: The Psychology of the Forbidden Fruit',
+                  content: 'Why does forbidding a food make you want it more? It\'s a classic case of the "forbidden fruit" effect. By creating strict rules, you give those foods immense psychological power, which sets you up for a fall.',
                   slideNumber: 3,
                   bulletPoints: [
-                    'Mental restriction is as powerful as physical restriction',
-                    'Food rules create stress and preoccupation',
-                    'Thoughts like "I shouldn\'t eat this" increase desire',
-                    'Guilt after eating "forbidden" foods triggers binges'
+                    'Avoiding foods you see as "bad" is a form of extreme dieting.',
+                    'When you have these strict rules, breaking one of them is a common trigger for a binge.',
+                    'This happens because of an "all-or-nothing" thinking style. Eating one "bad" cookie makes you feel like you\'ve completely failed, which can lead you to give up and binge on all the other "forbidden" foods.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_4_4',
-                  title: 'Food Freedom and Neutrality',
-                  content: 'Recovery involves removing moral judgments from food and allowing all foods to be part of a balanced approach.',
+                  title: 'Module 4: What Binge Foods Are Really Made Of',
+                  content: 'We tend to think of classic binge foods like ice cream, cookies, and chocolate as being packed with carbs, but that\'s not the whole story. A closer look at their nutritional content reveals a different picture.',
                   slideNumber: 4,
                   bulletPoints: [
-                    'All foods can fit into a healthy relationship with food',
-                    'Remove labels of "good" and "bad" foods',
-                    'Practice unconditional permission to eat',
-                    'Focus on how foods make you feel, not rules'
+                    'While it\'s commonly believed that these foods are high in carbohydrates, they are more accurately described as sweet foods with a high fat content.',
+                    'Interestingly, the composition of binges often reflects current dietary fads. What society labels as "bad" at the moment—whether it\'s fat or carbs—is what tends to show up most often in binges.'
                   ],
                 ),
               ],
@@ -639,60 +697,69 @@ class Stage1Data {
               updatedAt: now,
             ),
             
-            // Lesson 3.5: "Fixes" Like Purging Are Ineffective and Make Things Worse
+            // Lesson 3.5: "Fixes" Like Purging Are Ineffective and Make Things Worse"
             Lesson(
               id: 'lesson_3_5',
-              title: '3.5 "Fixes" Like Purging Are Ineffective and Make Things Worse',
+              title: '3.5 "Fixes" Like Purging Are Ineffective and Make Things Worse"',
               description: 'Understanding why compensatory behaviors don\'t work and actually perpetuate the cycle',
               chapterNumber: 3,
               lessonNumber: 5,
               slides: [
                 LessonSlide(
                   id: 'slide_3_5_1',
-                  title: 'Compensatory Behaviors Don\'t Work',
-                  content: 'Purging, excessive exercise, and other compensatory behaviors are ineffective at "undoing" binge episodes.',
+                  title: 'Module 1: The Illusion of a Quick Fix',
+                  content: 'Hello! People often turn to purging behaviors like vomiting or using laxatives because they seem like a brilliant, logical solution to a binge. It feels like a way to "undo the damage" and regain control. However, this sense of control is a dangerous illusion that makes the underlying problem much worse over time.',
                   slideNumber: 1,
                   bulletPoints: [
-                    'Vomiting only removes about 50% of consumed calories',
-                    'Laxatives don\'t prevent calorie absorption',
-                    'Excessive exercise can\'t "burn off" binge episodes',
-                    'These behaviors create physical and mental health risks'
+                    'Many people start purging because they believe they can eat whatever they want and then simply get rid of it without gaining weight.',
+                    'Initially, this can bring a sense of relief or of feeling "cleansed".',
+                    'However, this mistaken belief in a "fix" is what allows the binge eating cycle to become more powerful and entrenched.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_5_2',
-                  title: 'The Binge-Purge Cycle',
-                  content: 'Compensatory behaviors actually maintain and worsen binge eating by providing false reassurance.',
+                  title: 'Module 2: The Hard Numbers: Vomiting\'s 50% Failure Rate',
+                  content: 'It might feel like vomiting gets rid of everything you\'ve eaten, but the science tells a very different story. Laboratory studies have measured exactly how many calories are actually removed, and the results are pretty shocking.',
                   slideNumber: 2,
                   bulletPoints: [
-                    'Purging gives permission to binge more',
-                    'Creates false sense of control over eating',
-                    'Reinforces all-or-nothing thinking',
-                    'Prevents learning natural hunger/fullness cues'
+                    'The belief that vomiting is an effective way to get rid of food is a mistaken one.',
+                    'On average, vomiting only retrieves about half of the calories consumed during a binge.',
+                    'One study found that while patients\' binges averaged 2,131 calories, their vomit only contained 979 calories.',
+                    'This is why most people with bulimia nervosa maintain a normal body weight—they are unknowingly living off the 50% of calories they cannot retrieve.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_5_3',
-                  title: 'Physical and Mental Health Consequences',
-                  content: 'Compensatory behaviors cause serious health problems and increase psychological distress.',
+                  title: 'Module 3: The Laxative and Diuretic Lie',
+                  content: 'Laxatives and diuretics can be especially deceptive because they make the number on the scale go down, which feels like proof that they\'re working. In reality, this is just a temporary trick involving water weight, and they have almost no impact on the calories you\'ve consumed.',
                   slideNumber: 3,
                   bulletPoints: [
-                    'Electrolyte imbalances and dehydration',
-                    'Dental problems and throat damage',
-                    'Increased anxiety and depression',
-                    'Social isolation and shame'
+                    'Laxatives have little to no effect on calorie absorption. They work in the lower intestine, which is after most calories have already been absorbed by your body.',
+                    'Diuretics (water pills) have zero effect on calorie absorption. They only cause fluid loss through urine.',
+                    'The weight you lose is just water, and your body quickly regains it as it rehydrates, often with extra bloating.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_5_4',
-                  title: 'Breaking the Compensatory Cycle',
-                  content: 'Recovery requires stopping compensatory behaviors and learning healthier ways to cope with binge episodes.',
+                  title: 'Module 4: How the "Fix" Becomes a Trap',
+                  content: 'Here\'s the cruelest part of the cycle: the very behaviors you use to "undo" a binge actually make you more likely to binge again. The "fix" is a trap that strengthens the problem instead of solving it.',
                   slideNumber: 4,
                   bulletPoints: [
-                    'Accept that binges happen during recovery',
-                    'Practice self-compassion after difficult episodes',
-                    'Return to regular eating patterns without compensation',
-                    'Develop healthy coping strategies for distress'
+                    'Knowing you can vomit or use laxatives later makes a binge feel "safer" and undermines your attempts to resist eating in the first place.',
+                    'Because the binge feels less consequential, you become more prone to binge, and the binges themselves often become larger in size.',
+                    'This creates a powerful vicious circle where purging is both a response to bingeing and a behavior that actively encourages more bingeing.',
+                    'For many, these behaviors become one of the main processes that maintains the entire eating problem.'
+                  ],
+                ),
+                LessonSlide(
+                  id: 'slide_3_5_5',
+                  title: 'Module 5: The Serious Physical Price',
+                  content: 'Beyond being ineffective, these behaviors can cause significant and sometimes irreversible damage to your physical health. The temporary feeling of relief comes at a very high long-term cost.',
+                  slideNumber: 5,
+                  bulletPoints: [
+                    'Vomiting can cause irreversible erosion of tooth enamel, painful swelling of the salivary glands in your face, and dangerous electrolyte imbalances that can lead to irregular heartbeats.',
+                    'Laxative Misuse can also cause serious electrolyte disturbances and, in high doses over long periods, may result in permanent damage to your intestines.',
+                    'Diuretic Misuse is a fruitless exercise that carries the same risks of dangerous fluid and electrolyte disturbances.'
                   ],
                 ),
               ],
@@ -710,50 +777,48 @@ class Stage1Data {
               slides: [
                 LessonSlide(
                   id: 'slide_3_6_1',
-                  title: 'The Biology of Eating Disorders',
-                  content: 'Eating disorders have strong biological and genetic components that go far beyond willpower or personal choice.',
+                  title: 'Module 1: Your Body\'s Survival Alarm',
+                  content: 'Hello! It\'s easy to blame yourself when you feel an overwhelming urge to binge, but it\'s so important to understand what\'s happening behind the scenes. When you diet strictly, your body doesn\'t know you\'re trying to fit into a certain outfit; it thinks there\'s a famine. This sounds a powerful survival alarm that kicks off a chain of unavoidable biological responses.',
                   slideNumber: 1,
                   bulletPoints: [
-                    'Genetic factors account for 50-80% of eating disorder risk',
-                    'Brain chemistry differences affect hunger and satiety',
-                    'Hormonal imbalances influence eating behaviors',
-                    'Neurological factors impact impulse control'
+                    'Imposing strict limits on your eating creates a mounting physiological and psychological pressure to eat.',
+                    'This creates a situation where, once you start eating, it can be incredibly difficult to stop; many people describe the feeling "like a dam bursting".',
+                    'This isn\'t just in your head—undereating and being underweight physically affect your brain and its ability to function normally.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_6_2',
-                  title: 'Starvation Response',
-                  content: 'When the body experiences restriction, it activates biological survival mechanisms that drive binge eating.',
+                  title: 'Module 2: How "Starvation" Changes Your Brain',
+                  content: 'Undereating directly impacts your most important organ: your brain. The food obsession, the inability to focus, and the rigid thinking that often accompany dieting aren\'t signs of weakness; they are neurological symptoms of a brain that is being deprived of the fuel it needs to work properly.',
                   slideNumber: 2,
                   bulletPoints: [
-                    'Body interprets dieting as famine',
-                    'Metabolism slows to conserve energy',
-                    'Hunger hormones increase dramatically',
-                    'Brain becomes hyper-focused on food'
+                    'A major psychological effect of dieting is becoming preoccupied with thoughts about food and eating.',
+                    'This preoccupation can make it hard to concentrate on everyday tasks, as thoughts about food constantly intrude into your mind and even your dreams.',
+                    'Your thinking can become inflexible, making it hard to switch between topics, and your decision-making can be impaired, often leading to procrastination.',
+                    'In one famous study, healthy men put on a restricted diet became irritable, lost interest in socializing, and focused their lives around food, much like what is seen in anorexia nervosa.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_6_3',
-                  title: 'Debunking the Willpower Myth',
-                  content: 'Believing that eating disorders are about willpower creates shame and prevents effective treatment.',
+                  title: 'Module 3: Your Body\'s Smart Adaptations',
+                  content: 'Your body is incredibly intelligent. When it senses a food shortage, it makes a series of smart adaptations to conserve energy and maximize its chances of survival. While these changes are helpful in a real famine, they can make binge eating feel almost inevitable.',
                   slideNumber: 3,
                   bulletPoints: [
-                    'Willpower is not unlimited and depletes over time',
-                    'Biological drives override conscious control',
-                    'Shame about "lack of willpower" worsens symptoms',
-                    'Self-blame interferes with recovery'
+                    'Your gut slows down its processes to absorb as many nutrients as possible from the food you do eat. This can also make you feel uncomfortably full after eating even small amounts.',
+                    'Non-essential processes, like the production of sex hormones, shut down to save energy, which can affect menstruation and fertility.',
+                    'Your circulation is also affected; your heart rate slows down and your blood pressure drops as your body tries to conserve every bit of energy it can.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_6_4',
-                  title: 'Compassionate Understanding',
-                  content: 'Recognizing the biological nature of eating disorders allows for self-compassion and effective treatment.',
+                  title: 'Module 4: A Biological Urge, Not a Moral Failing',
+                  content: 'When you put all these pieces together, a clear picture emerges. That intense, desperate, and overwhelming urge to binge that follows a period of restriction is not a character flaw. It is a powerful, predictable, and completely understandable biological drive to survive.',
                   slideNumber: 4,
                   bulletPoints: [
-                    'You didn\'t choose to have an eating disorder',
-                    'Recovery requires medical and psychological support',
-                    'Self-compassion is essential for healing',
-                    'Focus on treatment, not self-blame'
+                    'The combination of intense psychological preoccupation with food and mounting physiological pressure to eat is a direct result of restriction.',
+                    'This pressure can become so powerful that thoughts about food feel totally overwhelming, making a binge feel like the only option.',
+                    'The binge itself is often a breakdown of the extreme attempts to restrict food, driven by your body\'s survival instincts.',
+                    'Recognizing that these urges are biological responses—not moral failures—is a compassionate and crucial step toward breaking the cycle.'
                   ],
                 ),
               ],
@@ -761,60 +826,58 @@ class Stage1Data {
               updatedAt: now,
             ),
             
-            // Lesson 3.7: "Feeling Fat" Is Often a Disguised Emotion
+            // Lesson 3.7: "Feeling Fat" Is Often a Disguised Emotion"
             Lesson(
               id: 'lesson_3_7',
-              title: '3.7 "Feeling Fat" Is Often a Disguised Emotion',
+              title: '3.7 "Feeling Fat" Is Often a Disguised Emotion"',
               description: 'Learning to recognize when "feeling fat" represents other emotions or experiences',
               chapterNumber: 3,
               lessonNumber: 7,
               slides: [
                 LessonSlide(
                   id: 'slide_3_7_1',
-                  title: 'Fat Is Not a Feeling',
-                  content: '"Feeling fat" is not actually an emotion, but often represents other uncomfortable feelings or experiences.',
+                  title: 'Module 1: What Is This "Feeling Fat"?',
+                  content: 'Hello! "Feeling fat" is a strange, powerful, and often distressing experience. It\'s not the same as being concerned about your weight; it\'s a sensation that can wash over you and change dramatically from one hour to the next. This fluctuation is a big clue that the feeling isn\'t actually about your body\'s size.',
                   slideNumber: 1,
                   bulletPoints: [
-                    'Fat is a physical descriptor, not an emotion',
-                    'Body size doesn\'t change from moment to moment',
-                    '"Feeling fat" often masks other emotions',
-                    'This feeling can occur regardless of actual body size'
+                    '"Feeling fat" is an experience reported by many women, but its intensity and frequency are far greater among people with eating problems.',
+                    'A key feature of this feeling is that it fluctuates markedly in intensity, even within a single day.',
+                    'This is completely unlike your actual shape and weight, which are stable and don\'t change from moment to moment.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_7_2',
-                  title: 'What "Feeling Fat" Really Means',
-                  content: 'When we say we "feel fat," we\'re often experiencing anxiety, sadness, shame, or other difficult emotions.',
+                  title: 'Module 2: The Real Feelings in Disguise',
+                  content: 'Here\'s the big secret: the sensation of "feeling fat" is almost never truly about your body. The book explains that it\'s usually the result of mislabeling other, more complicated emotions or physical sensations that might be harder to face directly.',
                   slideNumber: 2,
                   bulletPoints: [
-                    'Anxiety about performance or social situations',
-                    'Sadness or depression about life circumstances',
-                    'Shame about behaviors or perceived failures',
-                    'Feeling overwhelmed or out of control'
+                    '"Feeling fat" is usually the result of mislabeling unpleasant emotions and bodily experiences.',
+                    'Emotional Triggers: It can be a stand-in for feelings like being depressed, lonely, unloved, bored, or sleepy.',
+                    'Physical Triggers: It can also be caused by bodily sensations like feeling bloated, premenstrual, hungover, hot, or sweaty.',
+                    'Awareness Triggers: Sometimes it\'s sparked by simply becoming more aware of your body after checking it, seeing your reflection, or noticing your clothes feel tight.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_7_3',
-                  title: 'Body as Emotional Barometer',
-                  content: 'Our relationship with our body often reflects our emotional state and overall life satisfaction.',
+                  title: 'Module 3: Why Does Our Brain Do This?',
+                  content: 'So, why does your brain perform this tricky swap? While the exact reason isn\'t certain, it\'s likely a side effect of having been so deeply preoccupied with thoughts about your shape for a very long time. Your brain gets into a habit of interpreting everything through that filter.',
                   slideNumber: 3,
                   bulletPoints: [
-                    'Body dissatisfaction increases during stress',
-                    'Negative emotions get projected onto body image',
-                    'Body becomes a target for general life dissatisfaction',
-                    'Physical sensations can trigger body-focused thoughts'
+                    'The reason for this mislabeling isn\'t entirely clear.',
+                    'It\'s thought to be a consequence of the long-standing and profound preoccupation with thoughts about shape and weight.',
+                    'The danger is that people often equate feeling fat with actually being fat, which reinforces their body concerns and encourages more dieting.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_7_4',
-                  title: 'Emotional Awareness and Processing',
-                  content: 'Learning to identify and address the real emotions behind "feeling fat" is crucial for recovery.',
+                  title: 'Module 4: How to Decode the Feeling',
+                  content: 'The great news is that you can learn to see "feeling fat" for what it really is and strip it of its power. By acting like a detective when the feeling hits, you can uncover the true cause and address it directly.',
                   slideNumber: 4,
                   bulletPoints: [
-                    'Ask "What am I really feeling right now?"',
-                    'Practice naming specific emotions',
-                    'Address underlying concerns directly',
-                    'Develop healthy emotional coping strategies'
+                    'The first step is to start identifying the times when you have "peaks" of feeling fat and note them down.',
+                    'When you feel it, ask yourself two key questions: "Was there a trigger in the hour beforehand?" and "What else am I feeling or doing right now?".',
+                    'Once you identify the real cause (e.g., "I\'m not fat, I\'m just lonely" or "I\'m not fat, my clothes are just tight"), you can work on solving that actual problem.',
+                    'As you practice this, the feeling will decline in frequency and intensity, and it will lose its significance as you realize it has nothing to do with being fat.'
                   ],
                 ),
               ],
@@ -832,50 +895,47 @@ class Stage1Data {
               slides: [
                 LessonSlide(
                   id: 'slide_3_8_1',
-                  title: 'Problems with Food Addiction Model',
-                  content: 'The food addiction model oversimplifies eating disorders and can actually make recovery more difficult.',
+                  title: 'Module 1: The Surface Similarities (and Why They\'re Misleading)',
+                  content: 'Hey there! It\'s easy to see why terms like "food addict" have become so popular. On the surface, binge eating can look a lot like a classic addiction, with cravings, secrecy, and a feeling of lost control. But it\'s really important to know that just because two things look similar, it doesn\'t mean they have the same cause or need the same solution.',
                   slideNumber: 1,
                   bulletPoints: [
-                    'Ignores complex psychological and social factors',
-                    'Promotes fear and avoidance of certain foods',
-                    'Reinforces all-or-nothing thinking',
-                    'Creates shame and self-blame'
+                    'Binge eating can involve intense cravings and a sense of losing control, much like substance abuse.',
+                    'People often keep the behavior secret and continue despite knowing it has negative effects.',
+                    'However, focusing only on these similarities neglects the huge differences that are absolutely central to understanding the problem and treating it successfully.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_8_2',
-                  title: 'Food vs. Substance Addiction',
-                  content: 'Unlike substances, food is necessary for survival, making the addiction model inappropriate and harmful.',
+                  title: 'Module 2: The Three Game-Changing Differences',
+                  content: 'While they might look alike, binge eating and substance abuse are driven by completely different engines. The book highlights three fundamental differences that show why thinking of binge eating as an "addiction" is a mistake.',
                   slideNumber: 2,
                   bulletPoints: [
-                    'Food is essential for life, drugs are not',
-                    'Cannot achieve "sobriety" from food',
-                    'Restriction increases "addictive-like" behaviors',
-                    'Normal eating includes pleasure and satisfaction'
+                    'What You "Crave": Binge eating is not about an addiction to a specific substance or class of foods. The main issue is the amount of food eaten, not what is eaten.',
+                    'The Core Motivation: People with binge eating problems are constantly trying to avoid and restrict their food intake through dieting. This is the opposite of substance abuse, where the drive is toward the substance.',
+                    'The Underlying Fear: Binge eating is fueled by an intense fear of weight gain and the belief that self-worth is based on body shape. There is no equivalent phenomenon in classic addictions.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_8_3',
-                  title: 'How the Model Perpetuates Problems',
-                  content: 'Believing in food addiction often reinforces the very behaviors that maintain eating disorders.',
+                  title: 'Module 3: Two Opposite Paths to Treatment',
+                  content: 'Because the root causes are so different, the most effective treatments are also polar opposites. The approach for addiction can be incredibly damaging for someone with a binge eating problem because it strengthens the exact issues that need to be fixed.',
                   slideNumber: 3,
                   bulletPoints: [
-                    'Promotes avoidance of "trigger" foods',
-                    'Increases fear and anxiety around eating',
-                    'Justifies restrictive eating patterns',
-                    'Prevents development of normal eating'
+                    'The Addiction Approach: This model says the problem can be "arrested but not cured" and that the solution is complete, lifelong abstinence from so-called "toxic" or "trigger" foods.',
+                    'The Evidence-Based Approach: This model knows that full recovery is absolutely possible and that the solution involves systematically eliminating food avoidance by gradually reintroducing "forbidden" foods to prove they aren\'t dangerous.',
+                    'These two approaches are at total odds with each other.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_8_4',
-                  title: 'A Healthier Perspective',
-                  content: 'Recovery involves developing a balanced, non-fearful relationship with all foods.',
+                  title: 'Module 4: Why "Abstinence" From Food Backfires',
+                  content: 'Here\'s exactly why telling someone with a binge eating problem to "just abstain" from certain foods is so harmful. It accidentally reinforces the very beliefs and behaviors that keep the binge-restrict cycle going.',
                   slideNumber: 4,
                   bulletPoints: [
-                    'All foods can be part of healthy eating',
-                    'Focus on overall patterns, not individual foods',
-                    'Develop internal cues for eating decisions',
-                    'Practice food neutrality and flexibility'
+                    'The idea that certain foods are "toxic" has no basis in fact.',
+                    'In reality, it is the very attempt to avoid these foods that makes you vulnerable to bingeing on them.',
+                    'An abstinence strategy strengthens the rigid, "all-or-nothing" thinking that is a core part of the problem.',
+                    'Instead of making you fear food, effective treatment helps you learn to eat all foods in a moderate and normal way.'
                   ],
                 ),
               ],
@@ -893,50 +953,50 @@ class Stage1Data {
               slides: [
                 LessonSlide(
                   id: 'slide_3_9_1',
-                  title: 'Eating Disorders Are Common',
-                  content: 'Millions of people struggle with eating disorders, making them among the most common mental health conditions.',
+                  title: 'Module 1: The Feeling of Being the "Only One"',
+                  content: 'If you struggle with binge eating, it\'s incredibly common to feel like you are the only person in the world going through this. This intense feeling of isolation is a direct result of the shame and secrecy that are hallmarks of the behavior. But that feeling, as real as it is, isn\'t the truth.',
                   slideNumber: 1,
                   bulletPoints: [
-                    'Affect people of all ages, genders, and backgrounds',
-                    'Binge eating disorder is the most common eating disorder',
-                    'Many people struggle in silence due to shame',
-                    'You are not alone in this experience'
+                    'Many people who binge have the sense that they are the only one with the problem.',
+                    'A hallmark of the typical binge is that it occurs in secret. People are often so ashamed of their binge eating that they go to great lengths to hide it, sometimes successfully for many years.',
+                    'In the early days of research, the majority of patients seen by doctors thought they were the only person with their specific type of eating problem.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_9_2',
-                  title: 'Breaking the Silence',
-                  content: 'Shame and secrecy often keep people isolated, but sharing experiences can be healing and empowering.',
+                  title: 'Module 2: The Truth: A Hidden Epidemic Uncovered',
+                  content: 'In the late 1970s, even researchers were in the dark about how common binge eating was. That changed when a small notice was placed in a popular magazine asking people who struggled with bingeing and purging to write in. The response was overwhelming and proved that this was a massive, hidden problem affecting thousands who all thought they were alone.',
                   slideNumber: 2,
                   bulletPoints: [
-                    'Eating disorders thrive in secrecy and isolation',
-                    'Sharing reduces shame and self-blame',
-                    'Others\' stories can provide hope and validation',
-                    'Community support accelerates recovery'
+                    'To see if bulimia nervosa was a significant but undetected problem, a researcher placed a small notice in the April 1980 U.K. issue of Cosmopolitan magazine.',
+                    'The result was dramatic. Within about a week, more than a thousand letters were received from women who seemed to have the disorder.',
+                    'Most of the women who responded expressed surprise and relief at discovering that they were not the only one with the problem.',
+                    'This study strongly suggested that bulimia nervosa was a significant and largely undetected issue.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_9_3',
-                  title: 'Finding Your Support System',
-                  content: 'Recovery is easier with support from others who understand your experience.',
+                  title: 'Module 3: The Numbers Game: How Common Is It Really?',
+                  content: 'It helps to know you\'re not alone, but seeing the actual numbers can be even more powerful. Modern community studies that interview people directly have found that millions of people from all walks of life struggle with binge eating.',
                   slideNumber: 3,
                   bulletPoints: [
-                    'Professional treatment teams provide expertise',
-                    'Support groups offer peer understanding',
-                    'Family and friends can learn to help',
-                    'Online communities provide 24/7 connection'
+                    'Reliable interview-based studies have produced relatively consistent findings on how common these disorders are.',
+                    'Bulimia Nervosa: Affects between 1 and 2% of young adult women.',
+                    'Binge Eating Disorder: Affects about 2 to 3% of both men and women and is seen across a much broader age range.',
+                    'These figures are noteworthy because binge eating problems impair both quality of life and physical health.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_9_4',
-                  title: 'Hope and Recovery',
-                  content: 'Many people recover from eating disorders and go on to live full, healthy, and happy lives.',
+                  title: 'Module 4: It\'s a Global Issue, Not a "Western" Problem',
+                  content: 'There\'s a persistent but outdated myth that eating disorders only happen in Western, developed countries. The reality is that binge eating problems are a global health concern, affecting people in many different cultures, countries, and ethnic groups.',
                   slideNumber: 4,
                   bulletPoints: [
-                    'Recovery is possible for everyone',
-                    'Treatment works when consistently applied',
-                    'Many people achieve full recovery',
-                    'Your story can inspire others in the future'
+                    'The view that eating disorders are "culture-bound syndromes" of the West is now outdated.',
+                    'More and more evidence shows that these problems occur across the globe.',
+                    'Eating disorders are found in both high- and low-income Asian countries, including Japan, China, India, and Malaysia.',
+                    'In the Arab world, eating problems are also becoming a public health concern.',
+                    'Studies have also suggested that Asian Americans and Hispanic Americans may be even more vulnerable to developing binge eating problems.'
                   ],
                 ),
               ],
@@ -954,50 +1014,48 @@ class Stage1Data {
               slides: [
                 LessonSlide(
                   id: 'slide_3_10_1',
-                  title: 'Understanding Cycles',
-                  content: 'Eating disorders are maintained by repetitive cycles of thoughts, feelings, and behaviors that reinforce each other.',
+                  title: 'Module 1: The Past vs. The Present',
+                  content: 'Hello! It\'s natural to wonder "Why did this happen to me?" While understanding the past can give you context, the real key to getting better is tackling the habits and thought patterns that are keeping you stuck right now. Recovery is less about fixing the past and more about changing the present.',
                   slideNumber: 1,
                   bulletPoints: [
-                    'Restriction leads to binge eating',
-                    'Binge eating leads to guilt and shame',
-                    'Guilt leads to more restriction',
-                    'Cycles become automatic and unconscious'
+                    'When we think about a long-term problem, it\'s crucial to distinguish between the factors that caused it to start and the cycles that cause it to persist.',
+                    'The research on what keeps binge eating going suggests that a limited number of interacting processes are involved.',
+                    'Successful treatment focuses on identifying and breaking these cycles that are maintaining the problem today.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_10_2',
-                  title: 'Breaking Points in the Cycle',
-                  content: 'Recovery involves identifying where to interrupt harmful cycles and insert healthier responses.',
+                  title: 'Module 2: Identifying Your "Now" Cycles',
+                  content: 'Once a binge eating problem begins, new patterns often take over and become the real engine that keeps it running day after day. See if you recognize any of these common cycles that keep people trapped in the present.',
                   slideNumber: 2,
                   bulletPoints: [
-                    'Challenge restrictive thoughts and rules',
-                    'Develop alternative responses to triggers',
-                    'Practice self-compassion after setbacks',
-                    'Build new, healthier behavioral patterns'
+                    'The Dieting Cycle: This is the powerful loop where strict dieting leads to a binge, which causes guilt and leads to even stricter dieting.',
+                    'The Purging Cycle: The mistaken belief that vomiting or using laxatives "fixes" a binge actually encourages more binge eating because it removes the fear of weight gain.',
+                    'The Mood Cycle: Binge eating can become a primary way to cope with difficult moods and thoughts because it serves as a distraction, creating a powerful reliance on it.',
+                    'The Core Belief Cycle: The "overevaluation of shape and weight" is the engine that drives the strict dieting, which in turn drives the binge eating.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_10_3',
-                  title: 'Building New Patterns',
-                  content: 'Recovery creates new, healthier cycles that support well-being and a positive relationship with food.',
+                  title: 'Module 3: Why This Is Great News for Recovery!',
+                  content: 'Shifting the focus from the unchangeable past to the changeable present is incredibly hopeful and empowering. You can\'t go back and erase the life events or risk factors that made you vulnerable, but you have complete power to start changing the patterns you\'re living out today.',
                   slideNumber: 3,
                   bulletPoints: [
-                    'Regular eating prevents extreme hunger',
-                    'Self-compassion reduces shame and guilt',
-                    'Mindful eating increases satisfaction',
-                    'Healthy coping skills manage emotions'
+                    'For successful treatment, the main task is to identify the processes that are keeping the problem going right now.',
+                    'This means you don\'t have to be "stuck" because of your history; recovery is an active process of learning new skills to manage your life in the present.',
+                    'The desire to change is a key factor; by deciding to make a fresh start, many people are able to overcome the problem.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_3_10_4',
-                  title: 'The Recovery Process',
-                  content: 'Recovery is a gradual process of replacing old, harmful patterns with new, supportive ones.',
+                  title: 'Module 4: The Roadmap for Breaking the Cycles (CBT-E)',
+                  content: 'The book\'s recommended treatment, Cognitive Behavior Therapy-Enhanced (CBT-E), is a practical and evidence-based approach designed specifically to target and dismantle these current cycles in a step-by-step way. It provides a clear roadmap for change.',
                   slideNumber: 4,
                   bulletPoints: [
-                    'Change happens gradually, not overnight',
-                    'Setbacks are normal and expected',
-                    'Each small change builds on the last',
-                    'Focus on progress, not perfection'
+                    'CBT is a great fit for binge eating because its behavioral parts tackle the eating habits, while its cognitive parts address the thoughts and beliefs that keep you stuck (like the overevaluation of shape and weight).',
+                    'Stage 1 of the treatment immediately targets the behavioral cycle by helping you establish a pattern of regular eating, which displaces most binges.',
+                    'Stage 2 then focuses on the underlying engines by tackling the tendency to diet and finding new ways to cope with difficult moods.',
+                    'Stage 3 helps you create a plan to maintain your progress and handle future setbacks so you don\'t fall back into the old cycles.'
                   ],
                 ),
               ],

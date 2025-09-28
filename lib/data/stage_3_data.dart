@@ -16,60 +16,56 @@ class Stage3Data {
           chapterNumber: 0,
           title: 'Moving Forward',
           lessons: [
-            // Lesson 0.1: Maintaining Your Progress
+            // Lesson 0.1: Making Your Progress Last
             Lesson(
               id: 'lesson_s3_0_1',
-              title: '0.1 Maintaining Your Progress',
+              title: '0.1: Making Your Progress Last',
               description: 'Learning strategies to maintain your recovery gains and prevent relapse',
               chapterNumber: 0,
               lessonNumber: 1,
               slides: [
                 LessonSlide(
                   id: 'slide_s3_0_1_1',
-                  title: 'The Importance of Maintenance',
-                  content: 'Maintaining your progress requires ongoing attention and commitment to the skills you\'ve learned.',
+                  title: 'Module 1: Making Your New Skills a Habit',
+                  content: 'After your initial improvement, the focus shifts to making your progress last. Continue to use the most helpful parts of the program to build lasting, positive habits.',
                   slideNumber: 1,
                   bulletPoints: [
-                    'Recovery is an ongoing process, not a destination',
-                    'Regular practice of skills prevents relapse',
-                    'Maintenance becomes easier with time and practice',
-                    'Small consistent efforts prevent larger problems'
+                    'Keep what works: Think about the skills and strategies that made the biggest difference for you.',
+                    'Continued improvement: By sticking with these helpful tools, you\'re likely to see even more improvement over time.',
+                    'Stay consistent: The goal is to make these new, healthy behaviors feel like second nature.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_s3_0_1_2',
-                  title: 'Key Skills to Continue',
-                  content: 'Certain skills are essential to continue practicing for long-term success.',
+                  title: 'Module 2: Your Most Important Long-Term Tools',
+                  content: 'While not everything from the program needs to be done forever, a few key skills are especially powerful for long-term success and staying well.',
                   slideNumber: 2,
                   bulletPoints: [
-                    'Regular eating patterns and meal planning',
-                    'Self-monitoring when stressed or triggered',
-                    'Using alternative activities when urges arise',
-                    'Problem-solving skills for life challenges'
+                    'Stick with Regular Eating: This is perhaps the single most important habit to maintain, possibly indefinitely. It\'s your foundation for stable, balanced eating.',
+                    'Keep Your Problem-Solving Skills Sharp: Life will always have its challenges. Continuing to use your problem-solving skills will help you navigate difficulties without turning to food.',
+                    'Hold Regular Check-Ins: For the next three months or so, continue to have regular review sessions with yourself to keep an eye on your progress and catch any small slips before they become bigger issues.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_s3_0_1_3',
-                  title: 'Building a Support System',
-                  content: 'Ongoing support from others is crucial for maintaining your progress.',
+                  title: 'Module 3: When to Ease Off Monitoring',
+                  content: 'If your eating habits are stable and satisfactory, you can start easing off detailed, daily monitoring. It\'s important to be honest about the reasons for stopping.',
                   slideNumber: 3,
                   bulletPoints: [
-                    'Maintain connections with understanding friends and family',
-                    'Consider ongoing therapy or support groups',
-                    'Build relationships that don\'t center around food or weight',
-                    'Have people you can contact during difficult times'
+                    'You can stop if: Your eating is stable and you feel in control.',
+                    'Be careful if: You find you\'re stopping because you don\'t want to face up to any ongoing difficulties.',
+                    'It\'s always there if you need it: Remember, monitoring is a tool you can always pick back up if you feel yourself slipping.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_s3_0_1_4',
-                  title: 'Creating a Maintenance Plan',
-                  content: 'Develop a specific plan for maintaining your recovery over the long term.',
+                  title: 'Module 4: When to Ease Off Weekly Weighing',
+                  content: 'Similarly, you can stop weighing yourself every week once your weight feels stable and you\'re comfortable. However, it\'s still a good idea to check in from time to time as part of a healthy lifestyle.',
                   slideNumber: 4,
                   bulletPoints: [
-                    'Schedule regular check-ins with yourself about your progress',
-                    'Plan how to handle high-risk situations and stressful periods',
-                    'Set up systems for early detection of warning signs',
-                    'Know when and how to seek additional help if needed'
+                    'You can stop if: Your weight is stable and it no longer causes you distress.',
+                    'A healthy habit: It\'s generally a good idea for everyone to check their weight at regular intervals (e.g., once a month) to stay aware of their overall health.',
+                    'The choice is yours: You get to decide what feels right and supportive for you in the long term.'
                   ],
                 ),
               ],
@@ -77,60 +73,60 @@ class Stage3Data {
               updatedAt: now,
             ),
             
-            // Lesson 0.2: Dealing with Setbacks
+            // Lesson 0.2: How to Handle Setbacks
             Lesson(
               id: 'lesson_s3_0_2',
-              title: '0.2 Dealing with Setbacks',
+              title: '0.2: How to Handle Setbacks',
               description: 'Understanding that setbacks are normal and learning how to respond effectively',
               chapterNumber: 0,
               lessonNumber: 2,
               slides: [
                 LessonSlide(
                   id: 'slide_s3_0_2_1',
-                  title: 'Understanding Setbacks',
-                  content: 'Setbacks are a normal part of recovery and don\'t mean you\'ve failed or lost all progress.',
+                  title: 'Module 1: Expect Bumps in the Road',
+                  content: 'It\'s important to have realistic expectations. Hoping to never binge again is understandable, but it\'s not helpful. Think of your eating problems as old habits that might resurface during stressful times.',
                   slideNumber: 1,
                   bulletPoints: [
-                    'Setbacks are temporary and don\'t erase your progress',
-                    'They provide opportunities to learn and strengthen your skills',
-                    'Everyone experiences setbacks during recovery',
-                    'How you respond to setbacks is more important than avoiding them'
+                    'Perfection isn\'t the goal: Everyone has setbacks. It\'s a normal part of any long-term change.',
+                    'Think of it as your Achilles\' heel: You\'ll still be prone to react to difficulties with old eating patterns, just as other people might get irritable or have a drink.',
+                    'Setbacks are inevitable: They are especially likely in the first few months after you\'ve made big changes, but they can happen at any time. Expecting them means you can prepare for them.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_s3_0_2_2',
-                  title: 'Common Triggers for Setbacks',
-                  content: 'Certain situations and life events commonly trigger temporary returns to old behaviors.',
+                  title: 'Module 2: Know Your Triggers',
+                  content: 'Setbacks are not random. They are usually triggered by specific events or feelings. Knowing your personal triggers makes it easier to anticipate and address setbacks.',
                   slideNumber: 2,
                   bulletPoints: [
-                    'Major life stresses like job changes, relationship issues, or loss',
-                    'Physical illness or medication changes',
-                    'Holiday seasons or special events centered around food',
-                    'Times when support systems are less available'
+                    'Common Triggers Include:',
+                    'Stressful life events, especially anything that makes you doubt yourself.',
+                    'Feeling very down or depressed.',
+                    'Gaining weight, or feeling like you have.',
+                    'Negative comments from other people about your shape or weight.',
+                    'Restarting strict dieting or breaking one of your own food rules.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_s3_0_2_3',
-                  title: 'Responding to Setbacks',
-                  content: 'How you respond to a setback can turn it into a learning opportunity and prevent further problems.',
+                  title: 'Module 3: A Lapse is Not a Relapse',
+                  content: 'It\'s crucial to distinguish between a "lapse" (a temporary slip) and a "relapse" (returning to square one). Confusing them can make a small slip feel like a total failure, which can make things worse.',
                   slideNumber: 3,
                   bulletPoints: [
-                    'Acknowledge the setback without shame or self-blame',
-                    'Return to your regular eating and self-care routines immediately',
-                    'Review what led to the setback and what you can learn',
-                    'Reach out for support from your network or professionals'
+                    'Avoid all-or-nothing thinking: One binge doesn\'t erase all your progress.',
+                    'A lapse is a slip: It\'s a single event or a short period of difficulty. It\'s a chance to learn and get back on track.',
+                    'A relapse is a return to old patterns: This is what can happen if you view a lapse as a catastrophe and give up.',
+                    'Your mindset matters: Seeing a slip as a "lapse" helps you take action. Seeing it as a "relapse" can make you feel hopeless.'
                   ],
                 ),
                 LessonSlide(
                   id: 'slide_s3_0_2_4',
-                  title: 'Preventing Future Setbacks',
-                  content: 'Use insights from setbacks to strengthen your recovery and prevent future problems.',
+                  title: 'Module 4: Your 3-Step Action Plan for Lapses',
+                  content: 'Since setbacks are normal, having a clear plan for what to do when they happen is your best defense. When you feel yourself slipping, don\'t panic. Just follow these three simple steps to get back on track quickly.',
                   slideNumber: 4,
                   bulletPoints: [
-                    'Identify early warning signs that preceded the setback',
-                    'Develop specific plans for handling similar situations in the future',
-                    'Strengthen coping skills in areas where you struggled',
-                    'Consider whether you need additional support or resources'
+                    'Step 1: Spot the problem early. The "head in the sand" approach doesn\'t work. If you think you\'re having a setback, you probably are. Act as soon as you can.',
+                    'Step 2: Do the right thing. Go back to the basics of the program. Restart monitoring, focus on regular eating, and use any other skills that helped you before. Be your own therapist.',
+                    'Step 3: Identify and address the trigger. Think hard about what caused the slip. Once you know the "why," you can use your problem-solving skills to deal with the root cause.'
                   ],
                 ),
               ],
