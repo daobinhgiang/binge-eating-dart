@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/services/lesson_service.dart';
 import '../../models/lesson.dart';
 import '../../widgets/lesson_slide_widget.dart';
+import '../../data/stage_1_data.dart';
 
 class Lesson21Screen extends StatefulWidget {
   const Lesson21Screen({super.key});
@@ -24,21 +25,14 @@ class _Lesson21ScreenState extends State<Lesson21Screen> {
 
   Future<void> _loadLesson() async {
     try {
-      final lesson = await _lessonService.getLessonByChapterAndNumber(2, 1);
-      if (lesson != null) {
-        setState(() {
-          _lesson = lesson;
-          _isLoading = false;
-        });
-      } else {
-        // Initialize default lessons if not found
-        await _lessonService.initializeDefaultLessons();
-        final lesson = await _lessonService.getLessonByChapterAndNumber(2, 1);
-        setState(() {
-          _lesson = lesson;
-          _isLoading = false;
-        });
-      }
+      // Load from the new Stage 1 data structure
+      final stage1 = Stage1Data.getStage1();
+      final lesson21 = stage1.chapters[1].lessons[0]; // Chapter 2 (index 1), Lesson 1 (index 0)
+      
+      setState(() {
+        _lesson = lesson21;
+        _isLoading = false;
+      });
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -90,7 +84,7 @@ class _Lesson21ScreenState extends State<Lesson21Screen> {
     if (_lesson == null || _lesson!.slides.isEmpty) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Lesson 2.1: What Does "Binge" Really Mean?'),
+          title: const Text('Lesson 2.1'),
         ),
         body: const Center(
           child: Text('Lesson not found'),

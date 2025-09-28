@@ -13,11 +13,10 @@ class FirebaseDataInitializer {
   static Future<void> initializeLessons() async {
     try {
       await initializeApp();
-      final lessonService = LessonService();
-      await lessonService.initializeDefaultLessons();
-      print('✅ Lessons initialized successfully!');
+      // Lesson initialization removed - using new Stage system
+      print('✅ Firebase initialized successfully!');
     } catch (e) {
-      print('❌ Error initializing lessons: $e');
+      print('❌ Error initializing Firebase: $e');
       rethrow;
     }
   }

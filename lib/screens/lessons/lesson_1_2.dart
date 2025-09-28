@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/services/lesson_service.dart';
 import '../../models/lesson.dart';
 import '../../widgets/lesson_slide_widget.dart';
+import '../../data/stage_1_data.dart';
 
 class Lesson12Screen extends StatefulWidget {
   const Lesson12Screen({super.key});
@@ -24,21 +25,14 @@ class _Lesson12ScreenState extends State<Lesson12Screen> {
 
   Future<void> _loadLesson() async {
     try {
-      final lesson = await _lessonService.getLessonByChapterAndNumber(1, 2);
-      if (lesson != null) {
-        setState(() {
-          _lesson = lesson;
-          _isLoading = false;
-        });
-      } else {
-        // Initialize default lessons if not found
-        await _lessonService.initializeDefaultLessons();
-        final lesson = await _lessonService.getLessonByChapterAndNumber(1, 2);
-        setState(() {
-          _lesson = lesson;
-          _isLoading = false;
-        });
-      }
+      // Load from the new Stage 1 data structure
+      final stage1 = Stage1Data.getStage1();
+      final lesson12 = stage1.chapters.first.lessons[1]; // Second lesson (index 1)
+      
+      setState(() {
+        _lesson = lesson12;
+        _isLoading = false;
+      });
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -90,7 +84,7 @@ class _Lesson12ScreenState extends State<Lesson12Screen> {
     if (_lesson == null || _lesson!.slides.isEmpty) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Lesson 1.2: Why Trust Nurtra?'),
+          title: const Text('Lesson 1.2'),
         ),
         body: const Center(
           child: Text('Lesson not found'),

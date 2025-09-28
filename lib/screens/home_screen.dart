@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/auth_provider.dart';
-import '../providers/lesson_provider.dart';
 import '../providers/todo_provider.dart';
 import '../providers/analytics_provider.dart';
 import '../models/lesson.dart';
@@ -13,88 +12,37 @@ import '../screens/lessons/lesson_1_3.dart';
 import '../screens/lessons/lesson_2_1.dart';
 import '../screens/lessons/lesson_2_2.dart';
 import '../screens/lessons/lesson_2_3.dart';
-import '../screens/lessons/lesson_2_4.dart';
-import '../screens/lessons/lesson_2_5.dart';
-import '../screens/lessons/lesson_2_6.dart';
 import '../screens/lessons/lesson_3_1.dart';
 import '../screens/lessons/lesson_3_2.dart';
 import '../screens/lessons/lesson_3_3.dart';
 import '../screens/lessons/lesson_3_4.dart';
-import '../screens/lessons/lesson_4_1.dart';
-import '../screens/lessons/lesson_4_2.dart';
-import '../screens/lessons/lesson_4_3.dart';
-import '../screens/lessons/lesson_4_4.dart';
-import '../screens/lessons/lesson_4_5.dart';
-import '../screens/lessons/lesson_5_1.dart';
-import '../screens/lessons/lesson_5_2.dart';
-import '../screens/lessons/lesson_5_3.dart';
-import '../screens/lessons/lesson_5_4.dart';
-import '../screens/lessons/lesson_5_5.dart';
-import '../screens/lessons/lesson_5_6.dart';
-import '../screens/lessons/lesson_6_1.dart';
-import '../screens/lessons/lesson_6_2.dart';
-import '../screens/lessons/lesson_6_3.dart';
-import '../screens/lessons/lesson_6_4.dart';
-import '../screens/lessons/lesson_6_5.dart';
-import '../screens/lessons/lesson_6_6.dart';
-import '../screens/lessons/lesson_7_1.dart';
-import '../screens/lessons/lesson_7_2.dart';
-import '../screens/lessons/lesson_7_3.dart';
-import '../screens/lessons/lesson_7_4.dart';
-import '../screens/lessons/lesson_8_1.dart';
-import '../screens/lessons/lesson_8_2.dart';
-import '../screens/lessons/lesson_8_3.dart';
-import '../screens/lessons/lesson_8_4.dart';
-import '../screens/lessons/lesson_9_1.dart';
-import '../screens/lessons/lesson_9_2.dart';
-import '../screens/lessons/lesson_9_3.dart';
-import '../screens/lessons/lesson_9_4.dart';
-import '../screens/lessons/lesson_9_5.dart';
-import '../screens/lessons/lesson_9_6.dart';
-import '../screens/lessons/lesson_10_1.dart';
-import '../screens/lessons/lesson_10_2.dart';
-import '../screens/lessons/lesson_10_3.dart';
-import '../screens/lessons/lesson_10_4.dart';
-import '../screens/lessons/lesson_10_5.dart';
-import '../screens/lessons/lesson_11_1.dart';
-import '../screens/lessons/lesson_11_2.dart';
-import '../screens/lessons/lesson_11_3.dart';
-import '../screens/lessons/lesson_12_1.dart';
-import '../screens/lessons/lesson_12_2.dart';
-import '../screens/lessons/lesson_12_3.dart';
-import '../screens/lessons/lesson_12_4.dart';
-import '../screens/lessons/lesson_13_1.dart';
-import '../screens/lessons/lesson_13_2.dart';
-import '../screens/lessons/lesson_13_3.dart';
-import '../screens/lessons/lesson_13_4.dart';
-import '../screens/lessons/lesson_14_1.dart';
-import '../screens/lessons/lesson_14_2.dart';
-import '../screens/lessons/lesson_14_3.dart';
-import '../screens/lessons/lesson_14_4.dart';
-import '../screens/lessons/lesson_15_1.dart';
-import '../screens/lessons/lesson_15_2.dart';
-import '../screens/lessons/lesson_16_1.dart';
-import '../screens/lessons/lesson_16_2.dart';
-import '../screens/lessons/lesson_16_3.dart';
-import '../screens/lessons/lesson_17_1.dart';
-import '../screens/lessons/lesson_17_2.dart';
-import '../screens/lessons/lesson_17_3.dart';
-import '../screens/lessons/lesson_17_4.dart';
-import '../screens/lessons/lesson_18_1.dart';
-import '../screens/lessons/lesson_18_2.dart';
-import '../screens/lessons/lesson_18_3.dart';
-import '../screens/lessons/lesson_18_4.dart';
-import '../screens/lessons/appendix_1_1.dart';
-import '../screens/lessons/appendix_1_2.dart';
-import '../screens/lessons/appendix_1_3.dart';
-import '../screens/lessons/appendix_2_1.dart';
-import '../screens/lessons/appendix_2_2.dart';
-import '../screens/lessons/appendix_2_3.dart';
-import '../screens/lessons/appendix_2_4.dart';
-import '../screens/lessons/appendix_3_1.dart';
-import '../screens/lessons/appendix_3_2.dart';
-import '../screens/lessons/appendix_4_1.dart';
-import '../screens/lessons/appendix_4_2.dart';
+import '../screens/lessons/lesson_3_5.dart';
+import '../screens/lessons/lesson_3_6.dart';
+import '../screens/lessons/lesson_3_7.dart';
+import '../screens/lessons/lesson_3_8.dart';
+import '../screens/lessons/lesson_3_9.dart';
+import '../screens/lessons/lesson_3_10.dart';
+import '../screens/lessons/lesson_s2_0_1.dart';
+import '../screens/lessons/lesson_s2_0_2.dart';
+import '../screens/lessons/lesson_s2_0_3.dart';
+import '../screens/lessons/lesson_s2_0_4.dart';
+import '../screens/lessons/lesson_s2_0_5.dart';
+import '../screens/lessons/lesson_s2_0_6.dart';
+import '../screens/lessons/lesson_s2_1_1.dart';
+import '../screens/lessons/lesson_s2_1_2.dart';
+import '../screens/lessons/lesson_s2_1_3.dart';
+import '../screens/lessons/lesson_s3_0_1.dart';
+import '../screens/lessons/lesson_s3_0_2.dart';
+import '../screens/assessments/assessment_2_1_screen.dart';
+import '../screens/assessments/assessment_2_2_screen.dart';
+import '../screens/assessments/assessment_2_3_screen.dart';
+import '../screens/assessments/assessment_s3_0_3_screen.dart';
+import '../screens/assessments/assessment_s3_0_4_screen.dart';
+import '../screens/lessons/lesson_s2_4_3.dart';
+import '../screens/lessons/lesson_s2_2_7.dart';
+import '../screens/lessons/lesson_s2_3_5.dart';
+import '../screens/lessons/lesson_s2_7_2_1.dart';
+import '../screens/lessons/lesson_s3_0_2_1.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -313,17 +261,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
-        Consumer(
-          builder: (context, ref, child) {
-            final nextLessonAsync = ref.watch(nextSuggestedLessonProvider);
-            
-            return nextLessonAsync.when(
-              data: (nextLesson) => _buildLessonRecommendationCard(context, nextLesson),
-              loading: () => _buildLoadingCard(context),
-              error: (error, stack) => _buildErrorCard(context),
-            );
-          },
-        ),
+        // Lesson recommendations removed with old system
       ],
     );
   }
@@ -503,8 +441,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       );
       
-      // Trigger refresh of next lesson recommendation
-      ref.read(lessonCompletionProvider.notifier).notifyLessonCompleted();
+      // Lesson completed - no additional action needed for new system
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -518,173 +455,47 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget? _getLessonScreen(Lesson lesson) {
-    final chapterNumber = lesson.chapterNumber;
-    final lessonNumber = lesson.lessonNumber;
-    
-    // Handle appendices (101-104)
-    if (chapterNumber >= 101 && chapterNumber <= 104) {
-      final appendixNumber = chapterNumber - 100;
-      switch (appendixNumber) {
-        case 1:
-          switch (lessonNumber) {
-            case 1: return const Appendix11Screen();
-            case 2: return const Appendix12Screen();
-            case 3: return const Appendix13Screen();
-          }
-        case 2:
-          switch (lessonNumber) {
-            case 1: return const Appendix21Screen();
-            case 2: return const Appendix22Screen();
-            case 3: return const Appendix23Screen();
-            case 4: return const Appendix24Screen();
-          }
-        case 3:
-          switch (lessonNumber) {
-            case 1: return const Appendix31Screen();
-            case 2: return const Appendix32Screen();
-          }
-        case 4:
-          switch (lessonNumber) {
-            case 1: return const Appendix41Screen();
-            case 2: return const Appendix42Screen();
-          }
-      }
-      return null;
-    }
-    
-    // Handle regular chapters (1-18)
-    switch (chapterNumber) {
-      case 1:
-        switch (lessonNumber) {
-          case 1: return const Lesson11Screen();
-          case 2: return const Lesson12Screen();
-          case 3: return const Lesson13Screen();
-        }
-      case 2:
-        switch (lessonNumber) {
-          case 1: return const Lesson21Screen();
-          case 2: return const Lesson22Screen();
-          case 3: return const Lesson23Screen();
-          case 4: return const Lesson24Screen();
-          case 5: return const Lesson25Screen();
-          case 6: return const Lesson26Screen();
-        }
-      case 3:
-        switch (lessonNumber) {
-          case 1: return const Lesson31Screen();
-          case 2: return const Lesson32Screen();
-          case 3: return const Lesson33Screen();
-          case 4: return const Lesson34Screen();
-        }
-      case 4:
-        switch (lessonNumber) {
-          case 1: return const Lesson41Screen();
-          case 2: return const Lesson42Screen();
-          case 3: return const Lesson43Screen();
-          case 4: return const Lesson44Screen();
-          case 5: return const Lesson45Screen();
-        }
-      case 5:
-        switch (lessonNumber) {
-          case 1: return const Lesson51Screen();
-          case 2: return const Lesson52Screen();
-          case 3: return const Lesson53Screen();
-          case 4: return const Lesson54Screen();
-          case 5: return const Lesson55Screen();
-          case 6: return const Lesson56Screen();
-        }
-      case 6:
-        switch (lessonNumber) {
-          case 1: return const Lesson61Screen();
-          case 2: return const Lesson62Screen();
-          case 3: return const Lesson63Screen();
-          case 4: return const Lesson64Screen();
-          case 5: return const Lesson65Screen();
-          case 6: return const Lesson66Screen();
-        }
-      case 7:
-        switch (lessonNumber) {
-          case 1: return const Lesson71Screen();
-          case 2: return const Lesson72Screen();
-          case 3: return const Lesson73Screen();
-          case 4: return const Lesson74Screen();
-        }
-      case 8:
-        switch (lessonNumber) {
-          case 1: return const Lesson81Screen();
-          case 2: return const Lesson82Screen();
-          case 3: return const Lesson83Screen();
-          case 4: return const Lesson84Screen();
-        }
-      case 9:
-        switch (lessonNumber) {
-          case 1: return const Lesson91Screen();
-          case 2: return const Lesson92Screen();
-          case 3: return const Lesson93Screen();
-          case 4: return const Lesson94Screen();
-          case 5: return const Lesson95Screen();
-          case 6: return const Lesson96Screen();
-        }
-      case 10:
-        switch (lessonNumber) {
-          case 1: return const Lesson101Screen();
-          case 2: return const Lesson102Screen();
-          case 3: return const Lesson103Screen();
-          case 4: return const Lesson104Screen();
-          case 5: return const Lesson105Screen();
-        }
-      case 11:
-        switch (lessonNumber) {
-          case 1: return const Lesson111Screen();
-          case 2: return const Lesson112Screen();
-          case 3: return const Lesson113Screen();
-        }
-      case 12:
-        switch (lessonNumber) {
-          case 1: return const Lesson121Screen();
-          case 2: return const Lesson122Screen();
-          case 3: return const Lesson123Screen();
-          case 4: return const Lesson124Screen();
-        }
-      case 13:
-        switch (lessonNumber) {
-          case 1: return const Lesson131Screen();
-          case 2: return const Lesson132Screen();
-          case 3: return const Lesson133Screen();
-          case 4: return const Lesson134Screen();
-        }
-      case 14:
-        switch (lessonNumber) {
-          case 1: return const Lesson141Screen();
-          case 2: return const Lesson142Screen();
-          case 3: return const Lesson143Screen();
-          case 4: return const Lesson144Screen();
-        }
-      case 15:
-        switch (lessonNumber) {
-          case 1: return const Lesson151Screen();
-          case 2: return const Lesson152Screen();
-        }
-      case 16:
-        switch (lessonNumber) {
-          case 1: return const Lesson161Screen();
-          case 2: return const Lesson162Screen();
-          case 3: return const Lesson163Screen();
-        }
-      case 17:
-        switch (lessonNumber) {
-          case 1: return const Lesson171Screen();
-          case 2: return const Lesson172Screen();
-          case 3: return const Lesson173Screen();
-          case 4: return const Lesson174Screen();
-        }
-      case 18:
-        switch (lessonNumber) {
-          case 1: return const Lesson181Screen();
-          case 2: return const Lesson182Screen();
-          case 3: return const Lesson183Screen();
-          case 4: return const Lesson184Screen();
-        }
+    // Use lesson ID for direct mapping (supports all stages)
+    switch (lesson.id) {
+      // Stage 1 lessons
+      case 'lesson_1_1': return const Lesson11Screen();
+      case 'lesson_1_2': return const Lesson12Screen();
+      case 'lesson_1_3': return const Lesson13Screen();
+      case 'lesson_2_1': return const Assessment21Screen();
+      case 'lesson_2_2': return const Assessment22Screen();
+      case 'lesson_2_3': return const Assessment23Screen();
+      case 'lesson_3_1': return const Lesson31Screen();
+      case 'lesson_3_2': return const Lesson32Screen();
+      case 'lesson_3_3': return const Lesson33Screen();
+      case 'lesson_3_4': return const Lesson34Screen();
+      case 'lesson_3_5': return const Lesson35Screen();
+      case 'lesson_3_6': return const Lesson36Screen();
+      case 'lesson_3_7': return const Lesson37Screen();
+      case 'lesson_3_8': return const Lesson38Screen();
+      case 'lesson_3_9': return const Lesson39Screen();
+      case 'lesson_3_10': return const Lesson310Screen();
+      
+      // Stage 2 lessons
+      case 'lesson_s2_0_1': return const LessonS201Screen();
+      case 'lesson_s2_0_2': return const LessonS202Screen();
+      case 'lesson_s2_0_3': return const LessonS203Screen();
+      case 'lesson_s2_0_4': return const LessonS204Screen();
+      case 'lesson_s2_0_5': return const LessonS205Screen();
+      case 'lesson_s2_0_6': return const LessonS206Screen();
+      case 'lesson_s2_1_1': return const LessonS211Screen();
+      case 'lesson_s2_1_2': return const LessonS212Screen();
+      case 'lesson_s2_1_3': return const LessonS213Screen();
+      case 'lesson_s2_2_7': return const LessonS227Screen();
+      case 'lesson_s2_3_5': return const LessonS235Screen();
+      case 'lesson_s2_4_3': return const LessonS243Screen();
+      case 'lesson_s2_7_2_1': return const LessonS2721Screen();
+      
+      // Stage 3 lessons
+      case 'lesson_s3_0_1': return const LessonS301Screen();
+      case 'lesson_s3_0_2': return const LessonS302Screen();
+      case 'lesson_s3_0_2_1': return const LessonS3021Screen();
+      case 'lesson_s3_0_3': return const AssessmentS303Screen();
+      case 'lesson_s3_0_4': return const AssessmentS304Screen();
     }
     
     return null;
@@ -1385,23 +1196,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              _buildHelpOptionCard(
-                context,
-                'Lesson 13.1: Nutrition Basics for Recovery',
-                'Understanding proper nutrition helps manage urges',
-                Icons.book,
-                Colors.blue,
-                () => _navigateToLesson131(),
-              ),
-              const SizedBox(height: 8),
-              _buildHelpOptionCard(
-                context,
-                'Lesson 13.2: Understanding Your Body\'s Needs',
-                'Learn to interpret your body\'s signals',
-                Icons.book,
-                Colors.blue,
-                () => _navigateToLesson132(),
-              ),
+              // Old lesson navigation options removed
               const SizedBox(height: 16),
               const Text(
                 '2. Practice practical coping skills:',
@@ -1484,23 +1279,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
   
-  void _navigateToLesson131() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const Lesson131Screen(),
-        settings: const RouteSettings(name: '/lesson'),
-      ),
-    );
-  }
-  
-  void _navigateToLesson132() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const Lesson132Screen(),
-        settings: const RouteSettings(name: '/lesson'),
-      ),
-    );
-  }
+  // Old lesson navigation methods removed
   
   void _navigateToUrgeSurfing() {
     context.push('/tools/urge-surfing');
