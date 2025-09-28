@@ -7,6 +7,7 @@ import 'tools/tools_screen.dart';
 import 'journal/journal_screen.dart';
 import 'profile/profile_screen.dart';
 import '../widgets/comforting_background.dart';
+import '../widgets/forest_background.dart';
 
 class MainNavigation extends ConsumerStatefulWidget {
   const MainNavigation({super.key});
@@ -79,18 +80,31 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
     _updateCurrentIndex(location);
     
     return Scaffold(
-      body: ComfortingBackground(
-        child: IndexedStack(
-          index: _currentIndex,
-          children: const [
-            HomeScreen(),
-            EducationScreen(),
-            ToolsScreen(),
-            JournalScreen(),
-            ProfileScreen(),
-          ],
-        ),
-      ),
+      body: _currentIndex == 2 
+          ? ForestBackground(
+              child: IndexedStack(
+                index: _currentIndex,
+                children: const [
+                  HomeScreen(),
+                  EducationScreen(),
+                  ToolsScreen(),
+                  JournalScreen(),
+                  ProfileScreen(),
+                ],
+              ),
+            )
+          : ComfortingBackground(
+              child: IndexedStack(
+                index: _currentIndex,
+                children: const [
+                  HomeScreen(),
+                  EducationScreen(),
+                  ToolsScreen(),
+                  JournalScreen(),
+                  ProfileScreen(),
+                ],
+              ),
+            ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
