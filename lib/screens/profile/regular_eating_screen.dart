@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../providers/regular_eating_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../models/regular_eating.dart';
@@ -223,6 +224,10 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
       appBar: AppBar(
         title: const Text('Regular Eating'),
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/profile'),
+        ),
         actions: [
           if (_hasChanges)
             IconButton(
