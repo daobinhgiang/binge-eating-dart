@@ -299,7 +299,7 @@ class NavigationService {
           return const LessonS235Screen();
         case 'lesson_s2_4_3':
           return const LessonS243Screen();
-        case 'lesson_s2_7_2_1':
+        case 'lesson_s2_7_3':
           return const LessonS2721Screen();
         // Add more Stage 2 lessons as needed
       }

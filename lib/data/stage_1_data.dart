@@ -9,28 +9,28 @@ class Stage1Data {
     
     return Stage(
       stageNumber: 1,
-      title: 'Psychoeducation',
+      title: 'Introduction',
       chapters: [
         Chapter(
           chapterNumber: 1,
-          title: 'App introduction',
+          title: 'Introduction',
           lessons: [
             // Lesson 1.1: Explaining what treatment will involve and the prospect of change
             Lesson(
               id: 'lesson_1_1',
-              title: '1.1 Explaining what treatment will involve and the prospect of change',
+              title: '1.1 Your Path to Change',
               description: 'Understanding the treatment process and building hope for recovery',
               chapterNumber: 1,
               lessonNumber: 1,
               slides: [
                 LessonSlide(
                   id: 'slide_1_1_1',
-                  title: 'Welcome to Your Recovery Journey',
-                  content: 'This treatment program is designed to help you develop a healthier relationship with food and overcome binge eating patterns.',
+                  title: 'Welcome to Your Treatment Journey',
+                  content: 'This program is designed to help you overcome your eating problem by understanding and changing the things that are keeping it going. Think of it as a collaborative journey that we\'ll take together. It\'s based on Cognitive Behavior Therapy (CBT-E), the leading evidence-based treatment for people with eating disorders. You can do this, and we are here to help.',
                   slideNumber: 1,
                   bulletPoints: [
-                    'Evidence-based treatment approach',
-                    'Step-by-step guidance through recovery',
+                    'Focus on the "Here and Now": We will concentrate on the things that are keeping the problem going right now, rather than dwelling on the past.',
+                    'Tailored to You: This isn\'t a one-size-fits-all approach. The treatment will be personalized to your specific challenges and needs.',
                     'Focus on sustainable, long-term change',
                     'Personalized support throughout your journey'
                   ],

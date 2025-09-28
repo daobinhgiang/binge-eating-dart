@@ -368,7 +368,7 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
       case 'lesson_s2_2_7': return const LessonS227Screen();
       case 'lesson_s2_3_5': return const LessonS235Screen();
       case 'lesson_s2_4_3': return const LessonS243Screen();
-      case 'lesson_s2_7_2_1': return const LessonS2721Screen();
+      case 'lesson_s2_7_3': return const LessonS2721Screen();
       
       // Stage 3 lessons
       case 'lesson_s3_0_1': return const LessonS301Screen();
