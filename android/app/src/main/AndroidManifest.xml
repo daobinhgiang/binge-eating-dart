@@ -36,8 +36,7 @@
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
             android:name="flutterEmbedding"
-            android:value="2" />
-        
+            android:value="2" />        
         <!-- Firebase Messaging Service -->
         <service
             android:name="io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingService"

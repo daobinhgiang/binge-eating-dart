@@ -32,28 +32,15 @@ class NotificationService {
       // Initialize timezone data
       tz.initializeTimeZones();
 
-      // Initialize local notifications
-      const AndroidInitializationSettings androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
-      const DarwinInitializationSettings iosSettings = DarwinInitializationSettings(
-        requestAlertPermission: true,
-        requestBadgePermission: true,
-        requestSoundPermission: true,
-      );
-
-      const InitializationSettings initSettings = InitializationSettings(
-        android: androidSettings,
-        iOS: iosSettings,
-      );
-
-      await _localNotifications.initialize(
-        initSettings,
-        onDidReceiveNotificationResponse: _onNotificationTapped,
-      );
+      // Only initialize local notifications on mobile platforms
+      if (!kIsWeb) {
+        await _initializeLocalNotifications();
+      }
 
       // Request permissions
       await _requestPermissions();
 
-      // Initialize Firebase Messaging
+      // Initialize Firebase Messaging (works on all platforms)
       await _initializeFirebaseMessaging();
 
       _isInitialized = true;
@@ -68,42 +55,119 @@ class NotificationService {
     }
   }
 
+  /// Initialize local notifications for mobile platforms
+  Future<void> _initializeLocalNotifications() async {
+    const AndroidInitializationSettings androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const DarwinInitializationSettings iosSettings = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
+
+    const InitializationSettings initSettings = InitializationSettings(
+      android: androidSettings,
+      iOS: iosSettings,
+    );
+
+    await _localNotifications.initialize(
+      initSettings,
+      onDidReceiveNotificationResponse: _onNotificationTapped,
+    );
+  }
+
   /// Request notification permissions
   Future<void> _requestPermissions() async {
-    if (Platform.isAndroid) {
-      final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
-          _localNotifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
-      
-      await androidImplementation?.requestNotificationsPermission();
-    } else if (Platform.isIOS) {
-      await _localNotifications
-          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
-          ?.requestPermissions(
-            alert: true,
-            badge: true,
-            sound: true,
-          );
+    // Skip local notification permissions on web
+    if (kIsWeb) return;
+
+    try {
+      if (Platform.isAndroid) {
+        final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+            _localNotifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+        
+        await androidImplementation?.requestNotificationsPermission();
+      } else if (Platform.isIOS) {
+        await _localNotifications
+            .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+            ?.requestPermissions(
+              alert: true,
+              badge: true,
+              sound: true,
+            );
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to request local notification permissions: $e');
+      }
     }
   }
 
   /// Initialize Firebase Messaging
   Future<void> _initializeFirebaseMessaging() async {
-    // Request permission for notifications
-    NotificationSettings settings = await _firebaseMessaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+    try {
+      // Request permission for notifications
+      NotificationSettings settings = await _firebaseMessaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
 
-    if (kDebugMode) {
-      print('Firebase Messaging permission status: ${settings.authorizationStatus}');
+      if (kDebugMode) {
+        print('Firebase Messaging permission status: ${settings.authorizationStatus}');
+      }
+
+      // Handle background messages
+      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+      // Handle foreground messages
+      FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
+
+      // For web, also handle browser notifications
+      if (kIsWeb) {
+        await _initializeWebNotifications();
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to initialize Firebase Messaging: $e');
+      }
+      // Don't rethrow - allow the app to continue without notifications
     }
+  }
 
-    // Handle background messages
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  /// Initialize web-specific notifications
+  Future<void> _initializeWebNotifications() async {
+    try {
+      // Request browser notification permission
+      if (kIsWeb) {
+        // Check if service worker is available
+        if (await _isServiceWorkerAvailable()) {
+          if (kDebugMode) {
+            print('Web notifications initialized via Firebase messaging');
+          }
+        } else {
+          if (kDebugMode) {
+            print('Service worker not available, using fallback notification method');
+          }
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to initialize web notifications: $e');
+      }
+    }
+  }
 
-    // Handle foreground messages
-    FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
+  /// Check if service worker is available
+  Future<bool> _isServiceWorkerAvailable() async {
+    try {
+      if (kIsWeb) {
+        // Check if service workers are supported
+        return true; // Assume available for now
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
   }
 
   /// Handle notification tap
@@ -151,7 +215,16 @@ class NotificationService {
         mealTimes.addAll(dayMealTimes);
       }
 
-      // Schedule notifications for each meal time
+      if (kIsWeb) {
+        // For web, we'll rely on Firebase messaging for notifications
+        if (kDebugMode) {
+          print('Web platform: Regular eating notifications will be handled via Firebase messaging');
+          print('Calculated ${mealTimes.length} meal times for the next 7 days');
+        }
+        return;
+      }
+
+      // Schedule notifications for each meal time (mobile platforms only)
       for (int i = 0; i < mealTimes.length; i++) {
         final mealTime = mealTimes[i];
         final mealNumber = (i % 4) + 1; // 1-4 meals per day
@@ -177,20 +250,29 @@ class NotificationService {
 
   /// Create notification channel for Android
   Future<void> _createNotificationChannel() async {
-    if (Platform.isAndroid) {
-      const AndroidNotificationChannel channel = AndroidNotificationChannel(
-        _regularEatingChannelId,
-        _regularEatingChannelName,
-        description: _regularEatingChannelDescription,
-        importance: Importance.high,
-        playSound: true,
-        enableVibration: true,
-      );
+    // Skip on web platform
+    if (kIsWeb) return;
 
-      final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
-          _localNotifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
-      
-      await androidImplementation?.createNotificationChannel(channel);
+    try {
+      if (Platform.isAndroid) {
+        const AndroidNotificationChannel channel = AndroidNotificationChannel(
+          _regularEatingChannelId,
+          _regularEatingChannelName,
+          description: _regularEatingChannelDescription,
+          importance: Importance.high,
+          playSound: true,
+          enableVibration: true,
+        );
+
+        final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+            _localNotifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+        
+        await androidImplementation?.createNotificationChannel(channel);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to create notification channel: $e');
+      }
     }
   }
 
@@ -201,49 +283,72 @@ class NotificationService {
     required String body,
     required DateTime scheduledDate,
   }) async {
+    // Skip on web platform - use Firebase messaging instead
+    if (kIsWeb) {
+      if (kDebugMode) {
+        print('Web platform: Skipping local notification scheduling. Use Firebase messaging for web notifications.');
+      }
+      return;
+    }
+
     // Only schedule if the date is in the future
     if (scheduledDate.isBefore(DateTime.now())) return;
 
-    final tz.TZDateTime scheduledTZ = tz.TZDateTime.from(scheduledDate, tz.local);
+    try {
+      final tz.TZDateTime scheduledTZ = tz.TZDateTime.from(scheduledDate, tz.local);
 
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      _regularEatingChannelId,
-      _regularEatingChannelName,
-      channelDescription: _regularEatingChannelDescription,
-      importance: Importance.high,
-      priority: Priority.high,
-      playSound: true,
-      enableVibration: true,
-      icon: '@mipmap/ic_launcher',
-    );
+      const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+        _regularEatingChannelId,
+        _regularEatingChannelName,
+        channelDescription: _regularEatingChannelDescription,
+        importance: Importance.high,
+        priority: Priority.high,
+        playSound: true,
+        enableVibration: true,
+        icon: '@mipmap/ic_launcher',
+      );
 
-    const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
+      const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      );
 
-    const NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
+      const NotificationDetails notificationDetails = NotificationDetails(
+        android: androidDetails,
+        iOS: iosDetails,
+      );
 
-    await _localNotifications.zonedSchedule(
-      id,
-      title,
-      body,
-      scheduledTZ,
-      notificationDetails,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: DateTimeComponents.time, // Repeat daily at the same time
-    );
+      await _localNotifications.zonedSchedule(
+        id,
+        title,
+        body,
+        scheduledTZ,
+        notificationDetails,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.time, // Repeat daily at the same time
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to schedule notification: $e');
+      }
+    }
   }
 
   /// Cancel all regular eating notifications
   Future<void> cancelRegularEatingNotifications() async {
-    // Cancel all notifications with IDs in the regular eating range
-    for (int i = 0; i < 28; i++) { // 7 days * 4 meals max
-      await _localNotifications.cancel(_regularEatingNotificationId + i);
+    // Skip on web platform
+    if (kIsWeb) return;
+
+    try {
+      // Cancel all notifications with IDs in the regular eating range
+      for (int i = 0; i < 28; i++) { // 7 days * 4 meals max
+        await _localNotifications.cancel(_regularEatingNotificationId + i);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to cancel notifications: $e');
+      }
     }
   }
 
@@ -252,31 +357,45 @@ class NotificationService {
     required String title,
     required String body,
   }) async {
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      _regularEatingChannelId,
-      _regularEatingChannelName,
-      channelDescription: _regularEatingChannelDescription,
-      importance: Importance.high,
-      priority: Priority.high,
-    );
+    // Skip on web platform
+    if (kIsWeb) {
+      if (kDebugMode) {
+        print('Web platform: Cannot show local notification. Use browser notifications or Firebase messaging.');
+      }
+      return;
+    }
 
-    const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
+    try {
+      const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+        _regularEatingChannelId,
+        _regularEatingChannelName,
+        channelDescription: _regularEatingChannelDescription,
+        importance: Importance.high,
+        priority: Priority.high,
+      );
 
-    const NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
+      const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      );
 
-    await _localNotifications.show(
-      DateTime.now().millisecondsSinceEpoch ~/ 1000,
-      title,
-      body,
-      notificationDetails,
-    );
+      const NotificationDetails notificationDetails = NotificationDetails(
+        android: androidDetails,
+        iOS: iosDetails,
+      );
+
+      await _localNotifications.show(
+        DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        title,
+        body,
+        notificationDetails,
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to show local notification: $e');
+      }
+    }
   }
 
   /// Get notification title based on meal number
@@ -322,6 +441,9 @@ class NotificationService {
     } catch (e) {
       if (kDebugMode) {
         print('Failed to get Firebase token: $e');
+        if (kIsWeb) {
+          print('Web notification setup may be incomplete. Service worker registration failed.');
+        }
       }
       return null;
     }

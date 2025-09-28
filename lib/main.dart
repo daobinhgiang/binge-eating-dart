@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'firebase_options.dart';
-import 'core/services/notification_service.dart';
 import 'screens/main_navigation.dart';
 import 'screens/education/article_detail_screen.dart';
 import 'screens/auth/login_screen.dart';
@@ -43,9 +42,6 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  
-  // Initialize notification service
-  await NotificationService().initialize();
   
   runApp(const ProviderScope(child: BEDApp()));
 }
