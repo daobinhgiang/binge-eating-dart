@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/services/auth_service.dart';
+import '../core/services/firebase_analytics_service.dart';
 import '../models/user_model.dart';
 
 // Auth service provider
@@ -15,6 +16,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
   AuthNotifier(this._authService) : super(const AsyncValue.data(null));
 
   final AuthService _authService;
+  final FirebaseAnalyticsService _analytics = FirebaseAnalyticsService();
 
   // Initialize auth state
   Future<void> initialize() async {
@@ -39,6 +41,13 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         password: password,
       );
       state = AsyncValue.data(user);
+      
+      // Track login event
+      await _analytics.trackUserLogin('email_password');
+      await _analytics.setUserProperties(
+        userRole: user?.role.name,
+        onboardingCompleted: user?.onboardingCompleted,
+      );
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
@@ -62,6 +71,13 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         role: role,
       );
       state = AsyncValue.data(user);
+      
+      // Track registration event
+      await _analytics.trackUserRegistration('email_password');
+      await _analytics.setUserProperties(
+        userRole: user?.role.name,
+        onboardingCompleted: user?.onboardingCompleted,
+      );
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
@@ -73,6 +89,13 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
     try {
       final user = await _authService.signInWithGoogle();
       state = AsyncValue.data(user);
+      
+      // Track login event
+      await _analytics.trackUserLogin('google');
+      await _analytics.setUserProperties(
+        userRole: user?.role.name,
+        onboardingCompleted: user?.onboardingCompleted,
+      );
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
@@ -84,6 +107,30 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
     try {
       await _authService.signOut();
       state = const AsyncValue.data(null);
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
+    }
+  }
+
+  // Update onboarding status
+  Future<void> updateOnboardingStatus({
+    bool? onboardingCompleted,
+    bool? onboardingPartiallyCompleted,
+  }) async {
+    try {
+      await _authService.updateOnboardingStatus(
+        onboardingCompleted: onboardingCompleted,
+        onboardingPartiallyCompleted: onboardingPartiallyCompleted,
+      );
+      
+      // Track onboarding completion if completed
+      if (onboardingCompleted == true) {
+        await _analytics.trackOnboardingCompletion();
+      }
+      
+      // Refresh current user state
+      final user = await _authService.currentUser;
+      state = AsyncValue.data(user);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }

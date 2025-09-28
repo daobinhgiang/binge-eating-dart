@@ -5,6 +5,7 @@ import 'meal_planning_screen.dart';
 import 'urge_surfing_screen.dart';
 import 'addressing_overconcern_screen.dart';
 import 'addressing_setbacks_screen.dart';
+import '../../widgets/forest_background.dart';
 
 class ExerciseItem {
   final String title;
@@ -81,28 +82,55 @@ class ToolsScreen extends ConsumerWidget {
         title: const Text('Tools'),
         centerTitle: true,
         automaticallyImplyLeading: false,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color(0xFF7fb781).withValues(alpha: 0.15),
+                const Color(0xFF7ea66f).withValues(alpha: 0.12),
+                const Color(0xFF6e955f).withValues(alpha: 0.08),
+              ],
+            ),
+          ),
+        ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      body: ForestBackground(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             // Header
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.blue[600]!, Colors.purple[600]!],
+                  colors: [
+                    const Color(0xFF7fb781), // Main app green
+                    const Color(0xFF7ea66f), // Slightly darker green
+                    const Color(0xFF6e955f), // Even darker green
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF7fb781).withValues(alpha: 0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: Column(
                 children: [
                   Icon(
-                    Icons.build_outlined,
+                    Icons.forest,
                     size: 64,
                     color: Colors.white,
                   ),
@@ -117,7 +145,7 @@ class ToolsScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Interactive exercises and strategies for eating disorder recovery',
+                    'Find peace and healing through nature-inspired recovery tools',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.white.withValues(alpha: 0.9),
                     ),
@@ -147,7 +175,8 @@ class ToolsScreen extends ConsumerWidget {
             ),
             
             const SizedBox(height: 32),
-          ],
+            ],
+          ),
         ),
       ),
     );

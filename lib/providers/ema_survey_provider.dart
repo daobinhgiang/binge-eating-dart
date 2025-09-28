@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/services/ema_survey_service.dart';
+import '../core/services/firebase_analytics_service.dart';
 import '../models/ema_survey.dart';
 import 'auth_provider.dart';
 
@@ -41,6 +42,7 @@ class EMASurveyNotifier extends StateNotifier<AsyncValue<EMASurvey?>> {
   EMASurveyNotifier(this._service) : super(const AsyncValue.data(null));
 
   final EMASurveyService _service;
+  final FirebaseAnalyticsService _analytics = FirebaseAnalyticsService();
 
   // Create or get today's survey
   Future<void> createOrGetTodaySurvey(String userId) async {
@@ -80,6 +82,9 @@ class EMASurveyNotifier extends StateNotifier<AsyncValue<EMASurvey?>> {
   Future<void> completeSurvey(String surveyId) async {
     try {
       await _service.completeSurvey(surveyId);
+      
+      // Track EMA survey completion
+      await _analytics.trackEMASurveyCompletion();
       
       // Refresh current survey
       final survey = await _service.getSurveyById(surveyId);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'home_screen.dart';
@@ -6,6 +7,10 @@ import 'education/education_screen.dart';
 import 'tools/tools_screen.dart';
 import 'journal/journal_screen.dart';
 import 'profile/profile_screen.dart';
+import '../widgets/comforting_background.dart';
+import '../widgets/forest_background.dart';
+import '../providers/notification_provider.dart';
+import '../providers/auth_provider.dart';
 
 class MainNavigation extends ConsumerStatefulWidget {
   const MainNavigation({super.key});
@@ -16,6 +21,7 @@ class MainNavigation extends ConsumerStatefulWidget {
 
 class _MainNavigationState extends ConsumerState<MainNavigation> {
   int _currentIndex = 0;
+  bool _notificationServiceInitialized = false;
 
   final List<NavigationItem> _navigationItems = [
     NavigationItem(
@@ -50,6 +56,15 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
     ),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    // Initialize notification service when main navigation loads (user is logged in)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeNotificationService();
+    });
+  }
+
   void _updateCurrentIndex(String location) {
     switch (location) {
       case '/':
@@ -71,6 +86,39 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
     }
   }
 
+  /// Initialize notification service for logged-in users
+  Future<void> _initializeNotificationService() async {
+    if (_notificationServiceInitialized) return;
+
+    try {
+      // Check if user is authenticated
+      final authState = ref.read(authNotifierProvider);
+      final user = authState.value;
+      
+      if (user != null) {
+        // Initialize notification service
+        await ref.read(notificationServiceProvider).initialize();
+        
+        // Initialize notification settings provider to get Firebase token
+        ref.read(notificationSettingsProvider.notifier);
+        
+        _notificationServiceInitialized = true;
+        
+        if (mounted) {
+          // Optional: Show a subtle success message
+          if (kDebugMode) {
+            print('✅ Notification service initialized for user: ${user.id}');
+          }
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('❌ Failed to initialize notification service: $e');
+      }
+      // Don't show error to user as this is background initialization
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Get current location and update index
@@ -78,16 +126,31 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
     _updateCurrentIndex(location);
     
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: const [
-          HomeScreen(),
-          EducationScreen(),
-          ToolsScreen(),
-          JournalScreen(),
-          ProfileScreen(),
-        ],
-      ),
+      body: _currentIndex == 2 
+          ? ForestBackground(
+              child: IndexedStack(
+                index: _currentIndex,
+                children: const [
+                  HomeScreen(),
+                  EducationScreen(),
+                  ToolsScreen(),
+                  JournalScreen(),
+                  ProfileScreen(),
+                ],
+              ),
+            )
+          : ComfortingBackground(
+              child: IndexedStack(
+                index: _currentIndex,
+                children: const [
+                  HomeScreen(),
+                  EducationScreen(),
+                  ToolsScreen(),
+                  JournalScreen(),
+                  ProfileScreen(),
+                ],
+              ),
+            ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
