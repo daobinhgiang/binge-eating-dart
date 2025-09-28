@@ -258,6 +258,29 @@ class AuthService {
     }
   }
 
+  // Update onboarding status
+  Future<void> updateOnboardingStatus({
+    bool? onboardingCompleted,
+    bool? onboardingPartiallyCompleted,
+  }) async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) throw 'No user signed in';
+
+      final userDoc = _firestore.collection('users').doc(user.uid);
+      final updateData = <String, dynamic>{};
+
+      if (onboardingCompleted != null) updateData['onboardingCompleted'] = onboardingCompleted;
+      if (onboardingPartiallyCompleted != null) updateData['onboardingPartiallyCompleted'] = onboardingPartiallyCompleted;
+
+      if (updateData.isNotEmpty) {
+        await userDoc.update(updateData);
+      }
+    } catch (e) {
+      throw 'Failed to update onboarding status. Please try again.';
+    }
+  }
+
   // Delete user account
   Future<void> deleteAccount() async {
     try {

@@ -30,6 +30,7 @@ import 'screens/profile/notification_settings_screen.dart';
 import 'screens/notifications/notifications_screen.dart';
 import 'providers/auth_provider.dart';
 import 'models/user_model.dart';
+import 'widgets/analytics_tracker.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,8 +53,9 @@ class BEDApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return MaterialApp.router(
-      title: 'BED Support App',
+    return AnalyticsTracker(
+      child: MaterialApp.router(
+        title: 'BED Support App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF7fb781), // Refined green theme for growth, healing, and comfort
@@ -108,6 +110,7 @@ class BEDApp extends ConsumerWidget {
         ),
       ),
       routerConfig: _router,
+      ),
     );
   }
 }

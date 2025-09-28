@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/weight_diary.dart';
 import '../core/services/weight_diary_service.dart';
+import '../core/services/firebase_analytics_service.dart';
 
 // Weight diary service provider
 final weightDiaryServiceProvider = Provider<WeightDiaryService>((ref) => WeightDiaryService());
@@ -43,6 +44,7 @@ final weightTrendProvider = FutureProvider.family<List<Map<String, dynamic>>, ({
 class WeightDiaryNotifier extends StateNotifier<AsyncValue<List<WeightDiary>>> {
   final WeightDiaryService _weightDiaryService;
   final String _userId;
+  final FirebaseAnalyticsService _analytics = FirebaseAnalyticsService();
 
   WeightDiaryNotifier(this._weightDiaryService, this._userId) : super(const AsyncValue.loading()) {
     loadCurrentWeekEntries();
@@ -81,6 +83,9 @@ class WeightDiaryNotifier extends StateNotifier<AsyncValue<List<WeightDiary>>> {
 
       // Refresh current state
       await loadCurrentWeekEntries();
+      
+      // Track weight diary entry creation
+      await _analytics.trackWeightDiaryEntry();
       
       return entry;
     } catch (e) {
