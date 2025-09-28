@@ -104,6 +104,16 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                       const Divider(height: 1),
                       ListTile(
+                        leading: const Icon(Icons.schedule),
+                        title: const Text('Regular Eating'),
+                        subtitle: const Text('Set meal times and intervals'),
+                        trailing: const Icon(Icons.arrow_forward_ios),
+                        onTap: () {
+                          context.go('/profile/regular-eating');
+                        },
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
                         leading: const Icon(Icons.quiz_outlined),
                         title: const Text('Review Assessment'),
                         subtitle: const Text('Update your onboarding responses'),

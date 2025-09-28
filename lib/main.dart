@@ -25,6 +25,7 @@ import 'screens/tools/addressing_setbacks_screen.dart';
 import 'screens/todos/todos_screen.dart';
 import 'screens/todos/add_todo_screen.dart';
 import 'screens/chatbot/chatbot_screen.dart';
+import 'screens/profile/regular_eating_screen.dart';
 import 'providers/auth_provider.dart';
 import 'models/user_model.dart';
 
@@ -235,6 +236,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/chatbot',
       builder: (context, state) => const AuthGuard(child: ChatbotScreen()),
+    ),
+    GoRoute(
+      path: '/profile/regular-eating',
+      builder: (context, state) => const AuthGuard(child: RegularEatingScreen()),
     ),
   ],
 );
