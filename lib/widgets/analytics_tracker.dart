@@ -68,7 +68,13 @@ class _AnalyticsTrackerState extends ConsumerState<AnalyticsTracker>
       final trackAppOpen = ref.read(appOpenTrackingProvider);
       trackAppOpen();
     } catch (e) {
-      print('Error tracking app open: $e');
+      if (e.toString().contains('DEVELOPER_ERROR') || 
+          e.toString().contains('Phenotype.API') ||
+          e.toString().contains('FlagRegistrar')) {
+        print('⚠️ Analytics not available on emulator for app open: $e');
+      } else {
+        print('Error tracking app open: $e');
+      }
     }
   }
 
@@ -77,7 +83,13 @@ class _AnalyticsTrackerState extends ConsumerState<AnalyticsTracker>
       final trackAppOpen = ref.read(appOpenTrackingProvider);
       trackAppOpen();
     } catch (e) {
-      print('Error tracking app resume: $e');
+      if (e.toString().contains('DEVELOPER_ERROR') || 
+          e.toString().contains('Phenotype.API') ||
+          e.toString().contains('FlagRegistrar')) {
+        print('⚠️ Analytics not available on emulator for app resume: $e');
+      } else {
+        print('Error tracking app resume: $e');
+      }
     }
   }
 
@@ -89,7 +101,13 @@ class _AnalyticsTrackerState extends ConsumerState<AnalyticsTracker>
         trackSession(sessionDuration);
       }
     } catch (e) {
-      print('Error tracking app pause: $e');
+      if (e.toString().contains('DEVELOPER_ERROR') || 
+          e.toString().contains('Phenotype.API') ||
+          e.toString().contains('FlagRegistrar')) {
+        print('⚠️ Analytics not available on emulator for app pause: $e');
+      } else {
+        print('Error tracking app pause: $e');
+      }
     }
   }
 
@@ -101,7 +119,13 @@ class _AnalyticsTrackerState extends ConsumerState<AnalyticsTracker>
         trackSession(totalSessionDuration);
       }
     } catch (e) {
-      print('Error tracking session duration: $e');
+      if (e.toString().contains('DEVELOPER_ERROR') || 
+          e.toString().contains('Phenotype.API') ||
+          e.toString().contains('FlagRegistrar')) {
+        print('⚠️ Analytics not available on emulator for session duration: $e');
+      } else {
+        print('Error tracking session duration: $e');
+      }
     }
   }
 

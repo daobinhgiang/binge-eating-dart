@@ -10,6 +10,18 @@ class FirebaseAnalyticsService {
   final FirebaseAnalytics _analytics = FirebaseAnalytics.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  /// Handle analytics errors gracefully, especially for emulator issues
+  void _handleAnalyticsError(String operation, dynamic error) {
+    if (error.toString().contains('DEVELOPER_ERROR') || 
+        error.toString().contains('Phenotype.API') ||
+        error.toString().contains('FlagRegistrar') ||
+        error.toString().contains('Google Play Services')) {
+      print('⚠️ Analytics not available on emulator for $operation: $error');
+    } else {
+      print('Error tracking $operation: $error');
+    }
+  }
+
   /// Initialize analytics for the current user
   Future<void> initializeAnalytics() async {
     try {
@@ -23,7 +35,15 @@ class FirebaseAnalyticsService {
         );
       }
     } catch (e) {
-      print('Error initializing analytics: $e');
+      // Handle emulator-specific Google Play Services errors gracefully
+      if (e.toString().contains('DEVELOPER_ERROR') || 
+          e.toString().contains('Phenotype.API') ||
+          e.toString().contains('FlagRegistrar') ||
+          e.toString().contains('Google Play Services')) {
+        print('⚠️ Analytics not available on emulator: $e');
+      } else {
+        print('Error initializing analytics: $e');
+      }
     }
   }
 
@@ -38,7 +58,7 @@ class FirebaseAnalyticsService {
         },
       );
     } catch (e) {
-      print('Error tracking app open: $e');
+      _handleAnalyticsError('app open', e);
     }
   }
 
@@ -54,7 +74,7 @@ class FirebaseAnalyticsService {
         },
       );
     } catch (e) {
-      print('Error tracking daily active user: $e');
+      _handleAnalyticsError('daily active user', e);
     }
   }
 
@@ -75,7 +95,7 @@ class FirebaseAnalyticsService {
         },
       );
     } catch (e) {
-      print('Error tracking weekly active user: $e');
+      _handleAnalyticsError('weekly active user', e);
     }
   }
 
@@ -92,7 +112,7 @@ class FirebaseAnalyticsService {
         },
       );
     } catch (e) {
-      print('Error tracking feature engagement: $e');
+      _handleAnalyticsError('feature engagement', e);
     }
   }
 
@@ -108,7 +128,7 @@ class FirebaseAnalyticsService {
         },
       );
     } catch (e) {
-      print('Error tracking session duration: $e');
+      _handleAnalyticsError('session duration', e);
     }
   }
 
@@ -124,7 +144,7 @@ class FirebaseAnalyticsService {
         },
       );
     } catch (e) {
-      print('Error tracking retention milestone: $e');
+      _handleAnalyticsError('retention milestone', e);
     }
   }
 
@@ -179,7 +199,7 @@ class FirebaseAnalyticsService {
         },
       );
     } catch (e) {
-      print('Error tracking urge relapse button usage: $e');
+      _handleAnalyticsError('urge relapse button usage', e);
     }
   }
 
@@ -196,7 +216,7 @@ class FirebaseAnalyticsService {
         },
       );
     } catch (e) {
-      print('Error tracking urge help dialog interaction: $e');
+      _handleAnalyticsError('urge help dialog interaction', e);
     }
   }
 
@@ -215,7 +235,7 @@ class FirebaseAnalyticsService {
         },
       );
     } catch (e) {
-      print('Error tracking crisis moment: $e');
+      _handleAnalyticsError('crisis moment', e);
     }
   }
 
@@ -232,7 +252,7 @@ class FirebaseAnalyticsService {
         },
       );
     } catch (e) {
-      print('Error tracking app usage pattern: $e');
+      _handleAnalyticsError('app usage pattern', e);
     }
   }
 
@@ -247,7 +267,7 @@ class FirebaseAnalyticsService {
         },
       );
     } catch (e) {
-      print('Error tracking onboarding completion: $e');
+      _handleAnalyticsError('onboarding completion', e);
     }
   }
 
@@ -263,7 +283,7 @@ class FirebaseAnalyticsService {
         },
       );
     } catch (e) {
-      print('Error tracking user login: $e');
+      _handleAnalyticsError('user login', e);
     }
   }
 
@@ -278,7 +298,7 @@ class FirebaseAnalyticsService {
         },
       );
     } catch (e) {
-      print('Error tracking user registration: $e');
+      _handleAnalyticsError('user registration', e);
     }
   }
 
@@ -302,7 +322,7 @@ class FirebaseAnalyticsService {
         await _analytics.setUserProperty(name: 'app_version', value: appVersion);
       }
     } catch (e) {
-      print('Error setting user properties: $e');
+      _handleAnalyticsError('setting user properties', e);
     }
   }
 

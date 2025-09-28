@@ -87,8 +87,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
       curve: Curves.elasticOut,
     ));
     
-    _fadeController!.forward();
-    _scaleController!.forward();
+    _fadeController?.forward();
+    _scaleController?.forward();
   }
 
   @override
@@ -105,261 +105,175 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
     return Scaffold(
       body: ScrollAwareComfortingBackground(
-        scrollController: _scrollController,
+        scrollController: _scrollController ?? ScrollController(),
         child: CustomScrollView(
-          controller: _scrollController,
-              slivers: [
-            // Beautiful translucent app bar with comforting background
-            SliverAppBar(
-              expandedHeight: 140, // Slightly increased for better visual balance
-              floating: false,
-              pinned: true,
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              automaticallyImplyLeading: false, // Prevent back arrow from appearing
-              flexibleSpace: FlexibleSpaceBar(
-                background: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        const Color(0xFF7fb781).withValues(alpha:0.15), // Very light green
-                        const Color(0xFF7ea66f).withValues(alpha:0.12), // Slightly darker
-                        const Color(0xFF6e955f).withValues(alpha:0.08), // Even lighter
-                        const Color(0xFF5a7f4f).withValues(alpha:0.05), // Very subtle
-                      ],
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha:0.03),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
+          controller: _scrollController ?? ScrollController(),
+          slivers: [
+            // Simplified header to avoid layout issues
+            SliverToBoxAdapter(
+              child: Container(
+                height: 120,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      const Color(0xFF7fb781).withValues(alpha:0.15),
+                      const Color(0xFF7ea66f).withValues(alpha:0.12),
+                      const Color(0xFF6e955f).withValues(alpha:0.08),
+                      const Color(0xFF5a7f4f).withValues(alpha:0.05),
                     ],
                   ),
-                  child: SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Column(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha:0.03),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Welcome message
+                        Expanded(
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              // Top row with welcome message on left, profile and notifications on right
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  // Left side: Welcome message
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Welcome back!',
-                                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: const Color(0xFF2D5016), // Dark green for better contrast
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'Ready to continue your journey?',
-                                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                          color: const Color(0xFF4A6741), // Medium green
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  
-                                  // Right side: Profile and notifications container
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha:0.8),
-                                      borderRadius: BorderRadius.circular(20),
-                                      border: Border.all(
-                                        color: const Color(0xFF7fb781).withValues(alpha:0.3),
-                                        width: 1.5,
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withValues(alpha:0.08),
-                                          blurRadius: 12,
-                                          offset: const Offset(0, 4),
-                                        ),
-                                        BoxShadow(
-                                          color: const Color(0xFF7fb781).withValues(alpha:0.1),
-                                          blurRadius: 6,
-                                          offset: const Offset(0, 2),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        // User avatar and name
-                                        authState.when(
-                                          data: (user) => user != null
-                                              ? PopupMenuButton<String>(
-                                                  onSelected: (value) {
-                                                    if (value == 'logout') {
-                                                      ref.read(authNotifierProvider.notifier).signOut();
-                                                    }
-                                                  },
-                                                  itemBuilder: (context) => [
-                                                    const PopupMenuItem(
-                                                      value: 'logout',
-                                                      child: Text('Logout'),
-                                                    ),
-                                                  ],
-                                                  child: Row(
-                                                    children: [
-                                                      CircleAvatar(
-                                                        radius: 18,
-                                                        backgroundColor: const Color(0xFF7fb781).withValues(alpha:0.2),
-                                                        backgroundImage: user.photoUrl != null
-                                                            ? NetworkImage(user.photoUrl!)
-                                                            : null,
-                                                        child: user.photoUrl == null
-                                                            ? Text(
-                                                                user.displayName.substring(0, 1).toUpperCase(),
-                                                                style: const TextStyle(
-                                                                  color: Color(0xFF2D5016),
-                                                                  fontWeight: FontWeight.bold,
-                                                                  fontSize: 16,
-                                                                ),
-                                                              )
-                                                            : null,
-                                                      ),
-                                                      const SizedBox(width: 8),
-                                                      Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text(
-                                                            user.displayName,
-                                                            style: const TextStyle(
-                                                              color: Color(0xFF2D5016),
-                                                              fontWeight: FontWeight.bold,
-                                                              fontSize: 14,
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            'Profile',
-                                                            style: TextStyle(
-                                                              color: const Color(0xFF4A6741).withValues(alpha:0.8),
-                                                              fontSize: 12,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                )
-                                              : Row(
-                                                  children: [
-                                                    CircleAvatar(
-                                                      radius: 18,
-                                                      backgroundColor: const Color(0xFF7fb781).withValues(alpha:0.2),
-                                                      child: const Icon(
-                                                        Icons.person,
-                                                        color: Color(0xFF2D5016),
-                                                        size: 18,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 8),
-                                                    TextButton(
-                                                      onPressed: () => context.go('/login'),
-                                                      child: const Text(
-                                                        'Login',
-                                                        style: TextStyle(color: Color(0xFF2D5016)),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                          loading: () => const CircularProgressIndicator(color: Color(0xFF2D5016)),
-                                          error: (_, __) => Row(
-                                            children: [
-                                              CircleAvatar(
-                                                radius: 18,
-                                                backgroundColor: const Color(0xFF7fb781).withValues(alpha:0.2),
-                                                child: const Icon(
-                                                  Icons.person,
-                                                  color: Color(0xFF2D5016),
-                                                  size: 18,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              TextButton(
-                                                onPressed: () => context.go('/login'),
-                                                child: const Text(
-                                                  'Login',
-                                                  style: TextStyle(color: Color(0xFF2D5016)),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        // Notification bell
-                                        Consumer(
-                                          builder: (context, ref, child) {
-                                            final user = ref.watch(authNotifierProvider).value;
-                                            if (user == null) return const SizedBox.shrink();
-                                            
-                                            final unreadCountAsync = ref.watch(unreadNotificationsCountProvider(user.id));
-                                            
-                                            return GestureDetector(
-                                              onTap: () => context.go('/notifications'),
-                                              child: Container(
-                                                padding: const EdgeInsets.all(8),
-                                                decoration: BoxDecoration(
-                                                  color: const Color(0xFF7fb781).withValues(alpha:0.2),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                child: Stack(
-                                                  children: [
-                                                    const Icon(
-                                                      Icons.notifications_outlined,
-                                                      color: Color(0xFF2D5016),
-                                                      size: 20,
-                                                    ),
-                                                    // Notification badge - only show if there are unread notifications
-                                                    unreadCountAsync.when(
-                                                      data: (count) => count > 0
-                                                          ? Positioned(
-                                                              right: 0,
-                                                              top: 0,
-                                                              child: Container(
-                                                                width: 8,
-                                                                height: 8,
-                                                                decoration: const BoxDecoration(
-                                                                  color: Colors.red,
-                                                                  shape: BoxShape.circle,
-                                                                ),
-                                                              ),
-                                                            )
-                                                          : const SizedBox.shrink(),
-                                                      loading: () => const SizedBox.shrink(),
-                                                      error: (_, __) => const SizedBox.shrink(),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                              Text(
+                                'Welcome back!',
+                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF2D5016),
+                                ),
                               ),
-                              
+                              const SizedBox(height: 4),
+                              Text(
+                                'Ready to continue your journey?',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: const Color(0xFF4A6741),
+                                ),
+                              ),
                             ],
                           ),
-                        ],
-                      ),
+                        ),
+                        
+                        const SizedBox(width: 16),
+                        
+                        // Profile and notifications
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // User avatar
+                            authState.when(
+                              data: (user) => user != null
+                                  ? PopupMenuButton<String>(
+                                      onSelected: (value) {
+                                        if (value == 'logout') {
+                                          ref.read(authNotifierProvider.notifier).signOut();
+                                        }
+                                      },
+                                      itemBuilder: (context) => [
+                                        const PopupMenuItem(
+                                          value: 'logout',
+                                          child: Text('Logout'),
+                                        ),
+                                      ],
+                                      child: CircleAvatar(
+                                        radius: 20,
+                                        backgroundColor: const Color(0xFF7fb781).withValues(alpha:0.2),
+                                        backgroundImage: user.photoUrl != null
+                                            ? NetworkImage(user.photoUrl!)
+                                            : null,
+                                        child: user.photoUrl == null
+                                            ? Text(
+                                                user.displayName.substring(0, 1).toUpperCase(),
+                                                style: const TextStyle(
+                                                  color: Color(0xFF2D5016),
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                ),
+                                              )
+                                            : null,
+                                      ),
+                                    )
+                                  : CircleAvatar(
+                                      radius: 20,
+                                      backgroundColor: const Color(0xFF7fb781).withValues(alpha:0.2),
+                                      child: const Icon(
+                                        Icons.person,
+                                        color: Color(0xFF2D5016),
+                                        size: 20,
+                                      ),
+                                    ),
+                              loading: () => const CircularProgressIndicator(color: Color(0xFF2D5016)),
+                              error: (_, __) => CircleAvatar(
+                                radius: 20,
+                                backgroundColor: const Color(0xFF7fb781).withValues(alpha:0.2),
+                                child: const Icon(
+                                  Icons.person,
+                                  color: Color(0xFF2D5016),
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                            
+                            const SizedBox(width: 12),
+                            
+                            // Notification bell
+                            Consumer(
+                              builder: (context, ref, child) {
+                                final user = ref.watch(authNotifierProvider).value;
+                                if (user == null) return const SizedBox.shrink();
+                                
+                                final unreadCountAsync = ref.watch(unreadNotificationsCountProvider(user.id));
+                                
+                                return GestureDetector(
+                                  onTap: () => context.go('/notifications'),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF7fb781).withValues(alpha:0.2),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Stack(
+                                      children: [
+                                        const Icon(
+                                          Icons.notifications_outlined,
+                                          color: Color(0xFF2D5016),
+                                          size: 20,
+                                        ),
+                                        unreadCountAsync.when(
+                                          data: (count) => count > 0
+                                              ? Positioned(
+                                                  right: 0,
+                                                  top: 0,
+                                                  child: Container(
+                                                    width: 8,
+                                                    height: 8,
+                                                    decoration: const BoxDecoration(
+                                                      color: Colors.red,
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          loading: () => const SizedBox.shrink(),
+                                          error: (_, __) => const SizedBox.shrink(),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
