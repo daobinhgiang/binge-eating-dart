@@ -165,6 +165,77 @@ class FirebaseAnalyticsService {
     await trackFeatureEngagement('todo_completion');
   }
 
+  /// Track urge-relapse button usage for critical user engagement
+  Future<void> trackUrgeRelapseButtonUsage() async {
+    try {
+      await _analytics.logEvent(
+        name: 'urge_relapse_button_clicked',
+        parameters: {
+          'timestamp': DateTime.now().millisecondsSinceEpoch,
+          'user_id': _auth.currentUser?.uid ?? 'anonymous',
+          'button_location': 'home_screen',
+          'button_text': 'I have an urge to relapse',
+          'critical_feature': 'true', // Changed from bool to string
+        },
+      );
+    } catch (e) {
+      print('Error tracking urge relapse button usage: $e');
+    }
+  }
+
+  /// Track urge help dialog interactions
+  Future<void> trackUrgeHelpDialogInteraction(String action) async {
+    try {
+      await _analytics.logEvent(
+        name: 'urge_help_dialog_interaction',
+        parameters: {
+          'timestamp': DateTime.now().millisecondsSinceEpoch,
+          'user_id': _auth.currentUser?.uid ?? 'anonymous',
+          'action': action,
+          'dialog_type': 'urge_help',
+        },
+      );
+    } catch (e) {
+      print('Error tracking urge help dialog interaction: $e');
+    }
+  }
+
+  /// Track user crisis moments for critical intervention
+  Future<void> trackCrisisMoment(String crisisType, {Map<String, dynamic>? additionalData}) async {
+    try {
+      await _analytics.logEvent(
+        name: 'crisis_moment',
+        parameters: {
+          'timestamp': DateTime.now().millisecondsSinceEpoch,
+          'user_id': _auth.currentUser?.uid ?? 'anonymous',
+          'crisis_type': crisisType,
+          'critical_alert': 'true', // Changed from bool to string
+          'intervention_needed': 'true', // Changed from bool to string
+          ...?additionalData,
+        },
+      );
+    } catch (e) {
+      print('Error tracking crisis moment: $e');
+    }
+  }
+
+  /// Track app usage patterns for retention analysis
+  Future<void> trackAppUsagePattern(String pattern, {Map<String, dynamic>? metadata}) async {
+    try {
+      await _analytics.logEvent(
+        name: 'app_usage_pattern',
+        parameters: {
+          'timestamp': DateTime.now().millisecondsSinceEpoch,
+          'user_id': _auth.currentUser?.uid ?? 'anonymous',
+          'pattern': pattern,
+          ...?metadata,
+        },
+      );
+    } catch (e) {
+      print('Error tracking app usage pattern: $e');
+    }
+  }
+
   /// Track user onboarding completion
   Future<void> trackOnboardingCompletion() async {
     try {

@@ -70,3 +70,21 @@ final userPropertiesProvider = Provider<Future<void> Function({
     );
   };
 });
+
+/// Provider for tracking urge-relapse button usage
+final urgeRelapseButtonTrackingProvider = Provider<Future<void> Function()>((ref) {
+  final analyticsService = ref.read(firebaseAnalyticsServiceProvider);
+  
+  return () async {
+    await analyticsService.trackUrgeRelapseButtonUsage();
+  };
+});
+
+/// Provider for tracking urge help dialog interactions
+final urgeHelpDialogTrackingProvider = Provider<Future<void> Function(String)>((ref) {
+  final analyticsService = ref.read(firebaseAnalyticsServiceProvider);
+  
+  return (String action) async {
+    await analyticsService.trackUrgeHelpDialogInteraction(action);
+  };
+});

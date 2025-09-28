@@ -5,6 +5,7 @@ import '../widgets/comforting_background.dart';
 import '../providers/auth_provider.dart';
 import '../providers/todo_provider.dart';
 import '../providers/analytics_provider.dart';
+import '../providers/firebase_analytics_provider.dart';
 import '../providers/app_notification_provider.dart';
 import '../models/lesson.dart';
 import '../models/todo_item.dart';
@@ -410,7 +411,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(
-                        onTap: _showUrgeHelpDialog,
+                        onTap: () {
+                          // Track analytics for urge-relapse button usage
+                          final trackUrgeButton = ref.read(urgeRelapseButtonTrackingProvider);
+                          trackUrgeButton();
+                          _showUrgeHelpDialog();
+                        },
                         borderRadius: BorderRadius.circular(16),
                         splashColor: const Color(0xFF7fb781).withValues(alpha:0.1),
                         highlightColor: const Color(0xFF7fb781).withValues(alpha:0.05),
@@ -1918,6 +1924,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   }
   
   void _showUrgeHelpDialog() {
+    // Track dialog opening
+    final trackDialog = ref.read(urgeHelpDialogTrackingProvider);
+    trackDialog('dialog_opened');
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -1965,7 +1975,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              // Track dialog close
+              final trackDialog = ref.read(urgeHelpDialogTrackingProvider);
+              trackDialog('dialog_closed');
+              Navigator.of(context).pop();
+            },
             child: const Text('Close'),
           ),
         ],
@@ -2031,6 +2046,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   // Old lesson navigation methods removed
   
   void _navigateToUrgeSurfing() {
+    // Track urge surfing navigation from help dialog
+    final trackDialog = ref.read(urgeHelpDialogTrackingProvider);
+    trackDialog('urge_surfing_navigation');
     context.push('/tools/urge-surfing');
   }
   
