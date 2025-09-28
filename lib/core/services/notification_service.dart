@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import '../../models/regular_eating.dart';
+import 'firebase_token_service.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -13,6 +14,7 @@ class NotificationService {
 
   final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  final FirebaseTokenService _tokenService = FirebaseTokenService();
 
   bool _isInitialized = false;
 
@@ -192,6 +194,26 @@ class NotificationService {
     );
   }
 
+  /// Initialize token service for a user
+  Future<void> _initializeTokenService(String userId) async {
+    try {
+      // Save the current FCM token
+      await _tokenService.saveUserToken(userId);
+      
+      // Set up token refresh listener
+      _tokenService.setupTokenRefreshListener(userId);
+      
+      if (kDebugMode) {
+        print('Token service initialized for user $userId');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to initialize token service: $e');
+      }
+      // Don't rethrow - this is not critical for app functionality
+    }
+  }
+
   /// Schedule regular eating notifications based on user settings
   Future<void> scheduleRegularEatingNotifications(RegularEating regularEating) async {
     if (!_isInitialized) {
@@ -199,7 +221,10 @@ class NotificationService {
     }
 
     try {
-      // Cancel existing notifications first
+      // Save FCM token for Cloud Functions
+      await _tokenService.saveUserToken(regularEating.userId);
+
+      // Cancel existing local notifications first
       await cancelRegularEatingNotifications();
 
       // Create notification channel for Android
@@ -216,15 +241,16 @@ class NotificationService {
       }
 
       if (kIsWeb) {
-        // For web, we'll rely on Firebase messaging for notifications
+        // For web, we rely entirely on Firebase Cloud Functions
         if (kDebugMode) {
-          print('Web platform: Regular eating notifications will be handled via Firebase messaging');
+          print('Web platform: Regular eating notifications will be handled via Firebase Cloud Functions');
           print('Calculated ${mealTimes.length} meal times for the next 7 days');
         }
         return;
       }
 
-      // Schedule notifications for each meal time (mobile platforms only)
+      // For mobile platforms, we can still use local notifications as backup
+      // But Cloud Functions will be the primary method
       for (int i = 0; i < mealTimes.length; i++) {
         final mealTime = mealTimes[i];
         final mealNumber = (i % 4) + 1; // 1-4 meals per day
@@ -238,7 +264,7 @@ class NotificationService {
       }
 
       if (kDebugMode) {
-        print('Scheduled ${mealTimes.length} regular eating notifications');
+        print('Scheduled ${mealTimes.length} regular eating notifications (local + Cloud Functions)');
       }
     } catch (e) {
       if (kDebugMode) {
@@ -473,6 +499,34 @@ class NotificationService {
     } catch (e) {
       if (kDebugMode) {
         print('Failed to unsubscribe from regular_eating topic: $e');
+      }
+    }
+  }
+
+  /// Remove all tokens for a user (when they log out)
+  Future<void> removeUserTokens(String userId) async {
+    try {
+      await _tokenService.removeAllUserTokens(userId);
+      if (kDebugMode) {
+        print('Removed all tokens for user $userId');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to remove user tokens: $e');
+      }
+    }
+  }
+
+  /// Update token last used timestamp
+  Future<void> updateTokenLastUsed(String userId) async {
+    try {
+      final token = await getFirebaseToken();
+      if (token != null) {
+        await _tokenService.updateTokenLastUsed(userId, token);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to update token last used: $e');
       }
     }
   }
