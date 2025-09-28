@@ -27,6 +27,7 @@ import 'screens/todos/add_todo_screen.dart';
 import 'screens/chatbot/chatbot_screen.dart';
 import 'screens/profile/regular_eating_screen.dart';
 import 'screens/profile/notification_settings_screen.dart';
+import 'screens/notifications/notifications_screen.dart';
 import 'providers/auth_provider.dart';
 import 'models/user_model.dart';
 
@@ -246,6 +247,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/profile/notifications',
       builder: (context, state) => const AuthGuard(child: NotificationSettingsScreen()),
+    ),
+    GoRoute(
+      path: '/notifications',
+      builder: (context, state) => const AuthGuard(child: NotificationsScreen()),
     ),
   ],
 );

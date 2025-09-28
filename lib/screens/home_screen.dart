@@ -5,14 +5,12 @@ import '../widgets/comforting_background.dart';
 import '../providers/auth_provider.dart';
 import '../providers/todo_provider.dart';
 import '../providers/analytics_provider.dart';
+import '../providers/app_notification_provider.dart';
 import '../models/lesson.dart';
 import '../models/todo_item.dart';
 import '../screens/lessons/lesson_1_1.dart';
 import '../screens/lessons/lesson_1_2.dart';
 import '../screens/lessons/lesson_1_3.dart';
-import '../screens/lessons/lesson_2_1.dart';
-import '../screens/lessons/lesson_2_2.dart';
-import '../screens/lessons/lesson_2_3.dart';
 import '../screens/lessons/lesson_3_1.dart';
 import '../screens/lessons/lesson_3_2.dart';
 import '../screens/lessons/lesson_3_3.dart';
@@ -304,37 +302,52 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                         ),
                                         const SizedBox(width: 12),
                                         // Notification bell
-                                        GestureDetector(
-                                          onTap: () => _showNotifications(context),
-                                          child: Container(
-                                            padding: const EdgeInsets.all(8),
-                                            decoration: BoxDecoration(
-                                              color: const Color(0xFF7fb781).withValues(alpha:0.2),
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: Stack(
-                                              children: [
-                                                const Icon(
-                                                  Icons.notifications_outlined,
-                                                  color: Color(0xFF2D5016),
-                                                  size: 20,
+                                        Consumer(
+                                          builder: (context, ref, child) {
+                                            final user = ref.watch(authNotifierProvider).value;
+                                            if (user == null) return const SizedBox.shrink();
+                                            
+                                            final unreadCountAsync = ref.watch(unreadNotificationsCountProvider(user.id));
+                                            
+                                            return GestureDetector(
+                                              onTap: () => context.go('/notifications'),
+                                              child: Container(
+                                                padding: const EdgeInsets.all(8),
+                                                decoration: BoxDecoration(
+                                                  color: const Color(0xFF7fb781).withValues(alpha:0.2),
+                                                  shape: BoxShape.circle,
                                                 ),
-                                                // Notification badge
-                                                Positioned(
-                                                  right: 0,
-                                                  top: 0,
-                                                  child: Container(
-                                                    width: 8,
-                                                    height: 8,
-                                                    decoration: const BoxDecoration(
-                                                      color: Colors.red,
-                                                      shape: BoxShape.circle,
+                                                child: Stack(
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.notifications_outlined,
+                                                      color: Color(0xFF2D5016),
+                                                      size: 20,
                                                     ),
-                                                  ),
+                                                    // Notification badge - only show if there are unread notifications
+                                                    unreadCountAsync.when(
+                                                      data: (count) => count > 0
+                                                          ? Positioned(
+                                                              right: 0,
+                                                              top: 0,
+                                                              child: Container(
+                                                                width: 8,
+                                                                height: 8,
+                                                                decoration: const BoxDecoration(
+                                                                  color: Colors.red,
+                                                                  shape: BoxShape.circle,
+                                                                ),
+                                                              ),
+                                                            )
+                                                          : const SizedBox.shrink(),
+                                                      loading: () => const SizedBox.shrink(),
+                                                      error: (_, __) => const SizedBox.shrink(),
+                                                    ),
+                                                  ],
                                                 ),
-                                              ],
-                                            ),
-                                          ),
+                                              ),
+                                            );
+                                          },
                                         ),
                                       ],
                                     ),
@@ -2021,180 +2034,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     context.push('/tools/urge-surfing');
   }
   
-  void _showNotifications(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            Icon(Icons.notifications, color: const Color(0xFF7fb781)),
-            const SizedBox(width: 10),
-            const Expanded(
-              child: Text('Notifications'),
-            ),
-          ],
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Sample notifications
-              _buildNotificationItem(
-                context,
-                'New lesson available',
-                'Lesson 5.3: Building Healthy Relationships with Food is now ready',
-                Icons.book,
-                Colors.blue,
-                '2 hours ago',
-              ),
-              const SizedBox(height: 12),
-              _buildNotificationItem(
-                context,
-                'Journal reminder',
-                'Don\'t forget to log your thoughts and feelings today',
-                Icons.note,
-                Colors.orange,
-                '1 day ago',
-              ),
-              const SizedBox(height: 12),
-              _buildNotificationItem(
-                context,
-                'Progress update',
-                'Great job! You\'ve completed 3 lessons this week',
-                Icons.celebration,
-                const Color(0xFF7fb781),
-                '2 days ago',
-              ),
-              const SizedBox(height: 12),
-              _buildNotificationItem(
-                context,
-                'Wellness tip',
-                'Remember to practice mindfulness during meal times',
-                Icons.favorite,
-                Colors.pink,
-                '3 days ago',
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              // Navigate to notifications screen if you have one
-              // context.push('/notifications');
-            },
-            child: const Text('View All'),
-          ),
-        ],
-      ),
-    );
-  }
   
-  Widget _buildNotificationItem(BuildContext context, String title, String description, IconData icon, Color color, String time) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            color.withValues(alpha:0.05),
-            color.withValues(alpha:0.02),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: color.withValues(alpha:0.2),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha:0.1),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  color.withValues(alpha:0.3),
-                  color.withValues(alpha:0.15),
-                ],
-              ),
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: color.withValues(alpha:0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Icon(
-              icon,
-              color: color,
-              size: 22,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  description,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha:0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: color.withValues(alpha:0.2),
-                      width: 1,
-                    ),
-                  ),
-                  child: Text(
-                    time,
-                    style: TextStyle(
-                      color: color,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 // Custom painter for dashed lines

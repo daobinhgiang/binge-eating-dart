@@ -256,7 +256,7 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
         Switch(
           value: value,
           onChanged: onChanged,
-          activeColor: const Color(0xFF7fb781),
+          activeThumbColor: const Color(0xFF7fb781),
         ),
       ],
     );
