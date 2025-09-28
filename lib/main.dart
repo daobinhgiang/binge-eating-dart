@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'firebase_options.dart';
+import 'core/services/notification_service.dart';
 import 'screens/main_navigation.dart';
 import 'screens/education/article_detail_screen.dart';
 import 'screens/auth/login_screen.dart';
@@ -26,6 +27,7 @@ import 'screens/todos/todos_screen.dart';
 import 'screens/todos/add_todo_screen.dart';
 import 'screens/chatbot/chatbot_screen.dart';
 import 'screens/profile/regular_eating_screen.dart';
+import 'screens/profile/notification_settings_screen.dart';
 import 'providers/auth_provider.dart';
 import 'models/user_model.dart';
 
@@ -41,6 +43,10 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  
+  // Initialize notification service
+  await NotificationService().initialize();
+  
   runApp(const ProviderScope(child: BEDApp()));
 }
 
@@ -240,6 +246,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/profile/regular-eating',
       builder: (context, state) => const AuthGuard(child: RegularEatingScreen()),
+    ),
+    GoRoute(
+      path: '/profile/notifications',
+      builder: (context, state) => const AuthGuard(child: NotificationSettingsScreen()),
     ),
   ],
 );
