@@ -9,6 +9,7 @@ import '../../providers/todo_provider.dart';
 import '../../models/food_diary.dart';
 import '../../models/weight_diary.dart';
 import '../../models/body_image_diary.dart';
+import '../../widgets/tropical_forest_background.dart';
 import 'food_diary_survey_screen.dart';
 import 'weight_diary_survey_screen.dart';
 import 'body_image_diary_survey_screen.dart';
@@ -38,6 +39,8 @@ class JournalScreen extends ConsumerWidget {
         title: const Text('Journal'),
         centerTitle: true,
         automaticallyImplyLeading: false,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         actions: [
           IconButton(
             onPressed: () {
@@ -69,11 +72,12 @@ class JournalScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+      body: TropicalForestBackground(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             // Header with current week
             currentWeekNumber.when(
               data: (weekNumber) => Container(
@@ -335,6 +339,7 @@ class JournalScreen extends ConsumerWidget {
             _buildCombinedRecentEntries(context, currentWeekFoodDiaries, currentWeekWeightDiaries, currentWeekBodyImageDiaries),
           ],
         ),
+      ),
       ),
     );
   }
