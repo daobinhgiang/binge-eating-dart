@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../data/stage_3_data.dart';
 import '../../models/lesson.dart';
 import '../../screens/tools/addressing_setbacks_screen.dart';
@@ -72,11 +73,8 @@ class _LessonS3021ScreenState extends ConsumerState<LessonS3021Screen> {
   }
 
   void _navigateToAddressingSetbacksTool() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => const AddressingSetbacksScreen(),
-      ),
-    );
+    // Navigate to the Addressing Setbacks tool using route
+    context.go('/tools/addressing-setbacks');
   }
 
   void _startAddressingSetbacksExercise() {

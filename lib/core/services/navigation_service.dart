@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../models/todo_item.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/todo_provider.dart';
+import '../../providers/auto_todo_provider.dart';
 import '../../screens/lessons/lesson_1_1.dart';
 import '../../screens/lessons/lesson_1_2.dart';
 import '../../screens/lessons/lesson_1_3.dart';
@@ -23,9 +24,28 @@ import '../../screens/lessons/lesson_s2_2_7.dart';
 import '../../screens/lessons/lesson_s2_3_5.dart';
 import '../../screens/lessons/lesson_s2_7_2_1.dart';
 import '../../screens/lessons/lesson_s3_0_2_1.dart';
+import '../../screens/lessons/lesson_1_2_1.dart';
+import '../../screens/lessons/lesson_s2_5_1.dart';
+import '../../screens/lessons/lesson_s2_5_2.dart';
+import '../../screens/lessons/lesson_s2_6_1.dart';
+import '../../screens/lessons/lesson_s2_6_2.dart';
+import '../../screens/lessons/lesson_s2_6_3.dart';
+import '../../screens/lessons/lesson_s2_7_1.dart';
+import '../../screens/lessons/lesson_s2_7_2.dart';
+import '../../screens/lessons/lesson_s2_7_3.dart';
+import '../../screens/lessons/lesson_s2_7_4.dart';
+import '../../screens/lessons/lesson_s2_7_5.dart';
+import '../../screens/lessons/lesson_s2_7_6.dart';
+import '../../screens/lessons/lesson_s2_7_7.dart';
+import '../../screens/lessons/lesson_s2_7_8.dart';
+
 // Stage 3 lesson imports
 // Assessment imports
 import '../../screens/assessments/assessment_2_1_screen.dart';
+// Journal survey imports
+import '../../screens/journal/food_diary_survey_screen.dart';
+import '../../screens/journal/weight_diary_survey_screen.dart';
+import '../../screens/journal/body_image_diary_survey_screen.dart';
 import '../../screens/assessments/assessment_2_2_screen.dart';
 import '../../screens/assessments/assessment_2_3_screen.dart';
 
@@ -62,6 +82,12 @@ class NavigationService {
         // Mark todo as completed in the background
         ref.read(userTodosProvider(user.id).notifier)
             .markCompletedByActivity(todo.activityId, todo.type);
+            
+        // If this is a lesson, also mark it in the auto todo system
+        if (todo.type == TodoType.lesson) {
+          ref.read(autoTodoInitializationProvider(user.id).notifier)
+              .markLessonCompleted(todo.activityId);
+        }
       }
     } catch (e) {
       // Silently fail - this is a background operation
@@ -77,6 +103,12 @@ class NavigationService {
         // Mark any matching pending todo as completed in the background
         ref.read(userTodosProvider(user.id).notifier)
             .markCompletedByActivity(activityId, type);
+            
+        // If this is a lesson, also mark it in the auto todo system
+        if (type == TodoType.lesson) {
+          ref.read(autoTodoInitializationProvider(user.id).notifier)
+              .markLessonCompleted(activityId);
+        }
       }
     } catch (e) {
       // Silently fail - this is a background operation
@@ -199,9 +231,57 @@ class NavigationService {
 
   // Navigate to journal based on activity ID
   void _navigateToJournal(BuildContext context, TodoItem todo) {
-    // Journal activities would navigate to the journal tab
-    // For now, just navigate to the main journal screen
-    context.go('/journal');
+    // Extract journal type from activity data
+    final journalType = todo.activityData?['journalType'] as String?;
+    
+    if (journalType == null) {
+      // Fallback to main journal screen if no journal type
+      context.go('/journal');
+      return;
+    }
+    
+    // Navigate to specific journal survey based on type
+    switch (journalType) {
+      case 'food_diary':
+        _navigateToFoodDiarySurvey(context);
+        break;
+      case 'body_image_diary':
+        _navigateToBodyImageDiarySurvey(context);
+        break;
+      case 'weight_diary':
+        _navigateToWeightDiarySurvey(context);
+        break;
+      default:
+        // Fallback to main journal screen
+        context.go('/journal');
+    }
+  }
+  
+  // Navigate to food diary survey
+  void _navigateToFoodDiarySurvey(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const FoodDiarySurveyScreen(),
+      ),
+    );
+  }
+  
+  // Navigate to weight diary survey
+  void _navigateToWeightDiarySurvey(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const WeightDiarySurveyScreen(),
+      ),
+    );
+  }
+  
+  // Navigate to body image diary survey
+  void _navigateToBodyImageDiarySurvey(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const BodyImageDiarySurveyScreen(),
+      ),
+    );
   }
 
   // Get lesson screen by chapter and lesson number (only Stage 1 lessons)
@@ -211,6 +291,7 @@ class NavigationService {
         switch (lessonNumber) {
           case 1: return const Lesson11Screen();
           case 2: return const Lesson12Screen();
+          case 21: return const Lesson121Screen(); // 2.1 exercise
           case 3: return const Lesson13Screen();
         }
         break;

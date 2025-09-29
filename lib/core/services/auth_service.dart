@@ -4,6 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../models/user_model.dart';
+import 'auto_todo_service.dart';
 
 class AuthService {
   static final AuthService _instance = AuthService._internal();
@@ -12,6 +13,7 @@ class AuthService {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final AutoTodoService _autoTodoService = AutoTodoService();
   
   // Configure GoogleSignIn with platform-specific client IDs
   late final GoogleSignIn _googleSignIn = GoogleSignIn(
@@ -97,6 +99,9 @@ class AuthService {
             .collection('users')
             .doc(credential.user!.uid)
             .set(userModel.toFirestore());
+            
+        // Initialize todos for the new user
+        await _autoTodoService.initializeUserTodos(credential.user!.uid);
 
         return userModel;
       }
@@ -179,6 +184,10 @@ class AuthService {
               .doc(userCredential.user!.uid)
               .set(userModel.toFirestore());
           print('User saved to Firestore successfully');
+          
+          // Initialize todos for the new user
+          await _autoTodoService.initializeUserTodos(userCredential.user!.uid);
+          print('Auto todos initialized for new user');
         } else {
           print('User exists, updating last login...');
           // Update last login time for existing user
