@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/body_image_diary.dart';
 import '../core/services/body_image_diary_service.dart';
+import '../core/services/firebase_analytics_service.dart';
 
 // Body image diary service provider
 final bodyImageDiaryServiceProvider = Provider<BodyImageDiaryService>((ref) => BodyImageDiaryService());
@@ -43,6 +44,7 @@ final bodyCheckingTrendProvider = FutureProvider.family<List<Map<String, dynamic
 class BodyImageDiaryNotifier extends StateNotifier<AsyncValue<List<BodyImageDiary>>> {
   final BodyImageDiaryService _bodyImageDiaryService;
   final String _userId;
+  final FirebaseAnalyticsService _analytics = FirebaseAnalyticsService();
 
   BodyImageDiaryNotifier(this._bodyImageDiaryService, this._userId) : super(const AsyncValue.loading()) {
     loadCurrentWeekEntries();
@@ -89,6 +91,9 @@ class BodyImageDiaryNotifier extends StateNotifier<AsyncValue<List<BodyImageDiar
 
       // Refresh current state
       await loadCurrentWeekEntries();
+      
+      // Track body image diary entry creation
+      await _analytics.trackBodyImageDiaryEntry();
       
       return entry;
     } catch (e) {

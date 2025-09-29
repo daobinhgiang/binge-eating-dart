@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../widgets/comforting_background.dart';
 import '../providers/auth_provider.dart';
 import '../providers/todo_provider.dart';
 import '../providers/analytics_provider.dart';
+import '../providers/firebase_analytics_provider.dart';
+import '../providers/app_notification_provider.dart';
 import '../models/lesson.dart';
 import '../models/todo_item.dart';
 import '../screens/lessons/lesson_1_1.dart';
 import '../screens/lessons/lesson_1_2.dart';
 import '../screens/lessons/lesson_1_3.dart';
-import '../screens/lessons/lesson_2_1.dart';
-import '../screens/lessons/lesson_2_2.dart';
-import '../screens/lessons/lesson_2_3.dart';
 import '../screens/lessons/lesson_3_1.dart';
 import '../screens/lessons/lesson_3_2.dart';
 import '../screens/lessons/lesson_3_3.dart';
@@ -51,184 +51,476 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStateMixin {
+  AnimationController? _fadeController;
+  AnimationController? _scaleController;
+  ScrollController? _scrollController;
+  Animation<double>? _fadeAnimation;
+  Animation<double>? _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _scaleController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+    
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _fadeController!,
+      curve: Curves.easeInOut,
+    ));
+    
+    _scaleAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _scaleController!,
+      curve: Curves.elasticOut,
+    ));
+    
+    _fadeController?.forward();
+    _scaleController?.forward();
+  }
+
+  @override
+  void dispose() {
+    _scrollController?.dispose();
+    _fadeController?.dispose();
+    _scaleController?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authNotifierProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('BED Support App'),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-        actions: [
-          authState.when(
-            data: (user) => user != null
-                ? PopupMenuButton<String>(
-                    onSelected: (value) {
-                      if (value == 'logout') {
-                        ref.read(authNotifierProvider.notifier).signOut();
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(
-                        value: 'logout',
-                        child: Text('Logout'),
-                      ),
+      body: ScrollAwareComfortingBackground(
+        scrollController: _scrollController ?? ScrollController(),
+        child: CustomScrollView(
+          controller: _scrollController ?? ScrollController(),
+          slivers: [
+            // Simplified header to avoid layout issues
+            SliverToBoxAdapter(
+              child: Container(
+                height: 120,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      const Color(0xFF7fb781).withValues(alpha:0.15),
+                      const Color(0xFF7ea66f).withValues(alpha:0.12),
+                      const Color(0xFF6e955f).withValues(alpha:0.08),
+                      const Color(0xFF5a7f4f).withValues(alpha:0.05),
                     ],
-                    child: CircleAvatar(
-                      backgroundImage: user.photoUrl != null
-                          ? NetworkImage(user.photoUrl!)
-                          : null,
-                      child: user.photoUrl == null
-                          ? Text(user.displayName.substring(0, 1).toUpperCase())
-                          : null,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha:0.03),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
                     ),
-                  )
-                : TextButton(
-                    onPressed: () => context.go('/login'),
-                    child: const Text('Login'),
-                  ),
-            loading: () => const CircularProgressIndicator(),
-            error: (_, __) => TextButton(
-              onPressed: () => context.go('/login'),
-              child: const Text('Login'),
-            ),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Welcome back message
-            Text(
-              'Welcome back!',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            
-            // Urge help button
-            Card(
-              color: Colors.red[50],
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.red[200]!, width: 1),
-              ),
-              child: InkWell(
-                onTap: _showUrgeHelpDialog,
-                borderRadius: BorderRadius.circular(12),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.red[100],
-                          shape: BoxShape.circle,
+                  ],
+                ),
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Welcome message
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Welcome back!',
+                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF2D5016),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Ready to continue your journey?',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: const Color(0xFF4A6741),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        child: Icon(Icons.psychology, color: Colors.red[700]),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        
+                        const SizedBox(width: 16),
+                        
+                        // Profile and notifications
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
-                              'I have an urge to relapse',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red[700],
+                            // User avatar
+                            authState.when(
+                              data: (user) => user != null
+                                  ? PopupMenuButton<String>(
+                                      onSelected: (value) {
+                                        if (value == 'logout') {
+                                          ref.read(authNotifierProvider.notifier).signOut();
+                                        }
+                                      },
+                                      itemBuilder: (context) => [
+                                        const PopupMenuItem(
+                                          value: 'logout',
+                                          child: Text('Logout'),
+                                        ),
+                                      ],
+                                      child: CircleAvatar(
+                                        radius: 20,
+                                        backgroundColor: const Color(0xFF7fb781).withValues(alpha:0.2),
+                                        backgroundImage: user.photoUrl != null
+                                            ? NetworkImage(user.photoUrl!)
+                                            : null,
+                                        child: user.photoUrl == null
+                                            ? Text(
+                                                user.displayName.substring(0, 1).toUpperCase(),
+                                                style: const TextStyle(
+                                                  color: Color(0xFF2D5016),
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                ),
+                                              )
+                                            : null,
+                                      ),
+                                    )
+                                  : CircleAvatar(
+                                      radius: 20,
+                                      backgroundColor: const Color(0xFF7fb781).withValues(alpha:0.2),
+                                      child: const Icon(
+                                        Icons.person,
+                                        color: Color(0xFF2D5016),
+                                        size: 20,
+                                      ),
+                                    ),
+                              loading: () => const CircularProgressIndicator(color: Color(0xFF2D5016)),
+                              error: (_, __) => CircleAvatar(
+                                radius: 20,
+                                backgroundColor: const Color(0xFF7fb781).withValues(alpha:0.2),
+                                child: const Icon(
+                                  Icons.person,
+                                  color: Color(0xFF2D5016),
+                                  size: 20,
+                                ),
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Get immediate help and coping strategies',
-                              style: Theme.of(context).textTheme.bodySmall,
+                            
+                            const SizedBox(width: 12),
+                            
+                            // Notification bell
+                            Consumer(
+                              builder: (context, ref, child) {
+                                final user = ref.watch(authNotifierProvider).value;
+                                if (user == null) return const SizedBox.shrink();
+                                
+                                final unreadCountAsync = ref.watch(unreadNotificationsCountProvider(user.id));
+                                
+                                return GestureDetector(
+                                  onTap: () => context.go('/notifications'),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF7fb781).withValues(alpha:0.2),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Stack(
+                                      children: [
+                                        const Icon(
+                                          Icons.notifications_outlined,
+                                          color: Color(0xFF2D5016),
+                                          size: 20,
+                                        ),
+                                        unreadCountAsync.when(
+                                          data: (count) => count > 0
+                                              ? Positioned(
+                                                  right: 0,
+                                                  top: 0,
+                                                  child: Container(
+                                                    width: 8,
+                                                    height: 8,
+                                                    decoration: const BoxDecoration(
+                                                      color: Colors.red,
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          loading: () => const SizedBox.shrink(),
+                                          error: (_, __) => const SizedBox.shrink(),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           ],
                         ),
-                      ),
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        size: 16,
-                        color: Colors.red[700],
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
             
-            const SizedBox(height: 12),
-            
-            // Inquiries button
-            Card(
-              color: Colors.blue[50],
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.blue[200]!, width: 1),
-              ),
-              child: InkWell(
-                onTap: () => context.push('/chatbot'),
-                borderRadius: BorderRadius.circular(12),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.blue[100],
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(Icons.question_answer, color: Colors.blue[700]),
+            // Content
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  // Animated content wrapper
+                  FadeTransition(
+                    opacity: _fadeAnimation ?? const AlwaysStoppedAnimation(1.0),
+                    child: ScaleTransition(
+                      scale: _scaleAnimation ?? const AlwaysStoppedAnimation(1.0),
+                      child: Column(
+                        children: [
+                          // Urge help button with beautiful gradient and colorful accents
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFFF0F8F0), // Very light green tint
+                          Color(0xFFE8F5E8), // Light green tint
+                          Color(0xFFE0F2E0), // Slightly more green
+                        ],
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Inquiries',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blue[700],
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: const Color(0xFF7fb781).withValues(alpha:0.2),
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF7fb781).withValues(alpha:0.2),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha:0.05),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          // Track analytics for urge-relapse button usage
+                          final trackUrgeButton = ref.read(urgeRelapseButtonTrackingProvider);
+                          trackUrgeButton();
+                          _showUrgeHelpDialog();
+                        },
+                        borderRadius: BorderRadius.circular(16),
+                        splashColor: const Color(0xFF7fb781).withValues(alpha:0.1),
+                        highlightColor: const Color(0xFF7fb781).withValues(alpha:0.05),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFF7fb781), Color(0xFF7ea66f), Color(0xFF6e955f)],
+                                  ),
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFF7fb781).withValues(alpha:0.4),
+                                      blurRadius: 12,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: const Icon(
+                                  Icons.psychology,
+                                  color: Colors.white,
+                                  size: 24,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Chat with our assistant to find helpful resources',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'I have an urge to relapse',
+                                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      'Get immediate help and coping strategies',
+                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha:0.8),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.arrow_forward_ios,
+                                  size: 16,
+                                  color: Color(0xFF7fb781),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        size: 16,
-                        color: Colors.blue[700],
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Inquiries button with beautiful gradient and colorful accents
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFFF5F9F5), // Very light green tint
+                          Color(0xFFEDF5ED), // Light green tint
+                          Color(0xFFE5F0E5), // Slightly more green
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: const Color(0xFF7fb781).withValues(alpha:0.15),
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF7fb781).withValues(alpha:0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha:0.03),
+                          blurRadius: 4,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () => context.push('/chatbot'),
+                        borderRadius: BorderRadius.circular(16),
+                        splashColor: const Color(0xFF7fb781).withValues(alpha:0.1),
+                        highlightColor: const Color(0xFF7fb781).withValues(alpha:0.05),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFF7fb781), Color(0xFF7ea66f), Color(0xFF6e955f)],
+                                  ),
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFF7fb781).withValues(alpha:0.4),
+                                      blurRadius: 12,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: const Icon(
+                                  Icons.question_answer,
+                                  color: Colors.white,
+                                  size: 24,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Inquiries',
+                                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      'Chat with our assistant to find helpful resources',
+                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha:0.8),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.arrow_forward_ios,
+                                  size: 16,
+                                  color: Color(0xFF7fb781),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Next Lesson Recommendation
+                  authState.when(
+                    data: (user) => user != null 
+                        ? _buildAuthenticatedContent()
+                        : _buildGuestContentSection(),
+                    loading: () => const SizedBox.shrink(),
+                    error: (_, __) => _buildGuestContentSection(),
+                  ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ]),
               ),
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Next Lesson Recommendation
-            authState.when(
-              data: (user) => user != null 
-                  ? _buildAuthenticatedContent()
-                  : _buildGuestContentSection(),
-              loading: () => const SizedBox.shrink(),
-              error: (_, __) => _buildGuestContentSection(),
             ),
           ],
         ),
@@ -268,42 +560,54 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildLessonRecommendationCard(BuildContext context, Lesson? nextLesson) {
     if (nextLesson == null) {
-      return Card(
-        child: ListTile(
-          leading: CircleAvatar(
-            backgroundColor: Colors.green.withValues(alpha: 0.1),
-            child: const Icon(Icons.celebration, color: Colors.green),
+      return Container(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFF0F8F0), // Very light green tint
+              Color(0xFFE8F5E8), // Light green tint
+              Color(0xFFE0F2E0), // Slightly more green
+            ],
           ),
-          title: const Text('All lessons completed!'),
-          subtitle: const Text('Great job! Explore the education section for more content.'),
-          trailing: const Icon(Icons.arrow_forward_ios),
-          onTap: () => context.go('/education'),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF7fb781).withValues(alpha:0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-      );
-    }
-
-    return Card(
-      elevation: 4,
-      child: InkWell(
-        onTap: () => _navigateToNextLesson(nextLesson),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => context.go('/education'),
+            borderRadius: BorderRadius.circular(16),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
                 children: [
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF7fb781), Color(0xFF7ea66f)],
+                      ),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF7fb781).withValues(alpha:0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                    child: Icon(
-                      Icons.play_circle_fill,
-                      color: Theme.of(context).colorScheme.primary,
-                      size: 32,
+                    child: const Icon(
+                      Icons.celebration,
+                      color: Colors.white,
+                      size: 24,
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -312,48 +616,159 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Next Lesson',
-                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          nextLesson.title,
+                          'All lessons completed!',
                           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Great job! Explore the education section for more content.',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.black87,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const Icon(Icons.arrow_forward_ios),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha:0.8),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.arrow_forward_ios,
+                      size: 16,
+                      color: Color(0xFF7fb781),
+                    ),
+                  ),
                 ],
               ),
-              const SizedBox(height: 12),
-              Text(
-                nextLesson.description,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[600],
-              ),
             ),
-            const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFFF5F9F5), // Very light green tint
+            Color(0xFFEDF5ED), // Light green tint
+            Color(0xFFE5F0E5), // Slightly more green
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF7fb781).withValues(alpha:0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _navigateToNextLesson(nextLesson),
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF7fb781), Color(0xFF7fb781)],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF7fb781).withValues(alpha:0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.play_circle_fill,
+                        color: Colors.white,
+                        size: 32,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Next Lesson',
+                            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                              color: Colors.black87,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            nextLesson.title,
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha:0.8),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
+                        color: Color(0xFF7fb781),
+                      ),
+                    ),
+                  ],
                 ),
-                child: Text(
-                  '${nextLesson.slides.length} slides',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.w500,
+                const SizedBox(height: 16),
+                Text(
+                  nextLesson.description,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.black87,
                   ),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF7fb781), Color(0xFF7ea66f)],
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    '${nextLesson.slides.length} slides',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ],
             ),
+          ),
         ),
       ),
     );
@@ -393,38 +808,201 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-            Text(
-              'Featured Content',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+        Text(
+          'Featured Content',
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 16),
+        
+        // Understanding BED card
+        Container(
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFFF0F8F0), // Very light green tint
+                Color(0xFFE8F5E8), // Light green tint
+                Color(0xFFE0F2E0), // Slightly more green
+              ],
             ),
-            const SizedBox(height: 12),
-            Card(
-              child: ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                  child: const Icon(Icons.psychology),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF7fb781).withValues(alpha:0.05),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => context.go('/education'),
+              borderRadius: BorderRadius.circular(16),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF7fb781), Color(0xFF7fb781)],
+                        ),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF7fb781).withValues(alpha:0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.psychology,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Understanding Binge Eating Disorder',
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            'Learn about the causes, symptoms, and impact of BED',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha:0.8),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
+                        color: Color(0xFF7fb781),
+                      ),
+                    ),
+                  ],
                 ),
-                title: const Text('Understanding Binge Eating Disorder'),
-                subtitle: const Text('Learn about the causes, symptoms, and impact of BED'),
-                trailing: const Icon(Icons.arrow_forward_ios),
-                onTap: () => context.go('/education'),
               ),
             ),
-            Card(
-              child: ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-                  child: const Icon(Icons.favorite),
+          ),
+        ),
+        
+        const SizedBox(height: 16),
+        
+        // Self-Care Strategies card
+        Container(
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFFF5F9F5), // Very light green tint
+                Color(0xFFEDF5ED), // Light green tint
+                Color(0xFFE5F0E5), // Slightly more green
+              ],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF7fb781).withValues(alpha:0.05),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => context.go('/education'),
+              borderRadius: BorderRadius.circular(16),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF7fb781), Color(0xFF7ea66f)],
+                        ),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF7fb781).withValues(alpha:0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.favorite,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Self-Care Strategies',
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            'Practical techniques for managing difficult moments',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha:0.8),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
+                        color: Color(0xFF7fb781),
+                      ),
+                    ),
+                  ],
                 ),
-                title: const Text('Self-Care Strategies'),
-                subtitle: const Text('Practical techniques for managing difficult moments'),
-                trailing: const Icon(Icons.arrow_forward_ios),
-                onTap: () => context.go('/education'),
               ),
             ),
-          ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -596,12 +1174,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.blue.withValues(alpha: 0.1),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF7fb781), Color(0xFF7ea66f)],
+                    ),
                     borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF7fb781).withValues(alpha:0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.analytics,
-                    color: Colors.blue[700],
+                    color: Colors.white,
                     size: 32,
                   ),
                 ),
@@ -614,7 +1201,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         'Journal Analysis',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue[700],
+                          color: const Color(0xFF7fb781),
                         ),
                       ),
                       if (weekNumber != null && entriesAnalyzed != null)
@@ -1053,12 +1640,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        gradient: LinearGradient(
+          colors: [
+            color.withValues(alpha:0.15),
+            color.withValues(alpha:0.08),
+          ],
+        ),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: color.withValues(alpha:0.3),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha:0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 6),
           Text(
             value,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
@@ -1079,16 +1691,38 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildTodoPreviewItem(BuildContext context, TodoItem todo) {
+    Color statusColor;
+    IconData statusIcon;
+    
+    if (todo.isOverdue) {
+      statusColor = const Color(0xFFE53E3E); // Red
+      statusIcon = Icons.warning;
+    } else if (todo.isDueToday) {
+      statusColor = const Color(0xFFFF9500); // Orange
+      statusIcon = Icons.schedule;
+    } else {
+      statusColor = const Color(0xFF4A90E2); // Blue
+      statusIcon = Icons.check_circle_outline;
+    }
+    
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
           Container(
-            width: 8,
-            height: 8,
+            padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: todo.isOverdue ? Colors.red : (todo.isDueToday ? Colors.orange : Colors.grey),
+              color: statusColor.withValues(alpha:0.1),
               shape: BoxShape.circle,
+              border: Border.all(
+                color: statusColor.withValues(alpha:0.3),
+                width: 1,
+              ),
+            ),
+            child: Icon(
+              statusIcon,
+              color: statusColor,
+              size: 12,
             ),
           ),
           const SizedBox(width: 12),
@@ -1104,11 +1738,35 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                Text(
-                  '${todo.typeDisplayName} • Due ${_formatDueDate(todo.dueDate)}',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: _getTypeColor(todo.type).withValues(alpha:0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: _getTypeColor(todo.type).withValues(alpha:0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        todo.typeDisplayName,
+                        style: TextStyle(
+                          color: _getTypeColor(todo.type),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Due ${_formatDueDate(todo.dueDate)}',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -1116,6 +1774,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ],
       ),
     );
+  }
+
+  Color _getTypeColor(TodoType type) {
+    switch (type) {
+      case TodoType.lesson:
+        return const Color(0xFF4CAF50); // Green
+      case TodoType.journal:
+        return const Color(0xFF9C27B0); // Purple
+      case TodoType.tool:
+        return const Color(0xFF2196F3); // Blue
+    }
   }
 
   Widget _buildTodoLoadingCard(BuildContext context) {
@@ -1169,6 +1838,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
   
   void _showUrgeHelpDialog() {
+    // Track dialog opening
+    final trackDialog = ref.read(urgeHelpDialogTrackingProvider);
+    trackDialog('dialog_opened');
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -1216,7 +1889,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              // Track dialog close
+              final trackDialog = ref.read(urgeHelpDialogTrackingProvider);
+              trackDialog('dialog_closed');
+              Navigator.of(context).pop();
+            },
             child: const Text('Close'),
           ),
         ],
@@ -1282,6 +1960,123 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   // Old lesson navigation methods removed
   
   void _navigateToUrgeSurfing() {
+    // Track urge surfing navigation from help dialog
+    final trackDialog = ref.read(urgeHelpDialogTrackingProvider);
+    trackDialog('urge_surfing_navigation');
     context.push('/tools/urge-surfing');
   }
+  
+  
+}
+
+// Custom painter for dashed lines
+class DashedLinePainter extends CustomPainter {
+  final Color color;
+  final double strokeWidth;
+  final double dashWidth;
+  final double dashSpace;
+
+  DashedLinePainter({
+    required this.color,
+    required this.strokeWidth,
+    required this.dashWidth,
+    required this.dashSpace,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    double startX = 0;
+    while (startX < size.width) {
+      canvas.drawLine(
+        Offset(startX, size.height / 2),
+        Offset(startX + dashWidth, size.height / 2),
+        paint,
+      );
+      startX += dashWidth + dashSpace;
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
+}
+
+// Custom painter for comforting background with subtle nature elements
+class ComfortingBackgroundPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint();
+    
+    // Draw subtle circles for a calming effect
+    paint.color = const Color(0xFF7fb781).withValues(alpha:0.03);
+    canvas.drawCircle(
+      Offset(size.width * 0.1, size.height * 0.2),
+      size.width * 0.15,
+      paint,
+    );
+    
+    paint.color = const Color(0xFF7ea66f).withValues(alpha:0.02);
+    canvas.drawCircle(
+      Offset(size.width * 0.8, size.height * 0.3),
+      size.width * 0.2,
+      paint,
+    );
+    
+    paint.color = const Color(0xFF6e955f).withValues(alpha:0.025);
+    canvas.drawCircle(
+      Offset(size.width * 0.9, size.height * 0.7),
+      size.width * 0.12,
+      paint,
+    );
+    
+    paint.color = const Color(0xFF5a7f4f).withValues(alpha:0.02);
+    canvas.drawCircle(
+      Offset(size.width * 0.15, size.height * 0.8),
+      size.width * 0.18,
+      paint,
+    );
+    
+    // Draw subtle organic shapes for a nature-inspired feel
+    paint.color = const Color(0xFF7fb781).withValues(alpha:0.015);
+    final path = Path();
+    path.moveTo(size.width * 0.3, size.height * 0.1);
+    path.quadraticBezierTo(
+      size.width * 0.5, size.height * 0.05,
+      size.width * 0.7, size.height * 0.1,
+    );
+    path.quadraticBezierTo(
+      size.width * 0.8, size.height * 0.15,
+      size.width * 0.6, size.height * 0.2,
+    );
+    path.quadraticBezierTo(
+      size.width * 0.4, size.height * 0.18,
+      size.width * 0.3, size.height * 0.1,
+    );
+    canvas.drawPath(path, paint);
+    
+    // Draw gentle hills at the bottom
+    paint.color = const Color(0xFF7ea66f).withValues(alpha:0.02);
+    final hillsPath = Path();
+    hillsPath.moveTo(0, size.height);
+    hillsPath.quadraticBezierTo(
+      size.width * 0.2, size.height * 0.95,
+      size.width * 0.4, size.height,
+    );
+    hillsPath.quadraticBezierTo(
+      size.width * 0.6, size.height * 0.98,
+      size.width * 0.8, size.height,
+    );
+    hillsPath.quadraticBezierTo(
+      size.width * 0.9, size.height * 0.97,
+      size.width, size.height,
+    );
+    canvas.drawPath(hillsPath, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
