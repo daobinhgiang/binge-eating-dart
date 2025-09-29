@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/todo_provider.dart';
+import '../../providers/auto_todo_provider.dart';
 import '../../models/todo_item.dart';
 import '../../core/services/navigation_service.dart';
 
@@ -28,6 +29,38 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
     super.dispose();
   }
 
+  // Helper method to detect auto-assigned todos
+  bool _isAutoAssignedTodo(TodoItem todo) {
+    // Auto-assigned todos have specific patterns:
+    // 1. Lessons from stage data (lesson_1_*, lesson_s2_*, lesson_s3_*)
+    // 2. Daily journal tasks with timestamp in activityId
+    // 3. Have activityData with 'type' field
+    
+    if (todo.activityData != null && todo.activityData!.containsKey('type')) {
+      return true;
+    }
+    
+    // Check for lesson patterns
+    if (todo.type == TodoType.lesson && (
+        todo.activityId.startsWith('lesson_1_') ||
+        todo.activityId.startsWith('lesson_s2_') ||
+        todo.activityId.startsWith('lesson_s3_')
+    )) {
+      return true;
+    }
+    
+    // Check for journal patterns with timestamps
+    if (todo.type == TodoType.journal && (
+        todo.activityId.contains('food_diary_') ||
+        todo.activityId.contains('body_image_diary_') ||
+        todo.activityId.contains('weight_diary_')
+    )) {
+      return true;
+    }
+    
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(currentUserDataProvider);
@@ -42,6 +75,7 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
 
     final userTodosAsync = ref.watch(userTodosProvider(user.id));
     final todoStatsAsync = ref.watch(todoCountProvider(user.id));
+    final autoTodoState = ref.watch(autoTodoInitializationProvider(user.id));
 
     return Scaffold(
       appBar: AppBar(
@@ -49,8 +83,17 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
         centerTitle: true,
         actions: [
           IconButton(
-            onPressed: () => ref.read(userTodosProvider(user.id).notifier).refreshTodos(),
-            icon: const Icon(Icons.refresh),
+            onPressed: () async {
+              await ref.read(userTodosProvider(user.id).notifier).refreshTodos();
+              await ref.read(autoTodoInitializationProvider(user.id).notifier).refreshTodos();
+            },
+            icon: autoTodoState.isLoading 
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.refresh),
           ),
         ],
         bottom: TabBar(
@@ -73,7 +116,7 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.go('/todos/add'),
         icon: const Icon(Icons.add),
-        label: const Text('Add Task'),
+        label: const Text('Add Custom Task'),
       ),
     );
   }
@@ -87,41 +130,55 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
           return _buildEmptyState(
             icon: Icons.task_alt,
             title: 'No pending tasks',
-            subtitle: 'All caught up! Add new tasks or complete existing ones.',
-            actionText: 'Add Task',
+            subtitle: 'All caught up! Your lessons and journal tasks are automatically assigned based on your progress.',
+            actionText: 'Add Custom Task',
             onAction: () => context.go('/todos/add'),
           );
         }
 
-        // Group todos by status
-        final overdueTodos = pendingTodos.where((todo) => todo.isOverdue).toList();
+        // Group todos by status - with smart scaling, there should be no overdue todos
+        // We're keeping the structure but all todos will be either due today or upcoming
         final dueTodayTodos = pendingTodos.where((todo) => todo.isDueToday).toList();
-        final upcomingTodos = pendingTodos.where((todo) => !todo.isOverdue && !todo.isDueToday).toList();
+        final upcomingTodos = pendingTodos.where((todo) => !todo.isDueToday).toList();
+
+        // Group upcoming todos by their due dates
+        final upcomingTodosByDate = <DateTime, List<TodoItem>>{};
+        for (final todo in upcomingTodos) {
+          final dueDate = DateTime(todo.dueDate.year, todo.dueDate.month, todo.dueDate.day);
+          upcomingTodosByDate.putIfAbsent(dueDate, () => []).add(todo);
+        }
+
+        // Sort the dates
+        final sortedDates = upcomingTodosByDate.keys.toList()..sort();
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (overdueTodos.isNotEmpty) ...[
-                _buildSectionHeader(context, 'Overdue', overdueTodos.length, Colors.red),
-                const SizedBox(height: 8),
-                ...overdueTodos.map((todo) => _buildTodoCard(context, todo, userId)),
-                const SizedBox(height: 24),
-              ],
               
               if (dueTodayTodos.isNotEmpty) ...[
                 _buildSectionHeader(context, 'Due Today', dueTodayTodos.length, Colors.orange),
                 const SizedBox(height: 8),
-                ...dueTodayTodos.map((todo) => _buildTodoCard(context, todo, userId)),
+                ..._sortTodosByPriority(dueTodayTodos).map((todo) => _buildTodoCard(context, todo, userId)),
                 const SizedBox(height: 24),
               ],
               
-              if (upcomingTodos.isNotEmpty) ...[
-                _buildSectionHeader(context, 'Upcoming', upcomingTodos.length, Colors.blue),
-                const SizedBox(height: 8),
-                ...upcomingTodos.map((todo) => _buildTodoCard(context, todo, userId)),
-              ],
+              // Show upcoming todos grouped by date
+              ...sortedDates.map((date) {
+                final todosForDate = upcomingTodosByDate[date]!;
+                // Sort todos within each date: Journal first, then Lessons
+                final sortedTodosForDate = _sortTodosByPriority(todosForDate);
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildUpcomingSectionHeader(context, date, todosForDate.length),
+                    const SizedBox(height: 8),
+                    ...sortedTodosForDate.map((todo) => _buildTodoCard(context, todo, userId)),
+                    const SizedBox(height: 16),
+                  ],
+                );
+              }),
             ],
           ),
         );
@@ -236,10 +293,75 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
     );
   }
 
+  Widget _buildUpcomingSectionHeader(BuildContext context, DateTime date, int count) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final dueDate = DateTime(date.year, date.month, date.day);
+    
+    String dateText;
+    Color color = Colors.blue;
+    
+    if (dueDate.isAtSameMomentAs(today)) {
+      dateText = 'Today';
+      color = Colors.orange;
+    } else {
+      final daysFromNow = dueDate.difference(today).inDays;
+      if (daysFromNow == 1) {
+        dateText = 'Tomorrow';
+      } else if (daysFromNow <= 7) {
+        dateText = 'In $daysFromNow days';
+      } else {
+        // Format as "Oct 15" for dates further out
+        final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        dateText = '${months[date.month - 1]} ${date.day}';
+      }
+    }
+    
+    return Row(
+      children: [
+        Container(
+          width: 4,
+          height: 20,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          dateText,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Text(
+            count.toString(),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: color,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildTodoCard(BuildContext context, TodoItem todo, String userId) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
+        onTap: _isAutoAssignedTodo(todo) && !todo.isCompleted 
+            ? () => NavigationService().navigateToTodoActivity(context, todo, ref)
+            : null,
         leading: GestureDetector(
           onTap: () => ref.read(userTodosProvider(userId).notifier).toggleCompletion(todo.id),
           child: Container(
@@ -282,14 +404,7 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
               children: [
                 _buildTypeChip(todo.type),
                 const SizedBox(width: 8),
-                Text(
-                  'Due ${_formatDueDate(todo.dueDate)}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: _getDueDateColor(todo),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                // Due date is now shown in section headers, not individual items
               ],
             ),
           ],
@@ -343,7 +458,6 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
             ),
           ],
         ),
-        onTap: () => NavigationService().navigateToTodoActivity(context, todo, ref),
       ),
     );
   }
@@ -549,30 +663,33 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
     );
   }
 
-  Color _getDueDateColor(TodoItem todo) {
-    if (todo.isCompleted) return Colors.grey;
-    if (todo.isOverdue) return Colors.red;
-    if (todo.isDueToday) return Colors.orange;
-    return Colors.grey[600]!;
+  /// Sort todos by priority: Journal items first, then Lesson items
+  List<TodoItem> _sortTodosByPriority(List<TodoItem> todos) {
+    return List.from(todos)..sort((a, b) {
+      // Journal items come first (priority 0)
+      // Lesson items come second (priority 1)
+      // Tool items come last (priority 2)
+      final priorityA = _getTodoPriority(a);
+      final priorityB = _getTodoPriority(b);
+      
+      if (priorityA != priorityB) {
+        return priorityA.compareTo(priorityB);
+      }
+      
+      // If same priority, sort alphabetically by title
+      return a.title.compareTo(b.title);
+    });
   }
 
-  String _formatDueDate(DateTime date) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final dueDate = DateTime(date.year, date.month, date.day);
-    
-    if (dueDate.isBefore(today)) {
-      final daysAgo = today.difference(dueDate).inDays;
-      return '$daysAgo day${daysAgo == 1 ? '' : 's'} ago';
-    } else if (dueDate.isAtSameMomentAs(today)) {
-      return 'today';
-    } else {
-      final daysFromNow = dueDate.difference(today).inDays;
-      if (daysFromNow == 1) {
-        return 'tomorrow';
-      } else {
-        return 'in $daysFromNow days';
-      }
+  /// Get priority for todo sorting (lower number = higher priority)
+  int _getTodoPriority(TodoItem todo) {
+    switch (todo.type) {
+      case TodoType.journal:
+        return 0; // Highest priority
+      case TodoType.lesson:
+        return 1; // Second priority
+      case TodoType.tool:
+        return 2; // Lowest priority
     }
   }
 

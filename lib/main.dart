@@ -27,6 +27,7 @@ import 'screens/todos/add_todo_screen.dart';
 import 'screens/chatbot/chatbot_screen.dart';
 import 'screens/profile/regular_eating_screen.dart';
 import 'providers/auth_provider.dart';
+import 'providers/auto_todo_provider.dart';
 import 'models/user_model.dart';
 
 void main() async {
@@ -302,6 +303,16 @@ class AuthGuard extends ConsumerWidget {
             ),
           );
         }
+
+        // Initialize auto todos for authenticated user
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          try {
+            ref.read(autoTodoInitializationProvider(user.id).notifier).initializeTodos();
+          } catch (e) {
+            print('Error initializing auto todos: $e');
+            // Don't disrupt user experience if auto todos fail
+          }
+        });
 
         return child;
       },
