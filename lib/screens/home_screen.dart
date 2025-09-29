@@ -5,15 +5,14 @@ import '../widgets/comforting_background.dart';
 import '../providers/auth_provider.dart';
 import '../providers/todo_provider.dart';
 import '../providers/analytics_provider.dart';
+import '../providers/firebase_analytics_provider.dart';
+import '../providers/app_notification_provider.dart';
 import '../models/lesson.dart';
 import '../models/todo_item.dart';
 import '../screens/lessons/lesson_1_1.dart';
 import '../screens/lessons/lesson_1_2.dart';
 import '../screens/lessons/lesson_1_2_1.dart';
 import '../screens/lessons/lesson_1_3.dart';
-import '../screens/lessons/lesson_2_1.dart';
-import '../screens/lessons/lesson_2_2.dart';
-import '../screens/lessons/lesson_2_3.dart';
 import '../screens/lessons/lesson_3_1.dart';
 import '../screens/lessons/lesson_3_2.dart';
 import '../screens/lessons/lesson_3_3.dart';
@@ -117,8 +116,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
       curve: Curves.elasticOut,
     ));
     
-    _fadeController!.forward();
-    _scaleController!.forward();
+    _fadeController?.forward();
+    _scaleController?.forward();
   }
 
   @override
@@ -135,221 +134,151 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
     return Scaffold(
       body: ScrollAwareComfortingBackground(
-        scrollController: _scrollController,
+        scrollController: _scrollController ?? ScrollController(),
         child: CustomScrollView(
-          controller: _scrollController,
-              slivers: [
-            // Beautiful translucent app bar with comforting background
-            SliverAppBar(
-              expandedHeight: 140, // Slightly increased for better visual balance
-              floating: false,
-              pinned: true,
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              automaticallyImplyLeading: false, // Prevent back arrow from appearing
-              flexibleSpace: FlexibleSpaceBar(
-                background: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        const Color(0xFF7fb781).withValues(alpha:0.15), // Very light green
-                        const Color(0xFF7ea66f).withValues(alpha:0.12), // Slightly darker
-                        const Color(0xFF6e955f).withValues(alpha:0.08), // Even lighter
-                        const Color(0xFF5a7f4f).withValues(alpha:0.05), // Very subtle
-                      ],
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha:0.03),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
+          controller: _scrollController ?? ScrollController(),
+          slivers: [
+            // Simplified header to avoid layout issues
+            SliverToBoxAdapter(
+              child: Container(
+                height: 120,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      const Color(0xFF7fb781).withValues(alpha:0.15),
+                      const Color(0xFF7ea66f).withValues(alpha:0.12),
+                      const Color(0xFF6e955f).withValues(alpha:0.08),
+                      const Color(0xFF5a7f4f).withValues(alpha:0.05),
                     ],
                   ),
-                  child: SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Column(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha:0.03),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Welcome message
+                        Expanded(
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              // Top row with welcome message on left, profile and notifications on right
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  // Left side: Welcome message
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Welcome back!',
-                                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: const Color(0xFF2D5016), // Dark green for better contrast
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'Ready to continue your journey?',
-                                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                          color: const Color(0xFF4A6741), // Medium green
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  
-                                  // Right side: Profile and notifications container
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha:0.8),
-                                      borderRadius: BorderRadius.circular(20),
-                                      border: Border.all(
-                                        color: const Color(0xFF7fb781).withValues(alpha:0.3),
-                                        width: 1.5,
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withValues(alpha:0.08),
-                                          blurRadius: 12,
-                                          offset: const Offset(0, 4),
-                                        ),
-                                        BoxShadow(
-                                          color: const Color(0xFF7fb781).withValues(alpha:0.1),
-                                          blurRadius: 6,
-                                          offset: const Offset(0, 2),
+                              Text(
+                                'Welcome back!',
+                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF2D5016),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Ready to continue your journey?',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: const Color(0xFF4A6741),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        
+                        const SizedBox(width: 16),
+                        
+                        // Profile and notifications
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // User avatar
+                            authState.when(
+                              data: (user) => user != null
+                                  ? PopupMenuButton<String>(
+                                      onSelected: (value) {
+                                        if (value == 'logout') {
+                                          ref.read(authNotifierProvider.notifier).signOut();
+                                        }
+                                      },
+                                      itemBuilder: (context) => [
+                                        const PopupMenuItem(
+                                          value: 'logout',
+                                          child: Text('Logout'),
                                         ),
                                       ],
+                                      child: CircleAvatar(
+                                        radius: 20,
+                                        backgroundColor: const Color(0xFF7fb781).withValues(alpha:0.2),
+                                        backgroundImage: user.photoUrl != null
+                                            ? NetworkImage(user.photoUrl!)
+                                            : null,
+                                        child: user.photoUrl == null
+                                            ? Text(
+                                                user.displayName.substring(0, 1).toUpperCase(),
+                                                style: const TextStyle(
+                                                  color: Color(0xFF2D5016),
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                ),
+                                              )
+                                            : null,
+                                      ),
+                                    )
+                                  : CircleAvatar(
+                                      radius: 20,
+                                      backgroundColor: const Color(0xFF7fb781).withValues(alpha:0.2),
+                                      child: const Icon(
+                                        Icons.person,
+                                        color: Color(0xFF2D5016),
+                                        size: 20,
+                                      ),
                                     ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
+                              loading: () => const CircularProgressIndicator(color: Color(0xFF2D5016)),
+                              error: (_, __) => CircleAvatar(
+                                radius: 20,
+                                backgroundColor: const Color(0xFF7fb781).withValues(alpha:0.2),
+                                child: const Icon(
+                                  Icons.person,
+                                  color: Color(0xFF2D5016),
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                            
+                            const SizedBox(width: 12),
+                            
+                            // Notification bell
+                            Consumer(
+                              builder: (context, ref, child) {
+                                final user = ref.watch(authNotifierProvider).value;
+                                if (user == null) return const SizedBox.shrink();
+                                
+                                final unreadCountAsync = ref.watch(unreadNotificationsCountProvider(user.id));
+                                
+                                return GestureDetector(
+                                  onTap: () => context.go('/notifications'),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF7fb781).withValues(alpha:0.2),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Stack(
                                       children: [
-                                        // User avatar and name
-                                        authState.when(
-                                          data: (user) => user != null
-                                              ? PopupMenuButton<String>(
-                                                  onSelected: (value) {
-                                                    if (value == 'logout') {
-                                                      ref.read(authNotifierProvider.notifier).signOut();
-                                                    }
-                                                  },
-                                                  itemBuilder: (context) => [
-                                                    const PopupMenuItem(
-                                                      value: 'logout',
-                                                      child: Text('Logout'),
-                                                    ),
-                                                  ],
-                                                  child: Row(
-                                                    children: [
-                                                      CircleAvatar(
-                                                        radius: 18,
-                                                        backgroundColor: const Color(0xFF7fb781).withValues(alpha:0.2),
-                                                        backgroundImage: user.photoUrl != null
-                                                            ? NetworkImage(user.photoUrl!)
-                                                            : null,
-                                                        child: user.photoUrl == null
-                                                            ? Text(
-                                                                user.displayName.substring(0, 1).toUpperCase(),
-                                                                style: const TextStyle(
-                                                                  color: Color(0xFF2D5016),
-                                                                  fontWeight: FontWeight.bold,
-                                                                  fontSize: 16,
-                                                                ),
-                                                              )
-                                                            : null,
-                                                      ),
-                                                      const SizedBox(width: 8),
-                                                      Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text(
-                                                            user.displayName,
-                                                            style: const TextStyle(
-                                                              color: Color(0xFF2D5016),
-                                                              fontWeight: FontWeight.bold,
-                                                              fontSize: 14,
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            'Profile',
-                                                            style: TextStyle(
-                                                              color: const Color(0xFF4A6741).withValues(alpha:0.8),
-                                                              fontSize: 12,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                )
-                                              : Row(
-                                                  children: [
-                                                    CircleAvatar(
-                                                      radius: 18,
-                                                      backgroundColor: const Color(0xFF7fb781).withValues(alpha:0.2),
-                                                      child: const Icon(
-                                                        Icons.person,
-                                                        color: Color(0xFF2D5016),
-                                                        size: 18,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 8),
-                                                    TextButton(
-                                                      onPressed: () => context.go('/login'),
-                                                      child: const Text(
-                                                        'Login',
-                                                        style: TextStyle(color: Color(0xFF2D5016)),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                          loading: () => const CircularProgressIndicator(color: Color(0xFF2D5016)),
-                                          error: (_, __) => Row(
-                                            children: [
-                                              CircleAvatar(
-                                                radius: 18,
-                                                backgroundColor: const Color(0xFF7fb781).withValues(alpha:0.2),
-                                                child: const Icon(
-                                                  Icons.person,
-                                                  color: Color(0xFF2D5016),
-                                                  size: 18,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              TextButton(
-                                                onPressed: () => context.go('/login'),
-                                                child: const Text(
-                                                  'Login',
-                                                  style: TextStyle(color: Color(0xFF2D5016)),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
+                                        const Icon(
+                                          Icons.notifications_outlined,
+                                          color: Color(0xFF2D5016),
+                                          size: 20,
                                         ),
-                                        const SizedBox(width: 12),
-                                        // Notification bell
-                                        GestureDetector(
-                                          onTap: () => _showNotifications(context),
-                                          child: Container(
-                                            padding: const EdgeInsets.all(8),
-                                            decoration: BoxDecoration(
-                                              color: const Color(0xFF7fb781).withValues(alpha:0.2),
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: Stack(
-                                              children: [
-                                                const Icon(
-                                                  Icons.notifications_outlined,
-                                                  color: Color(0xFF2D5016),
-                                                  size: 20,
-                                                ),
-                                                // Notification badge
-                                                Positioned(
+                                        unreadCountAsync.when(
+                                          data: (count) => count > 0
+                                              ? Positioned(
                                                   right: 0,
                                                   top: 0,
                                                   child: Container(
@@ -360,21 +289,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                                       shape: BoxShape.circle,
                                                     ),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                          loading: () => const SizedBox.shrink(),
+                                          error: (_, __) => const SizedBox.shrink(),
                                         ),
                                       ],
                                     ),
                                   ),
-                                ],
-                              ),
-                              
-                            ],
-                          ),
-                        ],
-                      ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -426,7 +354,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(
-                        onTap: _showUrgeHelpDialog,
+                        onTap: () {
+                          // Track analytics for urge-relapse button usage
+                          final trackUrgeButton = ref.read(urgeRelapseButtonTrackingProvider);
+                          trackUrgeButton();
+                          _showUrgeHelpDialog();
+                        },
                         borderRadius: BorderRadius.circular(16),
                         splashColor: const Color(0xFF7fb781).withValues(alpha:0.1),
                         highlightColor: const Color(0xFF7fb781).withValues(alpha:0.05),
@@ -1972,6 +1905,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   }
   
   void _showUrgeHelpDialog() {
+    // Track dialog opening
+    final trackDialog = ref.read(urgeHelpDialogTrackingProvider);
+    trackDialog('dialog_opened');
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -2019,7 +1956,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              // Track dialog close
+              final trackDialog = ref.read(urgeHelpDialogTrackingProvider);
+              trackDialog('dialog_closed');
+              Navigator.of(context).pop();
+            },
             child: const Text('Close'),
           ),
         ],
@@ -2085,183 +2027,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   // Old lesson navigation methods removed
   
   void _navigateToUrgeSurfing() {
+    // Track urge surfing navigation from help dialog
+    final trackDialog = ref.read(urgeHelpDialogTrackingProvider);
+    trackDialog('urge_surfing_navigation');
     context.push('/tools/urge-surfing');
   }
   
-  void _showNotifications(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            Icon(Icons.notifications, color: const Color(0xFF7fb781)),
-            const SizedBox(width: 10),
-            const Expanded(
-              child: Text('Notifications'),
-            ),
-          ],
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Sample notifications
-              _buildNotificationItem(
-                context,
-                'New lesson available',
-                'Lesson 5.3: Building Healthy Relationships with Food is now ready',
-                Icons.book,
-                Colors.blue,
-                '2 hours ago',
-              ),
-              const SizedBox(height: 12),
-              _buildNotificationItem(
-                context,
-                'Journal reminder',
-                'Don\'t forget to log your thoughts and feelings today',
-                Icons.note,
-                Colors.orange,
-                '1 day ago',
-              ),
-              const SizedBox(height: 12),
-              _buildNotificationItem(
-                context,
-                'Progress update',
-                'Great job! You\'ve completed 3 lessons this week',
-                Icons.celebration,
-                const Color(0xFF7fb781),
-                '2 days ago',
-              ),
-              const SizedBox(height: 12),
-              _buildNotificationItem(
-                context,
-                'Wellness tip',
-                'Remember to practice mindfulness during meal times',
-                Icons.favorite,
-                Colors.pink,
-                '3 days ago',
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              // Navigate to notifications screen if you have one
-              // context.push('/notifications');
-            },
-            child: const Text('View All'),
-          ),
-        ],
-      ),
-    );
-  }
   
-  Widget _buildNotificationItem(BuildContext context, String title, String description, IconData icon, Color color, String time) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            color.withValues(alpha:0.05),
-            color.withValues(alpha:0.02),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: color.withValues(alpha:0.2),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha:0.1),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  color.withValues(alpha:0.3),
-                  color.withValues(alpha:0.15),
-                ],
-              ),
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: color.withValues(alpha:0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Icon(
-              icon,
-              color: color,
-              size: 22,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  description,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha:0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: color.withValues(alpha:0.2),
-                      width: 1,
-                    ),
-                  ),
-                  child: Text(
-                    time,
-                    style: TextStyle(
-                      color: color,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 // Custom painter for dashed lines

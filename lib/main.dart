@@ -26,9 +26,12 @@ import 'screens/todos/todos_screen.dart';
 import 'screens/todos/add_todo_screen.dart';
 import 'screens/chatbot/chatbot_screen.dart';
 import 'screens/profile/regular_eating_screen.dart';
+import 'screens/profile/notification_settings_screen.dart';
+import 'screens/notifications/notifications_screen.dart';
 import 'providers/auth_provider.dart';
 import 'providers/auto_todo_provider.dart';
 import 'models/user_model.dart';
+import 'widgets/analytics_tracker.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,9 +42,27 @@ void main() async {
   // Use path-based routing instead of hash-based routing
   usePathUrlStrategy();
   
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print('✅ Firebase initialized successfully');
+  } catch (e) {
+    // Firebase might already be initialized, which is fine
+    if (e.toString().contains('duplicate-app')) {
+      print('Firebase already initialized, continuing...');
+    } else if (e.toString().contains('DEVELOPER_ERROR') || 
+               e.toString().contains('Phenotype.API') ||
+               e.toString().contains('FlagRegistrar')) {
+      // These are emulator-specific Google Play Services errors that we can ignore
+      print('⚠️ Google Play Services not available on emulator, continuing with limited functionality...');
+      print('Error details: $e');
+    } else {
+      print('❌ Firebase initialization error: $e');
+      rethrow;
+    }
+  }
+  
   runApp(const ProviderScope(child: BEDApp()));
 }
 
@@ -50,8 +71,9 @@ class BEDApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return MaterialApp.router(
-      title: 'BED Support App',
+    return AnalyticsTracker(
+      child: MaterialApp.router(
+        title: 'BED Support App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF7fb781), // Refined green theme for growth, healing, and comfort
@@ -106,6 +128,7 @@ class BEDApp extends ConsumerWidget {
         ),
       ),
       routerConfig: _router,
+      ),
     );
   }
 }
@@ -241,6 +264,14 @@ final _router = GoRouter(
     GoRoute(
       path: '/profile/regular-eating',
       builder: (context, state) => const AuthGuard(child: RegularEatingScreen()),
+    ),
+    GoRoute(
+      path: '/profile/notifications',
+      builder: (context, state) => const AuthGuard(child: NotificationSettingsScreen()),
+    ),
+    GoRoute(
+      path: '/notifications',
+      builder: (context, state) => const AuthGuard(child: NotificationsScreen()),
     ),
   ],
 );

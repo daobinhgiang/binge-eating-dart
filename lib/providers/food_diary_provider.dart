@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/food_diary.dart';
 import '../core/services/food_diary_service.dart';
+import '../core/services/firebase_analytics_service.dart';
 
 // Food diary service provider
 final foodDiaryServiceProvider = Provider<FoodDiaryService>((ref) => FoodDiaryService());
@@ -43,6 +44,7 @@ final foodDiaryEntryProvider = FutureProvider.family<FoodDiary?, ({String userId
 class FoodDiaryNotifier extends StateNotifier<AsyncValue<List<FoodDiary>>> {
   final FoodDiaryService _foodDiaryService;
   final String _userId;
+  final FirebaseAnalyticsService _analytics = FirebaseAnalyticsService();
 
   FoodDiaryNotifier(this._foodDiaryService, this._userId) : super(const AsyncValue.loading()) {
     loadCurrentWeekEntries();
@@ -91,6 +93,9 @@ class FoodDiaryNotifier extends StateNotifier<AsyncValue<List<FoodDiary>>> {
 
       // Refresh current state
       await loadCurrentWeekEntries();
+      
+      // Track food diary entry creation
+      await _analytics.trackFoodDiaryEntry();
       
       return entry;
     } catch (e) {

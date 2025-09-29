@@ -11,9 +11,6 @@ import '../lessons/lesson_1_1.dart';
 import '../lessons/lesson_1_2.dart';
 import '../lessons/lesson_1_2_1.dart';
 import '../lessons/lesson_1_3.dart';
-import '../lessons/lesson_2_1.dart';
-import '../lessons/lesson_2_2.dart';
-import '../lessons/lesson_2_3.dart';
 import '../lessons/lesson_3_1.dart';
 import '../lessons/lesson_3_2.dart';
 import '../lessons/lesson_3_3.dart';
@@ -83,15 +80,77 @@ class EducationScreen extends ConsumerStatefulWidget {
 
 class _EducationScreenState extends ConsumerState<EducationScreen> {
   final LessonService _lessonService = LessonService();
+  
+  // State management for collapsible sections
+  final Map<String, bool> _stageExpanded = {};
+  final Map<String, bool> _chapterExpanded = {};
+
+  bool _isStageExpanded(String stageId) {
+    return _stageExpanded[stageId] ?? true; // Default to expanded
+  }
+
+  bool _isChapterExpanded(String chapterId) {
+    return _chapterExpanded[chapterId] ?? true; // Default to expanded
+  }
+
+  void _toggleStage(String stageId) {
+    setState(() {
+      _stageExpanded[stageId] = !_isStageExpanded(stageId);
+    });
+  }
+
+  void _toggleChapter(String chapterId) {
+    setState(() {
+      _chapterExpanded[chapterId] = !_isChapterExpanded(chapterId);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Education'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withOpacity( 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.school_outlined,
+                color: Theme.of(context).colorScheme.primary,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'Education',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 20,
+              ),
+            ),
+          ],
+        ),
         centerTitle: true,
         automaticallyImplyLeading: false,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Theme.of(context).colorScheme.primary.withOpacity( 0.05),
+                Theme.of(context).colorScheme.secondary.withOpacity( 0.05),
+              ],
+            ),
+          ),
+        ),
       ),
       body: _buildStageHierarchy(context),
     );
@@ -103,8 +162,67 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
     final stage3 = Stage3Data.getStage3();
     
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
       children: [
+        // Welcome section
+        Container(
+          margin: const EdgeInsets.only(bottom: 32),
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Theme.of(context).colorScheme.primary.withOpacity( 0.05),
+                Theme.of(context).colorScheme.secondary.withOpacity( 0.05),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.primary.withOpacity( 0.1),
+              width: 1,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary.withOpacity( 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      Icons.lightbulb_outline,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      'Your Learning Journey',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Complete lessons in order to unlock new content and track your progress.',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity( 0.7),
+                ),
+              ),
+            ],
+          ),
+        ),
+        
         // Display Stage 1 with new hierarchy
         _buildStageCard(context, stage1),
         
@@ -113,7 +231,7 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
         // Display Stage 2 with new hierarchy
         _buildStageCard(context, stage2),
         
-                  const SizedBox(height: 24),
+        const SizedBox(height: 24),
         
         // Display Stage 3 with new hierarchy
         _buildStageCard(context, stage3),
@@ -122,125 +240,262 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
   }
 
   Widget _buildStageCard(BuildContext context, Stage stage) {
+    final stageId = 'stage_${stage.stageNumber}';
+    final isExpanded = _isStageExpanded(stageId);
+    
     return Container(
-      margin: const EdgeInsets.only(bottom: 32),
+      margin: const EdgeInsets.only(bottom: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Stage Header
-          Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Theme.of(context).colorScheme.primary,
-                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
-          ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(20),
+              onTap: () => _toggleStage(stageId),
+              splashColor: Colors.white.withOpacity( 0.1),
+              highlightColor: Colors.white.withOpacity( 0.05),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Theme.of(context).colorScheme.primary,
+                      Theme.of(context).colorScheme.primary.withOpacity( 0.8),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                  child: Text(
-                    'Stage ${stage.stageNumber}',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).colorScheme.primary.withOpacity( 0.2),
+                      blurRadius: 12,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
                 ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity( 0.15),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: Colors.white.withOpacity( 0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            'STAGE',
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: Colors.white.withOpacity( 0.8),
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${stage.stageNumber}',
+                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            stage.title,
+                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '${stage.chapters.length} chapters • ${stage.chapters.fold(0, (sum, chapter) => sum + chapter.lessons.length)} lessons',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Colors.white.withOpacity( 0.9),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    AnimatedRotation(
+                      turns: isExpanded ? 0.5 : 0.0,
+                      duration: const Duration(milliseconds: 200),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity( 0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.keyboard_arrow_down,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-            child: Text(
-                    stage.title,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
               ),
-                  ),
-                ),
-              ],
             ),
           ),
-          const SizedBox(height: 16),
-          // Chapters within the stage
-          ...stage.chapters.map((chapter) => _buildChapterInStage(context, chapter)),
+          // Animated collapse/expand for chapters
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            height: isExpanded ? null : 0,
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 200),
+              opacity: isExpanded ? 1.0 : 0.0,
+              child: isExpanded
+                  ? Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        ...stage.chapters.map((chapter) => _buildChapterInStage(context, chapter)),
+                      ],
+                    )
+                  : const SizedBox.shrink(),
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildChapterInStage(BuildContext context, Chapter chapter) {
+    final chapterId = 'chapter_${chapter.chapterNumber}';
+    final isExpanded = _isChapterExpanded(chapterId);
+    
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Chapter Header (simpler than stage header)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondaryContainer,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondary,
-                    borderRadius: BorderRadius.circular(8),
+          // Chapter Header
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () => _toggleChapter(chapterId),
+              splashColor: Theme.of(context).colorScheme.primary.withOpacity( 0.1),
+              highlightColor: Theme.of(context).colorScheme.primary.withOpacity( 0.05),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outline.withOpacity( 0.2),
+                    width: 1,
                   ),
-                  child: Text(
-                    '${chapter.chapterNumber}',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity( 0.03),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
                     ),
-                  ),
+                  ],
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Chapter ${chapter.chapterNumber}',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.secondary,
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.secondary.withOpacity( 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.secondary.withOpacity( 0.3),
+                          width: 1,
                         ),
                       ),
-                      Text(
-                        chapter.title,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Colors.grey[700],
-                        ),
+                      child: Column(
+                        children: [
+                          Text(
+                            'CHAPTER',
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: Theme.of(context).colorScheme.secondary,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 1.0,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '${chapter.chapterNumber}',
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              color: Theme.of(context).colorScheme.secondary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            chapter.title,
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${chapter.lessons.length} lessons',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity( 0.7),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    AnimatedRotation(
+                      turns: isExpanded ? 0.5 : 0.0,
+                      duration: const Duration(milliseconds: 200),
+                      child: Icon(
+                        Icons.keyboard_arrow_down,
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity( 0.5),
+                        size: 20,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
-          const SizedBox(height: 12),
-          // Lessons within the chapter
-          ...chapter.lessons.map((lesson) => _buildLessonInChapter(context, lesson)),
+          // Animated collapse/expand for lessons
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            height: isExpanded ? null : 0,
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 200),
+              opacity: isExpanded ? 1.0 : 0.0,
+              child: isExpanded
+                  ? Column(
+                      children: [
+                        const SizedBox(height: 16),
+                        ...chapter.lessons.map((lesson) => _buildLessonInChapter(context, lesson)),
+                      ],
+                    )
+                  : const SizedBox.shrink(),
+            ),
+          ),
         ],
       ),
     );
@@ -248,63 +503,131 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
 
   Widget _buildLessonInChapter(BuildContext context, lesson_model.Lesson lesson) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: Card(
-        child: FutureBuilder<bool>(
-          future: _checkLessonUnlock(lesson),
-          builder: (context, snapshot) {
-            final isUnlocked = snapshot.data ?? false;
-            final isLoading = snapshot.connectionState == ConnectionState.waiting;
-            
-            return ListTile(
-              leading: Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: isUnlocked 
-                      ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
-                      : Colors.grey.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+      margin: const EdgeInsets.only(bottom: 12),
+      child: FutureBuilder<bool>(
+        future: _checkLessonUnlock(lesson),
+        builder: (context, snapshot) {
+          final isUnlocked = snapshot.data ?? false;
+          final isLoading = snapshot.connectionState == ConnectionState.waiting;
+          
+          return Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isUnlocked 
+                    ? Theme.of(context).colorScheme.outline.withOpacity( 0.2)
+                    : Theme.of(context).colorScheme.outline.withOpacity( 0.1),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity( 0.02),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
                 ),
-                child: isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Icon(
-                        isUnlocked ? Icons.play_circle_outline : Icons.lock_outline,
-                        color: isUnlocked 
-                            ? Theme.of(context).colorScheme.primary
-                            : Colors.grey,
+              ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(16),
+                onTap: isUnlocked ? () async {
+                  await _navigateToLesson(context, lesson);
+                } : () {
+                  _showLockedLessonDialog(context);
+                },
+                splashColor: isUnlocked 
+                    ? Theme.of(context).colorScheme.primary.withOpacity( 0.1)
+                    : Colors.grey.withOpacity( 0.1),
+                highlightColor: isUnlocked 
+                    ? Theme.of(context).colorScheme.primary.withOpacity( 0.05)
+                    : Colors.grey.withOpacity( 0.05),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: isUnlocked 
+                              ? Theme.of(context).colorScheme.primary.withOpacity( 0.1)
+                              : Colors.grey.withOpacity( 0.1),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isUnlocked 
+                                ? Theme.of(context).colorScheme.primary.withOpacity( 0.3)
+                                : Colors.grey.withOpacity( 0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: isLoading
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : Icon(
+                                isUnlocked ? Icons.play_circle_outline : Icons.lock_outline,
+                                color: isUnlocked 
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Colors.grey,
+                                size: 24,
+                              ),
                       ),
-              ),
-              title: Text(
-                lesson.title,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: isUnlocked ? null : Colors.grey,
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              lesson.title,
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: isUnlocked 
+                                    ? Theme.of(context).colorScheme.onSurface
+                                    : Colors.grey,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${lesson.description} • ${lesson.slides.length} slides',
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: isUnlocked 
+                                    ? Theme.of(context).colorScheme.onSurface.withOpacity( 0.7)
+                                    : Colors.grey.withOpacity( 0.6),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (!isUnlocked)
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.withOpacity( 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            Icons.lock,
+                            color: Colors.grey[400],
+                            size: 16,
+                          ),
+                        )
+                      else
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity( 0.4),
+                          size: 16,
+                        ),
+                    ],
+                  ),
                 ),
               ),
-              subtitle: Text(
-                '${lesson.description} | ${lesson.slides.length} slides',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: isUnlocked ? Colors.grey[600] : Colors.grey[400],
-                ),
-              ),
-              trailing: isUnlocked ? null : Icon(
-                Icons.lock,
-                color: Colors.grey[400],
-                size: 16,
-              ),
-              onTap: isUnlocked ? () async {
-                await _navigateToLesson(context, lesson);
-              } : () {
-                _showLockedLessonDialog(context);
-              },
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
