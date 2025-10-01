@@ -64,12 +64,19 @@ class WeightDiaryService {
         updatedAt: now,
       );
 
-      // Store in Firestore with structure: users/{userId}/weeks/{weekNumber}/weightDiaries/{entryId}
-      final docRef = await _firestore
+      // Ensure week doc exists/updated, then store entry under users/{userId}/weeks/week_{N}/weightDiaries/{entryId}
+      final weekDocRef = _firestore
           .collection('users')
           .doc(userId)
           .collection('weeks')
-          .doc('week_$weekNumber')
+          .doc('week_$weekNumber');
+
+      await weekDocRef.set({
+        'weekNumber': weekNumber,
+        'updatedAt': now.millisecondsSinceEpoch,
+      }, SetOptions(merge: true));
+
+      final docRef = await weekDocRef
           .collection('weightDiaries')
           .add(weightDiary.toFirestore());
 
@@ -112,22 +119,23 @@ class WeightDiaryService {
   // Get all weight diary entries for all weeks
   Future<Map<int, List<WeightDiary>>> getAllWeightDiaries(String userId) async {
     try {
-      final weeksSnapshot = await _firestore
-          .collection('users')
-          .doc(userId)
-          .collection('weeks')
+      // Use collection group to avoid relying on week doc existence
+      final query = await _firestore
+          .collectionGroup('weightDiaries')
+          .where('userId', isEqualTo: userId)
           .get();
 
       final Map<int, List<WeightDiary>> allDiaries = {};
+      for (final doc in query.docs) {
+        final entry = WeightDiary.fromFirestore(doc);
+        final weekNumber = entry.week;
+        allDiaries.putIfAbsent(weekNumber, () => []);
+        allDiaries[weekNumber]!.add(entry);
+      }
 
-      for (final weekDoc in weeksSnapshot.docs) {
-        final weekNumber = int.tryParse(weekDoc.id.replaceAll('week_', ''));
-        if (weekNumber != null) {
-          final diaries = await getWeightDiariesForWeek(userId, weekNumber);
-          if (diaries.isNotEmpty) {
-            allDiaries[weekNumber] = diaries;
-          }
-        }
+      // Ensure lists are sorted newest first within each week
+      for (final list in allDiaries.values) {
+        list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
       }
 
       return allDiaries;
@@ -224,6 +232,77 @@ class WeightDiaryService {
       return filteredDiaries;
     } catch (e) {
       throw 'Failed to get weight diary entries in date range: $e';
+    }
+  }
+
+  // Helper: compute week number for an arbitrary date based on user's firstAppUse
+  Future<int> _getWeekNumberForDate(String userId, DateTime date) async {
+    final userDoc = await _firestore.collection('users').doc(userId).get();
+    if (!userDoc.exists) throw 'User document not found';
+    final userData = userDoc.data()!;
+    final firstAppUse = userData['firstAppUse'] as int?;
+    if (firstAppUse == null) return 1;
+    final firstAppUseDate = DateTime.fromMillisecondsSinceEpoch(firstAppUse);
+    final daysDifference = date.difference(firstAppUseDate).inDays;
+    return (daysDifference / 7).floor() + 1;
+  }
+
+  // Optimized for last 24h without collectionGroup index requirement
+  Future<List<WeightDiary>> getWeightDiariesLast24h(String userId) async {
+    try {
+      final now = DateTime.now();
+      final start = now.subtract(const Duration(hours: 24));
+
+      final weeksToCheck = <int>{
+        await _getWeekNumberForDate(userId, start),
+        await _getWeekNumberForDate(userId, now),
+      };
+
+      final List<WeightDiary> results = [];
+      for (final week in weeksToCheck) {
+        final qs = await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('weeks')
+            .doc('week_$week')
+            .collection('weightDiaries')
+            .where('createdAt', isGreaterThanOrEqualTo: start.millisecondsSinceEpoch)
+            .where('createdAt', isLessThanOrEqualTo: now.millisecondsSinceEpoch)
+            .get();
+
+        for (final doc in qs.docs) {
+          results.add(WeightDiary.fromFirestore(doc));
+        }
+      }
+
+      results.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return results;
+    } catch (e) {
+      throw 'Failed to get last 24h weight diary entries: $e';
+    }
+  }
+
+  // Get all weight entries across all weeks without collectionGroup, sorted by createdAt asc
+  Future<List<WeightDiary>> getAllWeightEntries(String userId) async {
+    try {
+      final currentWeek = await getCurrentWeekNumber(userId);
+      final List<WeightDiary> results = [];
+      for (int week = 1; week <= currentWeek; week++) {
+        final qs = await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('weeks')
+            .doc('week_$week')
+            .collection('weightDiaries')
+            .get();
+        for (final doc in qs.docs) {
+          results.add(WeightDiary.fromFirestore(doc));
+        }
+      }
+      results.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+      return results;
+    } catch (e) {
+      throw 'Failed to get all weight entries: $e';
     }
   }
 

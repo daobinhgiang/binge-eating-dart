@@ -271,13 +271,6 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> with TickerProvid
         'color': Colors.orange,
       },
       {
-        'id': 'weight_diary',
-        'title': 'Weight Diary Entry',
-        'description': 'Record your weight and body measurements',
-        'icon': Icons.monitor_weight,
-        'color': Colors.blue,
-      },
-      {
         'id': 'body_image_diary',
         'title': 'Body Image Diary Entry',
         'description': 'Reflect on your body image and feelings',

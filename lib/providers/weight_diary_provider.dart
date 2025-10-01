@@ -23,10 +23,23 @@ final allWeightDiariesProvider = FutureProvider.family<Map<int, List<WeightDiary
   return await service.getAllWeightDiaries(userId);
 });
 
-// Week weight statistics provider
-final weekWeightStatisticsProvider = FutureProvider.family<Map<String, dynamic>, ({String userId, int weekNumber})>((ref, params) async {
+// Flat list of all weight entries, sorted by time ascending
+final allWeightEntriesProvider = FutureProvider.family<List<WeightDiary>, String>((ref, userId) async {
   final service = ref.read(weightDiaryServiceProvider);
-  return await service.getWeekStatistics(params.userId, params.weekNumber);
+  return await service.getAllWeightEntries(userId);
+});
+
+// Helper provider: entries in date range
+final weightDiariesInDateRangeProvider = FutureProvider.family<List<WeightDiary>, ({String userId, DateTime startDate, DateTime endDate})>((ref, params) async {
+  final service = ref.read(weightDiaryServiceProvider);
+  return await service.getWeightDiariesInDateRange(params.userId, params.startDate, params.endDate);
+});
+
+// Helper provider: entries in the last 24 hours
+final last24hWeightDiariesProvider = FutureProvider.family<List<WeightDiary>, String>((ref, userId) async {
+  final service = ref.read(weightDiaryServiceProvider);
+  // Use optimized service to avoid collection group index
+  return await service.getWeightDiariesLast24h(userId);
 });
 
 // Individual weight diary entry provider
@@ -35,10 +48,10 @@ final weightDiaryEntryProvider = FutureProvider.family<WeightDiary?, ({String us
   return await service.getWeightDiary(params.userId, params.weekNumber, params.entryId);
 });
 
-// Weight trend provider
-final weightTrendProvider = FutureProvider.family<List<Map<String, dynamic>>, ({String userId, int numberOfWeeks})>((ref, params) async {
+// Week statistics for weight
+final weightWeekStatisticsProvider = FutureProvider.family<Map<String, dynamic>, ({String userId, int weekNumber})>((ref, params) async {
   final service = ref.read(weightDiaryServiceProvider);
-  return await service.getWeightTrend(params.userId, numberOfWeeks: params.numberOfWeeks);
+  return await service.getWeekStatistics(params.userId, params.weekNumber);
 });
 
 class WeightDiaryNotifier extends StateNotifier<AsyncValue<List<WeightDiary>>> {
@@ -81,12 +94,9 @@ class WeightDiaryNotifier extends StateNotifier<AsyncValue<List<WeightDiary>>> {
         unit: unit,
       );
 
-      // Refresh current state
       await loadCurrentWeekEntries();
-      
-      // Track weight diary entry creation
       await _analytics.trackWeightDiaryEntry();
-      
+
       return entry;
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
@@ -109,7 +119,6 @@ class WeightDiaryNotifier extends StateNotifier<AsyncValue<List<WeightDiary>>> {
         unit: unit,
       );
 
-      // Refresh current state
       await loadCurrentWeekEntries();
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
@@ -119,8 +128,6 @@ class WeightDiaryNotifier extends StateNotifier<AsyncValue<List<WeightDiary>>> {
   Future<void> deleteEntry(int weekNumber, String entryId) async {
     try {
       await _weightDiaryService.deleteWeightDiary(_userId, weekNumber, entryId);
-      
-      // Refresh current state
       await loadCurrentWeekEntries();
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
@@ -136,43 +143,4 @@ class WeightDiaryNotifier extends StateNotifier<AsyncValue<List<WeightDiary>>> {
   }
 }
 
-// Helper provider for getting entries in date range
-final weightDiariesInDateRangeProvider = FutureProvider.family<List<WeightDiary>, ({String userId, DateTime startDate, DateTime endDate})>((ref, params) async {
-  final service = ref.read(weightDiaryServiceProvider);
-  return await service.getWeightDiariesInDateRange(params.userId, params.startDate, params.endDate);
-});
 
-// Provider for getting today's entries
-final todayWeightDiariesProvider = FutureProvider.family<List<WeightDiary>, String>((ref, userId) async {
-  final service = ref.read(weightDiaryServiceProvider);
-  final now = DateTime.now();
-  final startOfDay = DateTime(now.year, now.month, now.day);
-  final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
-  
-  return await service.getWeightDiariesInDateRange(userId, startOfDay, endOfDay);
-});
-
-// Provider for checking if user has any weight diary entries
-final hasWeightDiaryEntriesProvider = FutureProvider.family<bool, String>((ref, userId) async {
-  final service = ref.read(weightDiaryServiceProvider);
-  final allDiaries = await service.getAllWeightDiaries(userId);
-  return allDiaries.isNotEmpty && allDiaries.values.any((entries) => entries.isNotEmpty);
-});
-
-// Provider for latest weight entry across all weeks
-final latestWeightEntryProvider = FutureProvider.family<WeightDiary?, String>((ref, userId) async {
-  final service = ref.read(weightDiaryServiceProvider);
-  final allDiaries = await service.getAllWeightDiaries(userId);
-  
-  WeightDiary? latestEntry;
-  
-  for (final entries in allDiaries.values) {
-    for (final entry in entries) {
-      if (latestEntry == null || entry.createdAt.isAfter(latestEntry.createdAt)) {
-        latestEntry = entry;
-      }
-    }
-  }
-  
-  return latestEntry;
-});
