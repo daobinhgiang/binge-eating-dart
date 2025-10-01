@@ -9,7 +9,7 @@ import '../../providers/todo_provider.dart';
 import '../../models/food_diary.dart';
 import '../../models/weight_diary.dart';
 import '../../models/body_image_diary.dart';
-import '../../widgets/tropical_forest_background.dart';
+import '../../widgets/journal_background.dart';
 import 'food_diary_survey_screen.dart';
 import 'weight_diary_survey_screen.dart';
 import 'body_image_diary_survey_screen.dart';
@@ -35,44 +35,7 @@ class JournalScreen extends ConsumerWidget {
     final currentWeekBodyImageDiaries = ref.watch(currentWeekBodyImageDiariesProvider(user.id));
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Journal'),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          IconButton(
-            onPressed: () {
-              ref.read(currentWeekFoodDiariesProvider(user.id).notifier).refreshEntries();
-              ref.read(currentWeekWeightDiariesProvider(user.id).notifier).refreshEntries();
-              ref.read(currentWeekBodyImageDiariesProvider(user.id).notifier).refreshEntries();
-            },
-            icon: const Icon(Icons.refresh),
-          ),
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == 'generate_analysis') {
-                _generateAnalysis(context, ref, user.id);
-              }
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'generate_analysis',
-                child: Row(
-                  children: [
-                    Icon(Icons.analytics),
-                    SizedBox(width: 8),
-                    Text('Generate Analysis'),
-                  ],
-                ),
-              ),
-            ],
-            icon: const Icon(Icons.more_vert),
-          ),
-        ],
-      ),
-      body: TropicalForestBackground(
+      body: JournalBackground(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
