@@ -79,6 +79,10 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/home'),
+        ),
         title: const Text('To-Do List'),
         centerTitle: true,
         actions: [

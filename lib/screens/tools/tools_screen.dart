@@ -5,7 +5,7 @@ import 'meal_planning_screen.dart';
 import 'urge_surfing_screen.dart';
 import 'addressing_overconcern_screen.dart';
 import 'addressing_setbacks_screen.dart';
-import '../../widgets/forest_background.dart';
+import '../../widgets/tools_background.dart';
 
 class ExerciseItem {
   final String title;
@@ -78,27 +78,7 @@ class ToolsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tools'),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                const Color(0xFF7fb781).withValues(alpha: 0.15),
-                const Color(0xFF7ea66f).withValues(alpha: 0.12),
-                const Color(0xFF6e955f).withValues(alpha: 0.08),
-              ],
-            ),
-          ),
-        ),
-      ),
-      body: ForestBackground(
+      body: ToolsBackground(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(

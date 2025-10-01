@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../widgets/education_background.dart';
 import '../../core/services/lesson_service.dart';
 import '../../models/lesson.dart' as lesson_model;
 import '../../models/stage.dart';
@@ -68,7 +69,6 @@ import '../lessons/lesson_s2_7_6.dart';
 import '../lessons/lesson_s2_7_7.dart';
 import '../lessons/lesson_s2_7_8.dart';
 import '../lessons/lesson_s2_2_7.dart';
-import '../lessons/lesson_s2_7_2_1.dart';
 import '../lessons/lesson_s3_0_2_1.dart';
 
 class EducationScreen extends ConsumerStatefulWidget {
@@ -108,51 +108,9 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity( 0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                Icons.school_outlined,
-                color: Theme.of(context).colorScheme.primary,
-                size: 24,
-              ),
-            ),
-            const SizedBox(width: 12),
-            const Text(
-              'Education',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 20,
-              ),
-            ),
-          ],
-        ),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        surfaceTintColor: Colors.transparent,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Theme.of(context).colorScheme.primary.withOpacity( 0.05),
-                Theme.of(context).colorScheme.secondary.withOpacity( 0.05),
-              ],
-            ),
-          ),
-        ),
+      body: EducationBackground(
+        child: _buildStageHierarchy(context),
       ),
-      body: _buildStageHierarchy(context),
     );
   }
 

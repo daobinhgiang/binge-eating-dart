@@ -25,19 +25,6 @@ import '../../screens/lessons/lesson_s2_3_5.dart';
 import '../../screens/lessons/lesson_s2_7_2_1.dart';
 import '../../screens/lessons/lesson_s3_0_2_1.dart';
 import '../../screens/lessons/lesson_1_2_1.dart';
-import '../../screens/lessons/lesson_s2_5_1.dart';
-import '../../screens/lessons/lesson_s2_5_2.dart';
-import '../../screens/lessons/lesson_s2_6_1.dart';
-import '../../screens/lessons/lesson_s2_6_2.dart';
-import '../../screens/lessons/lesson_s2_6_3.dart';
-import '../../screens/lessons/lesson_s2_7_1.dart';
-import '../../screens/lessons/lesson_s2_7_2.dart';
-import '../../screens/lessons/lesson_s2_7_3.dart';
-import '../../screens/lessons/lesson_s2_7_4.dart';
-import '../../screens/lessons/lesson_s2_7_5.dart';
-import '../../screens/lessons/lesson_s2_7_6.dart';
-import '../../screens/lessons/lesson_s2_7_7.dart';
-import '../../screens/lessons/lesson_s2_7_8.dart';
 
 // Stage 3 lesson imports
 // Assessment imports

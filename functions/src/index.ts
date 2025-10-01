@@ -1,11 +1,17 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
+import { PubSub } from "@google-cloud/pubsub";
 
 // Initialize Firebase Admin
 admin.initializeApp();
 
 const db = admin.firestore();
 const messaging = admin.messaging();
+
+// Initialize Pub/Sub client
+const pubsub = new PubSub({
+  projectId: "bed-app-ef8f8",
+});
 
 // Interface for Regular Eating settings
 interface RegularEatingSettings {
@@ -30,151 +36,9 @@ interface UserNotificationToken {
  * This function can be triggered manually via HTTP
  */
 export const sendRegularEatingNotifications = functions.https.onRequest(async (req, res) => {
-  console.log("Starting Regular Eating notification check...");
-  
   try {
-    const now = new Date();
-    const currentHour = now.getUTCHours();
-    const currentMinute = now.getUTCMinutes();
-    
-    console.log(`Current time: ${currentHour}:${currentMinute}`);
-    
-    // Get all users with Regular Eating settings
-    const usersSnapshot = await db.collectionGroup("Regular Eating").get();
-    
-    if (usersSnapshot.empty) {
-      console.log("No Regular Eating settings found");
-      res.status(200).json({
-        success: true,
-        message: "No Regular Eating settings found",
-        notificationsSent: 0,
-      });
-      return;
-    }
-    
-    const notificationsToSend: Array<{
-      token: string;
-      title: string;
-      body: string;
-      data: any;
-    }> = [];
-    
-    for (const doc of usersSnapshot.docs) {
-      const settings = doc.data() as RegularEatingSettings;
-      
-      // Calculate meal times for today
-      const mealTimes = calculateMealTimesForToday(settings);
-      
-      // Check if current time matches any meal time (within 5 minutes tolerance)
-      const matchingMeal = mealTimes.find(meal => {
-        const timeDiff = Math.abs(
-          (currentHour * 60 + currentMinute) - 
-          (meal.hour * 60 + meal.minute)
-        );
-        return timeDiff <= 5; // 5 minutes tolerance
-      });
-      
-      if (matchingMeal) {
-        console.log(`Found matching meal for user ${settings.userId}: ${matchingMeal.type}`);
-        
-        // Get user's notification tokens
-        const tokensSnapshot = await db
-          .collection("users")
-          .doc(settings.userId)
-          .collection("notificationTokens")
-          .get();
-        
-        if (!tokensSnapshot.empty) {
-          const notification = createNotification(matchingMeal, settings);
-          
-          // Add notification for each token
-          tokensSnapshot.docs.forEach(tokenDoc => {
-            const tokenData = tokenDoc.data() as UserNotificationToken;
-            notificationsToSend.push({
-              token: tokenData.token,
-              ...notification,
-            });
-          });
-        }
-      }
-    }
-    
-    // Send all notifications
-    if (notificationsToSend.length > 0) {
-      console.log(`Sending ${notificationsToSend.length} notifications`);
-      
-      // Group notifications by token to avoid duplicates
-      const tokenGroups = new Map<string, any[]>();
-      notificationsToSend.forEach(notif => {
-        if (!tokenGroups.has(notif.token)) {
-          tokenGroups.set(notif.token, []);
-        }
-        tokenGroups.get(notif.token)!.push(notif);
-      });
-      
-      // Send notifications in batches
-      const batchPromises: Promise<any>[] = [];
-      
-      for (const [token, notifications] of tokenGroups) {
-        // Send the first notification for each token
-        const notification = notifications[0];
-        
-        const message = {
-          token: token,
-          notification: {
-            title: notification.title,
-            body: notification.body,
-          },
-          data: notification.data,
-          android: {
-            notification: {
-              channelId: "regular_eating_reminders",
-              priority: "high" as const,
-              sound: "default",
-            },
-          },
-          apns: {
-            payload: {
-              aps: {
-                alert: {
-                  title: notification.title,
-                  body: notification.body,
-                },
-                sound: "default",
-                badge: 1,
-              },
-            },
-          },
-        };
-        
-        batchPromises.push(
-          messaging.send(message).catch(error => {
-            console.error(`Failed to send notification to token ${token}:`, error);
-            // If token is invalid, remove it from the database
-            if (error.code === "messaging/invalid-registration-token" ||
-                error.code === "messaging/registration-token-not-registered") {
-              // Extract userId from the notification data
-              const userId = notification.data?.userId;
-              if (userId) {
-                return removeInvalidToken(userId, token);
-              }
-            }
-            return Promise.resolve();
-          })
-        );
-      }
-      
-      await Promise.allSettled(batchPromises);
-      console.log("All notifications sent successfully");
-    } else {
-      console.log("No notifications to send at this time");
-    }
-    
-    res.status(200).json({
-      success: true,
-      message: "Notification check completed",
-      notificationsSent: notificationsToSend.length,
-    });
+    const result = await processRegularEatingNotifications();
+    res.status(200).json(result);
   } catch (error) {
     console.error("Error in sendRegularEatingNotifications:", error);
     res.status(500).json({
@@ -320,3 +184,175 @@ export const updateRegularEatingNotifications = functions.firestore
     // This function just logs the event
     return null;
   });
+
+/**
+ * Pub/Sub trigger function for cron job
+ * This function is triggered by the Google Cloud Scheduler via Pub/Sub
+ */
+export const userNotificationCron = functions.pubsub
+  .topic("cron-topic")
+  .onPublish(async (message) => {
+    console.log("Cron job triggered via Pub/Sub");
+    console.log("Message data:", message.data ? message.data.toString() : "No data");
+    
+    try {
+      // Call the existing notification function
+      const result = await processRegularEatingNotifications();
+      
+      console.log("Cron job completed successfully:", result);
+      return result;
+    } catch (error) {
+      console.error("Error in cron job:", error);
+      throw error;
+    }
+  });
+
+/**
+ * Process Regular Eating notifications (extracted from the HTTP function)
+ * This function contains the core logic for sending notifications
+ */
+async function processRegularEatingNotifications() {
+  console.log("Starting Regular Eating notification check...");
+  
+  const now = new Date();
+  const currentHour = now.getUTCHours();
+  const currentMinute = now.getUTCMinutes();
+  
+  console.log(`Current time: ${currentHour}:${currentMinute}`);
+  
+  // Get all users with Regular Eating settings
+  const usersSnapshot = await db.collectionGroup("Regular Eating").get();
+  
+  if (usersSnapshot.empty) {
+    console.log("No Regular Eating settings found");
+    return {
+      success: true,
+      message: "No Regular Eating settings found",
+      notificationsSent: 0,
+    };
+  }
+  
+  const notificationsToSend: Array<{
+    token: string;
+    title: string;
+    body: string;
+    data: any;
+  }> = [];
+  
+  for (const doc of usersSnapshot.docs) {
+    const settings = doc.data() as RegularEatingSettings;
+    
+    // Calculate meal times for today
+    const mealTimes = calculateMealTimesForToday(settings);
+    
+    // Check if current time matches any meal time (within 5 minutes tolerance)
+    const matchingMeal = mealTimes.find(meal => {
+      const timeDiff = Math.abs(
+        (currentHour * 60 + currentMinute) - 
+        (meal.hour * 60 + meal.minute)
+      );
+      return timeDiff <= 5; // 5 minutes tolerance
+    });
+    
+    if (matchingMeal) {
+      console.log(`Found matching meal for user ${settings.userId}: ${matchingMeal.type}`);
+      
+      // Get user's notification tokens
+      const tokensSnapshot = await db
+        .collection("users")
+        .doc(settings.userId)
+        .collection("notificationTokens")
+        .get();
+      
+      if (!tokensSnapshot.empty) {
+        const notification = createNotification(matchingMeal, settings);
+        
+        // Add notification for each token
+        tokensSnapshot.docs.forEach(tokenDoc => {
+          const tokenData = tokenDoc.data() as UserNotificationToken;
+          notificationsToSend.push({
+            token: tokenData.token,
+            ...notification,
+          });
+        });
+      }
+    }
+  }
+  
+  // Send all notifications
+  if (notificationsToSend.length > 0) {
+    console.log(`Sending ${notificationsToSend.length} notifications`);
+    
+    // Group notifications by token to avoid duplicates
+    const tokenGroups = new Map<string, any[]>();
+    notificationsToSend.forEach(notif => {
+      if (!tokenGroups.has(notif.token)) {
+        tokenGroups.set(notif.token, []);
+      }
+      tokenGroups.get(notif.token)!.push(notif);
+    });
+    
+    // Send notifications in batches
+    const batchPromises: Promise<any>[] = [];
+    
+    for (const [token, notifications] of tokenGroups) {
+      // Send the first notification for each token
+      const notification = notifications[0];
+      
+      const message = {
+        token: token,
+        notification: {
+          title: notification.title,
+          body: notification.body,
+        },
+        data: notification.data,
+        android: {
+          notification: {
+            channelId: "regular_eating_reminders",
+            priority: "high" as const,
+            sound: "default",
+          },
+        },
+        apns: {
+          payload: {
+            aps: {
+              alert: {
+                title: notification.title,
+                body: notification.body,
+              },
+              sound: "default",
+              badge: 1,
+            },
+          },
+        },
+      };
+      
+      batchPromises.push(
+        messaging.send(message).catch(error => {
+          console.error(`Failed to send notification to token ${token}:`, error);
+          // If token is invalid, remove it from the database
+          if (error.code === "messaging/invalid-registration-token" ||
+              error.code === "messaging/registration-token-not-registered") {
+            // Extract userId from the notification data
+            const userId = notification.data?.userId;
+            if (userId) {
+              return removeInvalidToken(userId, token);
+            }
+          }
+          return Promise.resolve();
+        })
+      );
+    }
+    
+    await Promise.allSettled(batchPromises);
+    console.log("All notifications sent successfully");
+  } else {
+    console.log("No notifications to send at this time");
+  }
+  
+  return {
+    success: true,
+    message: "Notification check completed",
+    notificationsSent: notificationsToSend.length,
+  };
+}
