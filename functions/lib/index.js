@@ -1,7 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateRegularEatingNotifications = exports.scheduleRegularEatingNotifications = exports.triggerNotificationCheck = exports.sendRegularEatingNotifications = void 0;
-const functions = require("firebase-functions");
+exports.userNotificationCron = exports.updateRegularEatingNotifications = exports.scheduleRegularEatingNotifications = exports.triggerNotificationCheck = exports.sendRegularEatingNotifications = void 0;
+const https_1 = require("firebase-functions/v2/https");
+const firestore_1 = require("firebase-functions/v2/firestore");
+const pubsub_1 = require("firebase-functions/v2/pubsub");
 const admin = require("firebase-admin");
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -11,122 +13,10 @@ const messaging = admin.messaging();
  * Cloud Function to send Regular Eating notifications
  * This function can be triggered manually via HTTP
  */
-exports.sendRegularEatingNotifications = functions.https.onRequest(async (req, res) => {
-    console.log("Starting Regular Eating notification check...");
+exports.sendRegularEatingNotifications = (0, https_1.onRequest)(async (req, res) => {
     try {
-        const now = new Date();
-        const currentHour = now.getUTCHours();
-        const currentMinute = now.getUTCMinutes();
-        console.log(`Current time: ${currentHour}:${currentMinute}`);
-        // Get all users with Regular Eating settings
-        const usersSnapshot = await db.collectionGroup("Regular Eating").get();
-        if (usersSnapshot.empty) {
-            console.log("No Regular Eating settings found");
-            res.status(200).json({
-                success: true,
-                message: "No Regular Eating settings found",
-                notificationsSent: 0,
-            });
-            return;
-        }
-        const notificationsToSend = [];
-        for (const doc of usersSnapshot.docs) {
-            const settings = doc.data();
-            // Calculate meal times for today
-            const mealTimes = calculateMealTimesForToday(settings);
-            // Check if current time matches any meal time (within 5 minutes tolerance)
-            const matchingMeal = mealTimes.find(meal => {
-                const timeDiff = Math.abs((currentHour * 60 + currentMinute) -
-                    (meal.hour * 60 + meal.minute));
-                return timeDiff <= 5; // 5 minutes tolerance
-            });
-            if (matchingMeal) {
-                console.log(`Found matching meal for user ${settings.userId}: ${matchingMeal.type}`);
-                // Get user's notification tokens
-                const tokensSnapshot = await db
-                    .collection("users")
-                    .doc(settings.userId)
-                    .collection("notificationTokens")
-                    .get();
-                if (!tokensSnapshot.empty) {
-                    const notification = createNotification(matchingMeal, settings);
-                    // Add notification for each token
-                    tokensSnapshot.docs.forEach(tokenDoc => {
-                        const tokenData = tokenDoc.data();
-                        notificationsToSend.push(Object.assign({ token: tokenData.token }, notification));
-                    });
-                }
-            }
-        }
-        // Send all notifications
-        if (notificationsToSend.length > 0) {
-            console.log(`Sending ${notificationsToSend.length} notifications`);
-            // Group notifications by token to avoid duplicates
-            const tokenGroups = new Map();
-            notificationsToSend.forEach(notif => {
-                if (!tokenGroups.has(notif.token)) {
-                    tokenGroups.set(notif.token, []);
-                }
-                tokenGroups.get(notif.token).push(notif);
-            });
-            // Send notifications in batches
-            const batchPromises = [];
-            for (const [token, notifications] of tokenGroups) {
-                // Send the first notification for each token
-                const notification = notifications[0];
-                const message = {
-                    token: token,
-                    notification: {
-                        title: notification.title,
-                        body: notification.body,
-                    },
-                    data: notification.data,
-                    android: {
-                        notification: {
-                            channelId: "regular_eating_reminders",
-                            priority: "high",
-                            sound: "default",
-                        },
-                    },
-                    apns: {
-                        payload: {
-                            aps: {
-                                alert: {
-                                    title: notification.title,
-                                    body: notification.body,
-                                },
-                                sound: "default",
-                                badge: 1,
-                            },
-                        },
-                    },
-                };
-                batchPromises.push(messaging.send(message).catch(error => {
-                    var _a;
-                    console.error(`Failed to send notification to token ${token}:`, error);
-                    // If token is invalid, remove it from the database
-                    if (error.code === "messaging/invalid-registration-token" ||
-                        error.code === "messaging/registration-token-not-registered") {
-                        // Extract userId from the notification data
-                        const userId = (_a = notification.data) === null || _a === void 0 ? void 0 : _a.userId;
-                        if (userId) {
-                            return removeInvalidToken(userId, token);
-                        }
-                    }
-                    return Promise.resolve();
-                }));
-            }
-            await Promise.allSettled(batchPromises);
-            console.log("All notifications sent successfully");
-        }
-        else {
-            console.log("No notifications to send at this time");
-        }
-        res.status(200).json({
-            success: true,
-            message: "Notification check completed",
-            notificationsSent: notificationsToSend.length,
-        });
+        const result = await processRegularEatingNotifications();
+        res.status(200).json(result);
     }
     catch (error) {
         console.error("Error in sendRegularEatingNotifications:", error);
@@ -216,7 +106,7 @@ async function removeInvalidToken(userId, token) {
 /**
  * HTTP function to manually trigger notification check (for testing)
  */
-exports.triggerNotificationCheck = functions.https.onRequest(async (req, res) => {
+exports.triggerNotificationCheck = (0, https_1.onRequest)(async (req, res) => {
     try {
         console.log("Manual notification check triggered");
         res.status(200).json({
@@ -235,10 +125,8 @@ exports.triggerNotificationCheck = functions.https.onRequest(async (req, res) =>
 /**
  * Function to schedule notifications when user updates their Regular Eating settings
  */
-exports.scheduleRegularEatingNotifications = functions.firestore
-    .document("users/{userId}/Regular Eating/{settingsId}")
-    .onCreate(async (snap, context) => {
-    const userId = context.params.userId;
+exports.scheduleRegularEatingNotifications = (0, firestore_1.onDocumentCreated)("users/{userId}/Regular Eating/{settingsId}", async (event) => {
+    const userId = event.params.userId;
     console.log(`New Regular Eating settings created for user ${userId}`);
     // The actual scheduling is handled by the cron job
     // This function just logs the event
@@ -247,13 +135,201 @@ exports.scheduleRegularEatingNotifications = functions.firestore
 /**
  * Function to handle Regular Eating settings updates
  */
-exports.updateRegularEatingNotifications = functions.firestore
-    .document("users/{userId}/Regular Eating/{settingsId}")
-    .onUpdate(async (change, context) => {
-    const userId = context.params.userId;
+exports.updateRegularEatingNotifications = (0, firestore_1.onDocumentUpdated)("users/{userId}/Regular Eating/{settingsId}", async (event) => {
+    const userId = event.params.userId;
     console.log(`Regular Eating settings updated for user ${userId}`);
     // The actual scheduling is handled by the cron job
     // This function just logs the event
     return null;
 });
+/**
+ * Pub/Sub trigger function for cron job
+ * This function is triggered by the Google Cloud Scheduler via Pub/Sub
+ */
+exports.userNotificationCron = (0, pubsub_1.onMessagePublished)("cron-topic", async (event) => {
+    console.log("Cron job triggered via Pub/Sub");
+    console.log("Message data:", event.data ? event.data.toString() : "No data");
+    try {
+        // Call the existing notification function
+        const result = await processRegularEatingNotifications();
+        console.log("Cron job completed successfully:", result);
+        return result;
+    }
+    catch (error) {
+        console.error("Error in cron job:", error);
+        throw error;
+    }
+});
+/**
+ * Create in-app notification in Firestore
+ */
+async function createInAppNotification(userId, title, body, mealType) {
+    try {
+        await db
+            .collection("users")
+            .doc(userId)
+            .collection("notifications")
+            .add({
+            userId: userId,
+            title: title,
+            body: body,
+            type: "reminder",
+            isRead: false,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            data: {
+                type: "regular_eating",
+                mealType: mealType,
+            },
+            actionUrl: "/profile/regular-eating",
+        });
+        console.log(`Created in-app notification for user ${userId}`);
+    }
+    catch (error) {
+        console.error(`Failed to create in-app notification for user ${userId}:`, error);
+    }
+}
+/**
+ * Process Regular Eating notifications (extracted from the HTTP function)
+ * This function contains the core logic for sending notifications
+ */
+async function processRegularEatingNotifications() {
+    console.log("Starting Regular Eating notification check...");
+    const now = new Date();
+    const currentHour = now.getUTCHours();
+    const currentMinute = now.getUTCMinutes();
+    console.log(`Current time: ${currentHour}:${currentMinute}`);
+    // Get all users with Regular Eating settings
+    const usersSnapshot = await db.collectionGroup("Regular Eating").get();
+    if (usersSnapshot.empty) {
+        console.log("No Regular Eating settings found");
+        return {
+            success: true,
+            message: "No Regular Eating settings found",
+            notificationsSent: 0,
+        };
+    }
+    const notificationsToSend = [];
+    const inAppNotificationsToCreate = [];
+    for (const doc of usersSnapshot.docs) {
+        const settings = doc.data();
+        // Calculate meal times for today
+        const mealTimes = calculateMealTimesForToday(settings);
+        // Check if current time matches any meal time (within 5 minutes tolerance)
+        const matchingMeal = mealTimes.find(meal => {
+            const timeDiff = Math.abs((currentHour * 60 + currentMinute) -
+                (meal.hour * 60 + meal.minute));
+            return timeDiff <= 5; // 5 minutes tolerance
+        });
+        if (matchingMeal) {
+            console.log(`Found matching meal for user ${settings.userId}: ${matchingMeal.type}`);
+            // Create in-app notification for this user
+            inAppNotificationsToCreate.push({
+                userId: settings.userId,
+                title: matchingMeal.title,
+                body: matchingMeal.body,
+                mealType: matchingMeal.type,
+            });
+            // Get user's notification tokens
+            const tokensSnapshot = await db
+                .collection("users")
+                .doc(settings.userId)
+                .collection("notificationTokens")
+                .get();
+            if (!tokensSnapshot.empty) {
+                const notification = createNotification(matchingMeal, settings);
+                // Add notification for each token
+                tokensSnapshot.docs.forEach(tokenDoc => {
+                    const tokenData = tokenDoc.data();
+                    notificationsToSend.push(Object.assign({ token: tokenData.token }, notification));
+                });
+            }
+        }
+    }
+    // Create in-app notifications in Firestore
+    if (inAppNotificationsToCreate.length > 0) {
+        console.log(`Creating ${inAppNotificationsToCreate.length} in-app notifications`);
+        const inAppPromises = inAppNotificationsToCreate.map(notif => createInAppNotification(notif.userId, notif.title, notif.body, notif.mealType));
+        await Promise.allSettled(inAppPromises);
+    }
+    // Send all push notifications
+    if (notificationsToSend.length > 0) {
+        console.log(`Sending ${notificationsToSend.length} push notifications`);
+        // Group notifications by token to avoid duplicates
+        const tokenGroups = new Map();
+        notificationsToSend.forEach(notif => {
+            if (!tokenGroups.has(notif.token)) {
+                tokenGroups.set(notif.token, []);
+            }
+            tokenGroups.get(notif.token).push(notif);
+        });
+        // Send notifications in batches
+        const batchPromises = [];
+        for (const [token, notifications] of tokenGroups) {
+            // Send the first notification for each token
+            const notification = notifications[0];
+            const message = {
+                token: token,
+                notification: {
+                    title: notification.title,
+                    body: notification.body,
+                },
+                data: Object.assign(Object.assign({}, notification.data), { actionUrl: "/profile/regular-eating" }),
+                android: {
+                    notification: {
+                        channelId: "regular_eating_reminders",
+                        priority: "high",
+                        sound: "default",
+                    },
+                },
+                apns: {
+                    payload: {
+                        aps: {
+                            alert: {
+                                title: notification.title,
+                                body: notification.body,
+                            },
+                            sound: "default",
+                            badge: 1,
+                        },
+                    },
+                },
+                webpush: {
+                    notification: {
+                        title: notification.title,
+                        body: notification.body,
+                        icon: "/icons/Icon-192.png",
+                        badge: "/icons/Icon-192.png",
+                        tag: "regular-eating-notification",
+                        requireInteraction: false,
+                    },
+                },
+            };
+            batchPromises.push(messaging.send(message).catch(error => {
+                var _a;
+                console.error(`Failed to send notification to token ${token}:`, error);
+                // If token is invalid, remove it from the database
+                if (error.code === "messaging/invalid-registration-token" ||
+                    error.code === "messaging/registration-token-not-registered") {
+                    // Extract userId from the notification data
+                    const userId = (_a = notification.data) === null || _a === void 0 ? void 0 : _a.userId;
+                    if (userId) {
+                        return removeInvalidToken(userId, token);
+                    }
+                }
+                return Promise.resolve();
+            }));
+        }
+        await Promise.allSettled(batchPromises);
+        console.log("All push notifications sent successfully");
+    }
+    else {
+        console.log("No push notifications to send at this time");
+    }
+    return {
+        success: true,
+        message: "Notification check completed",
+        notificationsSent: notificationsToSend.length,
+        inAppNotificationsCreated: inAppNotificationsToCreate.length,
+    };
+}
 //# sourceMappingURL=index.js.map

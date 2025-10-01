@@ -1,17 +1,13 @@
-import * as functions from "firebase-functions";
+import { onRequest } from "firebase-functions/v2/https";
+import { onDocumentCreated, onDocumentUpdated } from "firebase-functions/v2/firestore";
+import { onMessagePublished } from "firebase-functions/v2/pubsub";
 import * as admin from "firebase-admin";
-import { PubSub } from "@google-cloud/pubsub";
 
 // Initialize Firebase Admin
 admin.initializeApp();
 
 const db = admin.firestore();
 const messaging = admin.messaging();
-
-// Initialize Pub/Sub client
-const pubsub = new PubSub({
-  projectId: "bed-app-ef8f8",
-});
 
 // Interface for Regular Eating settings
 interface RegularEatingSettings {
@@ -35,7 +31,7 @@ interface UserNotificationToken {
  * Cloud Function to send Regular Eating notifications
  * This function can be triggered manually via HTTP
  */
-export const sendRegularEatingNotifications = functions.https.onRequest(async (req, res) => {
+export const sendRegularEatingNotifications = onRequest(async (req, res) => {
   try {
     const result = await processRegularEatingNotifications();
     res.status(200).json(result);
@@ -138,7 +134,7 @@ async function removeInvalidToken(userId: string, token: string): Promise<void> 
 /**
  * HTTP function to manually trigger notification check (for testing)
  */
-export const triggerNotificationCheck = functions.https.onRequest(async (req, res) => {
+export const triggerNotificationCheck = onRequest(async (req, res) => {
   try {
     console.log("Manual notification check triggered");
     
@@ -158,42 +154,44 @@ export const triggerNotificationCheck = functions.https.onRequest(async (req, re
 /**
  * Function to schedule notifications when user updates their Regular Eating settings
  */
-export const scheduleRegularEatingNotifications = functions.firestore
-  .document("users/{userId}/Regular Eating/{settingsId}")
-  .onCreate(async (snap, context) => {
-    const userId = context.params.userId;
+export const scheduleRegularEatingNotifications = onDocumentCreated(
+  "users/{userId}/Regular Eating/{settingsId}",
+  async (event) => {
+    const userId = event.params.userId;
     
     console.log(`New Regular Eating settings created for user ${userId}`);
     
     // The actual scheduling is handled by the cron job
     // This function just logs the event
     return null;
-  });
+  }
+);
 
 /**
  * Function to handle Regular Eating settings updates
  */
-export const updateRegularEatingNotifications = functions.firestore
-  .document("users/{userId}/Regular Eating/{settingsId}")
-  .onUpdate(async (change, context) => {
-    const userId = context.params.userId;
+export const updateRegularEatingNotifications = onDocumentUpdated(
+  "users/{userId}/Regular Eating/{settingsId}",
+  async (event) => {
+    const userId = event.params.userId;
     
     console.log(`Regular Eating settings updated for user ${userId}`);
     
     // The actual scheduling is handled by the cron job
     // This function just logs the event
     return null;
-  });
+  }
+);
 
 /**
  * Pub/Sub trigger function for cron job
  * This function is triggered by the Google Cloud Scheduler via Pub/Sub
  */
-export const userNotificationCron = functions.pubsub
-  .topic("cron-topic")
-  .onPublish(async (message) => {
+export const userNotificationCron = onMessagePublished(
+  "cron-topic",
+  async (event) => {
     console.log("Cron job triggered via Pub/Sub");
-    console.log("Message data:", message.data ? message.data.toString() : "No data");
+    console.log("Message data:", event.data ? event.data.toString() : "No data");
     
     try {
       // Call the existing notification function
@@ -205,7 +203,41 @@ export const userNotificationCron = functions.pubsub
       console.error("Error in cron job:", error);
       throw error;
     }
-  });
+  }
+);
+
+/**
+ * Create in-app notification in Firestore
+ */
+async function createInAppNotification(
+  userId: string,
+  title: string,
+  body: string,
+  mealType: string
+): Promise<void> {
+  try {
+    await db
+      .collection("users")
+      .doc(userId)
+      .collection("notifications")
+      .add({
+        userId: userId,
+        title: title,
+        body: body,
+        type: "reminder",
+        isRead: false,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        data: {
+          type: "regular_eating",
+          mealType: mealType,
+        },
+        actionUrl: "/profile/regular-eating",
+      });
+    console.log(`Created in-app notification for user ${userId}`);
+  } catch (error) {
+    console.error(`Failed to create in-app notification for user ${userId}:`, error);
+  }
+}
 
 /**
  * Process Regular Eating notifications (extracted from the HTTP function)
@@ -239,6 +271,13 @@ async function processRegularEatingNotifications() {
     data: any;
   }> = [];
   
+  const inAppNotificationsToCreate: Array<{
+    userId: string;
+    title: string;
+    body: string;
+    mealType: string;
+  }> = [];
+  
   for (const doc of usersSnapshot.docs) {
     const settings = doc.data() as RegularEatingSettings;
     
@@ -256,6 +295,14 @@ async function processRegularEatingNotifications() {
     
     if (matchingMeal) {
       console.log(`Found matching meal for user ${settings.userId}: ${matchingMeal.type}`);
+      
+      // Create in-app notification for this user
+      inAppNotificationsToCreate.push({
+        userId: settings.userId,
+        title: matchingMeal.title,
+        body: matchingMeal.body,
+        mealType: matchingMeal.type,
+      });
       
       // Get user's notification tokens
       const tokensSnapshot = await db
@@ -279,9 +326,18 @@ async function processRegularEatingNotifications() {
     }
   }
   
-  // Send all notifications
+  // Create in-app notifications in Firestore
+  if (inAppNotificationsToCreate.length > 0) {
+    console.log(`Creating ${inAppNotificationsToCreate.length} in-app notifications`);
+    const inAppPromises = inAppNotificationsToCreate.map(notif =>
+      createInAppNotification(notif.userId, notif.title, notif.body, notif.mealType)
+    );
+    await Promise.allSettled(inAppPromises);
+  }
+  
+  // Send all push notifications
   if (notificationsToSend.length > 0) {
-    console.log(`Sending ${notificationsToSend.length} notifications`);
+    console.log(`Sending ${notificationsToSend.length} push notifications`);
     
     // Group notifications by token to avoid duplicates
     const tokenGroups = new Map<string, any[]>();
@@ -305,7 +361,10 @@ async function processRegularEatingNotifications() {
           title: notification.title,
           body: notification.body,
         },
-        data: notification.data,
+        data: {
+          ...notification.data,
+          actionUrl: "/profile/regular-eating",
+        },
         android: {
           notification: {
             channelId: "regular_eating_reminders",
@@ -323,6 +382,16 @@ async function processRegularEatingNotifications() {
               sound: "default",
               badge: 1,
             },
+          },
+        },
+        webpush: {
+          notification: {
+            title: notification.title,
+            body: notification.body,
+            icon: "/icons/Icon-192.png",
+            badge: "/icons/Icon-192.png",
+            tag: "regular-eating-notification",
+            requireInteraction: false,
           },
         },
       };
@@ -345,14 +414,15 @@ async function processRegularEatingNotifications() {
     }
     
     await Promise.allSettled(batchPromises);
-    console.log("All notifications sent successfully");
+    console.log("All push notifications sent successfully");
   } else {
-    console.log("No notifications to send at this time");
+    console.log("No push notifications to send at this time");
   }
   
   return {
     success: true,
     message: "Notification check completed",
     notificationsSent: notificationsToSend.length,
+    inAppNotificationsCreated: inAppNotificationsToCreate.length,
   };
 }
