@@ -68,7 +68,6 @@ import '../lessons/lesson_s2_7_6.dart';
 import '../lessons/lesson_s2_7_7.dart';
 import '../lessons/lesson_s2_7_8.dart';
 import '../lessons/lesson_s2_2_7.dart';
-import '../lessons/lesson_s2_7_2_1.dart';
 import '../lessons/lesson_s3_0_2_1.dart';
 
 class EducationScreen extends ConsumerStatefulWidget {
