@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/onboarding_answer.dart';
 import '../../models/onboarding_data.dart';
 import '../../core/services/onboarding_service.dart';
-import '../../core/services/recommendation_service.dart';
+// AI-based recommendation service removed
 import '../../providers/auth_provider.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
@@ -721,20 +721,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       // Save complete onboarding data
       await _onboardingService.saveOnboardingData(onboardingData);
       
-      // Generate AI recommendations based on survey responses
-      try {
-        // Create instance of recommendation service
-        final recommendationService = RecommendationService();
-        
-        // Generate personalized recommendations based on survey responses
-        await recommendationService.generateRecommendationsFromOnboarding(
-          user.id, 
-          _answers,
-        );
-      } catch (recError) {
-        // Log error but continue with onboarding completion
-        print('Error generating recommendations: $recError');
-      }
+      // AI-based recommendations removed
 
       // Update user's onboarding status
       await _updateUserOnboardingStatus(user.id);
@@ -777,23 +764,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       // Save partial onboarding data
       await _onboardingService.saveOnboardingData(onboardingData);
       
-      // Generate AI recommendations based on partial survey responses
-      // Only if we have at least 4 answers
-      if (_answers.length >= 4) {
-        try {
-          // Create instance of recommendation service
-          final recommendationService = RecommendationService();
-          
-          // Generate personalized recommendations based on survey responses
-          await recommendationService.generateRecommendationsFromOnboarding(
-            user.id, 
-            _answers,
-          );
-        } catch (recError) {
-          // Log error but continue with onboarding completion
-          print('Error generating recommendations: $recError');
-        }
-      }
+      // AI-based recommendations removed
 
       // Update user's partial onboarding status to allow app access
       await _updateUserPartialOnboardingStatus(user.id);

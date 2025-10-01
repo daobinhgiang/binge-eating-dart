@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../services/openai_service.dart';
-import '../services/recommendation_service.dart';
+// OpenAI and AI-based recommendation services removed
 import '../../models/food_diary.dart';
 import '../../models/weight_diary.dart';
 import '../../models/body_image_diary.dart';
@@ -11,8 +10,7 @@ class AnalyticsService {
   AnalyticsService._internal();
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final OpenAIService _openAIService = OpenAIService();
-  final RecommendationService _recommendationService = RecommendationService();
+  // AI services removed
 
   // Get the most recent week number for a user
   Future<int> getMostRecentWeekNumber(String userId) async {
@@ -94,7 +92,7 @@ class AnalyticsService {
     }
   }
 
-  // Generate analysis using OpenAI
+  // Generate a simple local analysis without AI
   Future<Map<String, dynamic>> generateJournalAnalysis(String userId) async {
     try {
       // Get the most recent week number
@@ -115,56 +113,26 @@ class AnalyticsService {
         };
       }
 
-      // Prepare context for OpenAI
-      final analysisContext = _prepareAnalysisContext(weekData);
-      
-      // Call OpenAI for analysis
-      final openAIResponse = await _callOpenAIForAnalysis(analysisContext);
-      
-      // Add metadata
-      openAIResponse['weekNumber'] = mostRecentWeek;
-      openAIResponse['generatedAt'] = DateTime.now().toIso8601String();
-      openAIResponse['entriesAnalyzed'] = weekData['totalEntries'];
-      
-      return openAIResponse;
+      // Build basic heuristic analysis locally
+      final localAnalysis = _buildLocalAnalysis(weekData);
+      localAnalysis['weekNumber'] = mostRecentWeek;
+      localAnalysis['generatedAt'] = DateTime.now().toIso8601String();
+      localAnalysis['entriesAnalyzed'] = weekData['totalEntries'];
+      return localAnalysis;
     } catch (e) {
       throw 'Failed to generate journal analysis: $e';
     }
   }
 
-  // Generate analysis and add AI-recommended todo items
+  // Generate analysis only (AI recommendations removed)
   Future<Map<String, dynamic>> generateJournalAnalysisWithRecommendations(String userId) async {
     try {
       // First generate the regular analysis
       final analysis = await generateJournalAnalysis(userId);
       
-      // If analysis contains useful insights and patterns, generate recommendations
-      if (analysis['insights'] != null && 
-          analysis['patterns'] != null &&
-          (analysis['insights'] as List).isNotEmpty &&
-          analysis['entriesAnalyzed'] != null &&
-          analysis['entriesAnalyzed'] > 0) {
-        
-        try {
-          // Generate AI recommendations based on the analysis
-          final recommendedTodos = await _recommendationService.generateRecommendationsFromAnalytics(
-            userId,
-            analysis,
-          );
-          
-          // Add information about generated recommendations to the analysis
-          analysis['recommendedTodos'] = recommendedTodos.length;
-          analysis['todosGenerated'] = true;
-        } catch (recommendationError) {
-          // If recommendations fail, still return the analysis without todos
-          analysis['recommendedTodos'] = 0;
-          analysis['todosGenerated'] = false;
-          analysis['recommendationError'] = recommendationError.toString();
-        }
-      } else {
-        analysis['recommendedTodos'] = 0;
-        analysis['todosGenerated'] = false;
-      }
+      // Recommendations removed; only analysis is returned
+      analysis['recommendedTodos'] = 0;
+      analysis['todosGenerated'] = false;
       
       return analysis;
     } catch (e) {
@@ -172,104 +140,50 @@ class AnalyticsService {
     }
   }
 
-  // Prepare context for OpenAI analysis
-  String _prepareAnalysisContext(Map<String, dynamic> weekData) {
+  // Build a simple local analysis based on available journal data
+  Map<String, dynamic> _buildLocalAnalysis(Map<String, dynamic> weekData) {
     final foodDiaries = weekData['foodDiaries'] as List<FoodDiary>;
     final weightDiaries = weekData['weightDiaries'] as List<WeightDiary>;
     final bodyImageDiaries = weekData['bodyImageDiaries'] as List<BodyImageDiary>;
-    final weekNumber = weekData['weekNumber'];
 
-    final buffer = StringBuffer();
-    buffer.writeln('Journal Data Analysis for Week $weekNumber:');
-    buffer.writeln();
+    final insights = <String>[];
+    final patterns = <String>[];
+    final recommendations = <String>[];
 
-    // Food diary analysis
+    // Basic insights
     if (foodDiaries.isNotEmpty) {
-      buffer.writeln('FOOD DIARY ENTRIES (${foodDiaries.length} entries):');
-      for (final entry in foodDiaries) {
-        buffer.writeln('- Date/Time: ${entry.mealTime}');
-        buffer.writeln('  Food: ${entry.foodAndDrinks}');
-        buffer.writeln('  Location: ${entry.displayLocation}');
-        buffer.writeln('  Binge Episode: ${entry.isBinge ? "Yes" : "No"}');
-        if (entry.purgeMethod != 'none') {
-          buffer.writeln('  Purge Method: ${entry.purgeMethod}');
-        }
-        buffer.writeln('  Context: ${entry.contextAndComments}');
-        buffer.writeln();
+      final bingeCount = foodDiaries.where((e) => e.isBinge).length;
+      insights.add('Logged ${foodDiaries.length} meals; ${bingeCount} marked as binge episodes.');
+      if (bingeCount > 0) {
+        recommendations.add('Review coping tools such as Urge Surfing when urges arise.');
       }
+    } else {
+      insights.add('No food diary entries this week. Adding entries improves insights.');
+      recommendations.add('Try logging a few meals next week to spot patterns.');
     }
 
-    // Weight diary analysis
     if (weightDiaries.isNotEmpty) {
-      buffer.writeln('WEIGHT DIARY ENTRIES (${weightDiaries.length} entries):');
-      for (final entry in weightDiaries) {
-        buffer.writeln('- Date: ${entry.createdAt}');
-        buffer.writeln('  Weight: ${entry.weight} ${entry.unit}');
-        buffer.writeln();
-      }
+      final first = weightDiaries.first.weight;
+      final last = weightDiaries.last.weight;
+      final delta = (last - first).toStringAsFixed(1);
+      patterns.add('Weight changed ${delta} ${weightDiaries.first.unit} across the week.');
     }
 
-    // Body image diary analysis
     if (bodyImageDiaries.isNotEmpty) {
-      buffer.writeln('BODY IMAGE DIARY ENTRIES (${bodyImageDiaries.length} entries):');
-      for (final entry in bodyImageDiaries) {
-        buffer.writeln('- Date/Time: ${entry.checkTime}');
-        buffer.writeln('  How Checked: ${entry.displayHowChecked}');
-        buffer.writeln('  Where Checked: ${entry.displayWhereChecked}');
-        buffer.writeln('  Context & Feelings: ${entry.contextAndFeelings}');
-        buffer.writeln();
-      }
+      insights.add('You reflected on body image ${bodyImageDiaries.length} times this week.');
+      recommendations.add('Consider scheduling supportive activities on challenging days.');
     }
 
-    return buffer.toString();
-  }
+    final analysisText = insights.isEmpty
+        ? 'No sufficient data to analyze this week.'
+        : 'Here is a brief overview based on your recent entries.';
 
-  // Call OpenAI for analysis
-  Future<Map<String, dynamic>> _callOpenAIForAnalysis(String context) async {
-    try {
-      final prompt = """
-Analyze the following journal data from a user with binge eating disorder. Please provide a comprehensive analysis that includes:
-
-1. Key insights about eating patterns, behaviors, and triggers
-2. Patterns or trends you notice in the data
-3. Recommendations for improvement based on the data
-4. Overall progress assessment
-
-$context
-
-Please return your analysis in the following JSON format:
-{
-  "analysis": "A comprehensive overview of the user's week in 2-3 paragraphs",
-  "insights": [
-    "Key insight 1",
-    "Key insight 2", 
-    "Key insight 3"
-  ],
-  "patterns": [
-    "Pattern or trend 1",
-    "Pattern or trend 2"
-  ],
-  "recommendations": [
-    "Specific recommendation 1",
-    "Specific recommendation 2",
-    "Specific recommendation 3"
-  ]
-}
-
-Focus on being:
-- Supportive and non-judgmental
-- Specific to the data provided
-- Constructive in recommendations
-- Encouraging about progress made
-- Professional but empathetic
-""";
-
-      // Use OpenAI service to get analysis
-      final response = await _openAIService.getAnalysis(prompt);
-      return response;
-    } catch (e) {
-      throw 'Failed to get analysis from OpenAI: $e';
-    }
+    return {
+      'analysis': analysisText,
+      'insights': insights,
+      'patterns': patterns,
+      'recommendations': recommendations,
+    };
   }
 
   // Store analysis in Firestore for caching

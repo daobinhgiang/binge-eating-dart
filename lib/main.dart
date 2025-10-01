@@ -24,7 +24,6 @@ import 'screens/tools/addressing_feeling_fat_screen.dart';
 import 'screens/tools/addressing_setbacks_screen.dart';
 import 'screens/todos/todos_screen.dart';
 import 'screens/todos/add_todo_screen.dart';
-import 'screens/chatbot/chatbot_screen.dart';
 import 'screens/profile/regular_eating_screen.dart';
 import 'screens/profile/notification_settings_screen.dart';
 import 'screens/notifications/notifications_screen.dart';
@@ -257,10 +256,7 @@ final _router = GoRouter(
       path: '/todos/add',
       builder: (context, state) => const AuthGuard(child: AddTodoScreen()),
     ),
-    GoRoute(
-      path: '/chatbot',
-      builder: (context, state) => const AuthGuard(child: ChatbotScreen()),
-    ),
+    // Chatbot route removed
     GoRoute(
       path: '/profile/regular-eating',
       builder: (context, state) => const AuthGuard(child: RegularEatingScreen()),
