@@ -22,6 +22,75 @@ import 'screens/todos/add_todo_screen.dart';
 import 'screens/profile/regular_eating_screen.dart';
 import 'screens/profile/notification_settings_screen.dart';
 import 'screens/notifications/notifications_screen.dart';
+import 'screens/chat/chat_screen.dart';
+// Journal imports
+import 'screens/journal/food_diary_survey_screen.dart';
+import 'screens/journal/weight_diary_survey_screen.dart';
+import 'screens/journal/body_image_diary_survey_screen.dart';
+// Assessment imports
+import 'screens/assessments/assessment_2_1_screen.dart';
+import 'screens/assessments/assessment_2_2_screen.dart';
+import 'screens/assessments/assessment_2_3_screen.dart';
+// Lesson imports
+import 'screens/lessons/lesson_1_1.dart';
+import 'screens/lessons/lesson_1_2.dart';
+import 'screens/lessons/lesson_1_2_1.dart';
+import 'screens/lessons/lesson_1_3.dart';
+import 'screens/lessons/lesson_3_1.dart';
+import 'screens/lessons/lesson_3_2.dart';
+import 'screens/lessons/lesson_3_3.dart';
+import 'screens/lessons/lesson_3_4.dart';
+import 'screens/lessons/lesson_3_5.dart';
+import 'screens/lessons/lesson_3_6.dart';
+import 'screens/lessons/lesson_3_7.dart';
+import 'screens/lessons/lesson_3_8.dart';
+import 'screens/lessons/lesson_3_9.dart';
+import 'screens/lessons/lesson_3_10.dart';
+import 'screens/lessons/lesson_s2_0_1.dart';
+import 'screens/lessons/lesson_s2_0_2.dart';
+import 'screens/lessons/lesson_s2_0_3.dart';
+import 'screens/lessons/lesson_s2_0_4.dart';
+import 'screens/lessons/lesson_s2_0_5.dart';
+import 'screens/lessons/lesson_s2_0_6.dart';
+import 'screens/lessons/lesson_s2_1_1.dart';
+import 'screens/lessons/lesson_s2_1_2.dart';
+import 'screens/lessons/lesson_s2_1_3.dart';
+import 'screens/lessons/lesson_s2_2_1.dart';
+import 'screens/lessons/lesson_s2_2_2.dart';
+import 'screens/lessons/lesson_s2_2_3.dart';
+import 'screens/lessons/lesson_s2_2_4.dart';
+import 'screens/lessons/lesson_s2_2_5.dart';
+import 'screens/lessons/lesson_s2_2_5_1.dart';
+import 'screens/lessons/lesson_s2_2_6.dart';
+import 'screens/lessons/lesson_s2_2_7.dart';
+import 'screens/lessons/lesson_s2_3_1.dart';
+import 'screens/lessons/lesson_s2_3_2.dart';
+import 'screens/lessons/lesson_s2_3_2_1.dart';
+import 'screens/lessons/lesson_s2_3_3.dart';
+import 'screens/lessons/lesson_s2_3_4.dart';
+import 'screens/lessons/lesson_s2_3_5.dart';
+import 'screens/lessons/lesson_s2_4_1.dart';
+import 'screens/lessons/lesson_s2_4_2.dart';
+import 'screens/lessons/lesson_s2_4_2_1.dart';
+import 'screens/lessons/lesson_s2_4_3.dart';
+import 'screens/lessons/lesson_s2_5_1.dart';
+import 'screens/lessons/lesson_s2_5_2.dart';
+import 'screens/lessons/lesson_s2_6_1.dart';
+import 'screens/lessons/lesson_s2_6_2.dart';
+import 'screens/lessons/lesson_s2_6_3.dart';
+import 'screens/lessons/lesson_s2_7_1.dart';
+import 'screens/lessons/lesson_s2_7_1_1.dart';
+import 'screens/lessons/lesson_s2_7_2.dart';
+import 'screens/lessons/lesson_s2_7_2_1.dart';
+import 'screens/lessons/lesson_s2_7_3.dart';
+import 'screens/lessons/lesson_s2_7_4.dart';
+import 'screens/lessons/lesson_s2_7_5.dart';
+import 'screens/lessons/lesson_s2_7_6.dart';
+import 'screens/lessons/lesson_s2_7_7.dart';
+import 'screens/lessons/lesson_s2_7_8.dart';
+import 'screens/lessons/lesson_s3_0_1.dart';
+import 'screens/lessons/lesson_s3_0_2.dart';
+import 'screens/lessons/lesson_s3_0_2_1.dart';
 import 'providers/auth_provider.dart';
 import 'providers/auto_todo_provider.dart';
 import 'models/user_model.dart';
@@ -230,6 +299,274 @@ final _router = GoRouter(
     GoRoute(
       path: '/notifications',
       builder: (context, state) => const AuthGuard(child: NotificationsScreen()),
+    ),
+    GoRoute(
+      path: '/chat',
+      builder: (context, state) => const AuthGuard(child: ChatScreen()),
+    ),
+    // Journal survey routes
+    GoRoute(
+      path: '/journal/food-diary',
+      builder: (context, state) => const AuthGuard(child: FoodDiarySurveyScreen()),
+    ),
+    GoRoute(
+      path: '/journal/weight-diary',
+      builder: (context, state) => const AuthGuard(child: WeightDiarySurveyScreen()),
+    ),
+    GoRoute(
+      path: '/journal/body-image-diary',
+      builder: (context, state) => const AuthGuard(child: BodyImageDiarySurveyScreen()),
+    ),
+    // Lesson routes - Stage 1
+    GoRoute(
+      path: '/lesson/1_1',
+      builder: (context, state) => const AuthGuard(child: Lesson11Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/1_2',
+      builder: (context, state) => const AuthGuard(child: Lesson12Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/1_2_1',
+      builder: (context, state) => const AuthGuard(child: Lesson121Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/1_3',
+      builder: (context, state) => const AuthGuard(child: Lesson13Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/2_1',
+      builder: (context, state) => const AuthGuard(child: Assessment21Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/2_2',
+      builder: (context, state) => const AuthGuard(child: Assessment22Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/2_3',
+      builder: (context, state) => const AuthGuard(child: Assessment23Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/3_1',
+      builder: (context, state) => const AuthGuard(child: Lesson31Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/3_2',
+      builder: (context, state) => const AuthGuard(child: Lesson32Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/3_3',
+      builder: (context, state) => const AuthGuard(child: Lesson33Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/3_4',
+      builder: (context, state) => const AuthGuard(child: Lesson34Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/3_5',
+      builder: (context, state) => const AuthGuard(child: Lesson35Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/3_6',
+      builder: (context, state) => const AuthGuard(child: Lesson36Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/3_7',
+      builder: (context, state) => const AuthGuard(child: Lesson37Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/3_8',
+      builder: (context, state) => const AuthGuard(child: Lesson38Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/3_9',
+      builder: (context, state) => const AuthGuard(child: Lesson39Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/3_10',
+      builder: (context, state) => const AuthGuard(child: Lesson310Screen()),
+    ),
+    // Lesson routes - Stage 2
+    GoRoute(
+      path: '/lesson/s2_0_1',
+      builder: (context, state) => const AuthGuard(child: LessonS201Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_0_2',
+      builder: (context, state) => const AuthGuard(child: LessonS202Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_0_3',
+      builder: (context, state) => const AuthGuard(child: LessonS203Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_0_4',
+      builder: (context, state) => const AuthGuard(child: LessonS204Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_0_5',
+      builder: (context, state) => const AuthGuard(child: LessonS205Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_0_6',
+      builder: (context, state) => const AuthGuard(child: LessonS206Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_1_1',
+      builder: (context, state) => const AuthGuard(child: LessonS211Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_1_2',
+      builder: (context, state) => const AuthGuard(child: LessonS212Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_1_3',
+      builder: (context, state) => const AuthGuard(child: LessonS213Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_2_1',
+      builder: (context, state) => const AuthGuard(child: LessonS221Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_2_2',
+      builder: (context, state) => const AuthGuard(child: LessonS222Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_2_3',
+      builder: (context, state) => const AuthGuard(child: LessonS223Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_2_4',
+      builder: (context, state) => const AuthGuard(child: LessonS224Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_2_5',
+      builder: (context, state) => const AuthGuard(child: LessonS225Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_2_5_1',
+      builder: (context, state) => const AuthGuard(child: LessonS2251Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_2_6',
+      builder: (context, state) => const AuthGuard(child: LessonS226Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_2_7',
+      builder: (context, state) => const AuthGuard(child: LessonS227Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_3_1',
+      builder: (context, state) => const AuthGuard(child: LessonS231Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_3_2',
+      builder: (context, state) => const AuthGuard(child: LessonS232Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_3_2_1',
+      builder: (context, state) => const AuthGuard(child: LessonS2321Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_3_3',
+      builder: (context, state) => const AuthGuard(child: LessonS233Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_3_4',
+      builder: (context, state) => const AuthGuard(child: LessonS234Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_3_5',
+      builder: (context, state) => const AuthGuard(child: LessonS235Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_4_1',
+      builder: (context, state) => const AuthGuard(child: LessonS241Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_4_2',
+      builder: (context, state) => const AuthGuard(child: LessonS242Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_4_2_1',
+      builder: (context, state) => const AuthGuard(child: LessonS2421Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_4_3',
+      builder: (context, state) => const AuthGuard(child: LessonS243Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_5_1',
+      builder: (context, state) => const AuthGuard(child: LessonS251Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_5_2',
+      builder: (context, state) => const AuthGuard(child: LessonS252Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_6_1',
+      builder: (context, state) => const AuthGuard(child: LessonS261Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_6_2',
+      builder: (context, state) => const AuthGuard(child: LessonS262Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_6_3',
+      builder: (context, state) => const AuthGuard(child: LessonS263Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_7_1',
+      builder: (context, state) => const AuthGuard(child: LessonS271Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_7_1_1',
+      builder: (context, state) => const AuthGuard(child: LessonS2711Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_7_2',
+      builder: (context, state) => const AuthGuard(child: LessonS272Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_7_2_1',
+      builder: (context, state) => const AuthGuard(child: LessonS2721Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_7_3',
+      builder: (context, state) => const AuthGuard(child: LessonS273Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_7_4',
+      builder: (context, state) => const AuthGuard(child: LessonS274Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_7_5',
+      builder: (context, state) => const AuthGuard(child: LessonS275Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_7_6',
+      builder: (context, state) => const AuthGuard(child: LessonS276Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_7_7',
+      builder: (context, state) => const AuthGuard(child: LessonS277Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s2_7_8',
+      builder: (context, state) => const AuthGuard(child: LessonS278Screen()),
+    ),
+    // Lesson routes - Stage 3
+    GoRoute(
+      path: '/lesson/s3_0_1',
+      builder: (context, state) => const AuthGuard(child: LessonS301Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s3_0_2',
+      builder: (context, state) => const AuthGuard(child: LessonS302Screen()),
+    ),
+    GoRoute(
+      path: '/lesson/s3_0_2_1',
+      builder: (context, state) => const AuthGuard(child: LessonS3021Screen()),
     ),
   ],
 );

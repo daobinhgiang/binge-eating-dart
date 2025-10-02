@@ -172,7 +172,7 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
       return const SizedBox.shrink();
     }
 
-    final allAsync = ref.watch(allWeightEntriesProvider(user.id));
+    final allAsync = ref.watch(allWeightEntriesStreamProvider(user.id));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -367,7 +367,9 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Weight saved successfully!'), backgroundColor: Colors.green),
         );
-        Navigator.of(context).pop();
+        // Clear the form after successful submission
+        _weightController.clear();
+        // Don't navigate away - let user stay on the weight diary page
       }
     } catch (e) {
       if (mounted) {

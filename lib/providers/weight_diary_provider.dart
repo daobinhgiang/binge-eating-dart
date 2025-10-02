@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/weight_diary.dart';
 import '../core/services/weight_diary_service.dart';
 import '../core/services/firebase_analytics_service.dart';
@@ -27,6 +28,52 @@ final allWeightDiariesProvider = FutureProvider.family<Map<int, List<WeightDiary
 final allWeightEntriesProvider = FutureProvider.family<List<WeightDiary>, String>((ref, userId) async {
   final service = ref.read(weightDiaryServiceProvider);
   return await service.getAllWeightEntries(userId);
+});
+
+// Real-time provider for all weight entries using Firestore streams
+final allWeightEntriesStreamProvider = StreamProvider.family<List<WeightDiary>, String>((ref, userId) {
+  final firestore = FirebaseFirestore.instance;
+  
+  // Get current week number first, then listen to current week changes
+  // and combine with historical data
+  return Stream.fromFuture(
+    ref.read(weightDiaryServiceProvider).getCurrentWeekNumber(userId)
+  ).asyncExpand((currentWeek) {
+    // Listen to current week weight diaries in real-time
+    return firestore
+        .collection('users')
+        .doc(userId)
+        .collection('weeks')
+        .doc('week_$currentWeek')
+        .collection('weightDiaries')
+        .orderBy('createdAt', descending: false)
+        .snapshots()
+        .asyncMap((currentWeekSnapshot) async {
+          // Get current week entries
+          final currentWeekEntries = currentWeekSnapshot.docs
+              .map((doc) => WeightDiary.fromFirestore(doc))
+              .toList();
+          
+          // Get historical entries (previous weeks)
+          final service = ref.read(weightDiaryServiceProvider);
+          final historicalEntries = <WeightDiary>[];
+          
+          for (int week = 1; week < currentWeek; week++) {
+            try {
+              final weekEntries = await service.getWeightDiariesForWeek(userId, week);
+              historicalEntries.addAll(weekEntries);
+            } catch (e) {
+              // Week might not exist, continue
+            }
+          }
+          
+          // Combine and sort all entries
+          final allEntries = [...historicalEntries, ...currentWeekEntries];
+          allEntries.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+          
+          return allEntries;
+        });
+  });
 });
 
 // Helper provider: entries in date range
