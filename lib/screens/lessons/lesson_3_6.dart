@@ -103,6 +103,7 @@ class _Lesson36ScreenState extends State<Lesson36Screen> {
       onPrevious: isFirstSlide ? null : _goToPreviousSlide,
       onNext: isLastSlide ? null : _goToNextSlide,
       onFinish: isLastSlide ? _finishLesson : null,
+      totalSlides: _lesson!.slides.length,
     );
   }
 }

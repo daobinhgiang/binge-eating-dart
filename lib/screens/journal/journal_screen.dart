@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/food_diary_provider.dart';
-import '../../providers/weight_diary_provider.dart';
 import '../../providers/body_image_diary_provider.dart';
+import '../../providers/weight_diary_provider.dart';
 import '../../providers/analytics_provider.dart';
 import '../../providers/todo_provider.dart';
 import '../../models/food_diary.dart';
-import '../../models/weight_diary.dart';
 import '../../models/body_image_diary.dart';
+import '../../models/weight_diary.dart';
+import '../../widgets/tropical_forest_background.dart';
 import '../../widgets/journal_background.dart';
 import 'food_diary_survey_screen.dart';
-import 'weight_diary_survey_screen.dart';
 import 'body_image_diary_survey_screen.dart';
+import 'weight_diary_survey_screen.dart';
 
 class JournalScreen extends ConsumerWidget {
   const JournalScreen({super.key});
@@ -31,11 +32,48 @@ class JournalScreen extends ConsumerWidget {
 
     final currentWeekNumber = ref.watch(currentWeekNumberProvider(user.id));
     final currentWeekFoodDiaries = ref.watch(currentWeekFoodDiariesProvider(user.id));
-    final currentWeekWeightDiaries = ref.watch(currentWeekWeightDiariesProvider(user.id));
     final currentWeekBodyImageDiaries = ref.watch(currentWeekBodyImageDiariesProvider(user.id));
+    final currentWeekWeightDiaries = ref.watch(currentWeekWeightDiariesProvider(user.id));
 
     return Scaffold(
-      body: JournalBackground(
+      appBar: AppBar(
+        title: const Text('Journal'),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          IconButton(
+            onPressed: () {
+              ref.read(currentWeekFoodDiariesProvider(user.id).notifier).refreshEntries();
+              ref.read(currentWeekBodyImageDiariesProvider(user.id).notifier).refreshEntries();
+              ref.read(currentWeekWeightDiariesProvider(user.id).notifier).refreshEntries();
+            },
+            icon: const Icon(Icons.refresh),
+          ),
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'generate_analysis') {
+                _generateAnalysis(context, ref, user.id);
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'generate_analysis',
+                child: Row(
+                  children: [
+                    Icon(Icons.analytics),
+                    SizedBox(width: 8),
+                    Text('Generate Analysis'),
+                  ],
+                ),
+              ),
+            ],
+            icon: const Icon(Icons.more_vert),
+          ),
+        ],
+      ),
+      body: TropicalForestBackground(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -164,12 +202,12 @@ class JournalScreen extends ConsumerWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(20),
                   child: Row(
-                        children: [
-                          Container(
+                    children: [
+                      Container(
                         width: 60,
                         height: 60,
-                            decoration: BoxDecoration(
-                          color: Colors.purple[600],
+                        decoration: BoxDecoration(
+                          color: Colors.orange[600],
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(
@@ -187,19 +225,19 @@ class JournalScreen extends ConsumerWidget {
                               'Weight Diary',
                               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.purple[600],
+                                color: Colors.orange[700],
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Track your weight progress',
+                              'Log your weight and track progress',
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 color: Colors.grey[600],
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
+                          ],
+                        ),
+                      ),
                       Icon(
                         Icons.chevron_right,
                         color: Colors.grey[400],
@@ -210,7 +248,9 @@ class JournalScreen extends ConsumerWidget {
                 ),
               ),
             ),
-            
+
+            const SizedBox(height: 16),
+
             const SizedBox(height: 16),
             
             // Body Image Diary Survey Card
@@ -299,7 +339,7 @@ class JournalScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             
             // Combined recent entries from all diaries
-            _buildCombinedRecentEntries(context, currentWeekFoodDiaries, currentWeekWeightDiaries, currentWeekBodyImageDiaries),
+            _buildCombinedRecentEntries(context, currentWeekFoodDiaries, currentWeekBodyImageDiaries, currentWeekWeightDiaries),
           ],
         ),
       ),
@@ -378,19 +418,17 @@ class JournalScreen extends ConsumerWidget {
   Widget _buildCombinedRecentEntries(
     BuildContext context,
     AsyncValue<List<FoodDiary>> foodDiaries,
-    AsyncValue<List<WeightDiary>> weightDiaries,
     AsyncValue<List<BodyImageDiary>> bodyImageDiaries,
+    AsyncValue<List<WeightDiary>> weightDiaries,
   ) {
     return foodDiaries.when(
       data: (foodEntries) {
-        return weightDiaries.when(
-          data: (weightEntries) {
-            return bodyImageDiaries.when(
-              data: (bodyImageEntries) {
-                final hasAnyEntries = foodEntries.isNotEmpty || 
-                                    weightEntries.isNotEmpty || 
-                                    bodyImageEntries.isNotEmpty;
-                
+        return bodyImageDiaries.when(
+          data: (bodyImageEntries) {
+            return weightDiaries.when(
+              data: (weightEntries) {
+                final hasAnyEntries = foodEntries.isNotEmpty || bodyImageEntries.isNotEmpty || weightEntries.isNotEmpty;
+
                 if (!hasAnyEntries) {
                   return Container(
                     width: double.infinity,
@@ -415,7 +453,7 @@ class JournalScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Start tracking with Food Diary, Weight Diary, or Body Image Diary entries',
+                          'Start tracking with Food, Weight, or Body Image entries',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Colors.grey[500],
                           ),
@@ -427,36 +465,35 @@ class JournalScreen extends ConsumerWidget {
                 }
 
                 final allEntries = <Widget>[];
-                
+
                 // Add food diary cards
                 for (final entry in foodEntries.take(2)) {
                   allEntries.add(_buildFoodDiaryCard(context, entry));
                 }
-                
+
                 // Add weight diary cards
                 for (final entry in weightEntries.take(2)) {
                   allEntries.add(_buildWeightDiaryCard(context, entry));
                 }
-                
+
                 // Add body image diary cards
                 for (final entry in bodyImageEntries.take(2)) {
                   allEntries.add(_buildBodyImageDiaryCard(context, entry));
                 }
-                
-                // Sort by creation time if needed (entries are already sorted from providers)
+
                 return Column(children: allEntries);
               },
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, _) => Container(
                 padding: const EdgeInsets.all(16),
-                child: Text('Error loading body image entries: $error'),
+                child: Text('Error loading weight entries: $error'),
               ),
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, _) => Container(
             padding: const EdgeInsets.all(16),
-            child: Text('Error loading weight entries: $error'),
+            child: Text('Error loading body image entries: $error'),
           ),
         );
       },
@@ -471,57 +508,57 @@ class JournalScreen extends ConsumerWidget {
   Widget _buildWeightDiaryCard(BuildContext context, WeightDiary entry) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
               width: 48,
               height: 48,
-                decoration: BoxDecoration(
-                color: Colors.purple[100],
-                  borderRadius: BorderRadius.circular(8),
+              decoration: BoxDecoration(
+                color: Colors.orange[100],
+                borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
                 Icons.monitor_weight,
-                color: Colors.purple[600],
+                color: Colors.orange[700],
                 size: 24,
-                ),
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
+                    children: [
+                      Text(
                         'Weight Diary',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                          color: Colors.purple[600],
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.orange[700],
                         ),
                       ),
                       Text(
-                        entry.displayWeight,
+                        _formatTime(entry.createdAt),
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Colors.purple[600],
+                          color: Colors.orange[700],
                         ),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    entry.displayWeight,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.grey[600],
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                    _formatTime(entry.createdAt),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
+            ),
           ],
         ),
       ),
