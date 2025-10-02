@@ -12,15 +12,10 @@ import 'screens/auth/register_screen.dart';
 import 'screens/admin/admin_screen.dart';
 import 'screens/onboarding/onboarding_screen.dart';
 import 'screens/onboarding/onboarding_review_screen.dart';
-import 'screens/ema_survey/ema_survey_screen.dart';
 import 'screens/tools/problem_solving_main_screen.dart';
 import 'screens/tools/meal_planning_screen.dart';
 import 'screens/tools/urge_surfing_screen.dart';
-import 'screens/tools/purge_control_screen.dart';
 import 'screens/tools/addressing_overconcern_screen.dart';
-import 'screens/tools/shape_checking_screen.dart';
-import 'screens/tools/addressing_comparisons_screen.dart';
-import 'screens/tools/addressing_feeling_fat_screen.dart';
 import 'screens/tools/addressing_setbacks_screen.dart';
 import 'screens/todos/todos_screen.dart';
 import 'screens/todos/add_todo_screen.dart';
@@ -196,23 +191,6 @@ final _router = GoRouter(
       ),
     ),
     GoRoute(
-      path: '/ema-survey',
-      builder: (context, state) {
-        final isResuming = state.uri.queryParameters['resuming'] == 'true';
-        return AuthGuard(
-          child: EMASurveyScreen(isResuming: isResuming),
-        );
-      },
-    ),
-    GoRoute(
-      path: '/ema-survey/resume',
-      builder: (context, state) {
-        return AuthGuard(
-          child: EMASurveyScreen(isResuming: true),
-        );
-      },
-    ),
-    GoRoute(
       path: '/tools/problem-solving',
       builder: (context, state) => const AuthGuard(child: ProblemSolvingMainScreen()),
     ),
@@ -225,24 +203,8 @@ final _router = GoRouter(
       builder: (context, state) => const AuthGuard(child: UrgeSurfingScreen()),
     ),
     GoRoute(
-      path: '/tools/purge-control',
-      builder: (context, state) => const AuthGuard(child: PurgeControlScreen()),
-    ),
-    GoRoute(
       path: '/tools/addressing-overconcern',
       builder: (context, state) => const AuthGuard(child: AddressingOverconcernScreen()),
-    ),
-    GoRoute(
-      path: '/tools/shape-checking',
-      builder: (context, state) => const AuthGuard(child: ShapeCheckingScreen()),
-    ),
-    GoRoute(
-      path: '/tools/addressing-comparisons',
-      builder: (context, state) => const AuthGuard(child: AddressingComparisonsScreen()),
-    ),
-    GoRoute(
-      path: '/tools/addressing-feeling-fat',
-      builder: (context, state) => const AuthGuard(child: AddressingFeelingFatScreen()),
     ),
     GoRoute(
       path: '/tools/addressing-setbacks',

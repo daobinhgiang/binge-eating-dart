@@ -165,9 +165,6 @@ class FirebaseAnalyticsService {
     await trackFeatureEngagement('body_image_diary_entry');
   }
 
-  Future<void> trackEMASurveyCompletion() async {
-    await trackFeatureEngagement('ema_survey_completion');
-  }
 
   Future<void> trackToolUsage(String toolName) async {
     await trackFeatureEngagement('tool_usage', parameters: {'tool_name': toolName});

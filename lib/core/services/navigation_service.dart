@@ -202,18 +202,6 @@ class NavigationService {
       case 'addressing_setbacks':
         route = '/tools/addressing-setbacks';
         break;
-      case 'purge_control':
-        route = '/tools/purge-control';
-        break;
-      case 'shape_checking':
-        route = '/tools/shape-checking';
-        break;
-      case 'addressing_comparisons':
-        route = '/tools/addressing-comparisons';
-        break;
-      case 'addressing_feeling_fat':
-        route = '/tools/addressing-feeling-fat';
-        break;
     }
     
     if (route != null) {
