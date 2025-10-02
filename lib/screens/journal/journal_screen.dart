@@ -10,6 +10,7 @@ import '../../models/food_diary.dart';
 import '../../models/body_image_diary.dart';
 import '../../models/weight_diary.dart';
 import '../../widgets/tropical_forest_background.dart';
+import '../../widgets/journal_background.dart';
 import 'food_diary_survey_screen.dart';
 import 'body_image_diary_survey_screen.dart';
 import 'weight_diary_survey_screen.dart';

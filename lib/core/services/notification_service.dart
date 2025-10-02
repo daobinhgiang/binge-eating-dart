@@ -1,10 +1,13 @@
 import 'dart:io';
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import '../../models/regular_eating.dart';
+import '../../models/app_notification.dart';
 import 'firebase_token_service.dart';
 
 class NotificationService {
@@ -15,8 +18,13 @@ class NotificationService {
   final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final FirebaseTokenService _tokenService = FirebaseTokenService();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   bool _isInitialized = false;
+  StreamSubscription<QuerySnapshot>? _notificationListener;
+  
+  // Callback for when a new notification arrives
+  Function(AppNotification)? onNewNotification;
 
   // Notification channel IDs
   static const String _regularEatingChannelId = 'regular_eating_reminders';
@@ -187,11 +195,35 @@ class NotificationService {
       print('Received foreground message: ${message.notification?.title}');
     }
     
-    // Show local notification for foreground messages
-    _showLocalNotification(
-      title: message.notification?.title ?? 'Regular Eating Reminder',
-      body: message.notification?.body ?? 'Time for your regular meal!',
-    );
+    // Create an in-app notification popup for foreground messages
+    if (onNewNotification != null) {
+      final notification = AppNotification(
+        id: message.messageId ?? DateTime.now().millisecondsSinceEpoch.toString(),
+        userId: message.data['userId'] ?? '',
+        title: message.notification?.title ?? 'Regular Eating Reminder',
+        body: message.notification?.body ?? 'Time for your regular meal!',
+        type: message.data['type'] ?? 'reminder',
+        createdAt: DateTime.now(),
+        isRead: false,
+        data: message.data,
+        actionUrl: message.data['actionUrl'],
+      );
+      
+      // Trigger the popup callback
+      onNewNotification!(notification);
+      
+      if (kDebugMode) {
+        print('Triggered in-app popup for foreground message');
+      }
+    }
+    
+    // Also show local notification as backup (on mobile only)
+    if (!kIsWeb) {
+      _showLocalNotification(
+        title: message.notification?.title ?? 'Regular Eating Reminder',
+        body: message.notification?.body ?? 'Time for your regular meal!',
+      );
+    }
   }
 
   /// Initialize token service for a user
@@ -212,6 +244,82 @@ class NotificationService {
       }
       // Don't rethrow - this is not critical for app functionality
     }
+  }
+
+  /// Start listening for new in-app notifications from Firestore
+  void startListeningForNotifications(String userId) {
+    // Cancel any existing listener
+    stopListeningForNotifications();
+    
+    if (kDebugMode) {
+      print('Starting notification listener for user $userId');
+    }
+
+    // Listen for new notifications (only unread ones)
+    _notificationListener = _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('notifications')
+        .where('isRead', isEqualTo: false)
+        .orderBy('createdAt', descending: true)
+        .limit(1)
+        .snapshots()
+        .listen(
+      (snapshot) {
+        for (var change in snapshot.docChanges) {
+          if (change.type == DocumentChangeType.added) {
+            try {
+              final notification = AppNotification.fromFirestore(change.doc);
+              
+              // Only trigger callback for notifications that are less than 10 seconds old
+              // This prevents showing popups for old notifications when app starts
+              final notificationAge = DateTime.now().difference(notification.createdAt);
+              if (notificationAge.inSeconds < 10 && onNewNotification != null) {
+                if (kDebugMode) {
+                  print('New notification received: ${notification.title}');
+                }
+                onNewNotification!(notification);
+              }
+            } catch (e) {
+              if (kDebugMode) {
+                print('Error parsing notification: $e');
+              }
+            }
+          }
+        }
+      },
+      onError: (error) {
+        if (kDebugMode) {
+          print('Error listening for notifications: $error');
+        }
+      },
+    );
+  }
+
+  /// Stop listening for notifications
+  void stopListeningForNotifications() {
+    _notificationListener?.cancel();
+    _notificationListener = null;
+    
+    if (kDebugMode) {
+      print('Stopped listening for notifications');
+    }
+  }
+
+  /// Initialize for a specific user (includes token service and notification listener)
+  Future<void> initializeForUser(String userId) async {
+    if (!_isInitialized) {
+      await initialize();
+    }
+    
+    await _initializeTokenService(userId);
+    startListeningForNotifications(userId);
+  }
+
+  /// Cleanup when user logs out
+  void cleanup() {
+    stopListeningForNotifications();
+    onNewNotification = null;
   }
 
   /// Schedule regular eating notifications based on user settings
