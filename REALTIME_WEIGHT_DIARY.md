@@ -44,3 +44,4 @@ final allAsync = ref.watch(allWeightEntriesProvider(user.id));
 - Automatically handles connection state changes
 - Optimized for mobile networks with efficient data transfer
 - Compatible with offline functionality
+

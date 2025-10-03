@@ -473,3 +473,4 @@ class FoodDiaryMainScreen extends ConsumerWidget {
     );
   }
 }
+
