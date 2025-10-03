@@ -32,6 +32,7 @@ import '../../screens/assessments/assessment_2_1_screen.dart';
 // Journal survey imports
 import '../../screens/journal/food_diary_survey_screen.dart';
 import '../../screens/journal/body_image_diary_survey_screen.dart';
+import '../../screens/journal/weight_diary_survey_screen.dart';
 import '../../screens/assessments/assessment_2_2_screen.dart';
 import '../../screens/assessments/assessment_2_3_screen.dart';
 
@@ -189,18 +190,6 @@ class NavigationService {
       case 'addressing_setbacks':
         route = '/tools/addressing-setbacks';
         break;
-      case 'purge_control':
-        route = '/tools/purge-control';
-        break;
-      case 'shape_checking':
-        route = '/tools/shape-checking';
-        break;
-      case 'addressing_comparisons':
-        route = '/tools/addressing-comparisons';
-        break;
-      case 'addressing_feeling_fat':
-        route = '/tools/addressing-feeling-fat';
-        break;
     }
     
     if (route != null) {
@@ -234,6 +223,9 @@ class NavigationService {
       case 'body_image_diary':
         _navigateToBodyImageDiarySurvey(context);
         break;
+      case 'weight_diary':
+        _navigateToWeightDiarySurvey(context);
+        break;
       default:
         // Fallback to main journal screen
         context.go('/journal');
@@ -249,7 +241,14 @@ class NavigationService {
     );
   }
   
-  // Weight diary survey navigation removed
+  // Navigate to weight diary survey
+  void _navigateToWeightDiarySurvey(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const WeightDiarySurveyScreen(),
+      ),
+    );
+  }
   
   // Navigate to body image diary survey
   void _navigateToBodyImageDiarySurvey(BuildContext context) {

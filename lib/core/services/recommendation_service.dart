@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/todo_item.dart';
 import '../../models/onboarding_answer.dart';
-import './openai_service.dart';
-import './app_content_service.dart';
+// AI services removed from recommendations
 import './todo_service.dart';
 
 class RecommendationService {
@@ -10,8 +9,7 @@ class RecommendationService {
   factory RecommendationService() => _instance;
   RecommendationService._internal();
 
-  final OpenAIService _openAiService = OpenAIService();
-  final AppContentService _appContentService = AppContentService();
+  // AI services removed
   final TodoService _todoService = TodoService();
 
   // Generate personalized recommendations based on onboarding answers
@@ -27,58 +25,11 @@ class RecommendationService {
         'questionNumber': answer.questionNumber,
       }).toList();
       
-      // Clear cache to ensure we get updated chapter-based content
-      _appContentService.clearCache();
-      
-      // Get app content for context
-      final appContentContext = await _appContentService.getAppContentContext();
-      
-      // Call OpenAI API to get recommendations
-      final recommendations = await _openAiService.getRecommendations(
-        userAnswers: answersFormatted,
-        appContentContext: appContentContext,
-      );
-      
-      // Check if recommendations were successfully retrieved
-      if (!recommendations.containsKey('recommendations') || 
-          recommendations['recommendations'] == null ||
-          recommendations['recommendations'] is! List) {
-        throw 'Invalid recommendations format received from OpenAI';
-      }
-      
-      // Create todo items from recommendations
+      // AI-based recommendations removed; return empty list
       final todoItems = <TodoItem>[];
       final now = DateTime.now();
       
-      for (final recommendation in recommendations['recommendations']) {
-        // Validate recommendation format
-        if (!_isValidRecommendation(recommendation)) {
-          continue;
-        }
-        
-        // Parse recommendation type
-        final TodoType todoType = _parseTodoType(recommendation['type']);
-        
-        // Parse due date with fallback to 7 days from now
-        final DateTime dueDate = _parseDueDate(recommendation['dueDate']) ?? 
-            now.add(const Duration(days: 7));
-        
-        // Create and save todo item
-        final todoItem = await _todoService.createTodo(
-          userId: userId,
-          title: recommendation['title'],
-          description: recommendation['description'],
-          type: todoType,
-          activityId: recommendation['id'],
-          activityData: {
-            'source': 'ai_recommendation',
-            'recommendedAt': Timestamp.fromDate(now),
-          },
-          dueDate: dueDate,
-        );
-        
-        todoItems.add(todoItem);
-      }
+      // Intentionally no-op
       
       return todoItems;
     } catch (e) {
@@ -92,85 +43,8 @@ class RecommendationService {
     Map<String, dynamic> analysis,
   ) async {
     try {
-      // Extract insights and patterns from analysis
-      final insights = (analysis['insights'] as List?)?.cast<String>() ?? [];
-      final patterns = (analysis['patterns'] as List?)?.cast<String>() ?? [];
-      final recommendations = (analysis['recommendations'] as List?)?.cast<String>() ?? [];
-      final analysisText = analysis['analysis'] as String? ?? '';
-      final weekNumber = analysis['weekNumber'] as int? ?? 1;
-      
-      // Check if we have enough data to generate meaningful recommendations
-      if (insights.isEmpty && patterns.isEmpty && analysisText.isEmpty) {
-        throw 'Insufficient analytics data to generate recommendations';
-      }
-      
-      // Prepare analytics data for the OpenAI API
-      final analyticsFormatted = {
-        'weekNumber': weekNumber,
-        'analysisOverview': analysisText,
-        'insights': insights,
-        'patterns': patterns,
-        'existingRecommendations': recommendations,
-        'entriesAnalyzed': analysis['entriesAnalyzed'] ?? 0,
-      };
-      
-      // Clear cache to ensure we get updated chapter-based content
-      _appContentService.clearCache();
-      
-      // Get app content for context
-      final appContentContext = await _appContentService.getAppContentContext();
-      
-      // Call OpenAI API to get lesson and exercise recommendations
-      final aiRecommendations = await _openAiService.getRecommendationsFromAnalytics(
-        analyticsData: analyticsFormatted,
-        appContentContext: appContentContext,
-      );
-      
-      // Check if recommendations were successfully retrieved
-      if (!aiRecommendations.containsKey('recommendations') || 
-          aiRecommendations['recommendations'] == null ||
-          aiRecommendations['recommendations'] is! List) {
-        throw 'Invalid recommendations format received from OpenAI';
-      }
-      
-      // Create todo items from recommendations
-      final todoItems = <TodoItem>[];
-      final now = DateTime.now();
-      
-      for (final recommendation in aiRecommendations['recommendations']) {
-        
-        if (!_isValidRecommendation(recommendation)) {
-          continue;
-        }
-        
-        // Parse recommendation type
-        final TodoType todoType = _parseTodoType(recommendation['type']);
-        
-        // Parse due date with fallback to 3 days from now (shorter than onboarding)
-        final DateTime dueDate = _parseDueDate(recommendation['dueDate']) ?? 
-            now.add(const Duration(days: 3));
-        
-        // Create and save todo item
-        final todoItem = await _todoService.createTodo(
-          userId: userId,
-          title: recommendation['title'],
-          description: recommendation['description'],
-          type: todoType,
-          activityId: recommendation['id'],
-          activityData: {
-            'source': 'analytics_recommendation',
-            'weekNumber': weekNumber,
-            'recommendedAt': Timestamp.fromDate(now),
-            'basedOnInsights': insights,
-            'basedOnPatterns': patterns,
-          },
-          dueDate: dueDate,
-        );
-        
-        todoItems.add(todoItem);
-      }
-      
-      return todoItems;
+      // AI-based analytics recommendations removed; return empty list
+      return <TodoItem>[];
     } catch (e) {
       throw 'Failed to generate analytics-based recommendations: $e';
     }

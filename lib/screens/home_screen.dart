@@ -4,9 +4,9 @@ import 'package:go_router/go_router.dart';
 import '../widgets/comforting_background.dart';
 import '../providers/auth_provider.dart';
 import '../providers/todo_provider.dart';
-import '../providers/analytics_provider.dart';
 import '../providers/firebase_analytics_provider.dart';
 import '../providers/app_notification_provider.dart';
+import '../core/services/openai_service.dart';
 import '../models/lesson.dart';
 import '../models/todo_item.dart';
 import '../screens/lessons/lesson_1_1.dart';
@@ -85,6 +85,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   ScrollController? _scrollController;
   Animation<double>? _fadeAnimation;
   Animation<double>? _scaleAnimation;
+  
+  // Insights section state
+  String _insightsText = '';
+  bool _isGeneratingInsights = false;
+  List<Map<String, dynamic>> _insightsRecommendations = [];
 
   @override
   void initState() {
@@ -430,40 +435,40 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   
                   const SizedBox(height: 16),
                   
-                  // Inquiries button with beautiful gradient and colorful accents
+                  // AI Support Chat button
                   Container(
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          Color(0xFFF5F9F5), // Very light green tint
-                          Color(0xFFEDF5ED), // Light green tint
-                          Color(0xFFE5F0E5), // Slightly more green
+                          Color(0xFFF0F8F0), // Very light green tint
+                          Color(0xFFE8F5E8), // Light green tint
+                          Color(0xFFE0F2E0), // Slightly more green
                         ],
                       ),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: const Color(0xFF7fb781).withValues(alpha:0.15),
+                        color: const Color(0xFF7fb781).withValues(alpha:0.2),
                         width: 1.5,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF7fb781).withValues(alpha:0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
+                          color: const Color(0xFF7fb781).withValues(alpha:0.2),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
                         ),
                         BoxShadow(
-                          color: Colors.black.withValues(alpha:0.03),
-                          blurRadius: 4,
-                          offset: const Offset(0, 1),
+                          color: Colors.black.withValues(alpha:0.05),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
                         ),
                       ],
                     ),
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(
-                        onTap: () => context.push('/chatbot'),
+                        onTap: () => context.go('/chat'),
                         borderRadius: BorderRadius.circular(16),
                         splashColor: const Color(0xFF7fb781).withValues(alpha:0.1),
                         highlightColor: const Color(0xFF7fb781).withValues(alpha:0.05),
@@ -487,7 +492,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                   ],
                                 ),
                                 child: const Icon(
-                                  Icons.question_answer,
+                                  Icons.chat,
                                   color: Colors.white,
                                   size: 24,
                                 ),
@@ -498,7 +503,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Inquiries',
+                                      'AI Support Chat',
                                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                         fontWeight: FontWeight.bold,
                                         color: Colors.black,
@@ -506,7 +511,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                     ),
                                     const SizedBox(height: 6),
                                     Text(
-                                      'Chat with our assistant to find helpful resources',
+                                      'Get personalized support and guidance',
                                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                         color: Colors.black87,
                                       ),
@@ -532,6 +537,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       ),
                     ),
                   ),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Insights Section
+                  _buildInsightsSection(),
                   
                   const SizedBox(height: 24),
                   
@@ -562,8 +572,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildNextLessonSection(),
-        const SizedBox(height: 32),
-        _buildAnalyticsSection(),
         const SizedBox(height: 32),
         _buildTodoSection(),
       ],
@@ -1145,400 +1153,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     return null;
   }
 
-  Widget _buildAnalyticsSection() {
-    return Consumer(
-      builder: (context, ref, child) {
-        final authState = ref.watch(authNotifierProvider);
-        
-        return authState.when(
-          data: (user) {
-            if (user == null) return const SizedBox.shrink();
-            
-            final analyticsAsync = ref.watch(analyticsNotifierProvider(user.id));
-            
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Analytics',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                analyticsAsync.when(
-                  data: (analysis) => _buildAnalyticsCard(context, ref, user.id, analysis),
-                  loading: () => _buildAnalyticsLoadingCard(context),
-                  error: (error, stack) => _buildAnalyticsErrorCard(context, error.toString()),
-                ),
-              ],
-            );
-          },
-          loading: () => const SizedBox.shrink(),
-          error: (_, __) => const SizedBox.shrink(),
-        );
-      },
-    );
-  }
 
-  Widget _buildAnalyticsCard(BuildContext context, WidgetRef ref, String userId, Map<String, dynamic>? analysis) {
-    if (analysis == null) {
-      return Card(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
-              Icon(
-                Icons.analytics_outlined,
-                size: 48,
-                color: Colors.grey[400],
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'No Analysis Available',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Colors.grey[600],
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Generate insights from your journal entries to see patterns and recommendations',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[500],
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton.icon(
-                onPressed: () => context.go('/journal'),
-                icon: const Icon(Icons.note_add),
-                label: const Text('Go to Journal'),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    final analysisSummary = analysis['analysis'] as String? ?? 'No analysis available';
-    final insights = (analysis['insights'] as List?)?.cast<String>() ?? [];
-    final recommendations = (analysis['recommendations'] as List?)?.cast<String>() ?? [];
-    final weekNumber = analysis['weekNumber'] as int?;
-    final entriesAnalyzed = analysis['entriesAnalyzed'] as int?;
-    final recommendedTodos = analysis['recommendedTodos'] as int? ?? 0;
-    final todosGenerated = analysis['todosGenerated'] as bool? ?? false;
-
-    return Card(
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF7fb781), Color(0xFF7ea66f)],
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF7fb781).withValues(alpha:0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: const Icon(
-                    Icons.analytics,
-                    color: Colors.white,
-                    size: 32,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Journal Analysis',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF7fb781),
-                        ),
-                      ),
-                      if (weekNumber != null && entriesAnalyzed != null)
-                        Text(
-                          'Week $weekNumber • $entriesAnalyzed entries analyzed${todosGenerated ? " • $recommendedTodos todos added" : ""}',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 16),
-            const Divider(),
-            const SizedBox(height: 16),
-            
-            // Analysis summary (truncated)
-            Text(
-              'Overview',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              analysisSummary.length > 200 
-                  ? '${analysisSummary.substring(0, 200)}...'
-                  : analysisSummary,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            
-            if (insights.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              Text(
-                'Key Insights',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
-              ...insights.take(2).map((insight) => Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('• ', style: TextStyle(fontWeight: FontWeight.bold)),
-                    Expanded(
-                      child: Text(
-                        insight,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ),
-                  ],
-                ),
-              )),
-              if (insights.length > 2)
-                Text(
-                  '+ ${insights.length - 2} more insights',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                  ),
-                ),
-            ],
-            
-            if (recommendations.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              Text(
-                'Recommendations',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
-              ...recommendations.take(2).map((recommendation) => Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('• ', style: TextStyle(fontWeight: FontWeight.bold)),
-                    Expanded(
-                      child: Text(
-                        recommendation,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ),
-                  ],
-                ),
-              )),
-              if (recommendations.length > 2)
-                Text(
-                  '+ ${recommendations.length - 2} more recommendations',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                  ),
-                ),
-            ],
-            
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () => _showFullAnalysis(context, analysis),
-                    icon: const Icon(Icons.visibility, size: 16),
-                    label: const Text('View Full'),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      // Refresh todos and navigate to todo list if todos were generated
-                      if (todosGenerated && recommendedTodos > 0) {
-                        ref.read(userTodosProvider(userId).notifier).refreshTodos();
-                        context.go('/todos');
-                      } else {
-                        context.go('/journal');
-                      }
-                    },
-                    icon: Icon(todosGenerated && recommendedTodos > 0 ? Icons.list : Icons.note_add, size: 16),
-                    label: Text(todosGenerated && recommendedTodos > 0 ? 'View Todos' : 'Add Entries'),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAnalyticsLoadingCard(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Row(
-          children: [
-            const CircularProgressIndicator(),
-            const SizedBox(width: 16),
-            Text(
-              'Loading analytics...',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAnalyticsErrorCard(BuildContext context, String error) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 48,
-              color: Colors.orange[400],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Unable to load analytics',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Colors.grey[600],
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Go to Journal to generate your first analysis',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey[500],
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
-              onPressed: () => context.go('/journal'),
-              icon: const Icon(Icons.note_add),
-              label: const Text('Go to Journal'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showFullAnalysis(BuildContext context, Map<String, dynamic> analysis) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Full Analysis'),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Overview',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(analysis['analysis'] as String? ?? 'No analysis available'),
-              
-              if ((analysis['insights'] as List?)?.isNotEmpty == true) ...[
-                const SizedBox(height: 16),
-                Text(
-                  'Key Insights',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                ...(analysis['insights'] as List).cast<String>().map(
-                  (insight) => Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Text('• $insight'),
-                  ),
-                ),
-              ],
-              
-              if ((analysis['patterns'] as List?)?.isNotEmpty == true) ...[
-                const SizedBox(height: 16),
-                Text(
-                  'Patterns',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                ...(analysis['patterns'] as List).cast<String>().map(
-                  (pattern) => Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Text('• $pattern'),
-                  ),
-                ),
-              ],
-              
-              if ((analysis['recommendations'] as List?)?.isNotEmpty == true) ...[
-                const SizedBox(height: 16),
-                Text(
-                  'Recommendations',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                ...(analysis['recommendations'] as List).cast<String>().map(
-                  (recommendation) => Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Text('• $recommendation'),
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildTodoSection() {
     return Consumer(
@@ -2030,6 +1645,640 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     final trackDialog = ref.read(urgeHelpDialogTrackingProvider);
     trackDialog('urge_surfing_navigation');
     context.push('/tools/urge-surfing');
+  }
+  
+  Widget _buildInsightsSection() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFFF8F9FA), // Light gray
+            Color(0xFFF1F3F4), // Slightly darker gray
+            Color(0xFFE8EAED), // More gray
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF7fb781).withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.insights,
+                    color: Color(0xFF7fb781),
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Personalized Insights',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF2D5016),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Get AI-powered insights about your progress',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: const Color(0xFF4A6741),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Container(
+              constraints: const BoxConstraints(
+                minHeight: 120,
+                maxHeight: 300,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: const Color(0xFFE0E0E0),
+                  width: 1,
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Main insights text
+                      Text(
+                        _insightsText.isEmpty 
+                            ? 'Click "Generate insights" to get personalized recommendations based on your progress...'
+                            : _insightsText,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: _insightsText.isEmpty 
+                              ? const Color(0xFF9E9E9E)
+                              : const Color(0xFF2D5016),
+                          height: 1.4,
+                        ),
+                      ),
+                      
+                      // Recommendations section
+                      if (_insightsRecommendations.isNotEmpty) ...[
+                        const SizedBox(height: 16),
+                        Text(
+                          'Recommended Resources:',
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF2D5016),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        ..._insightsRecommendations.map((recommendation) => 
+                          _buildInsightRecommendationCard(recommendation)
+                        ).toList(),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _isGeneratingInsights ? null : _generateInsights,
+                icon: _isGeneratingInsights 
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : const Icon(Icons.auto_awesome, size: 18),
+                label: Text(
+                  _isGeneratingInsights ? 'Generating...' : 'Generate insights',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF7fb781),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 2,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  Future<void> _generateInsights() async {
+    setState(() {
+      _isGeneratingInsights = true;
+    });
+    
+    try {
+      // Get the current user ID
+      final authState = ref.read(authNotifierProvider);
+      final user = authState.valueOrNull;
+      
+      if (user == null) {
+        setState(() {
+          _insightsText = 'Please log in to generate personalized insights.';
+        });
+        return;
+      }
+      
+      final openaiService = OpenAIService();
+      final response = await openaiService.generateInsights(user.id);
+      
+      setState(() {
+        _insightsText = response['response'] ?? 'No insights available.';
+        _insightsRecommendations = List<Map<String, dynamic>>.from(response['recommendations'] ?? []);
+      });
+    } catch (e) {
+      setState(() {
+        _insightsText = 'Sorry, I couldn\'t generate insights at the moment. Please try again later.';
+      });
+    } finally {
+      setState(() {
+        _isGeneratingInsights = false;
+      });
+    }
+  }
+  
+  Widget _buildInsightRecommendationCard(Map<String, dynamic> recommendation) {
+    final type = recommendation['type'] as String? ?? '';
+    final title = recommendation['title'] as String? ?? '';
+    final description = recommendation['description'] as String? ?? '';
+    final priority = recommendation['priority'] as String? ?? 'medium';
+
+    Color priorityColor;
+    IconData priorityIcon;
+    
+    switch (priority) {
+      case 'high':
+        priorityColor = Colors.red;
+        priorityIcon = Icons.priority_high;
+        break;
+      case 'medium':
+        priorityColor = Colors.orange;
+        priorityIcon = Icons.remove;
+        break;
+      case 'low':
+        priorityColor = Colors.green;
+        priorityIcon = Icons.keyboard_arrow_down;
+        break;
+      default:
+        priorityColor = Colors.grey;
+        priorityIcon = Icons.remove;
+    }
+
+    IconData typeIcon;
+    Color typeColor;
+    
+    switch (type) {
+      case 'lesson':
+        typeIcon = Icons.school;
+        typeColor = Colors.blue;
+        break;
+      case 'tool':
+        typeIcon = Icons.build;
+        typeColor = Colors.green;
+        break;
+      case 'journal':
+        typeIcon = Icons.edit_note;
+        typeColor = Colors.purple;
+        break;
+      case 'assessment':
+        typeIcon = Icons.quiz;
+        typeColor = Colors.orange;
+        break;
+      default:
+        typeIcon = Icons.help;
+        typeColor = Colors.grey;
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 6),
+      decoration: BoxDecoration(
+        color: typeColor.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: typeColor.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _navigateToInsightRecommendation(recommendation),
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Row(
+              children: [
+                Icon(typeIcon, color: typeColor, size: 16),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: typeColor,
+                        ),
+                      ),
+                      if (description.isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          description,
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.grey[600],
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                Icon(priorityIcon, color: priorityColor, size: 12),
+                const SizedBox(width: 4),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  color: typeColor,
+                  size: 12,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+  
+  void _navigateToInsightRecommendation(Map<String, dynamic> recommendation) {
+    final type = recommendation['type'] ?? '';
+    final id = recommendation['id'] ?? '';
+    
+    switch (type) {
+      case 'lesson':
+        _navigateToInsightLesson(id);
+        break;
+      case 'tool':
+        _navigateToInsightTool(id);
+        break;
+      case 'journal':
+        _navigateToInsightJournal(id);
+        break;
+      case 'assessment':
+        _navigateToInsightAssessment(id);
+        break;
+      default:
+        // Fallback to home
+        break;
+    }
+  }
+  
+  void _navigateToInsightLesson(String lessonId) {
+    // Navigate to specific lesson based on lesson ID (same logic as chatbot)
+    switch (lessonId) {
+      // Stage 1 lessons
+      case 'lesson_1_1':
+        context.push('/lesson/1_1');
+        break;
+      case 'lesson_1_2':
+        context.push('/lesson/1_2');
+        break;
+      case 'lesson_1_2_1':
+        context.push('/lesson/1_2_1');
+        break;
+      case 'lesson_1_3':
+        context.push('/lesson/1_3');
+        break;
+      case 'lesson_2_1':
+        context.push('/lesson/2_1');
+        break;
+      case 'lesson_2_2':
+        context.push('/lesson/2_2');
+        break;
+      case 'lesson_2_3':
+        context.push('/lesson/2_3');
+        break;
+      case 'lesson_3_1':
+        context.push('/lesson/3_1');
+        break;
+      case 'lesson_3_2':
+        context.push('/lesson/3_2');
+        break;
+      case 'lesson_3_3':
+        context.push('/lesson/3_3');
+        break;
+      case 'lesson_3_4':
+        context.push('/lesson/3_4');
+        break;
+      case 'lesson_3_5':
+        context.push('/lesson/3_5');
+        break;
+      case 'lesson_3_6':
+        context.push('/lesson/3_6');
+        break;
+      case 'lesson_3_7':
+        context.push('/lesson/3_7');
+        break;
+      case 'lesson_3_8':
+        context.push('/lesson/3_8');
+        break;
+      case 'lesson_3_9':
+        context.push('/lesson/3_9');
+        break;
+      case 'lesson_3_10':
+        context.push('/lesson/3_10');
+        break;
+      
+      // Stage 2 lessons
+      case 'lesson_s2_0_1':
+        context.push('/lesson/s2_0_1');
+        break;
+      case 'lesson_s2_0_2':
+        context.push('/lesson/s2_0_2');
+        break;
+      case 'lesson_s2_0_3':
+        context.push('/lesson/s2_0_3');
+        break;
+      case 'lesson_s2_0_4':
+        context.push('/lesson/s2_0_4');
+        break;
+      case 'lesson_s2_0_5':
+        context.push('/lesson/s2_0_5');
+        break;
+      case 'lesson_s2_0_6':
+        context.push('/lesson/s2_0_6');
+        break;
+      case 'lesson_s2_1_1':
+        context.push('/lesson/s2_1_1');
+        break;
+      case 'lesson_s2_1_2':
+        context.push('/lesson/s2_1_2');
+        break;
+      case 'lesson_s2_1_3':
+        context.push('/lesson/s2_1_3');
+        break;
+      case 'lesson_s2_2_1':
+        context.push('/lesson/s2_2_1');
+        break;
+      case 'lesson_s2_2_2':
+        context.push('/lesson/s2_2_2');
+        break;
+      case 'lesson_s2_2_3':
+        context.push('/lesson/s2_2_3');
+        break;
+      case 'lesson_s2_2_4':
+        context.push('/lesson/s2_2_4');
+        break;
+      case 'lesson_s2_2_5':
+        context.push('/lesson/s2_2_5');
+        break;
+      case 'lesson_s2_2_5_1':
+        context.push('/lesson/s2_2_5_1');
+        break;
+      case 'lesson_s2_2_7':
+        context.push('/lesson/s2_2_7');
+        break;
+      case 'lesson_s2_3_1':
+        context.push('/lesson/s2_3_1');
+        break;
+      case 'lesson_s2_3_2':
+        context.push('/lesson/s2_3_2');
+        break;
+      case 'lesson_s2_3_2_1':
+        context.push('/lesson/s2_3_2_1');
+        break;
+      case 'lesson_s2_3_3':
+        context.push('/lesson/s2_3_3');
+        break;
+      case 'lesson_s2_3_4':
+        context.push('/lesson/s2_3_4');
+        break;
+      case 'lesson_s2_3_5':
+        context.push('/lesson/s2_3_5');
+        break;
+      case 'lesson_s2_4_1':
+        context.push('/lesson/s2_4_1');
+        break;
+      case 'lesson_s2_4_2':
+        context.push('/lesson/s2_4_2');
+        break;
+      case 'lesson_s2_4_2_1':
+        context.push('/lesson/s2_4_2_1');
+        break;
+      case 'lesson_s2_4_3':
+        context.push('/lesson/s2_4_3');
+        break;
+      case 'lesson_s2_5_1':
+        context.push('/lesson/s2_5_1');
+        break;
+      case 'lesson_s2_5_2':
+        context.push('/lesson/s2_5_2');
+        break;
+      case 'lesson_s2_6_1':
+        context.push('/lesson/s2_6_1');
+        break;
+      case 'lesson_s2_6_2':
+        context.push('/lesson/s2_6_2');
+        break;
+      case 'lesson_s2_6_3':
+        context.push('/lesson/s2_6_3');
+        break;
+      case 'lesson_s2_7_1':
+        context.push('/lesson/s2_7_1');
+        break;
+      case 'lesson_s2_7_1_1':
+        context.push('/lesson/s2_7_1_1');
+        break;
+      case 'lesson_s2_7_2':
+        context.push('/lesson/s2_7_2');
+        break;
+      case 'lesson_s2_7_3':
+        context.push('/lesson/s2_7_3');
+        break;
+      case 'lesson_s2_7_4':
+        context.push('/lesson/s2_7_4');
+        break;
+      case 'lesson_s2_7_5':
+        context.push('/lesson/s2_7_5');
+        break;
+      case 'lesson_s2_7_6':
+        context.push('/lesson/s2_7_6');
+        break;
+      case 'lesson_s2_7_7':
+        context.push('/lesson/s2_7_7');
+        break;
+      case 'lesson_s2_7_8':
+        context.push('/lesson/s2_7_8');
+        break;
+      case 'lesson_s2_7_2_1':
+        context.push('/lesson/s2_7_2_1');
+        break;
+      
+      // Stage 3 lessons
+      case 'lesson_s3_0_1':
+        context.push('/lesson/s3_0_1');
+        break;
+      case 'lesson_s3_0_2':
+        context.push('/lesson/s3_0_2');
+        break;
+      case 'lesson_s3_0_2_1':
+        context.push('/lesson/s3_0_2_1');
+        break;
+      default:
+        _showInsightLessonNotAvailable(lessonId);
+    }
+  }
+  
+  void _navigateToInsightTool(String toolName) {
+    // Use the same logic as the chatbot for tool navigation
+    // Handle different formats: "Problem Solving", "problem solving", "problem_solving", etc.
+    final normalizedName = toolName.toLowerCase().replaceAll('_', ' ');
+    
+    switch (normalizedName) {
+      case 'problem solving':
+        context.push('/tools/problem-solving');
+        break;
+      case 'meal planning':
+        context.push('/tools/meal-planning');
+        break;
+      case 'urge surfing activities':
+        context.push('/tools/urge-surfing');
+        break;
+      case 'addressing overconcern':
+        context.push('/tools/addressing-overconcern');
+        break;
+      case 'addressing setbacks':
+        context.push('/tools/addressing-setbacks');
+        break;
+      default:
+        // Try to match partial names for better compatibility
+        if (normalizedName.contains('problem') && normalizedName.contains('solving')) {
+          context.push('/tools/problem-solving');
+        } else if (normalizedName.contains('meal') && normalizedName.contains('planning')) {
+          context.push('/tools/meal-planning');
+        } else if (normalizedName.contains('urge') && (normalizedName.contains('surfing') || normalizedName.contains('activities'))) {
+          context.push('/tools/urge-surfing');
+        } else if (normalizedName.contains('overconcern')) {
+          context.push('/tools/addressing-overconcern');
+        } else if (normalizedName.contains('setbacks')) {
+          context.push('/tools/addressing-setbacks');
+        } else {
+          _showInsightToolNotAvailable(toolName);
+        }
+    }
+  }
+  
+  void _navigateToInsightJournal(String journalType) {
+    // Use the same logic as the chatbot for journal navigation
+    // Handle different formats: "Food Diary", "food diary", "food_diary", etc.
+    final normalizedType = journalType.toLowerCase().replaceAll('_', ' ');
+    
+    switch (normalizedType) {
+      case 'food diary':
+        context.push('/journal/food-diary');
+        break;
+      case 'weight diary':
+        context.push('/journal/weight-diary');
+        break;
+      case 'body image diary':
+        context.push('/journal/body-image-diary');
+        break;
+      default:
+        // Try to match partial names
+        if (normalizedType.contains('food')) {
+          context.push('/journal/food-diary');
+        } else if (normalizedType.contains('weight')) {
+          context.push('/journal/weight-diary');
+        } else if (normalizedType.contains('body') || normalizedType.contains('image')) {
+          context.push('/journal/body-image-diary');
+        } else {
+          context.push('/journal');
+        }
+    }
+  }
+  
+  void _navigateToInsightAssessment(String assessmentName) {
+    switch (assessmentName.toLowerCase()) {
+      case 'ede-q':
+        context.push('/lesson/2_1'); // EDE-Q assessment
+        break;
+      case 'cia':
+        context.push('/lesson/2_2'); // CIA assessment
+        break;
+      case 'general psychiatric':
+        context.push('/lesson/2_3'); // General psychiatric assessment
+        break;
+      default:
+        _showInsightAssessmentNotAvailable(assessmentName);
+    }
+  }
+  
+  void _showInsightLessonNotAvailable(String lessonId) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Lesson "$lessonId" is not available yet. Please try another recommendation.'),
+        backgroundColor: Colors.orange,
+      ),
+    );
+  }
+  
+  void _showInsightToolNotAvailable(String toolName) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Tool "$toolName" is not available yet. Please try another recommendation.'),
+        backgroundColor: Colors.orange,
+      ),
+    );
+  }
+  
+  void _showInsightAssessmentNotAvailable(String assessmentName) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Assessment "$assessmentName" is not available yet. Please try another recommendation.'),
+        backgroundColor: Colors.orange,
+      ),
+    );
   }
   
   

@@ -59,7 +59,6 @@ Analytics tracking has been added to key user actions:
 - **Body Image Diary** (`lib/providers/body_image_diary_provider.dart`): Tracks body image diary entry creation
 
 #### Surveys and Tasks
-- **EMA Survey** (`lib/providers/ema_survey_provider.dart`): Tracks survey completion
 - **Todo Items** (`lib/providers/todo_provider.dart`): Tracks task completion
 
 ## Events Tracked
@@ -76,7 +75,6 @@ Analytics tracking has been added to key user actions:
 - `food_diary_entry`: Food diary entries
 - `weight_diary_entry`: Weight tracking entries
 - `body_image_diary_entry`: Body image diary entries
-- `ema_survey_completion`: EMA survey completion
 - `todo_completion`: Task completion
 - `onboarding_completed`: Onboarding completion
 

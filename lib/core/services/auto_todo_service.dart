@@ -185,7 +185,8 @@ class AutoTodoService {
   ) async {
     final journalTypes = [
       'food_diary',
-      'body_image_diary'
+      'body_image_diary',
+      'weight_diary'
     ];
 
     for (int i = 0; i < journalTypes.length; i++) {
@@ -292,11 +293,13 @@ class AutoTodoService {
       final titles = {
         'food_diary': 'Food Diary Entry',
         'body_image_diary': 'Body Image Check-in',
+        'weight_diary': 'Weight Entry',
       };
 
       final descriptions = {
         'food_diary': 'Record your meals, thoughts, and feelings in your food diary',
         'body_image_diary': 'Log any body checking behaviors or "feeling fat" moments',
+        'weight_diary': 'Log your current weight to track your progress',
       };
 
       await _todoService.createTodo(
