@@ -98,24 +98,6 @@ class RegularEatingNotifier extends StateNotifier<AsyncValue<RegularEating?>> {
     await loadRegularEatingSettings();
   }
 
-  // Notification-related methods
-  Future<void> rescheduleNotifications() async {
-    try {
-      await _regularEatingService.rescheduleNotifications(_userId);
-    } catch (e) {
-      // Handle error silently or show user feedback
-      print('Failed to reschedule notifications: $e');
-    }
-  }
-
-  Future<void> cancelNotifications() async {
-    try {
-      await _regularEatingService.cancelNotifications();
-    } catch (e) {
-      // Handle error silently or show user feedback
-      print('Failed to cancel notifications: $e');
-    }
-  }
 
   // Helper method to get default settings
   RegularEating getDefaultSettings() {

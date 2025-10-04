@@ -274,13 +274,6 @@ class ProfileScreen extends ConsumerWidget {
         onTap: () => context.go('/profile/regular-eating'),
       ),
       _ProfileOption(
-        icon: Icons.notifications,
-        title: 'Notification Settings',
-        subtitle: 'Manage meal reminders and notifications',
-        color: const Color(0xFFFF9800),
-        onTap: () => context.go('/profile/notifications'),
-      ),
-      _ProfileOption(
         icon: Icons.quiz_outlined,
         title: 'Review Assessment',
         subtitle: 'Update your onboarding responses',

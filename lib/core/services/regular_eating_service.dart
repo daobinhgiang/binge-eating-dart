@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/regular_eating.dart';
-import 'notification_service.dart';
 
 class RegularEatingService {
   static final RegularEatingService _instance = RegularEatingService._internal();
@@ -8,7 +7,6 @@ class RegularEatingService {
   RegularEatingService._internal();
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final NotificationService _notificationService = NotificationService();
   static const String _collectionName = 'Regular Eating';
 
   // Get user's regular eating settings
@@ -73,13 +71,6 @@ class RegularEatingService {
 
       final savedRegularEating = regularEating.copyWith(id: docRef.id);
       
-      // Schedule notifications for the new/updated settings
-      try {
-        await _notificationService.scheduleRegularEatingNotifications(savedRegularEating);
-      } catch (notificationError) {
-        // Log notification error but don't fail the save operation
-        print('Failed to schedule notifications: $notificationError');
-      }
       
       return savedRegularEating;
     } catch (e) {
@@ -117,13 +108,6 @@ class RegularEatingService {
           .doc(settingsId)
           .delete();
       
-      // Cancel notifications when settings are deleted
-      try {
-        await _notificationService.cancelRegularEatingNotifications();
-      } catch (notificationError) {
-        // Log notification error but don't fail the delete operation
-        print('Failed to cancel notifications: $notificationError');
-      }
     } catch (e) {
       throw 'Failed to delete regular eating settings: $e';
     }
@@ -147,24 +131,4 @@ class RegularEatingService {
     }
   }
 
-  // Reschedule notifications for existing settings
-  Future<void> rescheduleNotifications(String userId) async {
-    try {
-      final settings = await getUserRegularEatingSettings(userId);
-      if (settings != null) {
-        await _notificationService.scheduleRegularEatingNotifications(settings);
-      }
-    } catch (e) {
-      throw 'Failed to reschedule notifications: $e';
-    }
-  }
-
-  // Cancel all notifications
-  Future<void> cancelNotifications() async {
-    try {
-      await _notificationService.cancelRegularEatingNotifications();
-    } catch (e) {
-      throw 'Failed to cancel notifications: $e';
-    }
-  }
 }
