@@ -8,6 +8,7 @@ import 'journal/journal_screen.dart';
 import 'profile/profile_screen.dart';
 import '../widgets/comforting_background.dart';
 import '../widgets/forest_background.dart';
+import '../providers/auth_provider.dart';
 
 class MainNavigation extends ConsumerStatefulWidget {
   const MainNavigation({super.key});
@@ -55,7 +56,6 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
   @override
   void initState() {
     super.initState();
-    // Services are now initialized at the app level in AuthGuard
   }
 
   void _updateCurrentIndex(String location) {

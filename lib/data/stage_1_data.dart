@@ -245,11 +245,11 @@ class Stage1Data {
                 ),
                 LessonSlide(
                   id: 'slide_1_3_4',
-                  title: 'Module 4: Set Your Reminders and Get Started!',
-                  content: 'Now it\'s time to put your plan into action. A great way to support yourself is by using this app\'s notification feature as your personal mealtime reminder.',
+                  title: 'Module 4: Get Started with Your Plan!',
+                  content: 'Now it\'s time to put your plan into action. You can use the regular eating settings in your profile to help track your meal times.',
                   slideNumber: 4,
                   bulletPoints: [
-                    'Activate Your Notifications: Go to the "Tools" or "Settings" tab now and set up reminders for your planned meals and snacks. This is like having a friendly coach who gently nudges you to stay on track throughout the day.',
+                    'Set Up Your Regular Eating Schedule: Go to your profile and set up your regular eating times. This will help you track your meal schedule and maintain consistency.',
                     'Your Goal For This Week: Your assignment is to follow your regular eating plan every day. Plan your meals and snacks, and do your best not to eat in between them.',
                     'Be Patient with Yourself: It can take a few weeks to master this new pattern. If you have a slip-up, don\'t see it as a failure. Just get back on track with your next planned meal or snack. You can do this!'
                   ],

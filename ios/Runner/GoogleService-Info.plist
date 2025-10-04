@@ -3,9 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>169581897180-7qgjh3sfoc95qhm72laduhg752teila6.apps.googleusercontent.com</string>
+	<string>169581897180-h9f3sefoabj8i0i7puglv70l3gdc8bd1.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.169581897180-7qgjh3sfoc95qhm72laduhg752teila6</string>
+	<string>com.googleusercontent.apps.169581897180-h9f3sefoabj8i0i7puglv70l3gdc8bd1</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>169581897180-nftloedeti58n10v80begaepdp9mojc2.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyCEzGgAVAEGeHJPlzncOq-UKzJZOuuOSkQ</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.bedApp1</string>
+	<string>com.psycholabs.bedApp</string>
 	<key>PROJECT_ID</key>
 	<string>bed-app-ef8f8</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:169581897180:ios:4378f6b819de0e641a9b19</string>
+	<string>1:169581897180:ios:8c72dd8d022f9d2f1a9b19</string>
 </dict>
 </plist>

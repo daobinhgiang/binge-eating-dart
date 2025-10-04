@@ -5,7 +5,6 @@ import '../widgets/comforting_background.dart';
 import '../providers/auth_provider.dart';
 import '../providers/todo_provider.dart';
 import '../providers/firebase_analytics_provider.dart';
-import '../providers/app_notification_provider.dart';
 import '../core/services/openai_service.dart';
 import '../models/lesson.dart';
 import '../models/todo_item.dart';
@@ -197,7 +196,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                         
                         const SizedBox(width: 16),
                         
-                        // Profile and notifications
+                        // Profile section
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -257,53 +256,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                             
                             const SizedBox(width: 12),
                             
-                            // Notification bell
-                            Consumer(
-                              builder: (context, ref, child) {
-                                final user = ref.watch(authNotifierProvider).value;
-                                if (user == null) return const SizedBox.shrink();
-                                
-                                final unreadCountAsync = ref.watch(unreadNotificationsCountProvider(user.id));
-                                
-                                return GestureDetector(
-                                  onTap: () => context.go('/notifications'),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFF7fb781).withValues(alpha:0.2),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Stack(
-                                      children: [
-                                        const Icon(
-                                          Icons.notifications_outlined,
-                                          color: Color(0xFF2D5016),
-                                          size: 20,
-                                        ),
-                                        unreadCountAsync.when(
-                                          data: (count) => count > 0
-                                              ? Positioned(
-                                                  right: 0,
-                                                  top: 0,
-                                                  child: Container(
-                                                    width: 8,
-                                                    height: 8,
-                                                    decoration: const BoxDecoration(
-                                                      color: Colors.red,
-                                                      shape: BoxShape.circle,
-                                                    ),
-                                                  ),
-                                                )
-                                              : const SizedBox.shrink(),
-                                          loading: () => const SizedBox.shrink(),
-                                          error: (_, __) => const SizedBox.shrink(),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
                           ],
                         ),
                       ],

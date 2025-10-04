@@ -20,8 +20,6 @@ import 'screens/tools/addressing_setbacks_screen.dart';
 import 'screens/todos/todos_screen.dart';
 import 'screens/todos/add_todo_screen.dart';
 import 'screens/profile/regular_eating_screen.dart';
-import 'screens/profile/notification_settings_screen.dart';
-import 'screens/notifications/notifications_screen.dart';
 import 'screens/chat/chat_screen.dart';
 // Journal imports
 import 'screens/journal/food_diary_survey_screen.dart';
@@ -92,8 +90,11 @@ import 'screens/lessons/lesson_s3_0_1.dart';
 import 'screens/lessons/lesson_s3_0_2.dart';
 import 'screens/lessons/lesson_s3_0_2_1.dart';
 import 'providers/auth_provider.dart';
+import 'providers/auto_todo_provider.dart';
 import 'models/user_model.dart';
 import 'widgets/analytics_tracker.dart';
+import 'core/services/local_notifications_service.dart';
+import 'core/services/firebase_messaging_service.dart';
 import 'widgets/notification_popup_overlay.dart';
 import 'core/services/app_initialization_service.dart';
 
@@ -106,27 +107,16 @@ void main() async {
   // Use path-based routing instead of hash-based routing
   usePathUrlStrategy();
   
-  try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    print('✅ Firebase initialized successfully');
-  } catch (e) {
-    // Firebase might already be initialized, which is fine
-    if (e.toString().contains('duplicate-app')) {
-      print('Firebase already initialized, continuing...');
-    } else if (e.toString().contains('DEVELOPER_ERROR') || 
-               e.toString().contains('Phenotype.API') ||
-               e.toString().contains('FlagRegistrar')) {
-      // These are emulator-specific Google Play Services errors that we can ignore
-      print('⚠️ Google Play Services not available on emulator, continuing with limited functionality...');
-      print('Error details: $e');
-    } else {
-      print('❌ Firebase initialization error: $e');
-      rethrow;
-    }
-  }
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  print('✅ Firebase initialized successfully');
   
+  final localNotificationsService = LocalNotificationsService.instance();
+  await localNotificationsService.init();
+  
+  final firebaseMessagingService = FirebaseMessagingService.instance();
+  await firebaseMessagingService.init(localNotificationsService: localNotificationsService);
   runApp(const ProviderScope(child: BEDApp()));
 }
 
@@ -294,14 +284,6 @@ final _router = GoRouter(
     GoRoute(
       path: '/profile/regular-eating',
       builder: (context, state) => const AuthGuard(child: RegularEatingScreen()),
-    ),
-    GoRoute(
-      path: '/profile/notifications',
-      builder: (context, state) => const AuthGuard(child: NotificationSettingsScreen()),
-    ),
-    GoRoute(
-      path: '/notifications',
-      builder: (context, state) => const AuthGuard(child: NotificationsScreen()),
     ),
     GoRoute(
       path: '/chat',
