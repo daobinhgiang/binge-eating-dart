@@ -95,6 +95,8 @@ import 'models/user_model.dart';
 import 'widgets/analytics_tracker.dart';
 import 'core/services/local_notifications_service.dart';
 import 'core/services/firebase_messaging_service.dart';
+import 'widgets/notification_popup_overlay.dart';
+import 'core/services/app_initialization_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -124,7 +126,8 @@ class BEDApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AnalyticsTracker(
-      child: MaterialApp.router(
+      child: NotificationPopupOverlay(
+        child: MaterialApp.router(
           title: 'BED Support App',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
@@ -181,6 +184,7 @@ class BEDApp extends ConsumerWidget {
         ),
         routerConfig: _router,
         ),
+      ),
     );
   }
 }
@@ -611,14 +615,9 @@ class AuthGuard extends ConsumerWidget {
           );
         }
 
-        // Initialize auto todos for authenticated user
+        // Initialize all services for authenticated user (only once per session)
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          try {
-            ref.read(autoTodoInitializationProvider(user.id).notifier).initializeTodos();
-          } catch (e) {
-            print('Error initializing auto todos: $e');
-            // Don't disrupt user experience if auto todos fail
-          }
+          ref.read(appInitializationServiceProvider).initializeForUser(user.id, ref);
         });
 
         return child;

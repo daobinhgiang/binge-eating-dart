@@ -50,16 +50,16 @@ class _ComfortingBackgroundState extends State<ComfortingBackground>
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Main background with much more vibrant mint green
+        // Main background with white gradient
         Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Color(0xFFD4E6D4), // Much more vibrant mint green
-                Color(0xFFE0F2E0), // Vibrant mint
-                Color(0xFFD4E6D4), // Back to vibrant mint
+                Color(0xFFFFFFFF), // Pure white
+                Color(0xFFFAFAFA), // Very light gray
+                Color(0xFFFFFFFF), // Pure white
               ],
               stops: [0.0, 0.5, 1.0],
             ),
@@ -189,8 +189,8 @@ class AbstractShapesPainter extends CustomPainter {
         end: Alignment.bottomCenter,
         colors: [
           Colors.transparent,
-          const Color(0xFFE8F5E8).withOpacity(0.1),
-          const Color(0xFFE8F5E8).withOpacity(0.2),
+          const Color(0xFFF5F5F5).withOpacity(0.1),
+          const Color(0xFFF0F0F0).withOpacity(0.2),
         ],
         stops: const [0.0, 0.7, 1.0],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
@@ -276,16 +276,16 @@ class _ScrollAwareComfortingBackgroundState
 
     return Stack(
       children: [
-        // Main background with much more vibrant mint green
+        // Main background with white gradient
         Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Color(0xFFD4E6D4), // Much more vibrant mint green
-                Color(0xFFE0F2E0), // Vibrant mint
-                Color(0xFFD4E6D4), // Back to vibrant mint
+                Color(0xFFFFFFFF), // Pure white
+                Color(0xFFFAFAFA), // Very light gray
+                Color(0xFFFFFFFF), // Pure white
               ],
               stops: [0.0, 0.5, 1.0],
             ),
@@ -425,8 +425,8 @@ class ScrollAwareAbstractShapesPainter extends CustomPainter {
         end: Alignment.bottomCenter,
         colors: [
           Colors.transparent,
-          const Color(0xFFE8F5E8).withOpacity(0.1),
-          const Color(0xFFE8F5E8).withOpacity(0.2),
+          const Color(0xFFF5F5F5).withOpacity(0.1),
+          const Color(0xFFF0F0F0).withOpacity(0.2),
         ],
         stops: const [0.0, 0.7, 1.0],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));

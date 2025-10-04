@@ -50,16 +50,16 @@ class _ForestBackgroundState extends State<ForestBackground>
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Main background with forest green gradient
+        // Main background with white gradient
         Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Color(0xFFE8F5E8), // Light forest green
-                Color(0xFFD4E6D4), // Medium forest green
-                Color(0xFFC8E0C8), // Slightly deeper green
+                Color(0xFFFFFFFF), // Pure white
+                Color(0xFFFAFAFA), // Very light gray
+                Color(0xFFF5F5F5), // Light gray
               ],
               stops: [0.0, 0.5, 1.0],
             ),
@@ -352,16 +352,16 @@ class _ScrollAwareForestBackgroundState
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Main background with forest green gradient
+        // Main background with white gradient
         Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Color(0xFFE8F5E8), // Light forest green
-                Color(0xFFD4E6D4), // Medium forest green
-                Color(0xFFC8E0C8), // Slightly deeper green
+                Color(0xFFFFFFFF), // Pure white
+                Color(0xFFFAFAFA), // Very light gray
+                Color(0xFFF5F5F5), // Light gray
               ],
               stops: [0.0, 0.5, 1.0],
             ),

@@ -4,8 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import '../lib/providers/weight_diary_provider.dart';
-import '../lib/models/weight_diary.dart';
+import 'package:bed_app_1/providers/weight_diary_provider.dart';
+import 'package:bed_app_1/models/weight_diary.dart';
 
 // Generate mocks for testing
 @GenerateMocks([FirebaseFirestore, CollectionReference, Query, QuerySnapshot, DocumentSnapshot])

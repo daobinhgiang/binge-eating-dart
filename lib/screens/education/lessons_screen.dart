@@ -9,9 +9,6 @@ import '../lessons/lesson_1_1.dart';
 import '../lessons/lesson_1_2.dart';
 import '../lessons/lesson_1_2_1.dart';
 import '../lessons/lesson_1_3.dart';
-import '../lessons/lesson_2_1.dart';
-import '../lessons/lesson_2_2.dart';
-import '../lessons/lesson_2_3.dart';
 import '../lessons/lesson_3_1.dart';
 import '../lessons/lesson_3_2.dart';
 import '../lessons/lesson_3_3.dart';
@@ -130,7 +127,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => lessonScreen!,
+          builder: (context) => lessonScreen,
           settings: const RouteSettings(name: '/lesson'),
         ),
       );
