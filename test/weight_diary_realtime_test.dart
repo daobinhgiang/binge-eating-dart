@@ -2,35 +2,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:mockito/mockito.dart';
-import 'package:mockito/annotations.dart';
 import 'package:bed_app_1/providers/weight_diary_provider.dart';
 import 'package:bed_app_1/models/weight_diary.dart';
-
-// Generate mocks for testing
-@GenerateMocks([FirebaseFirestore, CollectionReference, Query, QuerySnapshot, DocumentSnapshot])
-import 'weight_diary_realtime_test.mocks.dart';
 
 void main() {
   group('Weight Diary Real-time Provider Tests', () {
     late ProviderContainer container;
-    late MockFirebaseFirestore mockFirestore;
-    late MockCollectionReference mockCollection;
-    late MockQuery mockQuery;
-    late MockQuerySnapshot mockQuerySnapshot;
+    late FirebaseFirestore mockFirestore;
+    late CollectionReference mockCollection;
+    late Query mockQuery;
+    late QuerySnapshot mockQuerySnapshot;
 
-    setUp(() {
-      mockFirestore = MockFirebaseFirestore();
-      mockCollection = MockCollectionReference();
-      mockQuery = MockQuery();
-      mockQuerySnapshot = MockQuerySnapshot();
-      
-      // Setup mocks
-      when(mockFirestore.collectionGroup('weightDiaries')).thenReturn(mockCollection);
-      when(mockCollection.where('userId', isEqualTo: 'test-user-id')).thenReturn(mockQuery);
-      when(mockQuery.orderBy('createdAt', descending: false)).thenReturn(mockQuery);
-      when(mockQuery.snapshots()).thenAnswer((_) => Stream.value(mockQuerySnapshot));
-    });
+  
 
     testWidgets('Real-time provider should emit data when Firestore updates', (tester) async {
       // Create test data
@@ -45,10 +28,10 @@ void main() {
       );
 
       // Mock document snapshot
-      final mockDoc = MockDocumentSnapshot();
-      when(mockDoc.id).thenReturn('test-id');
-      when(mockDoc.data()).thenReturn(testWeightDiary.toFirestore());
-      when(mockQuerySnapshot.docs).thenReturn([mockDoc]);
+      final mockDoc = DocumentSnapshot();
+      mockDoc.id = 'test-id';
+      mockDoc.data = () => testWeightDiary.toFirestore();
+      mockQuerySnapshot.docs = [mockDoc];
 
       container = ProviderContainer(
         overrides: [

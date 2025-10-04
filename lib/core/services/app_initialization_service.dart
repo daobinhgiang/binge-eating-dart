@@ -1,8 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'notification_service.dart';
+import 'local_notifications_service.dart';
 import 'auto_todo_service.dart';
-import '../../providers/notification_provider.dart';
 
 /// Service to handle app-level initialization of services
 /// This ensures services are only initialized once per user session
@@ -12,7 +11,7 @@ class AppInitializationService {
   AppInitializationService._internal();
 
   final Set<String> _initializedUsers = <String>{};
-  final NotificationService _notificationService = NotificationService();
+  final LocalNotificationsService _notificationService = LocalNotificationsService.instance();
   final AutoTodoService _autoTodoService = AutoTodoService();
 
   /// Initialize all services for a user (only once per user session)
@@ -30,10 +29,7 @@ class AppInitializationService {
       }
 
       // Initialize notification service
-      await _notificationService.initialize();
-      
-      // Initialize notification settings provider to get Firebase token
-      ref.read(notificationSettingsProvider.notifier);
+      await _notificationService.init();
 
       // Initialize auto todos
       await _autoTodoService.initializeUserTodos(userId);
