@@ -1,75 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../widgets/comforting_background.dart';
 import '../providers/auth_provider.dart';
 import '../providers/todo_provider.dart';
 import '../providers/firebase_analytics_provider.dart';
 import '../core/services/openai_service.dart';
-import '../models/lesson.dart';
 import '../models/todo_item.dart';
-import '../screens/lessons/lesson_1_1.dart';
-import '../screens/lessons/lesson_1_2.dart';
-import '../screens/lessons/lesson_1_2_1.dart';
-import '../screens/lessons/lesson_1_3.dart';
-import '../screens/lessons/lesson_3_1.dart';
-import '../screens/lessons/lesson_3_2.dart';
-import '../screens/lessons/lesson_3_3.dart';
-import '../screens/lessons/lesson_3_4.dart';
-import '../screens/lessons/lesson_3_5.dart';
-import '../screens/lessons/lesson_3_6.dart';
-import '../screens/lessons/lesson_3_7.dart';
-import '../screens/lessons/lesson_3_8.dart';
-import '../screens/lessons/lesson_3_9.dart';
-import '../screens/lessons/lesson_3_10.dart';
-import '../screens/lessons/lesson_s2_0_1.dart';
-import '../screens/lessons/lesson_s2_0_2.dart';
-import '../screens/lessons/lesson_s2_0_3.dart';
-import '../screens/lessons/lesson_s2_0_4.dart';
-import '../screens/lessons/lesson_s2_0_5.dart';
-import '../screens/lessons/lesson_s2_0_6.dart';
-import '../screens/lessons/lesson_s2_1_1.dart';
-import '../screens/lessons/lesson_s2_1_2.dart';
-import '../screens/lessons/lesson_s2_1_3.dart';
-import '../screens/lessons/lesson_s2_2_1.dart';
-import '../screens/lessons/lesson_s2_2_2.dart';
-import '../screens/lessons/lesson_s2_2_3.dart';
-import '../screens/lessons/lesson_s2_2_4.dart';
-import '../screens/lessons/lesson_s2_2_5.dart';
-import '../screens/lessons/lesson_s2_2_5_1.dart';
-import '../screens/lessons/lesson_s3_0_1.dart';
-import '../screens/lessons/lesson_s3_0_2.dart';
-import '../screens/assessments/assessment_2_1_screen.dart';
-import '../screens/assessments/assessment_2_2_screen.dart';
-import '../screens/assessments/assessment_2_3_screen.dart';
-import '../screens/assessments/assessment_s3_0_3_screen.dart';
-import '../screens/assessments/assessment_s3_0_4_screen.dart';
-import '../screens/lessons/lesson_s2_3_1.dart';
-import '../screens/lessons/lesson_s2_3_2.dart';
-import '../screens/lessons/lesson_s2_3_2_1.dart';
-import '../screens/lessons/lesson_s2_3_3.dart';
-import '../screens/lessons/lesson_s2_3_4.dart';
-import '../screens/lessons/lesson_s2_3_5.dart';
-import '../screens/lessons/lesson_s2_4_1.dart';
-import '../screens/lessons/lesson_s2_4_2.dart';
-import '../screens/lessons/lesson_s2_4_2_1.dart';
-import '../screens/lessons/lesson_s2_4_3.dart';
-import '../screens/lessons/lesson_s2_5_1.dart';
-import '../screens/lessons/lesson_s2_5_2.dart';
-import '../screens/lessons/lesson_s2_6_1.dart';
-import '../screens/lessons/lesson_s2_6_2.dart';
-import '../screens/lessons/lesson_s2_6_3.dart';
-import '../screens/lessons/lesson_s2_7_1.dart';
-import '../screens/lessons/lesson_s2_7_1_1.dart';
-import '../screens/lessons/lesson_s2_7_2.dart';
-import '../screens/lessons/lesson_s2_7_3.dart';
-import '../screens/lessons/lesson_s2_7_4.dart';
-import '../screens/lessons/lesson_s2_7_5.dart';
-import '../screens/lessons/lesson_s2_7_6.dart';
-import '../screens/lessons/lesson_s2_7_7.dart';
-import '../screens/lessons/lesson_s2_7_8.dart';
-import '../screens/lessons/lesson_s2_2_7.dart';
-import '../screens/lessons/lesson_s3_0_2_1.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -143,74 +79,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     }
   }
 
-  String _getMotivationalMessage() {
-    final messages = [
-      'Every step forward is progress worth celebrating',
-      'You\'re stronger than you know',
-      'Today is a new opportunity to grow',
-      'Your journey matters, and so do you',
-      'Small steps lead to big changes',
-      'You\'re doing better than you think',
-      'Every moment of self-care is an act of courage',
-      'Your progress is valid, no matter how small',
-    ];
-    return messages[DateTime.now().day % messages.length];
-  }
 
-  Widget _buildProgressIndicator() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            const Color(0xFF4CAF50).withValues(alpha: 0.2),
-            const Color(0xFF66BB6A).withValues(alpha: 0.15),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.trending_up,
-            size: 16,
-            color: const Color(0xFF2D5016),
-          ),
-          const SizedBox(width: 6),
-          Text(
-            'Keep going!',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: const Color(0xFF2D5016),
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildProfileSection(AsyncValue authState) {
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.white.withValues(alpha: 0.9),
-            Colors.white.withValues(alpha: 0.7),
-          ],
+        color: Colors.white.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.3),
+          width: 1,
         ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF4CAF50).withValues(alpha: 0.2),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: authState.when(
         data: (user) => user != null
@@ -263,13 +142,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                             user.displayName.split(' ').first,
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: const Color(0xFF2D5016),
+                              color: Colors.white,
                             ),
                           ),
                           Text(
                             'You\'ve got this!',
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: const Color(0xFF4A6741),
+                              color: Colors.white.withValues(alpha: 0.8),
                               fontSize: 11,
                             ),
                           ),
@@ -278,7 +157,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       const SizedBox(width: 4),
                       Icon(
                         Icons.keyboard_arrow_down,
-                        color: const Color(0xFF4A6741),
+                        color: Colors.white,
                         size: 16,
                       ),
                     ],
@@ -306,10 +185,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         children: [
           CircleAvatar(
             radius: 18,
-            backgroundColor: const Color(0xFF4CAF50).withValues(alpha: 0.2),
+            backgroundColor: Colors.white.withValues(alpha: 0.3),
             child: const Icon(
               Icons.person,
-              color: Color(0xFF2D5016),
+              color: Colors.white,
               size: 18,
             ),
           ),
@@ -322,13 +201,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 'Guest',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: const Color(0xFF2D5016),
+                  color: Colors.white,
                 ),
               ),
               Text(
                 'Welcome!',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: const Color(0xFF4A6741),
+                  color: Colors.white.withValues(alpha: 0.8),
                   fontSize: 11,
                 ),
               ),
@@ -339,139 +218,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     );
   }
 
-  Widget _buildQuickStats() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.white.withValues(alpha: 0.8),
-            Colors.white.withValues(alpha: 0.6),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color(0xFF4CAF50).withValues(alpha: 0.2),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.psychology,
-            color: const Color(0xFF4CAF50),
-            size: 20,
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              'Remember: Recovery is not linear, and every effort counts',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: const Color(0xFF2D5016),
-                fontStyle: FontStyle.italic,
-                height: 1.3,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authNotifierProvider);
 
     return Scaffold(
-      body: ScrollAwareComfortingBackground(
-        scrollController: _scrollController ?? ScrollController(),
-        child: CustomScrollView(
+      backgroundColor: Colors.white,
+      body: CustomScrollView(
           controller: _scrollController ?? ScrollController(),
           slivers: [
-            // Enhanced header with better visual appeal
+            // Simple header
             SliverToBoxAdapter(
               child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      const Color(0xFF4CAF50).withValues(alpha:0.1),
-                      const Color(0xFF66BB6A).withValues(alpha:0.08),
-                      const Color(0xFF43A047).withValues(alpha:0.06),
-                      const Color(0xFF388E3C).withValues(alpha:0.04),
-                    ],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF4CAF50).withValues(alpha:0.15),
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
-                    ),
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha:0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
+                color: const Color(0xFF4CAF50),
                 child: SafeArea(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-                    child: Column(
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Top row with greeting and profile
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // Enhanced greeting section
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // Time-based greeting
-                                  Text(
-                                    _getTimeBasedGreeting(),
-                                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: const Color(0xFF2D5016),
-                                      letterSpacing: -0.5,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  // Motivational message
-                                  Text(
-                                    _getMotivationalMessage(),
-                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                      color: const Color(0xFF4A6741),
-                                      height: 1.3,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  // Progress indicator
-                                  _buildProgressIndicator(),
-                                ],
-                              ),
-                            ),
-                            
-                            const SizedBox(width: 16),
-                            
-                            // Enhanced profile section
-                            _buildProfileSection(authState),
-                          ],
+                        Text(
+                          _getTimeBasedGreeting(),
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
-                        
-                        const SizedBox(height: 20),
-                        
-                        // Quick stats or motivational quote
-                        _buildQuickStats(),
+                        _buildProfileSection(authState),
                       ],
                     ),
                   ),
@@ -699,8 +473,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 
 
@@ -731,251 +504,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     );
   }
 
-  Widget _buildLessonRecommendationCard(BuildContext context, Lesson? nextLesson) {
-    if (nextLesson == null) {
-      return Container(
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFFF0F8F0), // Very light green tint
-              Color(0xFFE8F5E8), // Light green tint
-              Color(0xFFE0F2E0), // Slightly more green
-            ],
-          ),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF4CAF50).withValues(alpha:0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: () => context.go('/education'),
-            borderRadius: BorderRadius.circular(16),
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
-                      ),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF4CAF50).withValues(alpha:0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.celebration,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'All lessons completed!',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'Great job! Explore the education section for more content.',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha:0.8),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.arrow_forward_ios,
-                      size: 16,
-                      color: Color(0xFF4CAF50),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    }
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFFF5F9F5), // Very light green tint
-            Color(0xFFEDF5ED), // Light green tint
-            Color(0xFFE5F0E5), // Slightly more green
-          ],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF4CAF50).withValues(alpha:0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => _navigateToNextLesson(nextLesson),
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF4CAF50), Color(0xFF4CAF50)],
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF4CAF50).withValues(alpha:0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.play_circle_fill,
-                        color: Colors.white,
-                        size: 32,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Next Lesson',
-                            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                              color: Colors.black87,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            nextLesson.title,
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha:0.8),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.arrow_forward_ios,
-                        size: 16,
-                        color: Color(0xFF4CAF50),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  nextLesson.description,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Text(
-                    '${nextLesson.slides.length} slides',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
-  Widget _buildLoadingCard(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Row(
-          children: [
-            const CircularProgressIndicator(),
-            const SizedBox(width: 16),
-            Text(
-              'Loading your next lesson...',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildErrorCard(BuildContext context) {
-    return Card(
-      child: ListTile(
-        leading: const Icon(Icons.error_outline, color: Colors.orange),
-        title: const Text('Unable to load next lesson'),
-        subtitle: const Text('Tap to explore all lessons'),
-        trailing: const Icon(Icons.arrow_forward_ios),
-        onTap: () => context.go('/education'),
-      ),
-    );
-  }
 
   Widget _buildGuestContentSection() {
     return Column(
@@ -1181,114 +711,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
 
 
-  Future<void> _navigateToNextLesson(Lesson lesson) async {
-    final lessonScreen = _getLessonScreen(lesson);
-    
-    if (lessonScreen != null) {
-      await Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => lessonScreen,
-          settings: const RouteSettings(name: '/lesson'),
-        ),
-      );
-      
-      // Lesson completed - no additional action needed for new system
-    } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Lesson not available yet'),
-            backgroundColor: Colors.orange,
-          ),
-        );
-      }
-    }
-  }
 
-  Widget? _getLessonScreen(Lesson lesson) {
-    // Use lesson ID for direct mapping (supports all stages)
-    switch (lesson.id) {
-      // Stage 1 lessons
-      case 'lesson_1_1': return const Lesson11Screen();
-      case 'lesson_1_2': return const Lesson12Screen();
-      case 'lesson_1_2_1': return const Lesson121Screen();
-      case 'lesson_1_3': return const Lesson13Screen();
-      case 'lesson_2_1': return const Assessment21Screen();
-      case 'lesson_2_2': return const Assessment22Screen();
-      case 'lesson_2_3': return const Assessment23Screen();
-      case 'lesson_3_1': return const Lesson31Screen();
-      case 'lesson_3_2': return const Lesson32Screen();
-      case 'lesson_3_3': return const Lesson33Screen();
-      case 'lesson_3_4': return const Lesson34Screen();
-      case 'lesson_3_5': return const Lesson35Screen();
-      case 'lesson_3_6': return const Lesson36Screen();
-      case 'lesson_3_7': return const Lesson37Screen();
-      case 'lesson_3_8': return const Lesson38Screen();
-      case 'lesson_3_9': return const Lesson39Screen();
-      case 'lesson_3_10': return const Lesson310Screen();
-      
-      // Stage 2 lessons
-      case 'lesson_s2_0_1': return const LessonS201Screen();
-      case 'lesson_s2_0_2': return const LessonS202Screen();
-      case 'lesson_s2_0_3': return const LessonS203Screen();
-      case 'lesson_s2_0_4': return const LessonS204Screen();
-      case 'lesson_s2_0_5': return const LessonS205Screen();
-      case 'lesson_s2_0_6': return const LessonS206Screen();
-      case 'lesson_s2_1_1': return const LessonS211Screen();
-      case 'lesson_s2_1_2': return const LessonS212Screen();
-      case 'lesson_s2_1_3': return const LessonS213Screen();
-      case 'lesson_s2_2_1': return const LessonS221Screen();
-      case 'lesson_s2_2_2': return const LessonS222Screen();
-      case 'lesson_s2_2_3': return const LessonS223Screen();
-      case 'lesson_s2_2_4': return const LessonS224Screen();
-      case 'lesson_s2_2_5': return const LessonS225Screen();
-      case 'lesson_s2_2_5_1': return const LessonS2251Screen();
-      case 'lesson_s2_2_7': return const LessonS227Screen();
-      
-      // Chapter 3 lessons
-      case 'lesson_s2_3_1': return const LessonS231Screen();
-      case 'lesson_s2_3_2': return const LessonS232Screen();
-      case 'lesson_s2_3_2_1': return const LessonS2321Screen();
-      case 'lesson_s2_3_3': return const LessonS233Screen();
-      case 'lesson_s2_3_4': return const LessonS234Screen();
-      case 'lesson_s2_3_5': return const LessonS235Screen();
-      
-      // Chapter 4 lessons
-      case 'lesson_s2_4_1': return const LessonS241Screen();
-      case 'lesson_s2_4_2': return const LessonS242Screen();
-      case 'lesson_s2_4_2_1': return const LessonS2421Screen();
-      case 'lesson_s2_4_3': return const LessonS243Screen();
-      
-      // Chapter 5 lessons
-      case 'lesson_s2_5_1': return const LessonS251Screen();
-      case 'lesson_s2_5_2': return const LessonS252Screen();
-      
-      // Chapter 6 lessons
-      case 'lesson_s2_6_1': return const LessonS261Screen();
-      case 'lesson_s2_6_2': return const LessonS262Screen();
-      case 'lesson_s2_6_3': return const LessonS263Screen();
-      
-      // Chapter 7 lessons
-      case 'lesson_s2_7_1': return const LessonS271Screen();
-      case 'lesson_s2_7_1_1': return const LessonS2711Screen();
-      case 'lesson_s2_7_2': return const LessonS272Screen();
-      case 'lesson_s2_7_3': return const LessonS273Screen();
-      case 'lesson_s2_7_4': return const LessonS274Screen();
-      case 'lesson_s2_7_5': return const LessonS275Screen();
-      case 'lesson_s2_7_6': return const LessonS276Screen();
-      case 'lesson_s2_7_7': return const LessonS277Screen();
-      case 'lesson_s2_7_8': return const LessonS278Screen();
-      
-      // Stage 3 lessons
-      case 'lesson_s3_0_1': return const LessonS301Screen();
-      case 'lesson_s3_0_2': return const LessonS302Screen();
-      case 'lesson_s3_0_2_1': return const LessonS3021Screen();
-      case 'lesson_s3_0_3': return const AssessmentS303Screen();
-      case 'lesson_s3_0_4': return const AssessmentS304Screen();
-    }
-    
-    return null;
-  }
 
 
 
