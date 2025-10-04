@@ -109,7 +109,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
               const SizedBox(height: 24),
               
               // Log New Entry Button
-              Container(
+              SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: () => _navigateToSurvey(context),
@@ -246,7 +246,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    ...entries.take(2).map((entry) => _buildBodyImageDiaryCard(context, entry)).toList(),
+                    ...entries.take(2).map((entry) => _buildBodyImageDiaryCard(context, entry)),
                     if (entries.length > 2)
                       TextButton(
                         onPressed: () => _showWeekEntries(context, weekNumber, entries),
@@ -255,7 +255,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
                   ],
                 ),
               );
-            }).toList(),
+            }),
           ],
         );
       },

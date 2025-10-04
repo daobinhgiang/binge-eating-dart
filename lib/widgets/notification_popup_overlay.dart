@@ -38,40 +38,43 @@ class _NotificationPopupOverlayState extends ConsumerState<NotificationPopupOver
     final notification = ref.watch(notificationPopupProvider);
     final user = ref.watch(authNotifierProvider).value;
 
-    return Stack(
-      children: [
-        widget.child,
-        if (notification != null && user != null)
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: NotificationPopup(
-              notification: notification,
-              onTap: () async {
-                // Mark notification as read
-                try {
-                  await ref
-                      .read(notificationActionsProvider.notifier)
-                      .markAsRead(user.id, notification.id);
-                } catch (e) {
-                  debugPrint('Failed to mark notification as read: $e');
-                }
+    return Directionality(
+      textDirection: TextDirection.ltr, // Provide explicit text direction
+      child: Stack(
+        children: [
+          widget.child,
+          if (notification != null && user != null)
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: NotificationPopup(
+                notification: notification,
+                onTap: () async {
+                  // Mark notification as read
+                  try {
+                    await ref
+                        .read(notificationActionsProvider.notifier)
+                        .markAsRead(user.id, notification.id);
+                  } catch (e) {
+                    debugPrint('Failed to mark notification as read: $e');
+                  }
 
-                // Navigate to action URL if available
-                if (notification.actionUrl != null && context.mounted) {
-                  context.go(notification.actionUrl!);
-                }
+                  // Navigate to action URL if available
+                  if (notification.actionUrl != null && context.mounted) {
+                    context.go(notification.actionUrl!);
+                  }
 
-                // Clear the popup
-                ref.read(notificationPopupProvider.notifier).clearNotification();
-              },
-              onDismiss: () {
-                ref.read(notificationPopupProvider.notifier).clearNotification();
-              },
+                  // Clear the popup
+                  ref.read(notificationPopupProvider.notifier).clearNotification();
+                },
+                onDismiss: () {
+                  ref.read(notificationPopupProvider.notifier).clearNotification();
+                },
+              ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 

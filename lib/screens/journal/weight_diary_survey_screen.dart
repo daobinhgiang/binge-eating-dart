@@ -142,7 +142,7 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
                 SizedBox(
                   width: 120,
                   child: DropdownButtonFormField<String>(
-                    value: _unit,
+                    initialValue: _unit,
                     items: WeightDiary.weightUnits.map((u) => DropdownMenuItem(value: u, child: Text(u.toUpperCase()))).toList(),
                     onChanged: (v) {
                       if (v != null) setState(() => _unit = v);

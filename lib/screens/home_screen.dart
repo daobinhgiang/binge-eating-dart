@@ -1758,7 +1758,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                         const SizedBox(height: 8),
                         ..._insightsRecommendations.map((recommendation) => 
                           _buildInsightRecommendationCard(recommendation)
-                        ).toList(),
+                        ),
                       ],
                     ],
                   ),
