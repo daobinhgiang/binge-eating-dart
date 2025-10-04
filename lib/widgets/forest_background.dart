@@ -217,7 +217,7 @@ class ForestBackgroundPainter extends CustomPainter {
 
   void _drawForestFloor(Canvas canvas, Size size, Paint paint) {
     // Draw subtle forest floor elements
-    paint.color = const Color(0xFF5a7f4f).withValues(alpha: 0.015);
+    paint.color = const Color(0xFF388E3C).withValues(alpha: 0.015);
     
     // Draw gentle curves representing forest floor
     final path = Path();
@@ -250,7 +250,7 @@ class ForestBackgroundPainter extends CustomPainter {
     ];
 
     for (final element in smallElements) {
-      paint.color = const Color(0xFF6e955f).withValues(alpha: 0.01);
+      paint.color = const Color(0xFF43A047).withValues(alpha: 0.01);
       canvas.drawCircle(
         Offset(size.width * element['x']!, size.height * element['y']!),
         size.width * element['size']!,
@@ -261,7 +261,7 @@ class ForestBackgroundPainter extends CustomPainter {
 
   void _drawWindEffect(Canvas canvas, Size size, Paint paint) {
     // Draw subtle wind lines between trees
-    paint.color = const Color(0xFF7fb781).withValues(alpha: 0.01);
+    paint.color = const Color(0xFF4CAF50).withValues(alpha: 0.01);
     paint.strokeWidth = 1;
     
     for (int i = 0; i < 3; i++) {

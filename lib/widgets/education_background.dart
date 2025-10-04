@@ -113,7 +113,7 @@ class EducationShapesPainter extends CustomPainter {
       
       // Add a very subtle border
       paint.style = PaintingStyle.stroke;
-      paint.color = const Color(0xFF7fb781).withOpacity(0.15);
+      paint.color = const Color(0xFF4CAF50).withOpacity(0.15);
       paint.strokeWidth = 1;
       canvas.drawRRect(rect, paint);
       paint.style = PaintingStyle.fill;
@@ -127,7 +127,7 @@ class EducationShapesPainter extends CustomPainter {
       final centerY = size.height * (0.4 + i * 0.15) + math.cos(angle * 0.2) * 10;
       
       // Soft circular shapes
-      paint.color = const Color(0xFF7fb781).withOpacity(0.2 - i * 0.05);
+      paint.color = const Color(0xFF4CAF50).withOpacity(0.2 - i * 0.05);
       canvas.drawCircle(
         Offset(centerX, centerY),
         radius,
@@ -142,7 +142,7 @@ class EducationShapesPainter extends CustomPainter {
       final centerY = size.height * (0.3 + i * 0.25) + math.cos(angle * 0.3) * 10;
       
       // Simple triangle
-      paint.color = const Color(0xFF7fb781).withOpacity(0.25 - i * 0.1);
+      paint.color = const Color(0xFF4CAF50).withOpacity(0.25 - i * 0.1);
       final trianglePath = Path();
       trianglePath.moveTo(centerX, centerY - 12);
       trianglePath.lineTo(centerX - 10, centerY + 8);
@@ -152,7 +152,7 @@ class EducationShapesPainter extends CustomPainter {
     }
 
     // Very subtle line elements
-    paint.color = const Color(0xFF7ea66f).withOpacity(0.2);
+    paint.color = const Color(0xFF66BB6A).withOpacity(0.2);
     paint.strokeWidth = 2;
     paint.style = PaintingStyle.stroke;
     

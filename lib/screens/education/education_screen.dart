@@ -32,7 +32,7 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
+            color: const Color(0xFF4CAF50).withOpacity(0.15),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -40,10 +40,10 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
       ),
       child: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
+          color: const Color(0xFF4CAF50), // Bright green to match theme
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: Theme.of(context).colorScheme.primary,
+            color: const Color(0xFF4CAF50), // Bright green to match theme
             width: 1.5,
           ),
         ),
@@ -94,9 +94,9 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
         _buildHeader(context),
         const SizedBox(height: 24),
         _buildStageCard(context, stage1),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
         _buildStageCard(context, stage2),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
         _buildStageCard(context, stage3),
         const SizedBox(height: 24),
         _buildMotivationalQuote(context),
@@ -113,17 +113,21 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.95),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
-          width: 1,
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF66BB6A), // Brighter, more vibrant green
+            Color(0xFF4CAF50), // Material green
+            Color(0xFF43A047), // Slightly darker green
+          ],
         ),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: const Color(0xFF66BB6A).withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -133,19 +137,28 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(16),
+                  shape: BoxShape.circle,
                   border: Border.all(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                    width: 1,
+                    color: Colors.white,
+                    width: 4,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                child: Icon(
-                  Icons.auto_stories,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 28,
+                child: CircleAvatar(
+                  radius: 30,
+                  backgroundColor: Colors.white.withOpacity(0.2),
+                  child: const Icon(
+                    Icons.auto_stories,
+                    color: Colors.white,
+                    size: 28,
+                  ),
                 ),
               ),
               const SizedBox(width: 16),
@@ -155,17 +168,19 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
                   children: [
                     Text(
                       'Your Learning Journey',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: Colors.white,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 4),
                     Text(
                       'Evidence-based treatment for lasting recovery',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                        color: Colors.white.withOpacity(0.9),
                       ),
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
@@ -194,7 +209,7 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
         Text(
           label,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            color: Colors.white.withOpacity(0.8),
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -203,7 +218,7 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
           '$completed/$total',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.primary,
+            color: Colors.white,
           ),
         ),
       ],
@@ -267,29 +282,29 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
                     );
                   },
                   child: Container(
-                    padding: const EdgeInsets.all(24),
+                    padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(14),
+                              padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
+                                color: const Color(0xFF4CAF50).withOpacity(0.08),
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
-                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                                  color: const Color(0xFF4CAF50).withOpacity(0.2),
                                   width: 1,
                                 ),
                               ),
                               child: Icon(
                                 stageTheme['icon'],
-                                color: Theme.of(context).colorScheme.primary,
-                                size: 28,
+                                color: const Color(0xFF4CAF50),
+                                size: 24,
                               ),
                             ),
-                            const SizedBox(width: 20),
+                            const SizedBox(width: 16),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -297,12 +312,12 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
                                   Text(
                                     'Stage ${stage.stageNumber}',
                                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+                                      color: const Color(0xFF4CAF50).withOpacity(0.7),
                                       fontWeight: FontWeight.w600,
                                       letterSpacing: 0.5,
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(height: 2),
                                   Text(
                                     stage.title,
                                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -314,12 +329,12 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
                               ),
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                               decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                color: const Color(0xFF4CAF50).withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(18),
                                 border: Border.all(
-                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                  color: const Color(0xFF4CAF50).withOpacity(0.3),
                                   width: 1,
                                 ),
                               ),
@@ -331,28 +346,12 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
                                     color: Theme.of(context).colorScheme.primary,
                                     size: 16,
                                   ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    'Start',
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: Theme.of(context).colorScheme.primary,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
                                 ],
                               ),
                             ),
                           ],
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            _buildStatChip(context, Icons.menu_book, '${stage.chapters.length} Chapters', Theme.of(context).colorScheme.primary.withOpacity(0.7)),
-                            const SizedBox(width: 12),
-                            _buildStatChip(context, Icons.school, '$totalLessons Lessons', Theme.of(context).colorScheme.primary.withOpacity(0.7)),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
+                        ), 
+                        const SizedBox(height: 12),
                         Container(
                           height: 2,
                           decoration: BoxDecoration(
@@ -416,37 +415,37 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
       case 1:
         return {
           'gradient': [
-            const Color(0xFF7fb781), // Soft sage green
-            const Color(0xFF6ba86f), // Deeper sage green
+            const Color(0xFF66BB6A), // Bright vibrant green
+            const Color(0xFF4CAF50), // Material green
           ],
-          'shadowColor': const Color(0xFF7fb781).withOpacity(0.2),
+          'shadowColor': const Color(0xFF66BB6A).withOpacity(0.2),
           'icon': Icons.auto_stories,
         };
       case 2:
         return {
           'gradient': [
-            const Color(0xFF8bc34a), // Light green
-            const Color(0xFF689f38), // Medium green
+            const Color(0xFF81C784), // Brighter light green
+            const Color(0xFF66BB6A), // Bright green
           ],
-          'shadowColor': const Color(0xFF8bc34a).withOpacity(0.2),
+          'shadowColor': const Color(0xFF81C784).withOpacity(0.2),
           'icon': Icons.psychology,
         };
       case 3:
         return {
           'gradient': [
-            const Color(0xFF4caf50), // Material green
-            const Color(0xFF388e3c), // Darker green
+            const Color(0xFF4CAF50), // Material green
+            const Color(0xFF43A047), // Slightly darker green
           ],
-          'shadowColor': const Color(0xFF4caf50).withOpacity(0.2),
+          'shadowColor': const Color(0xFF4CAF50).withOpacity(0.2),
           'icon': Icons.celebration,
         };
       default:
         return {
           'gradient': [
-            const Color(0xFF7fb781),
-            const Color(0xFF6ba86f),
+            const Color(0xFF66BB6A),
+            const Color(0xFF4CAF50),
           ],
-          'shadowColor': const Color(0xFF7fb781).withOpacity(0.2),
+          'shadowColor': const Color(0xFF66BB6A).withOpacity(0.2),
           'icon': Icons.school,
         };
     }

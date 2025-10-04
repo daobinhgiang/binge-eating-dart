@@ -131,7 +131,7 @@ class BEDApp extends ConsumerWidget {
           title: 'BED Support App',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF7fb781), // Refined green theme for growth, healing, and comfort
+            seedColor: const Color(0xFF4CAF50), // Bright vibrant green to match the photo
             brightness: Brightness.light,
           ),
           useMaterial3: true,
@@ -158,7 +158,7 @@ class BEDApp extends ConsumerWidget {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: const Color(0xFF7fb781),
+                color: const Color(0xFF4CAF50),
                 width: 2,
               ),
             ),
@@ -169,7 +169,7 @@ class BEDApp extends ConsumerWidget {
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF7fb781),
+              backgroundColor: const Color(0xFF4CAF50),
               foregroundColor: Colors.white,
               elevation: 2,
               shape: RoundedRectangleBorder(

@@ -186,9 +186,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                const Color(0xFF7fb781).withValues(alpha: 0.15),
-                const Color(0xFF7ea66f).withValues(alpha: 0.12),
-                const Color(0xFF6e955f).withValues(alpha: 0.08),
+                const Color(0xFF4CAF50).withValues(alpha: 0.15),
+                const Color(0xFF66BB6A).withValues(alpha: 0.12),
+                const Color(0xFF43A047).withValues(alpha: 0.08),
               ],
             ),
           ),
@@ -254,7 +254,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(24),
                           borderSide: const BorderSide(
-                            color: Color(0xFF7fb781),
+                            color: Color(0xFF4CAF50),
                             width: 2,
                           ),
                         ),
@@ -271,7 +271,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   const SizedBox(width: 8),
                   Container(
                     decoration: BoxDecoration(
-                      color: const Color(0xFF7fb781),
+                      color: const Color(0xFF4CAF50),
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(
@@ -315,7 +315,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: const Color(0xFF7fb781),
+                color: const Color(0xFF4CAF50),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -331,7 +331,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
                 color: message.isUser
-                    ? const Color(0xFF7fb781)
+                    ? const Color(0xFF4CAF50)
                     : Colors.grey[100],
                 borderRadius: BorderRadius.circular(18).copyWith(
                   bottomLeft: message.isUser ? const Radius.circular(18) : const Radius.circular(4),
@@ -396,7 +396,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: const Color(0xFF7fb781),
+              color: const Color(0xFF4CAF50),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -473,7 +473,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         color: Colors.white.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: const Color(0xFF7fb781).withValues(alpha: 0.3),
+          color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -484,7 +484,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             children: [
               Icon(
                 Icons.lightbulb_outline,
-                color: const Color(0xFF7fb781),
+                color: const Color(0xFF4CAF50),
                 size: 16,
               ),
               const SizedBox(width: 6),
@@ -492,7 +492,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 'Recommendations',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF7fb781),
+                  color: const Color(0xFF4CAF50),
                 ),
               ),
             ],
@@ -507,7 +507,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: const Color(0xFF7fb781).withValues(alpha: 0.1),
+                color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
@@ -517,7 +517,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     'Next Steps',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF7fb781),
+                      color: const Color(0xFF4CAF50),
                     ),
                   ),
                   const SizedBox(height: 2),

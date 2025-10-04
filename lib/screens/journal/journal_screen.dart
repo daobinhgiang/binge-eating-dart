@@ -7,7 +7,7 @@ import '../../providers/weight_diary_provider.dart';
 import '../../models/food_diary.dart';
 import '../../models/body_image_diary.dart';
 import '../../models/weight_diary.dart';
-import '../../widgets/tropical_forest_background.dart';
+import '../../widgets/journal_background.dart';
 import 'food_diary_main_screen.dart';
 import 'body_image_diary_main_screen.dart';
 import 'weight_diary_survey_screen.dart';
@@ -33,24 +33,7 @@ class JournalScreen extends ConsumerWidget {
     final currentWeekWeightDiaries = ref.watch(currentWeekWeightDiariesProvider(user.id));
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Journal'),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          IconButton(
-            onPressed: () {
-              ref.read(currentWeekFoodDiariesProvider(user.id).notifier).refreshEntries();
-              ref.read(currentWeekBodyImageDiariesProvider(user.id).notifier).refreshEntries();
-              ref.read(currentWeekWeightDiariesProvider(user.id).notifier).refreshEntries();
-            },
-            icon: const Icon(Icons.refresh),
-          ),
-        ],
-      ),
-      body: TropicalForestBackground(
+      body: JournalBackground(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(

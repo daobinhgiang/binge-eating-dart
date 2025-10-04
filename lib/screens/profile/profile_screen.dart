@@ -62,15 +62,15 @@ class ProfileScreen extends ConsumerWidget {
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [
-                    Color(0xFF7fb781),
-                    Color(0xFF7ea66f),
-                    Color(0xFF6e955f),
+                    Color(0xFF4CAF50),
+                    Color(0xFF66BB6A),
+                    Color(0xFF43A047),
                   ],
                 ),
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF7fb781).withValues(alpha: 0.3),
+                    color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
                     blurRadius: 20,
                     offset: const Offset(0, 8),
                   ),
@@ -104,12 +104,12 @@ class ProfileScreen extends ConsumerWidget {
               width: double.infinity,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF7fb781), Color(0xFF7ea66f)],
+                  colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
                 ),
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF7fb781).withValues(alpha: 0.3),
+                    color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -154,15 +154,15 @@ class ProfileScreen extends ConsumerWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFF7fb781),
-            Color(0xFF7ea66f),
-            Color(0xFF6e955f),
+            Color(0xFF4CAF50),
+            Color(0xFF66BB6A),
+            Color(0xFF43A047),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF7fb781).withValues(alpha: 0.3),
+            color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -497,7 +497,7 @@ class ProfileScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [Color(0xFF7fb781), Color(0xFF7ea66f)],
+                colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
               ),
               shape: BoxShape.circle,
             ),
@@ -584,7 +584,7 @@ class ProfileScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [Color(0xFF7fb781), Color(0xFF7ea66f)],
+            colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
           ),
           shape: BoxShape.circle,
         ),

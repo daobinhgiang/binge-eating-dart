@@ -271,7 +271,7 @@ class TropicalForestPainter extends CustomPainter {
 
   void _drawForestFloor(Canvas canvas, Size size, Paint paint) {
     // Draw tropical forest floor with organic curves
-    paint.color = const Color(0xFF5a7f4f).withValues(alpha: 0.02);
+    paint.color = const Color(0xFF388E3C).withValues(alpha: 0.02);
     
     final path = Path();
     path.moveTo(0, size.height);
@@ -307,12 +307,12 @@ class TropicalForestPainter extends CustomPainter {
     for (final element in groundElements) {
       final elementType = element['type'] as String;
       if (elementType == 'fern') {
-        paint.color = const Color(0xFF6e955f).withValues(alpha: 0.015);
+        paint.color = const Color(0xFF43A047).withValues(alpha: 0.015);
         _drawFern(canvas, size, paint, 
           Offset(size.width * (element['x'] as double), size.height * (element['y'] as double)),
           size.width * (element['size'] as double));
       } else {
-        paint.color = const Color(0xFF6e955f).withValues(alpha: 0.01);
+        paint.color = const Color(0xFF43A047).withValues(alpha: 0.01);
         canvas.drawCircle(
           Offset(size.width * (element['x'] as double), size.height * (element['y'] as double)),
           size.width * (element['size'] as double),
@@ -662,7 +662,7 @@ class ScrollAwareTropicalForestPainter extends CustomPainter {
   }
 
   void _drawForestFloorWithParallax(Canvas canvas, Size size, Paint paint, double parallaxOffset) {
-    paint.color = const Color(0xFF5a7f4f).withValues(alpha: 0.02);
+    paint.color = const Color(0xFF388E3C).withValues(alpha: 0.02);
     
     final path = Path();
     path.moveTo(0, size.height);

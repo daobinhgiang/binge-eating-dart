@@ -91,9 +91,9 @@ class ToolsScreen extends ConsumerWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    const Color(0xFF7fb781), // Main app green
-                    const Color(0xFF7ea66f), // Slightly darker green
-                    const Color(0xFF6e955f), // Even darker green
+                    const Color(0xFF4CAF50), // Main app green
+                    const Color(0xFF66BB6A), // Slightly darker green
+                    const Color(0xFF43A047), // Even darker green
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -101,7 +101,7 @@ class ToolsScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF7fb781).withValues(alpha: 0.3),
+                    color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),

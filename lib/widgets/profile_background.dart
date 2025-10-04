@@ -103,7 +103,7 @@ class ProfileShapesPainter extends CustomPainter {
     }
 
     // Gentle wave patterns representing emotional flow
-    paint.color = const Color(0xFF7fb781).withOpacity(0.3);
+    paint.color = const Color(0xFF4CAF50).withOpacity(0.3);
     paint.strokeWidth = 2;
     paint.style = PaintingStyle.stroke;
     
@@ -130,7 +130,7 @@ class ProfileShapesPainter extends CustomPainter {
       
       // Outer circle
       paint.style = PaintingStyle.stroke;
-      paint.color = const Color(0xFF7fb781).withOpacity(0.4 - i * 0.05);
+      paint.color = const Color(0xFF4CAF50).withOpacity(0.4 - i * 0.05);
       paint.strokeWidth = 2;
       canvas.drawCircle(
         Offset(centerX, centerY),

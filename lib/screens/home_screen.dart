@@ -217,7 +217,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                       ],
                                       child: CircleAvatar(
                                         radius: 20,
-                                        backgroundColor: const Color(0xFF7fb781).withValues(alpha:0.2),
+                                        backgroundColor: const Color(0xFF4CAF50).withValues(alpha:0.2),
                                         backgroundImage: user.photoUrl != null
                                             ? NetworkImage(user.photoUrl!)
                                             : null,
@@ -235,7 +235,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                     )
                                   : CircleAvatar(
                                       radius: 20,
-                                      backgroundColor: const Color(0xFF7fb781).withValues(alpha:0.2),
+                                      backgroundColor: const Color(0xFF4CAF50).withValues(alpha:0.2),
                                       child: const Icon(
                                         Icons.person,
                                         color: Color(0xFF2D5016),
@@ -245,7 +245,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                               loading: () => const CircularProgressIndicator(color: Color(0xFF2D5016)),
                               error: (_, __) => CircleAvatar(
                                 radius: 20,
-                                backgroundColor: const Color(0xFF7fb781).withValues(alpha:0.2),
+                                backgroundColor: const Color(0xFF4CAF50).withValues(alpha:0.2),
                                 child: const Icon(
                                   Icons.person,
                                   color: Color(0xFF2D5016),
@@ -291,12 +291,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       ),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: const Color(0xFF7fb781).withValues(alpha:0.2),
+                        color: const Color(0xFF4CAF50).withValues(alpha:0.2),
                         width: 1.5,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF7fb781).withValues(alpha:0.2),
+                          color: const Color(0xFF4CAF50).withValues(alpha:0.2),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
@@ -317,8 +317,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                           _showUrgeHelpDialog();
                         },
                         borderRadius: BorderRadius.circular(16),
-                        splashColor: const Color(0xFF7fb781).withValues(alpha:0.1),
-                        highlightColor: const Color(0xFF7fb781).withValues(alpha:0.05),
+                        splashColor: const Color(0xFF4CAF50).withValues(alpha:0.1),
+                        highlightColor: const Color(0xFF4CAF50).withValues(alpha:0.05),
                         child: Padding(
                           padding: const EdgeInsets.all(20),
                           child: Row(
@@ -327,12 +327,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
                                   gradient: const LinearGradient(
-                                    colors: [Color(0xFF7fb781), Color(0xFF7ea66f), Color(0xFF6e955f)],
+                                    colors: [Color(0xFF4CAF50), Color(0xFF66BB6A), Color(0xFF43A047)],
                                   ),
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0xFF7fb781).withValues(alpha:0.4),
+                                      color: const Color(0xFF4CAF50).withValues(alpha:0.4),
                                       blurRadius: 12,
                                       offset: const Offset(0, 3),
                                     ),
@@ -375,7 +375,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                 child: const Icon(
                                   Icons.arrow_forward_ios,
                                   size: 16,
-                                  color: Color(0xFF7fb781),
+                                  color: Color(0xFF4CAF50),
                                 ),
                               ),
                             ],
@@ -401,12 +401,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       ),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: const Color(0xFF7fb781).withValues(alpha:0.2),
+                        color: const Color(0xFF4CAF50).withValues(alpha:0.2),
                         width: 1.5,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF7fb781).withValues(alpha:0.2),
+                          color: const Color(0xFF4CAF50).withValues(alpha:0.2),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
@@ -422,8 +422,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       child: InkWell(
                         onTap: () => context.go('/chat'),
                         borderRadius: BorderRadius.circular(16),
-                        splashColor: const Color(0xFF7fb781).withValues(alpha:0.1),
-                        highlightColor: const Color(0xFF7fb781).withValues(alpha:0.05),
+                        splashColor: const Color(0xFF4CAF50).withValues(alpha:0.1),
+                        highlightColor: const Color(0xFF4CAF50).withValues(alpha:0.05),
                         child: Padding(
                           padding: const EdgeInsets.all(20),
                           child: Row(
@@ -432,12 +432,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
                                   gradient: const LinearGradient(
-                                    colors: [Color(0xFF7fb781), Color(0xFF7ea66f), Color(0xFF6e955f)],
+                                    colors: [Color(0xFF4CAF50), Color(0xFF66BB6A), Color(0xFF43A047)],
                                   ),
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0xFF7fb781).withValues(alpha:0.4),
+                                      color: const Color(0xFF4CAF50).withValues(alpha:0.4),
                                       blurRadius: 12,
                                       offset: const Offset(0, 3),
                                     ),
@@ -480,7 +480,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                 child: const Icon(
                                   Icons.arrow_forward_ios,
                                   size: 16,
-                                  color: Color(0xFF7fb781),
+                                  color: Color(0xFF4CAF50),
                                 ),
                               ),
                             ],
@@ -562,7 +562,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF7fb781).withValues(alpha:0.05),
+              color: const Color(0xFF4CAF50).withValues(alpha:0.05),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -581,12 +581,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF7fb781), Color(0xFF7ea66f)],
+                        colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
                       ),
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF7fb781).withValues(alpha:0.3),
+                          color: const Color(0xFF4CAF50).withValues(alpha:0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -629,7 +629,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     child: const Icon(
                       Icons.arrow_forward_ios,
                       size: 16,
-                      color: Color(0xFF7fb781),
+                      color: Color(0xFF4CAF50),
                     ),
                   ),
                 ],
@@ -654,7 +654,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF7fb781).withValues(alpha:0.05),
+            color: const Color(0xFF4CAF50).withValues(alpha:0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -676,12 +676,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF7fb781), Color(0xFF7fb781)],
+                          colors: [Color(0xFF4CAF50), Color(0xFF4CAF50)],
                         ),
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF7fb781).withValues(alpha:0.3),
+                            color: const Color(0xFF4CAF50).withValues(alpha:0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -725,7 +725,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       child: const Icon(
                         Icons.arrow_forward_ios,
                         size: 16,
-                        color: Color(0xFF7fb781),
+                        color: Color(0xFF4CAF50),
                       ),
                     ),
                   ],
@@ -742,7 +742,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [Color(0xFF7fb781), Color(0xFF7ea66f)],
+                      colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
                     ),
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -820,7 +820,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF7fb781).withValues(alpha:0.05),
+                color: const Color(0xFF4CAF50).withValues(alpha:0.05),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -839,12 +839,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF7fb781), Color(0xFF7fb781)],
+                          colors: [Color(0xFF4CAF50), Color(0xFF4CAF50)],
                         ),
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF7fb781).withValues(alpha:0.3),
+                            color: const Color(0xFF4CAF50).withValues(alpha:0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -887,7 +887,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       child: const Icon(
                         Icons.arrow_forward_ios,
                         size: 16,
-                        color: Color(0xFF7fb781),
+                        color: Color(0xFF4CAF50),
                       ),
                     ),
                   ],
@@ -914,7 +914,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF7fb781).withValues(alpha:0.05),
+                color: const Color(0xFF4CAF50).withValues(alpha:0.05),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -933,12 +933,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF7fb781), Color(0xFF7ea66f)],
+                          colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
                         ),
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF7fb781).withValues(alpha:0.3),
+                            color: const Color(0xFF4CAF50).withValues(alpha:0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -981,7 +981,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       child: const Icon(
                         Icons.arrow_forward_ios,
                         size: 16,
-                        color: Color(0xFF7fb781),
+                        color: Color(0xFF4CAF50),
                       ),
                     ),
                   ],
@@ -1631,12 +1631,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF7fb781).withValues(alpha: 0.1),
+                    color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(
                     Icons.insights,
-                    color: Color(0xFF7fb781),
+                    color: Color(0xFF4CAF50),
                     size: 24,
                   ),
                 ),
@@ -1740,7 +1740,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF7fb781),
+                  backgroundColor: const Color(0xFF4CAF50),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
                   shape: RoundedRectangleBorder(
@@ -2279,28 +2279,28 @@ class ComfortingBackgroundPainter extends CustomPainter {
     final paint = Paint();
     
     // Draw subtle circles for a calming effect
-    paint.color = const Color(0xFF7fb781).withValues(alpha:0.03);
+    paint.color = const Color(0xFF4CAF50).withValues(alpha:0.03);
     canvas.drawCircle(
       Offset(size.width * 0.1, size.height * 0.2),
       size.width * 0.15,
       paint,
     );
     
-    paint.color = const Color(0xFF7ea66f).withValues(alpha:0.02);
+    paint.color = const Color(0xFF66BB6A).withValues(alpha:0.02);
     canvas.drawCircle(
       Offset(size.width * 0.8, size.height * 0.3),
       size.width * 0.2,
       paint,
     );
     
-    paint.color = const Color(0xFF6e955f).withValues(alpha:0.025);
+    paint.color = const Color(0xFF43A047).withValues(alpha:0.025);
     canvas.drawCircle(
       Offset(size.width * 0.9, size.height * 0.7),
       size.width * 0.12,
       paint,
     );
     
-    paint.color = const Color(0xFF5a7f4f).withValues(alpha:0.02);
+    paint.color = const Color(0xFF388E3C).withValues(alpha:0.02);
     canvas.drawCircle(
       Offset(size.width * 0.15, size.height * 0.8),
       size.width * 0.18,
@@ -2308,7 +2308,7 @@ class ComfortingBackgroundPainter extends CustomPainter {
     );
     
     // Draw subtle organic shapes for a nature-inspired feel
-    paint.color = const Color(0xFF7fb781).withValues(alpha:0.015);
+    paint.color = const Color(0xFF4CAF50).withValues(alpha:0.015);
     final path = Path();
     path.moveTo(size.width * 0.3, size.height * 0.1);
     path.quadraticBezierTo(
@@ -2326,7 +2326,7 @@ class ComfortingBackgroundPainter extends CustomPainter {
     canvas.drawPath(path, paint);
     
     // Draw gentle hills at the bottom
-    paint.color = const Color(0xFF7ea66f).withValues(alpha:0.02);
+    paint.color = const Color(0xFF66BB6A).withValues(alpha:0.02);
     final hillsPath = Path();
     hillsPath.moveTo(0, size.height);
     hillsPath.quadraticBezierTo(

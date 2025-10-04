@@ -99,7 +99,7 @@ class ToolsShapesPainter extends CustomPainter {
       final centerY = size.height * (0.15 + i * 0.2) + math.cos(angle * 0.2) * 25;
       final radius = 25.0 + i * 5.0;
       
-      paint.color = const Color(0xFF7fb781).withOpacity(0.5 - i * 0.1);
+      paint.color = const Color(0xFF4CAF50).withOpacity(0.5 - i * 0.1);
       _drawGear(canvas, paint, Offset(centerX, centerY), radius);
     }
 
@@ -119,7 +119,7 @@ class ToolsShapesPainter extends CustomPainter {
       final centerX = size.width * (0.15 + i * 0.14) + math.sin(angle) * 25;
       final centerY = size.height * (0.6 + i * 0.06) + math.cos(angle) * 20;
       
-      paint.color = const Color(0xFF7ea66f).withOpacity(0.5 - i * 0.06);
+      paint.color = const Color(0xFF66BB6A).withOpacity(0.5 - i * 0.06);
       _drawActivityIcon(canvas, paint, Offset(centerX, centerY), 18.0 + i * 2.0, i % 4);
     }
 
@@ -164,7 +164,7 @@ class ToolsShapesPainter extends CustomPainter {
       final centerY = size.height * (0.8 + i * 0.1) + math.cos(angle) * 20;
       
       // Target circles
-      paint.color = const Color(0xFF7fb781).withOpacity(0.4);
+      paint.color = const Color(0xFF4CAF50).withOpacity(0.4);
       canvas.drawCircle(Offset(centerX, centerY), 20, paint);
       paint.color = const Color(0xFF4CAF50).withOpacity(0.5);
       canvas.drawCircle(Offset(centerX, centerY), 12, paint);
