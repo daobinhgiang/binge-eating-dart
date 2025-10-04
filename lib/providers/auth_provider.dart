@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/services/auth_service.dart';
 import '../core/services/firebase_analytics_service.dart';
+import '../core/services/app_initialization_service.dart';
 import '../models/user_model.dart';
 
 // Auth service provider
@@ -105,6 +106,12 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
   Future<void> signOut() async {
     state = const AsyncValue.loading();
     try {
+      // Clear initialization state for current user before signing out
+      final currentUser = state.value;
+      if (currentUser != null) {
+        AppInitializationService().clearUserInitialization(currentUser.id);
+      }
+      
       await _authService.signOut();
       state = const AsyncValue.data(null);
     } catch (e, stackTrace) {
@@ -170,6 +177,12 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
   Future<void> deleteAccount() async {
     state = const AsyncValue.loading();
     try {
+      // Clear initialization state for current user before deleting account
+      final currentUser = state.value;
+      if (currentUser != null) {
+        AppInitializationService().clearUserInitialization(currentUser.id);
+      }
+      
       await _authService.deleteAccount();
       state = const AsyncValue.data(null);
     } catch (e, stackTrace) {

@@ -52,10 +52,10 @@ class _ProfileBackgroundState extends State<ProfileBackground>
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Color(0xFFF0F8F0), // Very light green
-                Color(0xFFE8F5E8), // Light mint green
-                Color(0xFFE0F2E0), // Slightly more green
-                Color(0xFFD4E6D4), // Mint green
+                Color(0xFFFFFFFF), // Pure white
+                Color(0xFFFAFAFA), // Very light gray
+                Color(0xFFF5F5F5), // Light gray
+                Color(0xFFFFFFFF), // Pure white
               ],
               stops: [0.0, 0.4, 0.7, 1.0],
             ),
@@ -177,8 +177,8 @@ class ProfileShapesPainter extends CustomPainter {
         end: Alignment.bottomRight,
         colors: [
           Colors.transparent,
-          const Color(0xFFE8F5E8).withOpacity(0.2),
-          const Color(0xFFD4E6D4).withOpacity(0.3),
+          const Color(0xFFF5F5F5).withOpacity(0.2),
+          const Color(0xFFF0F0F0).withOpacity(0.3),
         ],
         stops: const [0.0, 0.5, 1.0],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));

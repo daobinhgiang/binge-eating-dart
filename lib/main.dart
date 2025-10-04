@@ -92,10 +92,10 @@ import 'screens/lessons/lesson_s3_0_1.dart';
 import 'screens/lessons/lesson_s3_0_2.dart';
 import 'screens/lessons/lesson_s3_0_2_1.dart';
 import 'providers/auth_provider.dart';
-import 'providers/auto_todo_provider.dart';
 import 'models/user_model.dart';
 import 'widgets/analytics_tracker.dart';
 import 'widgets/notification_popup_overlay.dart';
+import 'core/services/app_initialization_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -633,14 +633,9 @@ class AuthGuard extends ConsumerWidget {
           );
         }
 
-        // Initialize auto todos for authenticated user
+        // Initialize all services for authenticated user (only once per session)
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          try {
-            ref.read(autoTodoInitializationProvider(user.id).notifier).initializeTodos();
-          } catch (e) {
-            print('Error initializing auto todos: $e');
-            // Don't disrupt user experience if auto todos fail
-          }
+          ref.read(appInitializationServiceProvider).initializeForUser(user.id, ref);
         });
 
         return child;

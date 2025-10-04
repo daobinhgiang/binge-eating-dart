@@ -151,10 +151,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      const Color(0xFF7fb781).withValues(alpha:0.15),
-                      const Color(0xFF7ea66f).withValues(alpha:0.12),
-                      const Color(0xFF6e955f).withValues(alpha:0.08),
-                      const Color(0xFF5a7f4f).withValues(alpha:0.05),
+                      const Color(0xFFFFFFFF).withValues(alpha:0.8),
+                      const Color(0xFFFAFAFA).withValues(alpha:0.6),
+                      const Color(0xFFF5F5F5).withValues(alpha:0.4),
+                      const Color(0xFFF0F0F0).withValues(alpha:0.2),
                     ],
                   ),
                   boxShadow: [

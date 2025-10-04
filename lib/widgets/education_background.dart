@@ -45,17 +45,17 @@ class _EducationBackgroundState extends State<EducationBackground>
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Main background with a more academic/learning-focused gradient
+        // Main background with a calm, subtle white gradient
         Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Color(0xFFE8F5E8), // Light mint green
-                Color(0xFFF0F8F0), // Very light green
-                Color(0xFFE0F2E0), // Slightly more green
-                Color(0xFFD4E6D4), // Back to mint green
+                Color(0xFFFFFFFF), // Pure white
+                Color(0xFFFAFAFA), // Very light gray
+                Color(0xFFF5F5F5), // Light gray
+                Color(0xFFFFFFFF), // Pure white
               ],
               stops: [0.0, 0.3, 0.7, 1.0],
             ),
@@ -91,132 +91,96 @@ class EducationShapesPainter extends CustomPainter {
       ..style = PaintingStyle.fill
       ..isAntiAlias = true;
 
-    // Learning-themed geometric shapes instead of organic ones
-    // Book-like rectangles with subtle animation
-    for (int i = 0; i < 3; i++) {
-      final angle = animationValue + (i * math.pi / 3);
-      final offsetX = math.sin(angle * 0.5) * 15;
-      final offsetY = math.cos(angle * 0.5) * 10;
+    // Subtle geometric shapes for a calm learning environment
+    // Soft rectangles with gentle animation
+    for (int i = 0; i < 2; i++) {
+      final angle = animationValue + (i * math.pi / 2);
+      final offsetX = math.sin(angle * 0.3) * 8;
+      final offsetY = math.cos(angle * 0.3) * 5;
       
       final rect = RRect.fromRectAndRadius(
         Rect.fromLTWH(
-          size.width * (0.1 + i * 0.3) + offsetX,
-          size.height * (0.2 + i * 0.15) + offsetY,
-          size.width * 0.15,
-          size.height * 0.08,
+          size.width * (0.15 + i * 0.4) + offsetX,
+          size.height * (0.25 + i * 0.2) + offsetY,
+          size.width * 0.12,
+          size.height * 0.06,
         ),
-        const Radius.circular(8),
+        const Radius.circular(6),
       );
       
-      paint.color = Colors.white.withOpacity(0.6 - i * 0.1);
+      paint.color = Colors.white.withOpacity(0.3 - i * 0.05);
       canvas.drawRRect(rect, paint);
       
-      // Add a subtle border
+      // Add a very subtle border
       paint.style = PaintingStyle.stroke;
-      paint.color = const Color(0xFF7fb781).withOpacity(0.3);
-      paint.strokeWidth = 1.5;
+      paint.color = const Color(0xFF7fb781).withOpacity(0.15);
+      paint.strokeWidth = 1;
       canvas.drawRRect(rect, paint);
       paint.style = PaintingStyle.fill;
     }
 
-    // Floating lightbulb shapes (representing learning/ideas)
-    for (int i = 0; i < 4; i++) {
-      final angle = animationValue + (i * math.pi / 2);
-      final radius = 18.0 + i * 3.0;
-      final centerX = size.width * (0.15 + i * 0.2) + math.sin(angle * 0.3) * 25;
-      final centerY = size.height * (0.4 + i * 0.12) + math.cos(angle * 0.3) * 20;
+    // Subtle circular shapes (representing learning/ideas)
+    for (int i = 0; i < 3; i++) {
+      final angle = animationValue + (i * math.pi / 1.5);
+      final radius = 12.0 + i * 2.0;
+      final centerX = size.width * (0.2 + i * 0.25) + math.sin(angle * 0.2) * 15;
+      final centerY = size.height * (0.4 + i * 0.15) + math.cos(angle * 0.2) * 10;
       
-      // Lightbulb body
-      paint.color = const Color(0xFFFFF59D).withOpacity(0.7 - i * 0.1);
+      // Soft circular shapes
+      paint.color = const Color(0xFF7fb781).withOpacity(0.2 - i * 0.05);
       canvas.drawCircle(
         Offset(centerX, centerY),
-        radius * 0.7,
+        radius,
         paint,
       );
-      
-      // Lightbulb base
-      final baseRect = RRect.fromRectAndRadius(
-        Rect.fromLTWH(
-          centerX - radius * 0.3,
-          centerY + radius * 0.5,
-          radius * 0.6,
-          radius * 0.3,
-        ),
-        const Radius.circular(4),
-      );
-      paint.color = const Color(0xFFE0E0E0).withOpacity(0.6 - i * 0.1);
-      canvas.drawRRect(baseRect, paint);
     }
 
-    // Graduation cap shapes (representing education)
+    // Simple triangular shapes (representing education)
     for (int i = 0; i < 2; i++) {
       final angle = animationValue + (i * math.pi);
-      final centerX = size.width * (0.7 + i * 0.2) + math.sin(angle * 0.4) * 30;
-      final centerY = size.height * (0.3 + i * 0.2) + math.cos(angle * 0.4) * 15;
+      final centerX = size.width * (0.75 + i * 0.15) + math.sin(angle * 0.3) * 20;
+      final centerY = size.height * (0.3 + i * 0.25) + math.cos(angle * 0.3) * 10;
       
-      // Cap top
-      paint.color = const Color(0xFF7fb781).withOpacity(0.6 - i * 0.2);
-      final capPath = Path();
-      capPath.moveTo(centerX - 20, centerY);
-      capPath.lineTo(centerX + 20, centerY);
-      capPath.lineTo(centerX + 15, centerY - 15);
-      capPath.lineTo(centerX - 15, centerY - 15);
-      capPath.close();
-      canvas.drawPath(capPath, paint);
-      
-      // Cap tassel
-      paint.color = const Color(0xFF4CAF50).withOpacity(0.7 - i * 0.2);
-      canvas.drawCircle(
-        Offset(centerX + 15, centerY - 15),
-        3,
-        paint,
-      );
+      // Simple triangle
+      paint.color = const Color(0xFF7fb781).withOpacity(0.25 - i * 0.1);
+      final trianglePath = Path();
+      trianglePath.moveTo(centerX, centerY - 12);
+      trianglePath.lineTo(centerX - 10, centerY + 8);
+      trianglePath.lineTo(centerX + 10, centerY + 8);
+      trianglePath.close();
+      canvas.drawPath(trianglePath, paint);
     }
 
-    // Subtle knowledge tree branches
-    paint.color = const Color(0xFF7ea66f).withOpacity(0.4);
-    paint.strokeWidth = 3;
+    // Very subtle line elements
+    paint.color = const Color(0xFF7ea66f).withOpacity(0.2);
+    paint.strokeWidth = 2;
     paint.style = PaintingStyle.stroke;
     
     for (int i = 0; i < 2; i++) {
-      final angle = animationValue * 0.2 + (i * math.pi);
-      final startX = size.width * (0.05 + i * 0.9);
-      final startY = size.height * 0.8;
-      final endX = startX + math.sin(angle) * 40;
-      final endY = startY - 60 + math.cos(angle) * 20;
+      final angle = animationValue * 0.1 + (i * math.pi);
+      final startX = size.width * (0.1 + i * 0.8);
+      final startY = size.height * 0.85;
+      final endX = startX + math.sin(angle) * 25;
+      final endY = startY - 40 + math.cos(angle) * 15;
       
       canvas.drawLine(
         Offset(startX, startY),
         Offset(endX, endY),
         paint,
       );
-      
-      // Add small leaves
-      paint.style = PaintingStyle.fill;
-      paint.color = const Color(0xFF4CAF50).withOpacity(0.5);
-      for (int j = 0; j < 3; j++) {
-        final leafX = startX + (endX - startX) * (j + 1) / 4;
-        final leafY = startY + (endY - startY) * (j + 1) / 4;
-        canvas.drawCircle(
-          Offset(leafX, leafY),
-          4,
-          paint,
-        );
-      }
-      paint.style = PaintingStyle.stroke;
     }
 
-    // Soft gradient overlay for depth
+    // Very subtle gradient overlay for depth
     final gradientPaint = Paint()
       ..shader = LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
           Colors.transparent,
-          const Color(0xFFE8F5E8).withOpacity(0.1),
-          const Color(0xFFD4E6D4).withOpacity(0.2),
+          const Color(0xFFF5F5F5).withOpacity(0.05),
+          const Color(0xFFF0F0F0).withOpacity(0.1),
         ],
-        stops: const [0.0, 0.6, 1.0],
+        stops: const [0.0, 0.7, 1.0],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
 
     canvas.drawRect(
