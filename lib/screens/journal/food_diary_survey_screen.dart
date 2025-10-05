@@ -894,17 +894,8 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        // Clear the form after successful submission
-        _foodController.clear();
-        _customLocationController.clear();
-        _contextController.clear();
-        _selectedTime = DateTime.now();
-        _selectedLocation = FoodDiary.locationOptions.first;
-        _isBinge = false;
-        _purgeMethod = FoodDiary.purgeMethodOptions.first;
-        _currentPage = 0;
-        _pageController.animateToPage(0, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
-        // Don't navigate away - let user stay on the food diary page
+        // Navigate back to the journal tab after successful submission
+        Navigator.of(context).pop();
       }
     } catch (e) {
       if (mounted) {

@@ -5,7 +5,6 @@ import 'meal_planning_screen.dart';
 import 'urge_surfing_screen.dart';
 import 'addressing_overconcern_screen.dart';
 import 'addressing_setbacks_screen.dart';
-import '../../widgets/tools_background.dart';
 
 class ExerciseItem {
   final String title;
@@ -187,13 +186,6 @@ class ToolsScreen extends ConsumerWidget {
                   duration: const Duration(milliseconds: 200),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
-                    image: DecorationImage(
-                      image: AssetImage(_assetForExercise(exercise.title)),
-                      fit: BoxFit.cover,
-                      colorFilter: isHovered
-                          ? ColorFilter.mode(Colors.black.withOpacity(0.05), BlendMode.darken)
-                          : null,
-                    ),
                     boxShadow: isHovered ? [
                       BoxShadow(
                         color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
@@ -213,12 +205,52 @@ class ToolsScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(16),
-                      onTap: () => exercise.onTap(context),
-                      child: Container(),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(16),
+                        onTap: () => exercise.onTap(context),
+                        child: ColorFiltered(
+                          colorFilter: isHovered
+                              ? ColorFilter.mode(Colors.black.withOpacity(0.05), BlendMode.darken)
+                              : ColorFilter.mode(Colors.transparent, BlendMode.multiply),
+                          child: Image.asset(
+                            _assetForExercise(exercise.title),
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: Colors.grey[200],
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        exercise.icon,
+                                        color: exercise.color,
+                                        size: 48,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        exercise.title,
+                                        style: TextStyle(
+                                          color: exercise.color,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),

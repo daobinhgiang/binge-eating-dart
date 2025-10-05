@@ -87,8 +87,14 @@ flutter:
   assets:
     - .env
     - logo.png
-    - assets/lessons/stages/
-    - assets/exercises/
+    - assets/lessons/stages/stage_1.png
+    - assets/lessons/stages/stage_2.png
+    - assets/lessons/stages/stage_3.png
+    - assets/exercises/addressing_overconcern.png
+    - assets/exercises/addressing_setbacks.png
+    - assets/exercises/meal_planning.png
+    - assets/exercises/problem_solving.png
+    - assets/exercises/urge_surfing.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

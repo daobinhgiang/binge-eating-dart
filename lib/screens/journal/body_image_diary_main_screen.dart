@@ -5,6 +5,7 @@ import '../../providers/body_image_diary_provider.dart';
 import '../../providers/food_diary_provider.dart';
 import '../../models/body_image_diary.dart';
 import 'body_image_diary_survey_screen.dart';
+import 'all_body_image_diary_entries_screen.dart';
 
 class BodyImageDiaryMainScreen extends ConsumerWidget {
   const BodyImageDiaryMainScreen({super.key});
@@ -321,27 +322,27 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
   }
 
   Widget _buildTodaysEntriesWithAddCard(BuildContext context, List<BodyImageDiary> entries) {
+    // Sort entries by time (most recent first) and take only 1
+    final sortedEntries = List<BodyImageDiary>.from(entries);
+    sortedEntries.sort((a, b) => b.checkTime.compareTo(a.checkTime));
+    final mostRecentEntry = sortedEntries.isNotEmpty ? sortedEntries.first : null;
+    
     return SizedBox(
       height: 200,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: entries.length + 1, // +1 for the add card
-        itemBuilder: (context, index) {
-          if (index == entries.length) {
-            // Add entry card at the end
-            return Container(
-              width: 200,
-              margin: const EdgeInsets.only(left: 12),
-              child: _buildAddEntryCard(context),
-            );
-          }
-          
-          return Container(
-            width: 280,
-            margin: const EdgeInsets.only(right: 12),
-            child: _buildBodyImageDiaryCard(context, entries[index]),
-          );
-        },
+      child: Row(
+        children: [
+          if (mostRecentEntry != null) ...[
+            Expanded(
+              flex: 2,
+              child: _buildBodyImageDiaryCard(context, mostRecentEntry),
+            ),
+            const SizedBox(width: 12),
+          ],
+          Container(
+            width: 200,
+            child: _buildAddEntryCard(context),
+          ),
+        ],
       ),
     );
   }
@@ -396,7 +397,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
     final sortedEntries = List<BodyImageDiary>.from(currentWeekEntries);
     sortedEntries.sort((a, b) => b.checkTime.compareTo(a.checkTime));
 
-    // Limit to 5 latest entries
+    // Limit to 5 most recent entries
     final limitedEntries = sortedEntries.take(5).toList();
 
     return Column(
@@ -663,9 +664,10 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
   }
 
   void _showAllEntries(BuildContext context, String userId) {
-    // TODO: Navigate to a detailed view of all entries
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('All entries view coming soon!')),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const AllBodyImageDiaryEntriesScreen(),
+      ),
     );
   }
 

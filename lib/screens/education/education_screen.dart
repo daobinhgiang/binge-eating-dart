@@ -175,30 +175,6 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
     );
   }
 
-  Widget _buildProgressIndicator(BuildContext context, String label, int total, int completed) {
-    return Column(
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.white,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          '$completed/$total',
-          style: const TextStyle(
-            fontSize: 18,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildStageCard(BuildContext context, Stage stage) {
     final stageTheme = _getStageTheme(stage.stageNumber);
     final totalLessons = stage.chapters.fold(0, (sum, chapter) => sum + chapter.lessons.length);
@@ -269,6 +245,18 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
                                 fit: BoxFit.cover,
                                 width: double.infinity,
                                 height: double.infinity,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: Colors.grey[200],
+                                    child: const Center(
+                                      child: Icon(
+                                        Icons.image_not_supported,
+                                        color: Colors.grey,
+                                        size: 48,
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
                             )
                           : Padding(
@@ -325,35 +313,6 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildStatChip(BuildContext context, IconData icon, String text, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: color, size: 14),
-          const SizedBox(width: 6),
-          Text(
-            text,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w500,
-              fontSize: 12,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
