@@ -44,6 +44,7 @@ class RegularEatingNotifier extends StateNotifier<AsyncValue<RegularEating?>> {
     required double mealIntervalHours,
     required int firstMealHour,
     required int firstMealMinute,
+    required int mealCount,
   }) async {
     try {
       // Validate input
@@ -60,6 +61,10 @@ class RegularEatingNotifier extends StateNotifier<AsyncValue<RegularEating?>> {
         throw 'First meal minute must be between 0 and 59';
       }
 
+      if (mealCount < RegularEating.minMealCount || mealCount > RegularEating.maxMealCount) {
+        throw 'Meal count must be between ${RegularEating.minMealCount} and ${RegularEating.maxMealCount}';
+      }
+
       // Get existing ID if available
       final currentSettings = state.value;
       final existingId = currentSettings?.id;
@@ -69,6 +74,7 @@ class RegularEatingNotifier extends StateNotifier<AsyncValue<RegularEating?>> {
         mealIntervalHours: mealIntervalHours,
         firstMealHour: firstMealHour,
         firstMealMinute: firstMealMinute,
+        mealCount: mealCount,
         existingId: existingId,
       );
 
@@ -102,15 +108,21 @@ class RegularEatingNotifier extends StateNotifier<AsyncValue<RegularEating?>> {
   // Helper method to get default settings
   RegularEating getDefaultSettings() {
     final now = DateTime.now();
-    return RegularEating(
+    final defaultSettings = RegularEating(
       id: '',
       userId: _userId,
       mealIntervalHours: RegularEating.defaultMealIntervalHours,
       firstMealHour: RegularEating.defaultFirstMealHour,
       firstMealMinute: RegularEating.defaultFirstMealMinute,
+      mealCount: RegularEating.defaultMealCount,
+      mealTimes: <String>[],
       createdAt: now,
       updatedAt: now,
     );
+    
+    // Generate meal times for default settings
+    final generatedMealTimes = defaultSettings.generateMealTimes();
+    return defaultSettings.copyWith(mealTimes: generatedMealTimes);
   }
 
   // Helper method to get current settings or default

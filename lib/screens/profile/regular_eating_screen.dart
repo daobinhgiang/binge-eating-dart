@@ -16,6 +16,7 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
   double _mealIntervalHours = RegularEating.defaultMealIntervalHours;
   int _firstMealHour = RegularEating.defaultFirstMealHour;
   int _firstMealMinute = RegularEating.defaultFirstMealMinute;
+  int _mealCount = RegularEating.defaultMealCount;
   bool _isLoading = false;
   bool _hasChanges = false;
 
@@ -39,6 +40,7 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
               _mealIntervalHours = settings.mealIntervalHours;
               _firstMealHour = settings.firstMealHour;
               _firstMealMinute = settings.firstMealMinute;
+              _mealCount = settings.mealCount;
             });
           }
         });
@@ -108,6 +110,7 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
         mealIntervalHours: _mealIntervalHours,
         firstMealHour: _firstMealHour,
         firstMealMinute: _firstMealMinute,
+        mealCount: _mealCount,
       );
 
       if (savedSettings != null && mounted) {
@@ -154,7 +157,7 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Today\'s Meal Schedule'),
+        title: const Text('Daily Meal Schedule'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,9 +171,8 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
             const SizedBox(height: 16),
             ...mealTimes.asMap().entries.map((entry) {
               final index = entry.key;
-              final time = entry.value;
-              final mealNames = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
-              final mealName = index < mealNames.length ? mealNames[index] : 'Meal ${index + 1}';
+              final timeString = entry.value;
+              final mealName = 'Meal ${index + 1}';
               
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
@@ -183,7 +185,7 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      '$mealName: ${TimeOfDay.fromDateTime(time).format(context)}',
+                      '$mealName: ${settings.formatTimeString(timeString)}',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
@@ -346,11 +348,11 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
                           value: _mealIntervalHours,
                           min: RegularEating.minMealIntervalHours,
                           max: RegularEating.maxMealIntervalHours,
-                          divisions: 16, // 0.25 hour increments
+                          divisions: 4, // 1 hour increments (2, 3, 4, 5, 6)
                           label: _formatMealInterval(),
                           onChanged: (value) {
                             setState(() {
-                              _mealIntervalHours = value;
+                              _mealIntervalHours = value.round().toDouble();
                               _markAsChanged();
                             });
                           },
@@ -435,6 +437,127 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
                                 ),
                               ],
                             ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Meal count settings
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Number of Meals',
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'How many meals would you like to have per day?',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        
+                        // Current value display
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.restaurant,
+                                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Current: $_mealCount meal${_mealCount == 1 ? '' : 's'} per day',
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        
+                        const SizedBox(height: 16),
+                        
+                        // Meal count selector
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Meals per day:',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                IconButton(
+                                  onPressed: _mealCount > RegularEating.minMealCount
+                                      ? () {
+                                          setState(() {
+                                            _mealCount--;
+                                            _markAsChanged();
+                                          });
+                                        }
+                                      : null,
+                                  icon: const Icon(Icons.remove),
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: _mealCount > RegularEating.minMealCount
+                                        ? Theme.of(context).colorScheme.primaryContainer
+                                        : Colors.grey[300],
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Text(
+                                  '$_mealCount',
+                                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                IconButton(
+                                  onPressed: _mealCount < RegularEating.maxMealCount
+                                      ? () {
+                                          setState(() {
+                                            _mealCount++;
+                                            _markAsChanged();
+                                          });
+                                        }
+                                      : null,
+                                  icon: const Icon(Icons.add),
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: _mealCount < RegularEating.maxMealCount
+                                        ? Theme.of(context).colorScheme.primaryContainer
+                                        : Colors.grey[300],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        
+                        const SizedBox(height: 8),
+                        
+                        // Range indicator
+                        Text(
+                          'Range: ${RegularEating.minMealCount}-${RegularEating.maxMealCount} meals',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.grey[600],
                           ),
                         ),
                       ],

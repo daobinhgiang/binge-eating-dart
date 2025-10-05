@@ -25,6 +25,8 @@ class UserModel {
   final DateTime createdAt;
   final DateTime? lastLoginAt;
   final String? photoUrl;
+  final String? fcmToken;
+  final DateTime? fcmTokenUpdatedAt;
   final Map<String, dynamic> preferences;
   final bool onboardingCompleted;
   final bool onboardingPartiallyCompleted;
@@ -38,6 +40,8 @@ class UserModel {
     required this.createdAt,
     this.lastLoginAt,
     this.photoUrl,
+    this.fcmToken,
+    this.fcmTokenUpdatedAt,
     this.preferences = const {},
     this.onboardingCompleted = false,
     this.onboardingPartiallyCompleted = false,
@@ -62,6 +66,10 @@ class UserModel {
           ? DateTime.fromMillisecondsSinceEpoch(data['lastLoginAt'])
           : null,
       photoUrl: data['photoUrl'],
+      fcmToken: data['fcmToken'],
+      fcmTokenUpdatedAt: data['fcmTokenUpdatedAt'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(data['fcmTokenUpdatedAt'])
+          : null,
       preferences: Map<String, dynamic>.from(data['preferences'] ?? {}),
       onboardingCompleted: data['onboardingCompleted'] ?? false,
       onboardingPartiallyCompleted: data['onboardingPartiallyCompleted'] ?? false,
@@ -77,6 +85,8 @@ class UserModel {
       'createdAt': createdAt.millisecondsSinceEpoch,
       'lastLoginAt': lastLoginAt?.millisecondsSinceEpoch,
       'photoUrl': photoUrl,
+      'fcmToken': fcmToken,
+      'fcmTokenUpdatedAt': fcmTokenUpdatedAt?.millisecondsSinceEpoch,
       'preferences': preferences,
       'onboardingCompleted': onboardingCompleted,
       'onboardingPartiallyCompleted': onboardingPartiallyCompleted,
@@ -92,6 +102,8 @@ class UserModel {
     DateTime? createdAt,
     DateTime? lastLoginAt,
     String? photoUrl,
+    String? fcmToken,
+    DateTime? fcmTokenUpdatedAt,
     Map<String, dynamic>? preferences,
     bool? onboardingCompleted,
     bool? onboardingPartiallyCompleted,
@@ -105,6 +117,8 @@ class UserModel {
       createdAt: createdAt ?? this.createdAt,
       lastLoginAt: lastLoginAt ?? this.lastLoginAt,
       photoUrl: photoUrl ?? this.photoUrl,
+      fcmToken: fcmToken ?? this.fcmToken,
+      fcmTokenUpdatedAt: fcmTokenUpdatedAt ?? this.fcmTokenUpdatedAt,
       preferences: preferences ?? this.preferences,
       onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
       onboardingPartiallyCompleted: onboardingPartiallyCompleted ?? this.onboardingPartiallyCompleted,

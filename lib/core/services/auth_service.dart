@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../models/user_model.dart';
 import 'auto_todo_service.dart';
+import 'fcm_token_service.dart';
 
 class AuthService {
   static final AuthService _instance = AuthService._internal();
@@ -14,6 +15,7 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final AutoTodoService _autoTodoService = AutoTodoService();
+  final FCMTokenService _fcmTokenService = FCMTokenService();
   
   // Configure GoogleSignIn with platform-specific client IDs
   late final GoogleSignIn _googleSignIn = GoogleSignIn(
@@ -59,6 +61,8 @@ class AuthService {
 
       if (credential.user != null) {
         await _updateLastLogin(credential.user!.uid);
+        // Initialize FCM token for the user
+        await _fcmTokenService.initializeForUser(credential.user!.uid);
         return await _getUserFromFirebaseUser(credential.user!);
       }
       return null;
@@ -102,6 +106,9 @@ class AuthService {
             
         // Initialize todos for the new user
         await _autoTodoService.initializeUserTodos(credential.user!.uid);
+        
+        // Initialize FCM token for the new user
+        await _fcmTokenService.initializeForUser(credential.user!.uid);
 
         return userModel;
       }
@@ -188,10 +195,18 @@ class AuthService {
           // Initialize todos for the new user
           await _autoTodoService.initializeUserTodos(userCredential.user!.uid);
           print('Auto todos initialized for new user');
+          
+          // Initialize FCM token for the new user
+          await _fcmTokenService.initializeForUser(userCredential.user!.uid);
+          print('FCM token initialized for new user');
         } else {
           print('User exists, updating last login...');
           // Update last login time for existing user
           await _updateLastLogin(userCredential.user!.uid);
+          
+          // Initialize FCM token for existing user
+          await _fcmTokenService.initializeForUser(userCredential.user!.uid);
+          print('FCM token initialized for existing user');
         }
 
         print('Retrieving user from Firestore...');
@@ -214,6 +229,12 @@ class AuthService {
   // Sign out
   Future<void> signOut() async {
     try {
+      final currentUser = _auth.currentUser;
+      if (currentUser != null) {
+        // Clean up FCM token
+        await _fcmTokenService.cleanupForUser(currentUser.uid);
+      }
+      
       await _auth.signOut();
       await _googleSignIn.signOut();
     } catch (e) {
