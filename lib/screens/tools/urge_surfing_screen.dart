@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/urge_surfing_provider.dart';
 import '../../models/urge_surfing.dart';
+import 'urge_surfing_detail_screen.dart';
+import 'urge_surfing_survey_screen.dart';
 
 class UrgeSurfingScreen extends ConsumerStatefulWidget {
   const UrgeSurfingScreen({super.key});
@@ -12,45 +14,7 @@ class UrgeSurfingScreen extends ConsumerStatefulWidget {
 }
 
 class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
-  List<AlternativeActivity> _activities = [];
   bool _isLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadActivities();
-    });
-  }
-
-  Future<void> _loadActivities() async {
-    final user = ref.read(currentUserDataProvider);
-    if (user == null) return;
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      // Wait for the provider to load
-      final exercisesAsync = ref.read(userUrgeSurfingExercisesProvider(user.id));
-      exercisesAsync.whenData((exercises) {
-        if (exercises.isNotEmpty && mounted) {
-          setState(() {
-            _activities = List.from(exercises.first.activities);
-          });
-        }
-      });
-    } catch (e) {
-      // Handle error silently, activities will remain empty
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,42 +28,46 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
       );
     }
 
+    final exercisesAsync = ref.watch(userUrgeSurfingExercisesProvider(user.id));
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Urge Surfing Activities'),
         centerTitle: true,
         actions: [
           IconButton(
-            onPressed: _isLoading ? null : () => _saveActivities(user.id, showSuccessMessage: true),
-            icon: _isLoading 
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.save),
+            onPressed: () {
+              ref.read(userUrgeSurfingExercisesProvider(user.id).notifier).refreshExercises();
+            },
+            icon: const Icon(Icons.refresh),
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Guide Section
-          Container(
-            width: double.infinity,
-            margin: const EdgeInsets.all(16),
-            child: _buildGuideSection(context),
+      body: exercisesAsync.when(
+        data: (exercises) {
+          if (exercises.isEmpty) {
+            return _buildEmptyState(context);
+          }
+          return _buildExercisesList(context, exercises);
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
+              const SizedBox(height: 16),
+              Text('Error loading activities: $e'),
+            ],
           ),
-
-          // Activities List
-          Expanded(
-            child: _activities.isEmpty ? _buildEmptyState(context) : _buildActivitiesList(context),
-          ),
-        ],
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _addActivity,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _navigateToNewExercise(context),
         backgroundColor: Colors.teal[600],
-        child: const Icon(Icons.add, color: Colors.white),
+        icon: const Icon(Icons.add, color: Colors.white),
+        label: const Text('New Activity'),
+        foregroundColor: Colors.white,
       ),
     );
   }
@@ -135,7 +103,7 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
             ),
             const SizedBox(height: 32),
             ElevatedButton.icon(
-              onPressed: _addActivity,
+              onPressed: () => _navigateToNewExercise(context),
               icon: const Icon(Icons.add),
               label: const Text('Add First Activity'),
               style: ElevatedButton.styleFrom(
@@ -153,201 +121,141 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
     );
   }
 
-  Widget _buildActivitiesList(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Your Alternative Activities (${_activities.length})',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.green[50],
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.green[200]!),
-                ),
-                child: Text(
-                  '${_getIdealActivitiesCount()}/${_activities.length} ideal',
-                  style: TextStyle(
-                    color: Colors.green[700],
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          ...List.generate(_activities.length, (index) {
-            return Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              child: _buildActivityCard(context, _activities[index], index),
-            );
-          }),
-          const SizedBox(height: 80), // Space for FAB
-        ],
-      ),
+  Widget _buildExercisesList(BuildContext context, List<UrgeSurfing> exercises) {
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+      itemCount: exercises.length,
+      itemBuilder: (context, index) => _buildExerciseCard(context, exercises[index]),
     );
   }
 
-
-  Widget _buildActivityCard(BuildContext context, AlternativeActivity activity, int index) {
-    final criteriaCount = activity.criteriaCount;
-    final isIdeal = activity.meetsAllCriteria;
-
+  Widget _buildExerciseCard(BuildContext context, UrgeSurfing exercise) {
+    final subtitle = '${exercise.totalActivities} activities • ${(exercise.completionRate * 100).round()}% ideal';
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isIdeal ? Colors.green[50] : Colors.teal[50],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isIdeal ? Colors.green[300]! : Colors.teal[200]!,
-          width: isIdeal ? 2 : 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: isIdeal ? Colors.green[600] : Colors.teal[600],
-                  borderRadius: BorderRadius.circular(14),
+      margin: const EdgeInsets.only(bottom: 16),
+      child: StatefulBuilder(
+        builder: (context, setState) {
+          bool isHovered = false;
+          return MouseRegion(
+            onEnter: (_) => setState(() => isHovered = true),
+            onExit: (_) => setState(() => isHovered = false),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.95),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: Colors.teal.withValues(alpha: 0.2),
+                  width: 1,
                 ),
-                child: Center(
-                  child: isIdeal
-                      ? const Icon(Icons.star, color: Colors.white, size: 16)
-                      : Text(
-                          '${index + 1}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  activity.name,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+                boxShadow: isHovered ? [
+                  BoxShadow(
+                    color: Colors.teal.withValues(alpha: 0.15),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
                   ),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: _getCriteriaColor(criteriaCount).withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  '$criteriaCount/3',
-                  style: TextStyle(
-                    color: _getCriteriaColor(criteriaCount),
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
+                  BoxShadow(
+                    color: Colors.teal.withValues(alpha: 0.08),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
                   ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    onPressed: () => _editActivity(index),
-                    icon: const Icon(Icons.edit, size: 18),
-                    padding: const EdgeInsets.all(4),
-                    constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                  ),
-                  IconButton(
-                    onPressed: () => _removeActivity(index),
-                    icon: const Icon(Icons.delete, size: 18),
-                    padding: const EdgeInsets.all(4),
-                    constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                    color: Colors.red[600],
+                ] : [
+                  BoxShadow(
+                    color: Colors.teal.withValues(alpha: 0.08),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
-            ],
-          ),
-          if (activity.description.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            Text(
-              activity.description,
-              style: Theme.of(context).textTheme.bodyMedium,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: () => _navigateToExerciseDetail(context, exercise),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.teal.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.teal.withValues(alpha: 0.2),
+                              width: 1,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.waves,
+                            color: Colors.teal,
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Activity List',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Colors.teal.withValues(alpha: 0.7),
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                exercise.title.isEmpty ? 'Urge Surfing Activities' : exercise.title,
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).colorScheme.onSurface,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                subtitle,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.teal.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.teal.withValues(alpha: 0.3),
+                              width: 1,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.arrow_forward,
+                            color: Colors.teal,
+                            size: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
-          ],
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              _buildCriteriaChip('Active', activity.isActive),
-              const SizedBox(width: 8),
-              _buildCriteriaChip('Enjoyable', activity.isEnjoyable),
-              const SizedBox(width: 8),
-              _buildCriteriaChip('Realistic', activity.isRealistic),
-            ],
-          ),
-        ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildCriteriaChip(String label, bool isMet) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: isMet ? Colors.green[100] : Colors.grey[200],
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            isMet ? Icons.check : Icons.close,
-            size: 12,
-            color: isMet ? Colors.green[700] : Colors.grey[600],
-          ),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: isMet ? Colors.green[700] : Colors.grey[600],
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
-  Color _getCriteriaColor(int count) {
-    switch (count) {
-      case 3:
-        return Colors.green[600]!;
-      case 2:
-        return Colors.orange[600]!;
-      case 1:
-        return Colors.amber[600]!;
-      default:
-        return Colors.red[600]!;
-    }
-  }
+  // Removed inline activity editing UI in favor of past-log tiles
 
   Widget _buildGuideSection(BuildContext context) {
     return Card(
@@ -418,220 +326,22 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
   }
 
 
-  int _getIdealActivitiesCount() {
-    return _activities.where((activity) => activity.meetsAllCriteria).length;
-  }
-
-  void _addActivity() {
-    _showActivityDialog();
-  }
-
-  void _editActivity(int index) {
-    _showActivityDialog(existingActivity: _activities[index], index: index);
-  }
-
-  void _removeActivity(int index) {
-    setState(() {
-      _activities.removeAt(index);
-    });
-    // Auto-save after removing activity
-    final user = ref.read(currentUserDataProvider);
-    if (user != null) {
-      _saveActivities(user.id, showSuccessMessage: false);
-    }
-  }
-
-  void _showActivityDialog({AlternativeActivity? existingActivity, int? index}) {
-    final nameController = TextEditingController(text: existingActivity?.name ?? '');
-    final descriptionController = TextEditingController(text: existingActivity?.description ?? '');
-    bool isActive = existingActivity?.isActive ?? false;
-    bool isEnjoyable = existingActivity?.isEnjoyable ?? false;
-    bool isRealistic = existingActivity?.isRealistic ?? false;
-
-    showDialog(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: Text(existingActivity != null ? 'Edit Activity' : 'Add Activity'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Activity Name *',
-                    hintText: 'e.g., Take a walk, Call a friend',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: descriptionController,
-                  maxLines: 2,
-                  decoration: const InputDecoration(
-                    labelText: 'Description (Optional)',
-                    hintText: 'Brief description of the activity...',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Properties:',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                CheckboxListTile(
-                  title: const Text('Active'),
-                  subtitle: const Text('Involves doing something rather than being passive'),
-                  value: isActive,
-                  onChanged: (value) => setDialogState(() => isActive = value ?? false),
-                  dense: true,
-                ),
-                CheckboxListTile(
-                  title: const Text('Enjoyable'),
-                  subtitle: const Text('Something you enjoy, not a chore'),
-                  value: isEnjoyable,
-                  onChanged: (value) => setDialogState(() => isEnjoyable = value ?? false),
-                  dense: true,
-                ),
-                CheckboxListTile(
-                  title: const Text('Realistic'),
-                  subtitle: const Text('Something you can actually do when urges strike'),
-                  value: isRealistic,
-                  onChanged: (value) => setDialogState(() => isRealistic = value ?? false),
-                  dense: true,
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (nameController.text.trim().isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please enter an activity name')),
-                  );
-                  return;
-                }
-
-                final activity = AlternativeActivity(
-                  id: existingActivity?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
-                  name: nameController.text.trim(),
-                  description: descriptionController.text.trim(),
-                  isActive: isActive,
-                  isEnjoyable: isEnjoyable,
-                  isRealistic: isRealistic,
-                );
-
-                setState(() {
-                  if (index != null) {
-                    _activities[index] = activity;
-                  } else {
-                    _activities.add(activity);
-                  }
-                });
-
-                Navigator.of(context).pop();
-                
-                // Auto-save after adding/editing activity
-                final user = ref.read(currentUserDataProvider);
-                if (user != null) {
-                  _saveActivities(user.id, showSuccessMessage: false);
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal[600],
-                foregroundColor: Colors.white,
-              ),
-              child: Text(existingActivity != null ? 'Update' : 'Add'),
-            ),
-          ],
-        ),
+  void _navigateToNewExercise(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const UrgeSurfingSurveyScreen(),
       ),
     );
   }
 
-  Future<void> _saveActivities(String userId, {bool showSuccessMessage = true}) async {
-    if (_isLoading) return; // Prevent multiple simultaneous saves
-    
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final exercisesAsync = ref.read(userUrgeSurfingExercisesProvider(userId));
-      
-      await exercisesAsync.when(
-        data: (exercises) async {
-          if (exercises.isNotEmpty) {
-            // Update existing exercise
-            await ref.read(userUrgeSurfingExercisesProvider(userId).notifier).updateExercise(
-              exerciseId: exercises.first.id,
-              title: 'My Urge Surfing Activities',
-              notes: '',
-              activities: _activities,
-            );
-          } else {
-            // Create new exercise
-            await ref.read(userUrgeSurfingExercisesProvider(userId).notifier).createExercise(
-              title: 'My Urge Surfing Activities',
-              notes: '',
-              activities: _activities,
-            );
-          }
-        },
-        loading: () async {
-          // Create new exercise if still loading
-          await ref.read(userUrgeSurfingExercisesProvider(userId).notifier).createExercise(
-            title: 'My Urge Surfing Activities',
-            notes: '',
-            activities: _activities,
-          );
-        },
-        error: (error, stackTrace) async {
-          // Create new exercise on error
-          await ref.read(userUrgeSurfingExercisesProvider(userId).notifier).createExercise(
-            title: 'My Urge Surfing Activities',
-            notes: '',
-            activities: _activities,
-          );
-        },
-      );
-
-      if (mounted && showSuccessMessage) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Activities saved successfully!'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error saving activities: $e'),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 3),
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
+  void _navigateToExerciseDetail(BuildContext context, UrgeSurfing exercise) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => UrgeSurfingDetailScreen(exercise: exercise),
+      ),
+    );
   }
+  
+  // Removed old editing dialog and save logic
 }
 

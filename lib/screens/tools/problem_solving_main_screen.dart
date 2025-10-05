@@ -7,6 +7,7 @@ import '../../models/todo_item.dart';
 import '../../core/services/navigation_service.dart';
 import 'problem_solving_survey_screen.dart';
 import 'problem_solving_history_screen.dart';
+import 'problem_solving_detail_screen.dart';
 
 class ProblemSolvingMainScreen extends ConsumerWidget {
   const ProblemSolvingMainScreen({super.key});
@@ -35,7 +36,6 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
         title: const Text('Problem Solving'),
         centerTitle: true,
         actions: [
-          // Refresh button
           IconButton(
             onPressed: () {
               ref.read(userProblemSolvingExercisesProvider(user.id).notifier).refreshExercises();
@@ -44,87 +44,178 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Top action buttons
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.deepOrange[50],
-              border: Border(
-                bottom: BorderSide(color: Colors.grey[200]!),
+      body: allExercises.when(
+        data: (exercises) {
+          if (exercises.isEmpty) {
+            return _buildEmptyState(context);
+          }
+          return _buildExercisesList(context, exercises);
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
+              const SizedBox(height: 16),
+              Text('Error loading exercises: $error'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  ref.read(userProblemSolvingExercisesProvider(user.id).notifier).refreshExercises();
+                },
+                child: const Text('Retry'),
               ),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () => _navigateToProblemSolvingSurvey(context),
-                    icon: const Icon(Icons.add),
-                    label: const Text('New Exercise'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepOrange[600],
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+            ],
+          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _navigateToProblemSolvingSurvey(context),
+        backgroundColor: Colors.deepOrange[600],
+        icon: const Icon(Icons.add, color: Colors.white),
+        label: const Text('New Exercise'),
+        foregroundColor: Colors.white,
+      ),
+    );
+  }
+
+  Widget _buildExercisesList(BuildContext context, List<ProblemSolving> exercises) {
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+      itemCount: exercises.length,
+      itemBuilder: (context, index) => _buildExerciseCard(context, exercises[index]),
+    );
+  }
+
+  Widget _buildExerciseCard(BuildContext context, ProblemSolving exercise) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: StatefulBuilder(
+        builder: (context, setState) {
+          bool isHovered = false;
+          return MouseRegion(
+            onEnter: (_) => setState(() => isHovered = true),
+            onExit: (_) => setState(() => isHovered = false),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.95),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: Colors.deepOrange.withValues(alpha: 0.2),
+                  width: 1,
+                ),
+                boxShadow: isHovered ? [
+                  BoxShadow(
+                    color: Colors.deepOrange.withValues(alpha: 0.15),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                  BoxShadow(
+                    color: Colors.deepOrange.withValues(alpha: 0.08),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ] : [
+                  BoxShadow(
+                    color: Colors.deepOrange.withValues(alpha: 0.08),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: () => _navigateToExerciseDetail(context, exercise),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.deepOrange.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.deepOrange.withValues(alpha: 0.2),
+                              width: 1,
+                            ),
+                          ),
+                          child: Icon(
+                            exercise.isComplete ? Icons.check_circle : Icons.psychology,
+                            color: Colors.deepOrange,
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Problem',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Colors.deepOrange.withValues(alpha: 0.7),
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                exercise.problemDescription,
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).colorScheme.onSurface,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              Builder(
+                                builder: (_) {
+                                  final chosen = exercise.chosenSolutions.map((s) => s.description).toList();
+                                  final chosenText = chosen.isNotEmpty ? chosen.join(', ') : 'No chosen solution yet';
+                                  return Text(
+                                    chosenText,
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: Colors.grey[600],
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.deepOrange.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.deepOrange.withValues(alpha: 0.3),
+                              width: 1,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.arrow_forward,
+                            color: Colors.deepOrange,
+                            size: 16,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () => _navigateToAllExercises(context, user.id),
-                    icon: const Icon(Icons.history),
-                    label: const Text('View Past Exercises'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.deepOrange[600],
-                      side: BorderSide(color: Colors.deepOrange[600]!),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          
-          // Latest Exercise Details
-          Expanded(
-            child: allExercises.when(
-              data: (exercises) {
-                if (exercises.isEmpty) {
-                  return _buildEmptyState(context);
-                }
-                
-                final latestExercise = exercises.first;
-                return _buildLatestExerciseDetails(context, latestExercise);
-              },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, _) => Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
-                    const SizedBox(height: 16),
-                    Text('Error loading exercises: $error'),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        ref.read(userProblemSolvingExercisesProvider(user.id).notifier).refreshExercises();
-                      },
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
               ),
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -579,6 +670,14 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => const ProblemSolvingSurveyScreen(),
+      ),
+    );
+  }
+
+  void _navigateToExerciseDetail(BuildContext context, ProblemSolving exercise) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ProblemSolvingDetailScreen(exercise: exercise),
       ),
     );
   }

@@ -18,8 +18,10 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: EducationBackground(
-        child: _buildStageHierarchy(context),
+      body: SafeArea(
+        child: EducationBackground(
+          child: _buildStageHierarchy(context),
+        ),
       ),
       floatingActionButton: _buildFloatingActionButton(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -205,151 +207,124 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
   }
 
   Widget _buildStageCardContent(BuildContext context, Stage stage, Map<String, dynamic> stageTheme, int totalLessons) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      child: StatefulBuilder(
-        builder: (context, setState) {
-          bool isHovered = false;
-          return MouseRegion(
-            onEnter: (_) => setState(() => isHovered = true),
-            onExit: (_) => setState(() => isHovered = false),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.95),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                  width: 1,
-                ),
-                boxShadow: isHovered ? [
-                  BoxShadow(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
-                    blurRadius: 16,
-                    offset: const Offset(0, 6),
-                  ),
-                  BoxShadow(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
-                    blurRadius: 24,
-                    offset: const Offset(0, 12),
-                  ),
-                ] : [
-                  BoxShadow(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(20),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LessonsScreen(stageNumber: stage.stageNumber),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double tileSize = MediaQuery.of(context).size.width * 0.85;
+        return Container(
+          margin: const EdgeInsets.only(bottom: 20),
+          alignment: Alignment.center,
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              bool isHovered = false;
+              return MouseRegion(
+                onEnter: (_) => setState(() => isHovered = true),
+                onExit: (_) => setState(() => isHovered = false),
+                child: AnimatedContainer(
+                  width: tileSize,
+                  height: tileSize,
+                  duration: const Duration(milliseconds: 200),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.95),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                      width: 1,
+                    ),
+                    boxShadow: isHovered ? [
+                      BoxShadow(
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
                       ),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF4CAF50).withOpacity(0.08),
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: const Color(0xFF4CAF50).withOpacity(0.2),
-                                  width: 1,
-                                ),
+                      BoxShadow(
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
+                        blurRadius: 24,
+                        offset: const Offset(0, 12),
+                      ),
+                    ] : [
+                      BoxShadow(
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(20),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LessonsScreen(stageNumber: stage.stageNumber),
+                          ),
+                        );
+                      },
+                      child: (stage.stageNumber >= 1 && stage.stageNumber <= 3)
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Image.asset(
+                                'assets/lessons/stages/stage_${stage.stageNumber}.png',
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: double.infinity,
                               ),
-                              child: Icon(
-                                stageTheme['icon'],
-                                color: const Color(0xFF4CAF50),
-                                size: 24,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
+                            )
+                          : Padding(
+                              padding: const EdgeInsets.all(20),
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(14),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF4CAF50).withOpacity(0.08),
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                        color: const Color(0xFF4CAF50).withOpacity(0.2),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      stageTheme['icon'],
+                                      color: const Color(0xFF4CAF50),
+                                      size: 36,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
                                   Text(
                                     'Stage ${stage.stageNumber}',
+                                    textAlign: TextAlign.center,
                                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                       color: const Color(0xFF4CAF50).withOpacity(0.7),
                                       fontWeight: FontWeight.w600,
                                       letterSpacing: 0.5,
                                     ),
                                   ),
-                                  const SizedBox(height: 2),
+                                  const SizedBox(height: 4),
                                   Text(
                                     stage.title,
+                                    textAlign: TextAlign.center,
                                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                       fontWeight: FontWeight.bold,
                                       color: Theme.of(context).colorScheme.onSurface,
                                     ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ],
                               ),
                             ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF4CAF50).withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(18),
-                                border: Border.all(
-                                  color: const Color(0xFF4CAF50).withOpacity(0.3),
-                                  width: 1,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.play_arrow,
-                                    color: Theme.of(context).colorScheme.primary,
-                                    size: 16,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ), 
-                        const SizedBox(height: 12),
-                        Container(
-                          height: 2,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(1),
-                          ),
-                          child: FractionallySizedBox(
-                            alignment: Alignment.centerLeft,
-                            widthFactor: 0.0, // This would be updated with actual progress
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primary,
-                                borderRadius: BorderRadius.circular(1),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
                     ),
                   ),
                 ),
-              ),
-            ),
-          );
-        },
-      ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 

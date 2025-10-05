@@ -78,185 +78,175 @@ class ToolsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      body: ToolsBackground(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             // Header
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(24),
+              margin: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    const Color(0xFF4CAF50), // Main app green
-                    const Color(0xFF66BB6A), // Slightly darker green
-                    const Color(0xFF43A047), // Even darker green
-                  ],
+                gradient: const LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF66BB6A), // Brighter, more vibrant green
+                    Color(0xFF4CAF50), // Material green
+                    Color(0xFF43A047), // Slightly darker green
+                  ],
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
+                    color: const Color(0xFF66BB6A).withOpacity(0.3),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
                   ),
                 ],
               ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    Icons.forest,
-                    size: 64,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Recovery Tools',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Find peace and healing through nature-inspired recovery tools',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.9),
-                    ),
-                    textAlign: TextAlign.center,
+                  Row(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 4,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: CircleAvatar(
+                          radius: 30,
+                          backgroundColor: Colors.white.withOpacity(0.2),
+                          child: const Icon(
+                            Icons.psychology,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Recovery Tools',
+                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-            
-            const SizedBox(height: 32),
-            
-            // Exercise Grid
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.8,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                children: exercises.map((exercise) => _buildExerciseCard(context, exercise)).toList(),
               ),
-              itemCount: exercises.length,
-              itemBuilder: (context, index) {
-                final exercise = exercises[index];
-                return _buildExerciseCard(context, exercise);
-              },
             ),
-            
-            const SizedBox(height: 32),
-            ],
-          ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildExerciseCard(BuildContext context, ExerciseItem exercise) {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: InkWell(
-        onTap: () => exercise.onTap(context),
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: exercise.color[600]?.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(
-                  exercise.icon,
-                  color: exercise.color[600],
-                  size: 28,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      exercise.title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: exercise.color[700],
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double tileSize = MediaQuery.of(context).size.width * 0.85;
+        return Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          alignment: Alignment.center,
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              bool isHovered = false;
+              return MouseRegion(
+                onEnter: (_) => setState(() => isHovered = true),
+                onExit: (_) => setState(() => isHovered = false),
+                child: AnimatedContainer(
+                  width: tileSize,
+                  height: tileSize,
+                  duration: const Duration(milliseconds: 200),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    image: DecorationImage(
+                      image: AssetImage(_assetForExercise(exercise.title)),
+                      fit: BoxFit.cover,
+                      colorFilter: isHovered
+                          ? ColorFilter.mode(Colors.black.withOpacity(0.05), BlendMode.darken)
+                          : null,
                     ),
-                    const SizedBox(height: 8),
-                    Expanded(
-                      child: Text(
-                        exercise.description,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
-                        ),
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
+                    boxShadow: isHovered ? [
+                      BoxShadow(
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      decoration: BoxDecoration(
-                        color: exercise.color[50],
-                        borderRadius: BorderRadius.circular(8),
+                      BoxShadow(
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Start',
-                            style: TextStyle(
-                              color: exercise.color[700],
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Icon(
-                            Icons.arrow_forward,
-                            color: exercise.color[700],
-                            size: 16,
-                          ),
-                        ],
+                    ] : [
+                      BoxShadow(
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
                       ),
+                    ],
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(16),
+                      onTap: () => exercise.onTap(context),
+                      child: Container(),
                     ),
                   ),
-                ],
-              ),
-            ],
+                ),
+              );
+            },
           ),
-        ),
-      ),
+        );
+      },
     );
+  }
+
+  String _assetForExercise(String title) {
+    final key = title.toLowerCase();
+    if (key.contains('problem') && key.contains('solving')) {
+      return 'assets/exercises/problem_solving.png';
+    }
+    if (key.contains('meal') && key.contains('planning')) {
+      return 'assets/exercises/meal_planning.png';
+    }
+    if (key.contains('urge') && (key.contains('surfing') || key.contains('activities')) ) {
+      return 'assets/exercises/urge_surfing.png';
+    }
+    if (key.contains('overconcern')) {
+      return 'assets/exercises/addressing_overconcern.png';
+    }
+    if (key.contains('setbacks')) {
+      return 'assets/exercises/addressing_setbacks.png';
+    }
+    return 'assets/exercises/problem_solving.png';
   }
 }
