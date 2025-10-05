@@ -35,20 +35,29 @@ class RegularEatingService {
     required double mealIntervalHours,
     required int firstMealHour,
     required int firstMealMinute,
+    required int mealCount,
     String? existingId,
   }) async {
     try {
       final now = DateTime.now();
       
-      final regularEating = RegularEating(
-        id: existingId ?? '', // Will be set by Firestore if new
+      // Create temporary settings to generate meal times
+      final tempSettings = RegularEating(
+        id: existingId ?? '',
         userId: userId,
         mealIntervalHours: mealIntervalHours,
         firstMealHour: firstMealHour,
         firstMealMinute: firstMealMinute,
+        mealCount: mealCount,
+        mealTimes: <String>[],
         createdAt: existingId != null ? await _getCreatedAt(userId, existingId) : now,
         updatedAt: now,
       );
+      
+      // Generate meal times based on settings
+      final generatedMealTimes = tempSettings.generateMealTimes();
+      
+      final regularEating = tempSettings.copyWith(mealTimes: generatedMealTimes);
 
       DocumentReference docRef;
       if (existingId != null) {

@@ -1,5 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'local_notifications_service.dart';
+import 'fcm_token_service.dart';
 
 class FirebaseMessagingService {
   // Private constructor for singleton pattern
@@ -13,6 +14,9 @@ class FirebaseMessagingService {
 
   // Reference to local notifications service for displaying notifications
   LocalNotificationsService? _localNotificationsService;
+  
+  // FCM token service for managing tokens
+  final FCMTokenService _fcmTokenService = FCMTokenService();
 
   /// Initialize Firebase Messaging and sets up all message listeners
   Future<void> init({required LocalNotificationsService localNotificationsService}) async {
@@ -50,7 +54,7 @@ class FirebaseMessagingService {
     // Listen for token refresh events
     FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
       print('FCM token refreshed: $fcmToken');
-      // TODO: optionally send token to your server for targeting this device
+      // Note: Token will be saved to user document when user signs in
     }).onError((error) {
       // Handle errors during token refresh
       print('Error refreshing FCM token: $error');
