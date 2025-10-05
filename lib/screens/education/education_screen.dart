@@ -18,8 +18,10 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: EducationBackground(
-        child: _buildStageHierarchy(context),
+      body: SafeArea(
+        child: EducationBackground(
+          child: _buildStageHierarchy(context),
+        ),
       ),
       floatingActionButton: _buildFloatingActionButton(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

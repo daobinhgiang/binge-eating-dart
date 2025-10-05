@@ -12,8 +12,9 @@ class ProfileScreen extends ConsumerWidget {
     final authState = ref.watch(authNotifierProvider);
 
     return Scaffold(
-      body: ProfileBackground(
-        child: authState.when(
+      body: SafeArea(
+        child: ProfileBackground(
+          child: authState.when(
           data: (user) {
             if (user == null) {
               return _buildLoginPrompt(context);
@@ -46,6 +47,7 @@ class ProfileScreen extends ConsumerWidget {
           loading: () => _buildLoadingState(context),
           error: (error, stackTrace) => _buildErrorState(context, error),
         ),
+      ),
       ),
     );
   }

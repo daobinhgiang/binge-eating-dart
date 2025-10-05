@@ -78,12 +78,13 @@ class ToolsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      body: ToolsBackground(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+      body: SafeArea(
+        child: ToolsBackground(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
             // Header
             Container(
               width: double.infinity,
@@ -156,6 +157,7 @@ class ToolsScreen extends ConsumerWidget {
             
             const SizedBox(height: 32),
             ],
+            ),
           ),
         ),
       ),

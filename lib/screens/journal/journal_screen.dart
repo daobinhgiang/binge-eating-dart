@@ -33,12 +33,13 @@ class JournalScreen extends ConsumerWidget {
     final currentWeekWeightDiaries = ref.watch(currentWeekWeightDiariesProvider(user.id));
 
     return Scaffold(
-      body: JournalBackground(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      body: SafeArea(
+        child: JournalBackground(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
             // Header with current week
             currentWeekNumber.when(
               data: (weekNumber) => Container(
@@ -296,9 +297,10 @@ class JournalScreen extends ConsumerWidget {
             // Combined recent entries from all diaries
             _buildCombinedRecentEntries(context, currentWeekFoodDiaries, currentWeekBodyImageDiaries, currentWeekWeightDiaries),
           ],
+            ),
+          ),
         ),
-      ),
-      ),
+    )
     );
   }
 
