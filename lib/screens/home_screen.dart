@@ -79,17 +79,70 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     }
   }
 
+  Widget _buildAppLogo() {
+    return Container(
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Image.asset(
+          'logo.png',
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            // Fallback to a simple icon if image fails to load
+            return Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF64B5F6), // Light blue
+                    Color(0xFF4CAF50), // Green
+                    Color(0xFFFFB74D), // Light orange
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.psychology,
+                color: Colors.white,
+                size: 24,
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
 
 
   Widget _buildProfileSection(AsyncValue authState) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.white.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.3),
-          width: 1,
+          color: Colors.white.withValues(alpha: 0.25),
+          width: 1.5,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: authState.when(
         data: (user) => user != null
@@ -112,13 +165,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   ),
                 ],
                 child: Padding(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       CircleAvatar(
-                        radius: 18,
-                        backgroundColor: const Color(0xFF4CAF50).withValues(alpha: 0.2),
+                        radius: 16,
+                        backgroundColor: Colors.white.withValues(alpha: 0.3),
                         backgroundImage: user.photoUrl != null
                             ? NetworkImage(user.photoUrl!)
                             : null,
@@ -126,39 +179,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                             ? Text(
                                 user.displayName.substring(0, 1).toUpperCase(),
                                 style: const TextStyle(
-                                  color: Color(0xFF2D5016),
+                                  color: Colors.white,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 14,
+                                  fontSize: 12,
                                 ),
                               )
                             : null,
                       ),
                       const SizedBox(width: 8),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            user.displayName.split(' ').first,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                          Text(
-                            'You\'ve got this!',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.white.withValues(alpha: 0.8),
-                              fontSize: 11,
-                            ),
-                          ),
-                        ],
+                      Text(
+                        user.displayName.split(' ').first,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                          fontSize: 14,
+                        ),
                       ),
                       const SizedBox(width: 4),
                       Icon(
                         Icons.keyboard_arrow_down,
-                        color: Colors.white,
-                        size: 16,
+                        color: Colors.white.withValues(alpha: 0.8),
+                        size: 14,
                       ),
                     ],
                   ),
@@ -166,10 +207,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               )
             : _buildGuestProfile(),
         loading: () => Container(
-          padding: const EdgeInsets.all(12),
-          child: const CircularProgressIndicator(
-            color: Color(0xFF2D5016),
-            strokeWidth: 2,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: const SizedBox(
+            width: 16,
+            height: 16,
+            child: CircularProgressIndicator(
+              color: Colors.white,
+              strokeWidth: 2,
+            ),
           ),
         ),
         error: (_, __) => _buildGuestProfile(),
@@ -179,39 +224,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
   Widget _buildGuestProfile() {
     return Padding(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           CircleAvatar(
-            radius: 18,
+            radius: 16,
             backgroundColor: Colors.white.withValues(alpha: 0.3),
             child: const Icon(
               Icons.person,
               color: Colors.white,
-              size: 18,
+              size: 16,
             ),
           ),
           const SizedBox(width: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Guest',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
-              Text(
-                'Welcome!',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.white.withValues(alpha: 0.8),
-                  fontSize: 11,
-                ),
-              ),
-            ],
+          Text(
+            'Guest',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+              fontSize: 14,
+            ),
           ),
         ],
       ),
@@ -228,23 +261,60 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
       body: CustomScrollView(
           controller: _scrollController ?? ScrollController(),
           slivers: [
-            // Simple header
+            // Enhanced header with logo
             SliverToBoxAdapter(
               child: Container(
-                color: const Color(0xFF4CAF50),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF4CAF50), // Green
+                      Color(0xFF66BB6A), // Lighter green
+                      Color(0xFF43A047), // Darker green
+                    ],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
                 child: SafeArea(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          _getTimeBasedGreeting(),
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                        // App Logo
+                        _buildAppLogo(),
+                        const SizedBox(width: 16),
+                        // Greeting and user info
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _getTimeBasedGreeting(),
+                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Your journey to recovery',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Colors.white.withValues(alpha: 0.9),
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
+                        // Profile section
                         _buildProfileSection(authState),
                       ],
                     ),
@@ -1955,3 +2025,4 @@ class ComfortingBackgroundPainter extends CustomPainter {
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
+
