@@ -22,7 +22,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   Animation<double>? _scaleAnimation;
   
   // Insights section state
-  String _insightsText = '';
   bool _isGeneratingInsights = false;
   List<Map<String, dynamic>> _insightsRecommendations = [];
 
@@ -130,15 +129,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   Widget _buildProfileSection(AsyncValue authState) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.15),
+        color: Colors.grey[50],
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.25),
+          color: Colors.grey[300]!,
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -171,15 +170,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     children: [
                       CircleAvatar(
                         radius: 16,
-                        backgroundColor: Colors.white.withValues(alpha: 0.3),
+                        backgroundColor: Colors.grey[200],
                         backgroundImage: user.photoUrl != null
                             ? NetworkImage(user.photoUrl!)
                             : null,
                         child: user.photoUrl == null
                             ? Text(
                                 user.displayName.substring(0, 1).toUpperCase(),
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                style: TextStyle(
+                                  color: Colors.grey[700],
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
                                 ),
@@ -191,14 +190,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                         user.displayName.split(' ').first,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                          color: Colors.black87,
                           fontSize: 14,
                         ),
                       ),
                       const SizedBox(width: 4),
                       Icon(
                         Icons.keyboard_arrow_down,
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: Colors.grey[600],
                         size: 14,
                       ),
                     ],
@@ -230,10 +229,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         children: [
           CircleAvatar(
             radius: 16,
-            backgroundColor: Colors.white.withValues(alpha: 0.3),
-            child: const Icon(
+            backgroundColor: Colors.grey[200],
+            child: Icon(
               Icons.person,
-              color: Colors.white,
+              color: Colors.grey[700],
               size: 16,
             ),
           ),
@@ -242,7 +241,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
             'Guest',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w600,
-              color: Colors.white,
+              color: Colors.black87,
               fontSize: 14,
             ),
           ),
@@ -264,23 +263,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
             // Enhanced header with logo
             SliverToBoxAdapter(
               child: Container(
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFF4CAF50), // Green
-                      Color(0xFF66BB6A), // Lighter green
-                      Color(0xFF43A047), // Darker green
-                    ],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+                decoration: const BoxDecoration(
+                  color: Colors.white,
                 ),
                 child: SafeArea(
                   child: Padding(
@@ -299,7 +283,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                 _getTimeBasedGreeting(),
                                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color: Colors.black87,
                                   fontSize: 20,
                                 ),
                               ),
@@ -307,7 +291,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                               Text(
                                 'Your journey to recovery',
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Colors.white.withValues(alpha: 0.9),
+                                  color: Colors.grey[600],
                                   fontSize: 14,
                                 ),
                               ),
@@ -335,30 +319,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       scale: _scaleAnimation ?? const AlwaysStoppedAnimation(1.0),
                       child: Column(
                         children: [
+                          // Insights Section - moved to top
+                          _buildInsightsSection(),
+                  
+                          const SizedBox(height: 24),
+                  
                           // Side-by-side buttons row
                           Row(
                             children: [
-                              // Urge help button - smaller and more concise
+                              // Urge help button - clean and concise
                               Expanded(
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                        Color(0xFFF0F8F0), // Very light green tint
-                                        Color(0xFFE8F5E8), // Light green tint
-                                        Color(0xFFE0F2E0), // Slightly more green
-                                      ],
-                                    ),
+                                    color: Colors.white,
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
-                                      color: const Color(0xFF4CAF50).withValues(alpha:0.2),
-                                      width: 1.5,
+                                      color: const Color(0xFFE57373).withValues(alpha: 0.3),
+                                      width: 2,
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: const Color(0xFF4CAF50).withValues(alpha:0.15),
+                                        color: Colors.black.withValues(alpha: 0.04),
                                         blurRadius: 8,
                                         offset: const Offset(0, 2),
                                       ),
@@ -374,52 +355,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                         _showUrgeHelpDialog();
                                       },
                                       borderRadius: BorderRadius.circular(12),
-                                      splashColor: const Color(0xFF4CAF50).withValues(alpha:0.1),
-                                      highlightColor: const Color(0xFF4CAF50).withValues(alpha:0.05),
                                       child: Padding(
-                                        padding: const EdgeInsets.all(12),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
+                                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
-                                            Container(
-                                              padding: const EdgeInsets.all(8),
-                                              decoration: BoxDecoration(
-                                                gradient: const LinearGradient(
-                                                  colors: [Color(0xFF4CAF50), Color(0xFF66BB6A), Color(0xFF43A047)],
-                                                ),
-                                                shape: BoxShape.circle,
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: const Color(0xFF4CAF50).withValues(alpha:0.3),
-                                                    blurRadius: 6,
-                                                    offset: const Offset(0, 2),
-                                                  ),
-                                                ],
-                                              ),
-                                              child: const Icon(
-                                                Icons.psychology,
-                                                color: Colors.white,
-                                                size: 18,
-                                              ),
+                                            Icon(
+                                              Icons.psychology,
+                                              color: const Color(0xFFE57373),
+                                              size: 24,
                                             ),
-                                            const SizedBox(height: 8),
+                                            const SizedBox(width: 10),
                                             Text(
                                               'Urge Help',
                                               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black,
-                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                                color: const Color(0xFFE57373),
+                                                fontSize: 16,
                                               ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              'Coping strategies',
-                                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                                color: Colors.black87,
-                                                fontSize: 11,
-                                              ),
-                                              textAlign: TextAlign.center,
                                             ),
                                           ],
                                         ),
@@ -431,27 +384,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                               
                               const SizedBox(width: 12),
                               
-                              // AI Support Chat button - smaller and more concise
+                              // AI Support Chat button - clean and concise
                               Expanded(
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                        Color(0xFFF0F8F0), // Very light green tint
-                                        Color(0xFFE8F5E8), // Light green tint
-                                        Color(0xFFE0F2E0), // Slightly more green
-                                      ],
-                                    ),
+                                    color: Colors.white,
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
-                                      color: const Color(0xFF4CAF50).withValues(alpha:0.2),
-                                      width: 1.5,
+                                      color: const Color(0xFF64B5F6).withValues(alpha: 0.3),
+                                      width: 2,
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: const Color(0xFF4CAF50).withValues(alpha:0.15),
+                                        color: Colors.black.withValues(alpha: 0.04),
                                         blurRadius: 8,
                                         offset: const Offset(0, 2),
                                       ),
@@ -462,52 +407,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                     child: InkWell(
                                       onTap: () => context.go('/chat'),
                                       borderRadius: BorderRadius.circular(12),
-                                      splashColor: const Color(0xFF4CAF50).withValues(alpha:0.1),
-                                      highlightColor: const Color(0xFF4CAF50).withValues(alpha:0.05),
                                       child: Padding(
-                                        padding: const EdgeInsets.all(12),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
+                                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
-                                            Container(
-                                              padding: const EdgeInsets.all(8),
-                                              decoration: BoxDecoration(
-                                                gradient: const LinearGradient(
-                                                  colors: [Color(0xFF4CAF50), Color(0xFF66BB6A), Color(0xFF43A047)],
-                                                ),
-                                                shape: BoxShape.circle,
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: const Color(0xFF4CAF50).withValues(alpha:0.3),
-                                                    blurRadius: 6,
-                                                    offset: const Offset(0, 2),
-                                                  ),
-                                                ],
-                                              ),
-                                              child: const Icon(
-                                                Icons.chat,
-                                                color: Colors.white,
-                                                size: 18,
-                                              ),
+                                            Icon(
+                                              Icons.chat,
+                                              color: const Color(0xFF64B5F6),
+                                              size: 24,
                                             ),
-                                            const SizedBox(height: 8),
+                                            const SizedBox(width: 10),
                                             Text(
                                               'AI Chat',
                                               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black,
-                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                                color: const Color(0xFF64B5F6),
+                                                fontSize: 16,
                                               ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              'Get support',
-                                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                                color: Colors.black87,
-                                                fontSize: 11,
-                                              ),
-                                              textAlign: TextAlign.center,
                                             ),
                                           ],
                                         ),
@@ -518,11 +435,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                               ),
                             ],
                           ),
-                  
-                  const SizedBox(height: 24),
-                  
-                  // Insights Section
-                  _buildInsightsSection(),
                   
                   const SizedBox(height: 24),
                   
@@ -1279,62 +1191,144 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   
   Widget _buildInsightsSection() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFFF8F9FA), // Light gray
-            Color(0xFFF1F3F4), // Slightly darker gray
-            Color(0xFFE8EAED), // More gray
-          ],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      child: Column(
+        children: [
+          // Circular insights section
+          Container(
+            width: 280,
+            height: 280,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white,
+              border: Border.all(
+                color: Colors.grey[200]!,
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.03),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Stack(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.insights,
-                    color: Color(0xFF4CAF50),
-                    size: 24,
+                // Background circles for visual effect
+                Positioned(
+                  top: 20,
+                  right: 20,
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFF4CAF50).withValues(alpha: 0.05),
+                    ),
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
+                Positioned(
+                  bottom: 30,
+                  left: 30,
+                  child: Container(
+                    width: 25,
+                    height: 25,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFF4CAF50).withValues(alpha: 0.08),
+                    ),
+                  ),
+                ),
+                
+                // Main content
+                Center(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      // Icon
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF4CAF50).withValues(alpha: 0.08),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.auto_awesome,
+                          color: Color(0xFF4CAF50),
+                          size: 32,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      
+                      // Title
                       Text(
                         'Personalized Insights',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF2D5016),
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                          fontSize: 18,
                         ),
+                        textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Get AI-powered insights about your progress',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: const Color(0xFF4A6741),
+                      const SizedBox(height: 8),
+                      
+                      // Subtitle
+
+                      
+                      const SizedBox(height: 20),
+                      
+                      // Generate button
+                      Container(
+                        width: 200,
+                        child: ElevatedButton(
+                          onPressed: _isGeneratingInsights ? null : _generateInsights,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF4CAF50),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                            elevation: 0,
+                            shadowColor: Colors.transparent,
+                          ),
+                          child: _isGeneratingInsights 
+                              ? Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const SizedBox(
+                                      width: 14,
+                                      height: 14,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Generating...',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.auto_awesome, size: 16),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      'Generate insights',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                         ),
                       ),
                     ],
@@ -1342,94 +1336,49 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+          ),
+          
+          // Recommendations display (if any)
+          if (_insightsRecommendations.isNotEmpty) ...[
+            const SizedBox(height: 24),
             Container(
               constraints: const BoxConstraints(
-                minHeight: 120,
-                maxHeight: 300,
+                minHeight: 80,
+                maxHeight: 200,
               ),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.grey[50],
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: const Color(0xFFE0E0E0),
+                  color: Colors.grey[100]!,
                   width: 1,
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(16),
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Main insights text
                       Text(
-                        _insightsText.isEmpty 
-                            ? 'Click "Generate insights" to get personalized recommendations based on your progress...'
-                            : _insightsText,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: _insightsText.isEmpty 
-                              ? const Color(0xFF9E9E9E)
-                              : const Color(0xFF2D5016),
-                          height: 1.4,
+                        'Recommended for you',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                          fontSize: 14,
                         ),
                       ),
-                      
-                      // Recommendations section
-                      if (_insightsRecommendations.isNotEmpty) ...[
-                        const SizedBox(height: 16),
-                        Text(
-                          'Recommended Resources:',
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF2D5016),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        ..._insightsRecommendations.map((recommendation) => 
-                          _buildInsightRecommendationCard(recommendation)
-                        ),
-                      ],
+                      const SizedBox(height: 12),
+                      ..._insightsRecommendations.map((recommendation) => 
+                        _buildInsightRecommendationCard(recommendation)
+                      ),
                     ],
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: _isGeneratingInsights ? null : _generateInsights,
-                icon: _isGeneratingInsights 
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      )
-                    : const Icon(Icons.auto_awesome, size: 18),
-                label: Text(
-                  _isGeneratingInsights ? 'Generating...' : 'Generate insights',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF4CAF50),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 2,
-                ),
-              ),
-            ),
           ],
-        ),
+        ],
       ),
     );
   }
@@ -1445,9 +1394,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
       final user = authState.valueOrNull;
       
       if (user == null) {
-        setState(() {
-          _insightsText = 'Please log in to generate personalized insights.';
-        });
         return;
       }
       
@@ -1455,13 +1401,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
       final response = await openaiService.generateInsights(user.id);
       
       setState(() {
-        _insightsText = response['response'] ?? 'No insights available.';
         _insightsRecommendations = List<Map<String, dynamic>>.from(response['recommendations'] ?? []);
       });
     } catch (e) {
-      setState(() {
-        _insightsText = 'Sorry, I couldn\'t generate insights at the moment. Please try again later.';
-      });
+      // Handle error silently or show a snackbar if needed
     } finally {
       setState(() {
         _isGeneratingInsights = false;
@@ -1473,105 +1416,103 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     final type = recommendation['type'] as String? ?? '';
     final title = recommendation['title'] as String? ?? '';
     final description = recommendation['description'] as String? ?? '';
-    final priority = recommendation['priority'] as String? ?? 'medium';
-
-    Color priorityColor;
-    IconData priorityIcon;
-    
-    switch (priority) {
-      case 'high':
-        priorityColor = Colors.red;
-        priorityIcon = Icons.priority_high;
-        break;
-      case 'medium':
-        priorityColor = Colors.orange;
-        priorityIcon = Icons.remove;
-        break;
-      case 'low':
-        priorityColor = Colors.green;
-        priorityIcon = Icons.keyboard_arrow_down;
-        break;
-      default:
-        priorityColor = Colors.grey;
-        priorityIcon = Icons.remove;
-    }
 
     IconData typeIcon;
     Color typeColor;
     
     switch (type) {
       case 'lesson':
-        typeIcon = Icons.school;
-        typeColor = Colors.blue;
+        typeIcon = Icons.school_outlined;
+        typeColor = const Color(0xFF4CAF50);
         break;
       case 'tool':
-        typeIcon = Icons.build;
-        typeColor = Colors.green;
+        typeIcon = Icons.build_outlined;
+        typeColor = const Color(0xFF2196F3);
         break;
       case 'journal':
-        typeIcon = Icons.edit_note;
-        typeColor = Colors.purple;
+        typeIcon = Icons.edit_note_outlined;
+        typeColor = const Color(0xFF9C27B0);
         break;
       case 'assessment':
-        typeIcon = Icons.quiz;
-        typeColor = Colors.orange;
+        typeIcon = Icons.quiz_outlined;
+        typeColor = const Color(0xFFFF9800);
         break;
       default:
-        typeIcon = Icons.help;
+        typeIcon = Icons.help_outline;
         typeColor = Colors.grey;
     }
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 6),
+      margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: typeColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: typeColor.withValues(alpha: 0.3),
+          color: Colors.grey[200]!,
           width: 1,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 4,
+            offset: const Offset(0, 1),
+          ),
+        ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _navigateToInsightRecommendation(recommendation),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(10),
           child: Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(12),
             child: Row(
               children: [
-                Icon(typeIcon, color: typeColor, size: 16),
-                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: typeColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Icon(
+                    typeIcon, 
+                    color: typeColor, 
+                    size: 16,
+                  ),
+                ),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         title,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: typeColor,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black87,
+                          fontSize: 14,
                         ),
                       ),
                       if (description.isNotEmpty) ...[
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 4),
                         Text(
                           description,
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Colors.grey[600],
-                            fontSize: 11,
+                            fontSize: 12,
                           ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ],
                   ),
                 ),
-                Icon(priorityIcon, color: priorityColor, size: 12),
-                const SizedBox(width: 4),
+                const SizedBox(width: 8),
                 Icon(
                   Icons.arrow_forward_ios,
-                  color: typeColor,
-                  size: 12,
+                  color: Colors.grey[400],
+                  size: 14,
                 ),
               ],
             ),

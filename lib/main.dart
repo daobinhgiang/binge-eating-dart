@@ -90,7 +90,6 @@ import 'screens/lessons/lesson_s3_0_1.dart';
 import 'screens/lessons/lesson_s3_0_2.dart';
 import 'screens/lessons/lesson_s3_0_2_1.dart';
 import 'providers/auth_provider.dart';
-import 'providers/auto_todo_provider.dart';
 import 'models/user_model.dart';
 import 'widgets/analytics_tracker.dart';
 import 'core/services/local_notifications_service.dart';

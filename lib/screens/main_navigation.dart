@@ -8,7 +8,6 @@ import 'journal/journal_screen.dart';
 import 'profile/profile_screen.dart';
 import '../widgets/comforting_background.dart';
 import '../widgets/forest_background.dart';
-import '../providers/auth_provider.dart';
 
 class MainNavigation extends ConsumerStatefulWidget {
   const MainNavigation({super.key});
