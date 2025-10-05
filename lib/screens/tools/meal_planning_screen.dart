@@ -5,6 +5,7 @@ import '../../providers/meal_plan_provider.dart';
 import '../../models/meal_plan.dart';
 import 'meal_plan_survey_screen.dart';
 import 'meal_plan_history_screen.dart';
+import 'meal_plan_detail_screen.dart';
 
 class MealPlanningScreen extends ConsumerWidget {
   const MealPlanningScreen({super.key});
@@ -28,98 +29,190 @@ class MealPlanningScreen extends ConsumerWidget {
         title: const Text('Meal Planning'),
         centerTitle: true,
         actions: [
-        // Refresh button
-        IconButton(
-          onPressed: () {
-            ref.read(allUserMealPlansProvider(user.id).notifier).refreshPlans();
-          },
-          icon: const Icon(Icons.refresh),
-        ),
+          IconButton(
+            onPressed: () {
+              ref.read(allUserMealPlansProvider(user.id).notifier).refreshPlans();
+            },
+            icon: const Icon(Icons.refresh),
+          ),
         ],
       ),
-      body: Column(
-        children: [
-          // Top action buttons
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.green[50],
-              border: Border(
-                bottom: BorderSide(color: Colors.grey[200]!),
+      body: allPlans.when(
+        data: (plans) {
+          if (plans.isEmpty) {
+            return _buildEmptyState(context);
+          }
+          return _buildPlansList(context, plans);
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
+              const SizedBox(height: 16),
+              Text('Error loading meal plans: $error'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  ref.read(allUserMealPlansProvider(user.id).notifier).refreshPlans();
+                },
+                child: const Text('Retry'),
               ),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () => _navigateToMealPlanSurvey(context),
-                    icon: const Icon(Icons.add),
-                    label: const Text('New Meal Plan'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[600],
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () => _navigateToAllPlans(context, user.id),
-                    icon: const Icon(Icons.history),
-                    label: const Text('View Past Plans'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.green[600],
-                      side: BorderSide(color: Colors.green[600]!),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            ],
           ),
-          
-          // Latest Meal Plan Details
-          Expanded(
-            child: allPlans.when(
-              data: (plans) {
-                if (plans.isEmpty) {
-                  return _buildEmptyState(context);
-                }
-                
-                final latestPlan = plans.first;
-                return _buildLatestPlanDetails(context, latestPlan);
-              },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, _) => Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
-                    const SizedBox(height: 16),
-                    Text('Error loading meal plans: $error'),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        ref.read(allUserMealPlansProvider(user.id).notifier).refreshPlans();
-                      },
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _navigateToMealPlanSurvey(context),
+        backgroundColor: Colors.green[600],
+        icon: const Icon(Icons.add, color: Colors.white),
+        label: const Text('New Meal Plan'),
+        foregroundColor: Colors.white,
       ),
     );
+  }
+
+  Widget _buildPlansList(BuildContext context, List<MealPlan> plans) {
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+      itemCount: plans.length,
+      itemBuilder: (context, index) => _buildPlanCard(context, plans[index]),
+    );
+  }
+
+  Widget _buildPlanCard(BuildContext context, MealPlan plan) {
+    String subtitle = _summarizeMeals(plan);
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: StatefulBuilder(
+        builder: (context, setState) {
+          bool isHovered = false;
+          return MouseRegion(
+            onEnter: (_) => setState(() => isHovered = true),
+            onExit: (_) => setState(() => isHovered = false),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.95),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: Colors.green.withValues(alpha: 0.2),
+                  width: 1,
+                ),
+                boxShadow: isHovered ? [
+                  BoxShadow(
+                    color: Colors.green.withValues(alpha: 0.15),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                  BoxShadow(
+                    color: Colors.green.withValues(alpha: 0.08),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ] : [
+                  BoxShadow(
+                    color: Colors.green.withValues(alpha: 0.08),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: () => _navigateToPlanDetail(context, plan),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.green.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.green.withValues(alpha: 0.2),
+                              width: 1,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.restaurant_menu,
+                            color: Color(0xFF4CAF50),
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Meal Plan',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Colors.green.withValues(alpha: 0.7),
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                plan.formattedPlanDate,
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).colorScheme.onSurface,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                subtitle,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Colors.grey[600],
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.green.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.green.withValues(alpha: 0.3),
+                              width: 1,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.arrow_forward,
+                            color: Color(0xFF4CAF50),
+                            size: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  String _summarizeMeals(MealPlan plan) {
+    final parts = <String>[];
+    if (plan.breakfast.isNotEmpty) parts.add('Breakfast: ${plan.breakfast}');
+    if (plan.lunch.isNotEmpty) parts.add('Lunch: ${plan.lunch}');
+    if (plan.dinner.isNotEmpty) parts.add('Dinner: ${plan.dinner}');
+    if (plan.snacks.isNotEmpty) parts.add('Snacks: ${plan.snacks}');
+    return parts.isEmpty ? 'No meals added yet' : parts.join(' • ');
   }
 
   Widget _buildEmptyState(BuildContext context) {
@@ -541,6 +634,14 @@ class MealPlanningScreen extends ConsumerWidget {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => MealPlanHistoryScreen(userId: userId),
+      ),
+    );
+  }
+
+  void _navigateToPlanDetail(BuildContext context, MealPlan plan) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => MealPlanDetailScreen(plan: plan),
       ),
     );
   }

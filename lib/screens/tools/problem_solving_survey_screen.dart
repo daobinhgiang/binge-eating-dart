@@ -195,7 +195,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
           ),
           const SizedBox(height: 16),
           Text(
-            'What were the root causes of the problem? Break down the main problem into specific, concrete issues. Add each specific problem as a separate item.',
+            'What were the root causes of the problem? Break down the main problem into specific, concrete root causes. Add each specific root cause as a separate item.',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Colors.grey[600],
             ),
@@ -605,12 +605,12 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
       builder: (context) {
         final controller = TextEditingController();
         return AlertDialog(
-          title: const Text('Add Specific Problem'),
+          title: const Text('Add Root Cause'),
           content: TextField(
             controller: controller,
             maxLines: 3,
             decoration: const InputDecoration(
-              hintText: 'Describe a specific aspect of the problem...',
+              hintText: 'Describe a specific root cause of the problem...',
               border: OutlineInputBorder(),
             ),
           ),
@@ -737,7 +737,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
         break;
       case 1: // Specify problems
         if (_specificProblems.isEmpty) {
-          _showValidationError('Please add at least one specific problem.');
+          _showValidationError('Please add at least one specific root cause.');
           return false;
         }
         break;

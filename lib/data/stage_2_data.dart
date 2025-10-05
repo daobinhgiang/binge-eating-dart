@@ -9,7 +9,7 @@ class Stage2Data {
     
     return Stage(
       stageNumber: 2,
-      title: 'Maintaining Mechanisms',
+      title: 'Building Strong Foundations',
       chapters: [
         // Chapter 0: Starting Well
         Chapter(

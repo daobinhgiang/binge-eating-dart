@@ -186,11 +186,13 @@ class ToolsScreen extends ConsumerWidget {
                   height: tileSize,
                   duration: const Duration(milliseconds: 200),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.95),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                      width: 1,
+                    image: DecorationImage(
+                      image: AssetImage(_assetForExercise(exercise.title)),
+                      fit: BoxFit.cover,
+                      colorFilter: isHovered
+                          ? ColorFilter.mode(Colors.black.withOpacity(0.05), BlendMode.darken)
+                          : null,
                     ),
                     boxShadow: isHovered ? [
                       BoxShadow(
@@ -216,42 +218,7 @@ class ToolsScreen extends ConsumerWidget {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(16),
                       onTap: () => exercise.onTap(context),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(14),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF4CAF50).withOpacity(0.08),
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: const Color(0xFF4CAF50).withOpacity(0.2),
-                                  width: 1,
-                                ),
-                              ),
-                              child: Icon(
-                                exercise.icon,
-                                color: const Color(0xFF4CAF50),
-                                size: 36,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              exercise.title,
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
+                      child: Container(),
                     ),
                   ),
                 ),
@@ -261,5 +228,25 @@ class ToolsScreen extends ConsumerWidget {
         );
       },
     );
+  }
+
+  String _assetForExercise(String title) {
+    final key = title.toLowerCase();
+    if (key.contains('problem') && key.contains('solving')) {
+      return 'assets/exercises/problem_solving.png';
+    }
+    if (key.contains('meal') && key.contains('planning')) {
+      return 'assets/exercises/meal_planning.png';
+    }
+    if (key.contains('urge') && (key.contains('surfing') || key.contains('activities')) ) {
+      return 'assets/exercises/urge_surfing.png';
+    }
+    if (key.contains('overconcern')) {
+      return 'assets/exercises/addressing_overconcern.png';
+    }
+    if (key.contains('setbacks')) {
+      return 'assets/exercises/addressing_setbacks.png';
+    }
+    return 'assets/exercises/problem_solving.png';
   }
 }
