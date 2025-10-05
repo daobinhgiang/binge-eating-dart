@@ -67,21 +67,49 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   }
 
   // Helper methods for enhanced header
-  String _getTimeBasedGreeting() {
+  String _getTimeBasedGreeting(String? firstName) {
     final hour = DateTime.now().hour;
+    String timeGreeting;
     if (hour < 12) {
-      return 'Good morning!';
+      timeGreeting = 'Good morning';
     } else if (hour < 17) {
-      return 'Good afternoon!';
+      timeGreeting = 'Good afternoon';
     } else {
-      return 'Good evening!';
+      timeGreeting = 'Good evening';
     }
+    
+    if (firstName != null && firstName.isNotEmpty) {
+      return '$timeGreeting, $firstName!';
+    } else {
+      return '$timeGreeting!';
+    }
+  }
+
+  String _getCurrentDate() {
+    final now = DateTime.now();
+    final weekday = _getWeekdayName(now.weekday);
+    final day = now.day;
+    final month = _getMonthName(now.month);
+    final year = now.year;
+    
+    return '$weekday, $month $day, $year';
+  }
+
+  void _onNotificationBellTapped() {
+    // Handle notification bell tap
+    // This can be extended to show notifications or navigate to a notifications screen
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Notifications feature coming soon!'),
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
 
   Widget _buildAppLogo() {
     return Container(
-      width: 48,
-      height: 48,
+      width: 56,
+      height: 56,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
@@ -115,7 +143,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               child: const Icon(
                 Icons.psychology,
                 color: Colors.white,
-                size: 24,
+                size: 28,
               ),
             );
           },
@@ -127,125 +155,49 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
 
   Widget _buildProfileSection(AsyncValue authState) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.grey[300]!,
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: authState.when(
-        data: (user) => user != null
-            ? PopupMenuButton<String>(
-                onSelected: (value) {
-                  if (value == 'logout') {
-                    ref.read(authNotifierProvider.notifier).signOut();
-                  }
-                },
-                itemBuilder: (context) => [
-                  const PopupMenuItem(
-                    value: 'logout',
-                    child: Row(
-                      children: [
-                        Icon(Icons.logout, color: Colors.red),
-                        SizedBox(width: 8),
-                        Text('Logout'),
-                      ],
-                    ),
-                  ),
-                ],
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CircleAvatar(
-                        radius: 16,
-                        backgroundColor: Colors.grey[200],
-                        backgroundImage: user.photoUrl != null
-                            ? NetworkImage(user.photoUrl!)
-                            : null,
-                        child: user.photoUrl == null
-                            ? Text(
-                                user.displayName.substring(0, 1).toUpperCase(),
-                                style: TextStyle(
-                                  color: Colors.grey[700],
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                              )
-                            : null,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        user.displayName.split(' ').first,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Icon(
-                        Icons.keyboard_arrow_down,
-                        color: Colors.grey[600],
-                        size: 14,
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            : _buildGuestProfile(),
-        loading: () => Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: const SizedBox(
-            width: 16,
-            height: 16,
-            child: CircularProgressIndicator(
-              color: Colors.white,
-              strokeWidth: 2,
-            ),
+    return authState.when(
+      data: (user) => user != null
+          ? _buildNotificationBell()
+          : _buildGuestProfile(),
+      loading: () => _buildNotificationBell(),
+      error: (_, __) => _buildGuestProfile(),
+    );
+  }
+
+  Widget _buildNotificationBell() {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: _onNotificationBellTapped,
+        borderRadius: BorderRadius.circular(24),
+        child: CircleAvatar(
+          radius: 24,
+          backgroundColor: const Color(0xFF4CAF50).withValues(alpha: 0.1),
+          child: Icon(
+            Icons.notifications,
+            color: const Color(0xFF4CAF50),
+            size: 24,
           ),
         ),
-        error: (_, __) => _buildGuestProfile(),
       ),
     );
   }
 
   Widget _buildGuestProfile() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CircleAvatar(
-            radius: 16,
-            backgroundColor: Colors.grey[200],
-            child: Icon(
-              Icons.person,
-              color: Colors.grey[700],
-              size: 16,
-            ),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: _onNotificationBellTapped,
+        borderRadius: BorderRadius.circular(24),
+        child: CircleAvatar(
+          radius: 24,
+          backgroundColor: const Color(0xFF4CAF50).withValues(alpha: 0.1),
+          child: Icon(
+            Icons.notifications,
+            color: const Color(0xFF4CAF50),
+            size: 24,
           ),
-          const SizedBox(width: 8),
-          Text(
-            'Guest',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
-              fontSize: 14,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -268,7 +220,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 ),
                 child: SafeArea(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
                     child: Row(
                       children: [
                         // App Logo
@@ -280,22 +232,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                _getTimeBasedGreeting(),
+                                _getTimeBasedGreeting(authState.valueOrNull?.displayName.split(' ').first),
                                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black87,
-                                  fontSize: 20,
+                                  fontSize: 24,
                                 ),
                               ),
-                              const SizedBox(height: 4),
+                              const SizedBox(height: 2),
                               Text(
-                                'Your journey to recovery',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                _getCurrentDate(),
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                   color: Colors.grey[600],
                                   fontSize: 14,
                                 ),
                               ),
-                            ],
+                              ],
                           ),
                         ),
                         // Profile section
@@ -319,124 +271,179 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       scale: _scaleAnimation ?? const AlwaysStoppedAnimation(1.0),
                       child: Column(
                         children: [
-                          // Insights Section - moved to top
-                          _buildInsightsSection(),
-                  
-                          const SizedBox(height: 24),
-                  
-                          // Side-by-side buttons row
+                          // Main buttons layout - left column with two buttons, right side with larger button
                           Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Urge help button - clean and concise
+                              // Left side - Column with Urge Help and AI Chat buttons
                               Expanded(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: const Color(0xFFE57373).withValues(alpha: 0.3),
-                                      width: 2,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.04),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 2),
+                                flex: 1,
+                                child: Column(
+                                  children: [
+                                    // Urge Help button
+                                    Container(
+                                      width: double.infinity,
+                                      height: 80,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: const Color(0xFFE57373).withValues(alpha: 0.3),
+                                          width: 2,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withValues(alpha: 0.04),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: InkWell(
-                                      onTap: () {
-                                        // Track analytics for urge-relapse button usage
-                                        final trackUrgeButton = ref.read(urgeRelapseButtonTrackingProvider);
-                                        trackUrgeButton();
-                                        _showUrgeHelpDialog();
-                                      },
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.psychology,
-                                              color: const Color(0xFFE57373),
-                                              size: 24,
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () {
+                                            // Track analytics for urge-relapse button usage
+                                            final trackUrgeButton = ref.read(urgeRelapseButtonTrackingProvider);
+                                            trackUrgeButton();
+                                            _showUrgeHelpDialog();
+                                          },
+                                          borderRadius: BorderRadius.circular(12),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(16),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.psychology,
+                                                  color: const Color(0xFFE57373),
+                                                  size: 35,
+                                                ),
+                                                const SizedBox(width: 12),
+                                                Text(
+                                                  'Urge Help',
+                                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: const Color(0xFFE57373),
+                                                    fontSize: 21,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ],
                                             ),
-                                            const SizedBox(width: 10),
-                                            Text(
-                                              'Urge Help',
-                                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                                fontWeight: FontWeight.w600,
-                                                color: const Color(0xFFE57373),
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                          ],
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
+                                    
+                                    const SizedBox(height: 16),
+                                    
+                                    // AI Chat button
+                                    Container(
+                                      width: double.infinity,
+                                      height: 80,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: const Color(0xFF64B5F6).withValues(alpha: 0.3),
+                                          width: 2,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withValues(alpha: 0.04),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () => context.go('/chat'),
+                                          borderRadius: BorderRadius.circular(12),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(16),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.chat,
+                                                  color: const Color(0xFF64B5F6),
+                                                  size: 35,
+                                                ),
+                                                const SizedBox(width: 12),
+                                                Text(
+                                                  'AI Chat',
+                                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: const Color(0xFF64B5F6),
+                                                    fontSize: 21,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                               
-                              const SizedBox(width: 12),
+                              const SizedBox(width: 16),
                               
-                              // AI Support Chat button - clean and concise
+                              // Right side - Larger Personalized Insights button
                               Expanded(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: const Color(0xFF64B5F6).withValues(alpha: 0.3),
-                                      width: 2,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.04),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: InkWell(
-                                      onTap: () => context.go('/chat'),
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.chat,
-                                              color: const Color(0xFF64B5F6),
-                                              size: 24,
-                                            ),
-                                            const SizedBox(width: 10),
-                                            Text(
-                                              'AI Chat',
-                                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                                fontWeight: FontWeight.w600,
-                                                color: const Color(0xFF64B5F6),
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                                flex: 1,
+                                child: _buildInsightsButton(),
                               ),
                             ],
                           ),
                   
-                  const SizedBox(height: 24),
+                          // Recommendations display (if any)
+                          if (_insightsRecommendations.isNotEmpty) ...[
+                            const SizedBox(height: 24),
+                            Container(
+                              constraints: const BoxConstraints(
+                                minHeight: 80,
+                                maxHeight: 200,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[50],
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Colors.grey[100]!,
+                                  width: 1,
+                                ),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Recommended for you',
+                                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black87,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      ..._insightsRecommendations.map((recommendation) => 
+                                        _buildInsightRecommendationCard(recommendation)
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                  
+                          const SizedBox(height: 24),
                   
                   // Next Lesson Recommendation
                   authState.when(
@@ -463,9 +470,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildNextLessonSection(),
-        const SizedBox(height: 32),
         _buildTodoSection(),
+        const SizedBox(height: 32),
+        _buildNextLessonSection(),
       ],
     );
   }
@@ -726,9 +733,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
                 userTodosAsync.when(
-                  data: (todos) => _buildTodoListPreview(context, todos),
+                  data: (todos) => _buildRefinedTodoLayout(context, todos),
                   loading: () => _buildTodoLoadingCard(context),
                   error: (error, stack) => _buildTodoErrorCard(context),
                 ),
@@ -742,254 +749,286 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     );
   }
 
-  Widget _buildTodoListPreview(BuildContext context, List<TodoItem> todos) {
+  Widget _buildRefinedTodoLayout(BuildContext context, List<TodoItem> todos) {
     if (todos.isEmpty) {
-      return Card(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
-              Icon(
-                Icons.task_alt,
-                size: 48,
-                color: Colors.grey[400],
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'No tasks yet',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Colors.grey[600],
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Add lessons, tools, or journal activities to your to-do list',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[500],
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton.icon(
-                onPressed: () => context.go('/todos/add'),
-                icon: const Icon(Icons.add),
-                label: const Text('Add Task'),
-              ),
-            ],
-          ),
-        ),
-      );
+      return _buildEmptyTodoLayout(context);
     }
 
-    // Show summary stats and preview of tasks
-    final pendingTodos = todos.where((todo) => !todo.isCompleted).toList();
-    final dueTodayTodos = pendingTodos.where((todo) => todo.isDueToday).toList();
-    final overdueTodos = pendingTodos.where((todo) => todo.isOverdue).toList();
-    
-    final previewTodos = [
-      ...overdueTodos.take(2),
-      ...dueTodayTodos.take(2),
-      ...pendingTodos.where((todo) => !todo.isOverdue && !todo.isDueToday).take(2),
-    ].take(3).toList();
+    // Get today's todos in the same order as the main todo list
+    final todayTodos = todos.where((todo) => todo.isDueToday && !todo.isCompleted).toList();
+    final completedToday = todos.where((todo) => todo.isDueToday && todo.isCompleted).toList();
+    final totalToday = todayTodos.length + completedToday.length;
 
-    return Card(
-      child: InkWell(
-        onTap: () => context.go('/todos'),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Summary row
-              Row(
-                children: [
-                  _buildTodoStat(context, 'Total', todos.length.toString(), Colors.blue),
-                  const SizedBox(width: 16),
-                  _buildTodoStat(context, 'Pending', pendingTodos.length.toString(), Colors.orange),
-                  const SizedBox(width: 16),
-                  if (overdueTodos.isNotEmpty)
-                    _buildTodoStat(context, 'Overdue', overdueTodos.length.toString(), Colors.red),
-                ],
-              ),
-              
-              if (previewTodos.isNotEmpty) ...[
-                const SizedBox(height: 16),
-                const Divider(),
-                const SizedBox(height: 8),
-                
-                // Preview todos
-                ...previewTodos.map((todo) => _buildTodoPreviewItem(context, todo)),
-                
-                if (pendingTodos.length > 3) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    '+ ${pendingTodos.length - 3} more tasks',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ],
-              
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () => context.go('/todos/add'),
-                      icon: const Icon(Icons.add, size: 16),
-                      label: const Text('Add Task'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () => context.go('/todos'),
-                      icon: const Icon(Icons.list, size: 16),
-                      label: const Text('View All'),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTodoStat(BuildContext context, String label, String value, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            color.withValues(alpha:0.15),
-            color.withValues(alpha:0.08),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(16),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: color.withValues(alpha:0.3),
-          width: 1.5,
+          color: Colors.grey[200]!,
+          width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: color.withValues(alpha:0.1),
-            blurRadius: 4,
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Left side - Date card
+            Expanded(
+              flex: 1,
+              child: _buildDateCard(context, totalToday, completedToday.length),
             ),
-          ),
-          const SizedBox(width: 6),
-          Text(
-            value,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: color,
+            const SizedBox(width: 16),
+            // Right side - Todo list
+            Expanded(
+              flex: 2,
+              child: _buildCompactTodoListCard(context, todayTodos),
             ),
-          ),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: color,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildTodoPreviewItem(BuildContext context, TodoItem todo) {
-    Color statusColor;
-    IconData statusIcon;
-    
-    if (todo.isOverdue) {
-      statusColor = const Color(0xFFE53E3E); // Red
-      statusIcon = Icons.warning;
-    } else if (todo.isDueToday) {
-      statusColor = const Color(0xFFFF9500); // Orange
-      statusIcon = Icons.schedule;
-    } else {
-      statusColor = const Color(0xFF4A90E2); // Blue
-      statusIcon = Icons.check_circle_outline;
-    }
-    
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: statusColor.withValues(alpha:0.1),
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: statusColor.withValues(alpha:0.3),
-                width: 1,
-              ),
+  Widget _buildEmptyTodoLayout(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.grey[200]!,
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Left side - Date card
+            Expanded(
+              flex: 1,
+              child: _buildDateCard(context, 0, 0),
             ),
-            child: Icon(
-              statusIcon,
-              color: statusColor,
-              size: 12,
+            const SizedBox(width: 16),
+            // Right side - Empty state
+            Expanded(
+              flex: 2,
+              child: _buildCompactEmptyTodoCard(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDateCard(BuildContext context, int totalTasks, int completedTasks) {
+    final now = DateTime.now();
+    final weekday = _getWeekdayName(now.weekday);
+    final day = now.day;
+    final month = _getMonthName(now.month);
+
+    return Container(
+      height: 125,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF81C784), // Light green
+            Color(0xFF4CAF50), // Green
+          ],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.white,
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  weekday,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  '$month $day',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                  ),
+                ),
+              ],
+            ),
+            if (totalTasks > 0)
+              Text(
+                '$completedTasks/$totalTasks Tasks Done',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 12,
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCompactTodoListCard(BuildContext context, List<TodoItem> todayTodos) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'To-Do List',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+            fontSize: 16,
+          ),
+        ),
+        const SizedBox(height: 8),
+        if (todayTodos.isEmpty)
+          _buildEmptyTodoState(context)
+        else
+          ...todayTodos.take(2).map((todo) => _buildCompactTodoItem(context, todo)),
+      ],
+    );
+  }
+
+  Widget _buildCompactEmptyTodoCard(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'To-Do List',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+            fontSize: 16,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Expanded(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.task_alt,
+                  size: 32,
+                  color: Colors.grey[400],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'No tasks for today',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.grey[600],
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Add lessons, tools, or journal activities',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.grey[500],
+                    fontSize: 11,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
           ),
-          const SizedBox(width: 12),
+        ),
+      ],
+    );
+  }
+
+
+  Widget _buildEmptyTodoState(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Text(
+        'No tasks scheduled for today',
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          color: Colors.grey[600],
+          fontStyle: FontStyle.italic,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCompactTodoItem(BuildContext context, TodoItem todo) {
+    final timeText = _formatTodoTime(todo.dueDate);
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        children: [
+          // Type icon
+          _buildTodoTypeIcon(todo.type),
+          const SizedBox(width: 8),
+          // Task content
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   todo.title,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                    fontSize: 13,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: _getTypeColor(todo.type).withValues(alpha:0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: _getTypeColor(todo.type).withValues(alpha:0.3),
-                          width: 1,
-                        ),
-                      ),
-                      child: Text(
-                        todo.typeDisplayName,
-                        style: TextStyle(
-                          color: _getTypeColor(todo.type),
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Due ${_formatDueDate(todo.dueDate)}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
+                const SizedBox(height: 2),
+                Text(
+                  timeText,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.grey[600],
+                    fontSize: 10,
+                  ),
                 ),
               ],
             ),
@@ -999,16 +1038,64 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     );
   }
 
-  Color _getTypeColor(TodoType type) {
-    switch (type) {
-      case TodoType.lesson:
-        return const Color(0xFF4CAF50); // Green
-      case TodoType.journal:
-        return const Color(0xFF9C27B0); // Purple
-      case TodoType.tool:
-        return const Color(0xFF2196F3); // Blue
-    }
+
+  String _getWeekdayName(int weekday) {
+    const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    return weekdays[weekday - 1];
   }
+
+  String _getMonthName(int month) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return months[month - 1];
+  }
+
+  Widget _buildTodoTypeIcon(TodoType type) {
+    IconData iconData;
+    
+    switch (type) {
+      case TodoType.journal:
+        iconData = Icons.edit_note;
+        break;
+      case TodoType.lesson:
+        iconData = Icons.school;
+        break;
+      case TodoType.tool:
+        iconData = Icons.build;
+        break;
+    }
+    
+    return Container(
+      width: 24,
+      height: 24,
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: const Color(0xFF4CAF50), // Green outline
+          width: 2,
+        ),
+      ),
+      child: Icon(
+        iconData,
+        color: const Color(0xFF4CAF50), // Green icon
+        size: 14,
+      ),
+    );
+  }
+
+  String _formatTodoTime(DateTime dueDate) {
+    final hour = dueDate.hour;
+    final minute = dueDate.minute;
+    final period = hour >= 12 ? 'PM' : 'AM';
+    final displayHour = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
+    final displayMinute = minute.toString().padLeft(2, '0');
+    
+    return '$displayHour:$displayMinute $period';
+  }
+
+
+
+
 
   Widget _buildTodoLoadingCard(BuildContext context) {
     return Card(
@@ -1040,25 +1127,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     );
   }
 
-  String _formatDueDate(DateTime date) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final dueDate = DateTime(date.year, date.month, date.day);
-    
-    if (dueDate.isBefore(today)) {
-      final daysAgo = today.difference(dueDate).inDays;
-      return '$daysAgo day${daysAgo == 1 ? '' : 's'} ago';
-    } else if (dueDate.isAtSameMomentAs(today)) {
-      return 'today';
-    } else {
-      final daysFromNow = dueDate.difference(today).inDays;
-      if (daysFromNow == 1) {
-        return 'tomorrow';
-      } else {
-        return 'in $daysFromNow days';
-      }
-    }
-  }
   
   void _showUrgeHelpDialog() {
     // Track dialog opening
@@ -1189,66 +1257,41 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     context.push('/tools/urge-surfing');
   }
   
-  Widget _buildInsightsSection() {
+  Widget _buildInsightsButton() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4),
-      child: Column(
-        children: [
-          // Circular insights section
-          Container(
-            width: 280,
-            height: 280,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white,
-              border: Border.all(
-                color: Colors.grey[200]!,
-                width: 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Stack(
+      height: 177, // Height to match the combined height of the two left buttons (120 + 16 + 120)
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _isGeneratingInsights ? null : _generateInsights,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Background circles for visual effect
-                Positioned(
-                  top: 20,
-                  right: 20,
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: const Color(0xFF4CAF50).withValues(alpha: 0.05),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 30,
-                  left: 30,
-                  child: Container(
-                    width: 25,
-                    height: 25,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: const Color(0xFF4CAF50).withValues(alpha: 0.08),
-                    ),
-                  ),
-                ),
-                
-                // Main content
-                Center(
+                // Icon and Title stacked vertically
+                Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Icon
                       Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
                           color: const Color(0xFF4CAF50).withValues(alpha: 0.08),
                           shape: BoxShape.circle,
@@ -1256,129 +1299,91 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                         child: const Icon(
                           Icons.auto_awesome,
                           color: Color(0xFF4CAF50),
-                          size: 32,
+                          size: 20,
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      
-                      // Title
+                      const SizedBox(height: 6),
                       Text(
-                        'Personalized Insights',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        'Personalized',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                          fontSize: 18,
+                          color: const Color(0xFF4CAF50),
+                          fontSize: 20,
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 8),
-                      
-                      // Subtitle
-
-                      
-                      const SizedBox(height: 20),
-                      
-                      // Generate button
-                      Container(
-                        width: 200,
-                        child: ElevatedButton(
-                          onPressed: _isGeneratingInsights ? null : _generateInsights,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF4CAF50),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            elevation: 0,
-                            shadowColor: Colors.transparent,
-                          ),
-                          child: _isGeneratingInsights 
-                              ? Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const SizedBox(
-                                      width: 14,
-                                      height: 14,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      'Generating...',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Icon(Icons.auto_awesome, size: 16),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      'Generate insights',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                      Text(
+                        'Insights',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF4CAF50),
+                          fontSize: 20,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
+                  ),
+                ),
+                
+                // Generate button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _isGeneratingInsights ? null : _generateInsights,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF4CAF50),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                      shadowColor: Colors.transparent,
+                    ),
+                    child: _isGeneratingInsights 
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const SizedBox(
+                                width: 8,
+                                height: 8,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 1.5,
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Generating...',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 9,
+                                ),
+                              ),
+                            ],
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.auto_awesome, size: 12),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Generate',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ],
+                          ),
                   ),
                 ),
               ],
             ),
           ),
-          
-          // Recommendations display (if any)
-          if (_insightsRecommendations.isNotEmpty) ...[
-            const SizedBox(height: 24),
-            Container(
-              constraints: const BoxConstraints(
-                minHeight: 80,
-                maxHeight: 200,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.grey[50],
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Colors.grey[100]!,
-                  width: 1,
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Recommended for you',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      ..._insightsRecommendations.map((recommendation) => 
-                        _buildInsightRecommendationCard(recommendation)
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ],
+        ),
       ),
     );
   }

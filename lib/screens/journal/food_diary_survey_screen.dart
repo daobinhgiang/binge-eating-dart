@@ -418,93 +418,95 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Where did you have this meal?',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-              fontFamily: 'SF Pro Text',
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Select the location where you ate this meal.',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-              fontFamily: 'SF Pro Text',
-            ),
-          ),
-          const SizedBox(height: 24),
-          ...FoodDiary.locationOptions.map((location) {
-            final isSelected = _selectedLocation == location;
-            return Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              decoration: BoxDecoration(
-                color: isSelected ? Theme.of(context).primaryColor.withOpacity(0.1) : Colors.grey[50],
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: isSelected ? Theme.of(context).primaryColor : Colors.grey[200]!,
-                  width: isSelected ? 2 : 1,
-                ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Where did you have this meal?',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+                fontFamily: 'SF Pro Text',
               ),
-              child: RadioListTile<String>(
-                title: Text(
-                  location,
-                  style: TextStyle(
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Select the location where you ate this meal.',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
+                fontFamily: 'SF Pro Text',
+              ),
+            ),
+            const SizedBox(height: 24),
+            ...FoodDiary.locationOptions.map((location) {
+              final isSelected = _selectedLocation == location;
+              return Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: isSelected ? Theme.of(context).primaryColor.withOpacity(0.1) : Colors.grey[50],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isSelected ? Theme.of(context).primaryColor : Colors.grey[200]!,
+                    width: isSelected ? 2 : 1,
+                  ),
+                ),
+                child: RadioListTile<String>(
+                  title: Text(
+                    location,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                      color: Colors.black87,
+                      fontFamily: 'SF Pro Text',
+                    ),
+                  ),
+                  value: location,
+                  groupValue: _selectedLocation,
+                  activeColor: Theme.of(context).primaryColor,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedLocation = value!;
+                    });
+                  },
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                ),
+              );
+            }),
+            if (_selectedLocation == 'Other') ...[
+              const SizedBox(height: 16),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.grey[200]!,
+                    width: 1,
+                  ),
+                ),
+                child: TextField(
+                  controller: _customLocationController,
+                  decoration: InputDecoration(
+                    labelText: 'Please specify location',
+                    labelStyle: TextStyle(
+                      color: Colors.grey[600],
+                      fontFamily: 'SF Pro Text',
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.all(16),
+                  ),
+                  style: const TextStyle(
                     fontSize: 16,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                     color: Colors.black87,
                     fontFamily: 'SF Pro Text',
                   ),
                 ),
-                value: location,
-                groupValue: _selectedLocation,
-                activeColor: Theme.of(context).primaryColor,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedLocation = value!;
-                  });
-                },
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               ),
-            );
-          }),
-          if (_selectedLocation == 'Other') ...[
-            const SizedBox(height: 16),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[50],
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Colors.grey[200]!,
-                  width: 1,
-                ),
-              ),
-              child: TextField(
-                controller: _customLocationController,
-                decoration: InputDecoration(
-                  labelText: 'Please specify location',
-                  labelStyle: TextStyle(
-                    color: Colors.grey[600],
-                    fontFamily: 'SF Pro Text',
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.all(16),
-                ),
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.black87,
-                  fontFamily: 'SF Pro Text',
-                ),
-              ),
-            ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -628,71 +630,73 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Did you vomit or use laxatives?',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-              fontFamily: 'SF Pro Text',
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Please select if you used any compensatory behaviors after this meal.',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-              fontFamily: 'SF Pro Text',
-            ),
-          ),
-          const SizedBox(height: 24),
-          ...FoodDiary.purgeMethodOptions.map((method) {
-            final isSelected = _purgeMethod == method;
-            return Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              decoration: BoxDecoration(
-                color: isSelected ? Theme.of(context).primaryColor.withOpacity(0.1) : Colors.grey[50],
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: isSelected ? Theme.of(context).primaryColor : Colors.grey[200]!,
-                  width: isSelected ? 2 : 1,
-                ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Did you vomit or use laxatives?',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+                fontFamily: 'SF Pro Text',
               ),
-              child: RadioListTile<String>(
-                title: Text(
-                  _getPurgeMethodTitle(method),
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                    color: Colors.black87,
-                    fontFamily: 'SF Pro Text',
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Please select if you used any compensatory behaviors after this meal.',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
+                fontFamily: 'SF Pro Text',
+              ),
+            ),
+            const SizedBox(height: 24),
+            ...FoodDiary.purgeMethodOptions.map((method) {
+              final isSelected = _purgeMethod == method;
+              return Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: isSelected ? Theme.of(context).primaryColor.withOpacity(0.1) : Colors.grey[50],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isSelected ? Theme.of(context).primaryColor : Colors.grey[200]!,
+                    width: isSelected ? 2 : 1,
                   ),
                 ),
-                subtitle: Text(
-                  _getPurgeMethodSubtitle(method),
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                    fontFamily: 'SF Pro Text',
+                child: RadioListTile<String>(
+                  title: Text(
+                    _getPurgeMethodTitle(method),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                      color: Colors.black87,
+                      fontFamily: 'SF Pro Text',
+                    ),
                   ),
+                  subtitle: Text(
+                    _getPurgeMethodSubtitle(method),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                      fontFamily: 'SF Pro Text',
+                    ),
+                  ),
+                  value: method,
+                  groupValue: _purgeMethod,
+                  activeColor: Theme.of(context).primaryColor,
+                  onChanged: (value) {
+                    setState(() {
+                      _purgeMethod = value!;
+                    });
+                  },
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 ),
-                value: method,
-                groupValue: _purgeMethod,
-                activeColor: Theme.of(context).primaryColor,
-                onChanged: (value) {
-                  setState(() {
-                    _purgeMethod = value!;
-                  });
-                },
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              ),
-            );
-          }),
-        ],
+              );
+            }),
+          ],
+        ),
       ),
     );
   }

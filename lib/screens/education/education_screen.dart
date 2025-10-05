@@ -113,91 +113,62 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
 
   Widget _buildHeaderContent(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      width: double.infinity,
+      padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF66BB6A), // Brighter, more vibrant green
-            Color(0xFF4CAF50), // Material green
-            Color(0xFF43A047), // Slightly darker green
-          ],
-        ),
+        color: const Color(0xFF4CAF50), // Same green as journal tab
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF66BB6A).withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: const Color(0xFF4CAF50).withOpacity(0.3),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.white,
-                    width: 4,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(40),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  spreadRadius: 0,
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
                 ),
-                child: CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Colors.white.withOpacity(0.2),
-                  child: const Icon(
-                    Icons.auto_stories,
-                    color: Colors.white,
-                    size: 28,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Your Learning Journey',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Evidence-based treatment for lasting recovery',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.white.withOpacity(0.9),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
+            child: const Icon(
+              Icons.auto_stories,
+              color: Color(0xFF4CAF50),
+              size: 40,
+            ),
           ),
           const SizedBox(height: 20),
-          Row(
-            children: [
-              _buildProgressIndicator(context, 'Stages', 3, 0),
-              const SizedBox(width: 24),
-              _buildProgressIndicator(context, 'Chapters', 9, 0),
-              const SizedBox(width: 24),
-              _buildProgressIndicator(context, 'Lessons', 25, 0),
-            ],
+          const Text(
+            'Your Learning Journey',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'Evidence-based treatment for lasting recovery',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -206,21 +177,22 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
 
   Widget _buildProgressIndicator(BuildContext context, String label, int total, int completed) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Colors.white.withOpacity(0.8),
-            fontWeight: FontWeight.w500,
+          style: const TextStyle(
+            fontSize: 12,
+            color: Colors.white,
+            fontWeight: FontWeight.w400,
           ),
         ),
         const SizedBox(height: 4),
         Text(
           '$completed/$total',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
+          style: const TextStyle(
+            fontSize: 18,
             color: Colors.white,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ],

@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/food_diary_provider.dart';
 import '../../models/food_diary.dart';
-import '../../widgets/tropical_forest_background.dart';
 import 'food_diary_survey_screen.dart';
+import 'all_food_diary_entries_screen.dart';
 
 class FoodDiaryMainScreen extends ConsumerWidget {
   const FoodDiaryMainScreen({super.key});
@@ -26,182 +26,270 @@ class FoodDiaryMainScreen extends ConsumerWidget {
     final allFoodDiaries = ref.watch(allFoodDiariesProvider(user.id));
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Food Diary'),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          IconButton(
-            onPressed: () {
-              ref.read(currentWeekFoodDiariesProvider(user.id).notifier).loadCurrentWeekEntries();
-            },
-            icon: const Icon(Icons.refresh),
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Navigation Bar
+            _buildNavigationBar(context),
+            
+            // Main Content
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header with current week
+                    currentWeekNumber.when(
+                      data: (weekNumber) => _buildJournalHeader(context, weekNumber),
+                      loading: () => const SizedBox(
+                        height: 200,
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+                      error: (error, _) => Container(
+                        padding: const EdgeInsets.all(16),
+                        child: Text('Error loading week: $error'),
+                      ),
+                    ),
+              
+                    const SizedBox(height: 24),
+                    
+                    // Today's Entries Section
+                    Text(
+                      "Today's Entries",
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Today's Entries with Add Entry Card
+                    _buildTodaysEntries(context, currentWeekFoodDiaries),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Recent Entries Section
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Recent Entries',
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF4CAF50).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: const Color(0xFF4CAF50).withOpacity(0.3),
+                              width: 1,
+                            ),
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () => _showAllEntries(context, user.id),
+                              borderRadius: BorderRadius.circular(20),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'View All',
+                                      style: TextStyle(
+                                        color: const Color(0xFF4CAF50),
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 12,
+                                      color: const Color(0xFF4CAF50),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Recent Entries (Vertical Scroll)
+                    _buildRecentEntries(context, currentWeekFoodDiaries, allFoodDiaries),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _navigateToSurvey(context),
+        backgroundColor: const Color(0xFF4CAF50),
+        foregroundColor: Colors.white,
+        elevation: 8,
+        child: const Icon(
+          Icons.add,
+          size: 28,
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    );
+  }
+
+  Widget _buildNavigationBar(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 0,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      body: TropicalForestBackground(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header with current week
-              currentWeekNumber.when(
-                data: (weekNumber) => Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Theme.of(context).colorScheme.primary,
-                        Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.restaurant,
-                        size: 48,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Week $weekNumber',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Track your eating patterns and behaviors',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.white.withValues(alpha: 0.9),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: const Color(0xFF4CAF50),
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF4CAF50).withOpacity(0.3),
+                  spreadRadius: 0,
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
                 ),
-                loading: () => const SizedBox(
-                  height: 120,
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-                error: (error, _) => Container(
-                  padding: const EdgeInsets.all(16),
-                  child: Text('Error loading week: $error'),
+              ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => Navigator.of(context).pop(),
+                borderRadius: BorderRadius.circular(8),
+                child: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
+                  size: 20,
                 ),
               ),
-              
-              const SizedBox(height: 24),
-              
-              // Log New Entry Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () => _navigateToSurvey(context),
-                  icon: const Icon(Icons.add),
-                  label: const Text('Log New Entry'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 2,
-                  ),
-                ),
-              ),
-              
-              const SizedBox(height: 24),
-              
-              // Past Entries Section
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Past Entries',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () => _showAllEntries(context, user.id),
-                    child: const Text('View All'),
-                  ),
-                ],
-              ),
-              
-              const SizedBox(height: 16),
-              
-              // Current Week Entries
-              _buildCurrentWeekEntries(context, currentWeekFoodDiaries),
-              
-              const SizedBox(height: 24),
-              
-              // All Entries by Week
-              _buildAllEntriesByWeek(context, allFoodDiaries),
-            ],
+            ),
           ),
-        ),
+          const SizedBox(width: 16),
+          Text(
+            'Food Diary',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildCurrentWeekEntries(BuildContext context, AsyncValue<List<FoodDiary>> foodDiaries) {
-    return foodDiaries.when(
-      data: (entries) {
-        if (entries.isEmpty) {
-          return Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(32),
+  Widget _buildJournalHeader(BuildContext context, int weekNumber) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: const Color(0xFF4CAF50),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF4CAF50).withOpacity(0.3),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 80,
+            height: 80,
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey[300]!),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              children: [
-                Icon(
-                  Icons.restaurant_outlined,
-                  size: 48,
-                  color: Colors.grey[400],
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'No entries this week',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.grey[600],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Start tracking your eating patterns',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey[500],
-                  ),
-                  textAlign: TextAlign.center,
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(40),
+              border: Border.all(
+                color: Colors.white,
+                width: 4,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  spreadRadius: 0,
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
-          );
+            child: const Icon(
+              Icons.restaurant,
+              color: Color(0xFF4CAF50),
+              size: 40,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Week $weekNumber',
+            style: const TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'Track your eating patterns and behaviors',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTodaysEntries(BuildContext context, AsyncValue<List<FoodDiary>> foodDiaries) {
+    return foodDiaries.when(
+      data: (entries) {
+        final today = DateTime.now();
+        final todayEntries = entries.where((entry) {
+          final entryDate = DateTime(entry.mealTime.year, entry.mealTime.month, entry.mealTime.day);
+          final todayDate = DateTime(today.year, today.month, today.day);
+          return entryDate == todayDate;
+        }).toList();
+
+        // Sort by time (newest first)
+        todayEntries.sort((a, b) => b.mealTime.compareTo(a.mealTime));
+
+        if (todayEntries.isEmpty) {
+          return _buildTodaysEmptyState(context);
         }
 
-        return Column(
-          children: entries.take(3).map((entry) => _buildFoodDiaryCard(context, entry)).toList(),
-        );
+        // Only show the newest entry
+        return _buildTodaysEntriesWithAddCard(context, [todayEntries.first]);
       },
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, _) => Container(
@@ -211,131 +299,292 @@ class FoodDiaryMainScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildAllEntriesByWeek(BuildContext context, AsyncValue<Map<int, List<FoodDiary>>> allFoodDiaries) {
-    return allFoodDiaries.when(
-      data: (entriesByWeek) {
-        if (entriesByWeek.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'All Entries by Week',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+  Widget _buildTodaysEmptyState(BuildContext context) {
+    return Container(
+      height: 200,
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey[300]!),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _navigateToSurvey(context),
+          borderRadius: BorderRadius.circular(16),
+          child: const Center(
+            child: Icon(
+              Icons.add,
+              size: 32,
+              color: Colors.grey,
             ),
-            const SizedBox(height: 16),
-            ...entriesByWeek.entries.map((entry) {
-              final weekNumber = entry.key;
-              final entries = entry.value;
-              
-              return Container(
-                margin: const EdgeInsets.only(bottom: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Week $weekNumber (${entries.length} entries)',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    ...entries.take(2).map((entry) => _buildFoodDiaryCard(context, entry)),
-                    if (entries.length > 2)
-                      TextButton(
-                        onPressed: () => _showWeekEntries(context, weekNumber, entries),
-                        child: Text('View all ${entries.length} entries'),
-                      ),
-                  ],
-                ),
-              );
-            }),
-          ],
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, _) => Container(
-        padding: const EdgeInsets.all(16),
-        child: Text('Error loading all entries: $error'),
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildFoodDiaryCard(BuildContext context, FoodDiary entry) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+  Widget _buildTodaysEntriesWithAddCard(BuildContext context, List<FoodDiary> entries) {
+    return SizedBox(
+      height: 200,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: entries.length + 1, // +1 for the add card
+        itemBuilder: (context, index) {
+          if (index == entries.length) {
+            // Add entry card at the end
+            return Container(
+              width: 200,
+              margin: const EdgeInsets.only(left: 12),
+              child: _buildAddEntryCard(context),
+            );
+          }
+          
+          return Container(
+            width: 280,
+            margin: const EdgeInsets.only(right: 12),
+            child: _buildFoodDiaryCard(context, entries[index]),
+          );
+        },
       ),
-      child: InkWell(
-        onTap: () => _showEntryDetails(context, entry),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    _formatTime(entry.mealTime),
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: entry.isBinge ? Colors.red[50] : Colors.green[50],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      entry.isBinge ? 'Binge' : 'Normal',
-                      style: TextStyle(
-                        color: entry.isBinge ? Colors.red[700] : Colors.green[700],
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
+    );
+  }
+
+  Widget _buildRecentEntries(BuildContext context, AsyncValue<List<FoodDiary>> currentWeekFoodDiaries, AsyncValue<Map<int, List<FoodDiary>>> allFoodDiaries) {
+    // Use current week entries as primary source (auto-refreshes)
+    return currentWeekFoodDiaries.when(
+      data: (currentWeekEntries) {
+        // For now, just show current week entries to ensure immediate refresh
+        // TODO: Add historical entries back when provider refresh is implemented
+        return _buildRecentEntriesFromCurrentWeek(context, currentWeekEntries);
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, _) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Text('Error loading recent entries: $error'),
+      ),
+    );
+  }
+
+  Widget _buildRecentEntriesFromCurrentWeek(BuildContext context, List<FoodDiary> currentWeekEntries) {
+    if (currentWeekEntries.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    // Sort by date (most recent first)
+    final sortedEntries = List<FoodDiary>.from(currentWeekEntries);
+    sortedEntries.sort((a, b) => b.mealTime.compareTo(a.mealTime));
+
+    // Limit to 5 latest entries
+    final limitedEntries = sortedEntries.take(5).toList();
+
+    return Column(
+      children: limitedEntries.map((entry) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          child: _buildRecentFoodDiaryCard(context, entry),
+        );
+      }).toList(),
+    );
+  }
+
+
+
+
+
+  Widget _buildAddEntryCard(BuildContext context) {
+    return Container(
+      height: 200,
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey[300]!),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _navigateToSurvey(context),
+          borderRadius: BorderRadius.circular(16),
+          child: const Center(
+            child: Icon(
+              Icons.add,
+              size: 32,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+
+  Widget _buildFoodDiaryCard(BuildContext context, FoodDiary entry) {
+    return Container(
+      height: 200,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey[300]!),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _showEntryDetails(context, entry),
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF4CAF50).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Icon(
+                        Icons.restaurant,
+                        color: Color(0xFF4CAF50),
+                        size: 16,
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                entry.foodAndDrinks,
-                style: Theme.of(context).textTheme.bodyMedium,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
-                  const SizedBox(width: 4),
-                  Text(
-                    entry.displayLocation,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: entry.isBinge ? Colors.red[50] : Colors.green[50],
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        entry.isBinge ? 'Binge' : 'Normal',
+                        style: TextStyle(
+                          color: entry.isBinge ? Colors.red[700] : Colors.green[700],
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  entry.foodAndDrinks,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
                   ),
-                  const Spacer(),
-                  Text(
-                    _formatDate(entry.mealTime),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[500],
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const Spacer(),
+                Text(
+                  '${_formatTime(entry.mealTime)} • ${_formatDate(entry.mealTime)}',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRecentFoodDiaryCard(BuildContext context, FoodDiary entry) {
+    return Container(
+      height: 120,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[300]!),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 0,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _showEntryDetails(context, entry),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF4CAF50).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.restaurant,
+                        color: Color(0xFF4CAF50),
+                        size: 12,
+                      ),
                     ),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: entry.isBinge ? Colors.red[50] : Colors.green[50],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        entry.isBinge ? 'Binge' : 'Normal',
+                        style: TextStyle(
+                          color: entry.isBinge ? Colors.red[700] : Colors.green[700],
+                          fontSize: 9,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Expanded(
+                  child: Text(
+                    entry.foodAndDrinks,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                      fontSize: 18,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ],
-              ),
-            ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${_formatTime(entry.mealTime)} • ${_formatDate(entry.mealTime)}',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -419,56 +668,9 @@ class FoodDiaryMainScreen extends ConsumerWidget {
   }
 
   void _showAllEntries(BuildContext context, String userId) {
-    // TODO: Navigate to a detailed view of all entries
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('All entries view coming soon!')),
-    );
-  }
-
-  void _showWeekEntries(BuildContext context, int weekNumber, List<FoodDiary> entries) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Week $weekNumber Entries'),
-        content: SizedBox(
-          width: double.maxFinite,
-          height: 400,
-          child: ListView.builder(
-            itemCount: entries.length,
-            itemBuilder: (context, index) {
-              final entry = entries[index];
-              return ListTile(
-                title: Text(_formatTime(entry.mealTime)),
-                subtitle: Text(entry.foodAndDrinks),
-                trailing: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: entry.isBinge ? Colors.red[50] : Colors.green[50],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    entry.isBinge ? 'Binge' : 'Normal',
-                    style: TextStyle(
-                      color: entry.isBinge ? Colors.red[700] : Colors.green[700],
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                onTap: () {
-                  Navigator.of(context).pop();
-                  _showEntryDetails(context, entry);
-                },
-              );
-            },
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          ),
-        ],
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const AllFoodDiaryEntriesScreen(),
       ),
     );
   }
