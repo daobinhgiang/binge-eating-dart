@@ -450,9 +450,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildNextLessonSection(),
-        const SizedBox(height: 32),
         _buildTodoSection(),
+        const SizedBox(height: 32),
+        _buildNextLessonSection(),
       ],
     );
   }
@@ -823,7 +823,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     final month = _getMonthName(now.month);
 
     return Container(
-      height: 120,
+      height: 125,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
@@ -863,7 +863,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     fontSize: 14,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Text(
                   '$month $day',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
