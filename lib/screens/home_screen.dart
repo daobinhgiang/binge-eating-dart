@@ -1178,7 +1178,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   
   Widget _buildInsightsButton() {
     return Container(
-      height: 180, // Height to match the combined height of the two left buttons (120 + 16 + 120)
+      height: 177, // Height to match the combined height of the two left buttons (120 + 16 + 120)
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
