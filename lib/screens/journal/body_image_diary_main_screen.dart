@@ -4,7 +4,6 @@ import '../../providers/auth_provider.dart';
 import '../../providers/body_image_diary_provider.dart';
 import '../../providers/food_diary_provider.dart';
 import '../../models/body_image_diary.dart';
-import '../../widgets/tropical_forest_background.dart';
 import 'body_image_diary_survey_screen.dart';
 
 class BodyImageDiaryMainScreen extends ConsumerWidget {
@@ -27,182 +26,255 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
     final allBodyImageDiaries = ref.watch(allBodyImageDiariesProvider(user.id));
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Body Image Diary'),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          IconButton(
-            onPressed: () {
-              ref.read(currentWeekBodyImageDiariesProvider(user.id).notifier).loadCurrentWeekEntries();
-            },
-            icon: const Icon(Icons.refresh),
-          ),
-        ],
-      ),
-      body: TropicalForestBackground(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header with current week
-              currentWeekNumber.when(
-                data: (weekNumber) => Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.teal[600]!,
-                        Colors.teal[600]!.withValues(alpha: 0.8),
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Navigation Bar
+            _buildNavigationBar(context),
+            
+            // Main Content
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header with current week
+                    currentWeekNumber.when(
+                      data: (weekNumber) => _buildJournalHeader(context, weekNumber),
+                      loading: () => const SizedBox(
+                        height: 200,
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+                      error: (error, _) => Container(
+                        padding: const EdgeInsets.all(16),
+                        child: Text('Error loading week: $error'),
+                      ),
+                    ),
+              
+                    const SizedBox(height: 24),
+                    
+                    // Today's Entries Section
+                    Text(
+                      "Today's Entries",
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Today's Entries with Add Entry Card
+                    _buildTodaysEntries(context, currentWeekBodyImageDiaries),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Recent Entries Section
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Recent Entries',
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.teal[50],
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Colors.teal[200]!,
+                              width: 1,
+                            ),
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () => _showAllEntries(context, user.id),
+                              borderRadius: BorderRadius.circular(20),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'View All',
+                                      style: TextStyle(
+                                        color: Colors.teal[700],
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 12,
+                                      color: Colors.teal[700],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
                     ),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.teal[600]!.withValues(alpha: 0.3),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.visibility,
-                        size: 48,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Week $weekNumber',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Track your body checking behaviors',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.white.withValues(alpha: 0.9),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-                loading: () => const SizedBox(
-                  height: 120,
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-                error: (error, _) => Container(
-                  padding: const EdgeInsets.all(16),
-                  child: Text('Error loading week: $error'),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Recent Entries (Vertical Scroll)
+                    _buildRecentEntries(context, allBodyImageDiaries),
+                  ],
                 ),
               ),
-              
-              const SizedBox(height: 24),
-              
-              // Log New Entry Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () => _navigateToSurvey(context),
-                  icon: const Icon(Icons.add),
-                  label: const Text('Log New Entry'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal[600],
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 2,
-                  ),
-                ),
-              ),
-              
-              const SizedBox(height: 24),
-              
-              // Past Entries Section
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Past Entries',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () => _showAllEntries(context, user.id),
-                    child: const Text('View All'),
-                  ),
-                ],
-              ),
-              
-              const SizedBox(height: 16),
-              
-              // Current Week Entries
-              _buildCurrentWeekEntries(context, currentWeekBodyImageDiaries),
-              
-              const SizedBox(height: 24),
-              
-              // All Entries by Week
-              _buildAllEntriesByWeek(context, allBodyImageDiaries),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildCurrentWeekEntries(BuildContext context, AsyncValue<List<BodyImageDiary>> bodyImageDiaries) {
-    return bodyImageDiaries.when(
-      data: (entries) {
-        if (entries.isEmpty) {
-          return Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(32),
+  Widget _buildNavigationBar(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 0,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey[300]!),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              children: [
-                Icon(
-                  Icons.visibility_outlined,
-                  size: 48,
-                  color: Colors.grey[400],
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'No entries this week',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.grey[600],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Start tracking your body checking behaviors',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey[500],
-                  ),
-                  textAlign: TextAlign.center,
+              color: Colors.teal[600],
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.teal[600]!.withOpacity(0.3),
+                  spreadRadius: 0,
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
-          );
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => Navigator.of(context).pop(),
+                borderRadius: BorderRadius.circular(8),
+                child: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Text(
+            'Body Image Diary',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildJournalHeader(BuildContext context, int weekNumber) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: Colors.teal[600],
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.teal[600]!.withOpacity(0.3),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(40),
+              border: Border.all(
+                color: Colors.white,
+                width: 4,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  spreadRadius: 0,
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.visibility,
+              color: Colors.teal,
+              size: 40,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Week $weekNumber',
+            style: const TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'Track your body checking behaviors',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTodaysEntries(BuildContext context, AsyncValue<List<BodyImageDiary>> bodyImageDiaries) {
+    return bodyImageDiaries.when(
+      data: (entries) {
+        final today = DateTime.now();
+        final todayEntries = entries.where((entry) {
+          final entryDate = DateTime(entry.checkTime.year, entry.checkTime.month, entry.checkTime.day);
+          final todayDate = DateTime(today.year, today.month, today.day);
+          return entryDate == todayDate;
+        }).toList();
+
+        if (todayEntries.isEmpty) {
+          return _buildTodaysEmptyState(context);
         }
 
-        return Column(
-          children: entries.take(3).map((entry) => _buildBodyImageDiaryCard(context, entry)).toList(),
-        );
+        return _buildTodaysEntriesWithAddCard(context, todayEntries);
       },
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, _) => Container(
@@ -212,143 +284,211 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildAllEntriesByWeek(BuildContext context, AsyncValue<Map<int, List<BodyImageDiary>>> allBodyImageDiaries) {
+  Widget _buildTodaysEmptyState(BuildContext context) {
+    return Container(
+      height: 200,
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey[300]!),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _navigateToSurvey(context),
+          borderRadius: BorderRadius.circular(16),
+          child: const Center(
+            child: Icon(
+              Icons.add,
+              size: 32,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTodaysEntriesWithAddCard(BuildContext context, List<BodyImageDiary> entries) {
+    return SizedBox(
+      height: 200,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: entries.length + 1, // +1 for the add card
+        itemBuilder: (context, index) {
+          if (index == entries.length) {
+            // Add entry card at the end
+            return Container(
+              width: 200,
+              margin: const EdgeInsets.only(left: 12),
+              child: _buildAddEntryCard(context),
+            );
+          }
+          
+          return Container(
+            width: 280,
+            margin: const EdgeInsets.only(right: 12),
+            child: _buildBodyImageDiaryCard(context, entries[index]),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildAddEntryCard(BuildContext context) {
+    return Container(
+      height: 200,
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey[300]!),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _navigateToSurvey(context),
+          borderRadius: BorderRadius.circular(16),
+          child: const Center(
+            child: Icon(
+              Icons.add,
+              size: 32,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRecentEntries(BuildContext context, AsyncValue<Map<int, List<BodyImageDiary>>> allBodyImageDiaries) {
     return allBodyImageDiaries.when(
       data: (entriesByWeek) {
         if (entriesByWeek.isEmpty) {
           return const SizedBox.shrink();
         }
 
+        // Get all entries from all weeks and sort by date (most recent first)
+        final allEntries = <BodyImageDiary>[];
+        for (final weekEntries in entriesByWeek.values) {
+          allEntries.addAll(weekEntries);
+        }
+        allEntries.sort((a, b) => b.checkTime.compareTo(a.checkTime));
+
+        // Take only the first 5 most recent entries
+        final recentEntries = allEntries.take(5).toList();
+
+        if (recentEntries.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
         return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'All Entries by Week',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            ...entriesByWeek.entries.map((entry) {
-              final weekNumber = entry.key;
-              final entries = entry.value;
-              
-              return Container(
-                margin: const EdgeInsets.only(bottom: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Week $weekNumber (${entries.length} entries)',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.teal[600],
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    ...entries.take(2).map((entry) => _buildBodyImageDiaryCard(context, entry)),
-                    if (entries.length > 2)
-                      TextButton(
-                        onPressed: () => _showWeekEntries(context, weekNumber, entries),
-                        child: Text('View all ${entries.length} entries'),
-                      ),
-                  ],
-                ),
-              );
-            }),
-          ],
+          children: recentEntries.map((entry) {
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              child: _buildBodyImageDiaryCard(context, entry),
+            );
+          }).toList(),
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, _) => Container(
         padding: const EdgeInsets.all(16),
-        child: Text('Error loading all entries: $error'),
+        child: Text('Error loading recent entries: $error'),
       ),
     );
   }
 
+
+
   Widget _buildBodyImageDiaryCard(BuildContext context, BodyImageDiary entry) {
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      elevation: 2,
-      shape: RoundedRectangleBorder(
+      decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.grey[300]!,
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 0,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      child: InkWell(
-        onTap: () => _showEntryDetails(context, entry),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    entry.displayCheckTime,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.teal[600],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.teal[50],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      'Body Check',
-                      style: TextStyle(
-                        color: Colors.teal[700],
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _showEntryDetails(context, entry),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      entry.displayCheckTime,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.teal[600],
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '${entry.displayHowChecked} • ${entry.displayWhereChecked}',
-                style: Theme.of(context).textTheme.bodyMedium,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              if (entry.contextAndFeelings.isNotEmpty) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.teal[50],
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        'Body Check',
+                        style: TextStyle(
+                          color: Colors.teal[700],
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 8),
                 Text(
-                  entry.contextAndFeelings,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                    fontStyle: FontStyle.italic,
-                  ),
+                  '${entry.displayHowChecked} • ${entry.displayWhereChecked}',
+                  style: Theme.of(context).textTheme.bodyMedium,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-              ],
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
-                  const SizedBox(width: 4),
+                if (entry.contextAndFeelings.isNotEmpty) ...[
+                  const SizedBox(height: 8),
                   Text(
-                    entry.displayWhereChecked,
+                    entry.contextAndFeelings,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.grey[600],
+                      fontStyle: FontStyle.italic,
                     ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    _formatDate(entry.checkTime),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[500],
-                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
-              ),
-            ],
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const Spacer(),
+                    Text(
+                      _formatDate(entry.checkTime),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.grey[500],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -429,51 +569,4 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
     );
   }
 
-  void _showWeekEntries(BuildContext context, int weekNumber, List<BodyImageDiary> entries) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Week $weekNumber Entries'),
-        content: SizedBox(
-          width: double.maxFinite,
-          height: 400,
-          child: ListView.builder(
-            itemCount: entries.length,
-            itemBuilder: (context, index) {
-              final entry = entries[index];
-              return ListTile(
-                title: Text(entry.displayCheckTime),
-                subtitle: Text('${entry.displayHowChecked} • ${entry.displayWhereChecked}'),
-                trailing: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.teal[50],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    'Body Check',
-                    style: TextStyle(
-                      color: Colors.teal[700],
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                onTap: () {
-                  Navigator.of(context).pop();
-                  _showEntryDetails(context, entry);
-                },
-              );
-            },
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
 }

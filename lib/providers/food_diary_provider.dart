@@ -156,6 +156,7 @@ class FoodDiaryNotifier extends StateNotifier<AsyncValue<List<FoodDiary>>> {
   }
 }
 
+
 // Helper provider for getting entries in date range
 final foodDiariesInDateRangeProvider = FutureProvider.family<List<FoodDiary>, ({String userId, DateTime startDate, DateTime endDate})>((ref, params) async {
   final service = ref.read(foodDiaryServiceProvider);
