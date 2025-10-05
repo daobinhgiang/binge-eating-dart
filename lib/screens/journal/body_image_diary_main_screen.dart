@@ -124,7 +124,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
                     const SizedBox(height: 16),
                     
                     // Recent Entries (Vertical Scroll)
-                    _buildRecentEntries(context, allBodyImageDiaries),
+                    _buildRecentEntries(context, currentWeekBodyImageDiaries, allBodyImageDiaries),
                   ],
                 ),
               ),
@@ -132,6 +132,17 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _navigateToSurvey(context),
+        backgroundColor: Colors.teal[600],
+        foregroundColor: Colors.white,
+        elevation: 8,
+        child: const Icon(
+          Icons.add,
+          size: 28,
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
@@ -360,35 +371,13 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildRecentEntries(BuildContext context, AsyncValue<Map<int, List<BodyImageDiary>>> allBodyImageDiaries) {
-    return allBodyImageDiaries.when(
-      data: (entriesByWeek) {
-        if (entriesByWeek.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        // Get all entries from all weeks and sort by date (most recent first)
-        final allEntries = <BodyImageDiary>[];
-        for (final weekEntries in entriesByWeek.values) {
-          allEntries.addAll(weekEntries);
-        }
-        allEntries.sort((a, b) => b.checkTime.compareTo(a.checkTime));
-
-        // Take only the first 5 most recent entries
-        final recentEntries = allEntries.take(5).toList();
-
-        if (recentEntries.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        return Column(
-          children: recentEntries.map((entry) {
-            return Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              child: _buildBodyImageDiaryCard(context, entry),
-            );
-          }).toList(),
-        );
+  Widget _buildRecentEntries(BuildContext context, AsyncValue<List<BodyImageDiary>> currentWeekBodyImageDiaries, AsyncValue<Map<int, List<BodyImageDiary>>> allBodyImageDiaries) {
+    // Use current week entries as primary source (auto-refreshes)
+    return currentWeekBodyImageDiaries.when(
+      data: (currentWeekEntries) {
+        // For now, just show current week entries to ensure immediate refresh
+        // TODO: Add historical entries back when provider refresh is implemented
+        return _buildRecentEntriesFromCurrentWeek(context, currentWeekEntries);
       },
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, _) => Container(
@@ -398,7 +387,118 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
     );
   }
 
+  Widget _buildRecentEntriesFromCurrentWeek(BuildContext context, List<BodyImageDiary> currentWeekEntries) {
+    if (currentWeekEntries.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
+    // Sort by date (most recent first)
+    final sortedEntries = List<BodyImageDiary>.from(currentWeekEntries);
+    sortedEntries.sort((a, b) => b.checkTime.compareTo(a.checkTime));
+
+    // Limit to 5 latest entries
+    final limitedEntries = sortedEntries.take(5).toList();
+
+    return Column(
+      children: limitedEntries.map((entry) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          child: _buildRecentBodyImageDiaryCard(context, entry),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildRecentBodyImageDiaryCard(BuildContext context, BodyImageDiary entry) {
+    return Container(
+      height: 120,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.grey[300]!,
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 0,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _showEntryDetails(context, entry),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        color: Colors.teal[600]!.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.visibility,
+                        color: Colors.teal,
+                        size: 12,
+                      ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: Colors.teal[50],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        'Body Check',
+                        style: TextStyle(
+                          color: Colors.teal[700],
+                          fontSize: 9,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Expanded(
+                  child: Text(
+                    '${entry.displayHowChecked} • ${entry.displayWhereChecked}',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                      fontSize: 18,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${entry.displayCheckTime} • ${_formatDate(entry.checkTime)}',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   Widget _buildBodyImageDiaryCard(BuildContext context, BodyImageDiary entry) {
     return Container(
