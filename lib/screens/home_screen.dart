@@ -67,14 +67,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   }
 
   // Helper methods for enhanced header
-  String _getTimeBasedGreeting() {
+  String _getTimeBasedGreeting(String? firstName) {
     final hour = DateTime.now().hour;
+    String timeGreeting;
     if (hour < 12) {
-      return 'Good morning!';
+      timeGreeting = 'Good morning';
     } else if (hour < 17) {
-      return 'Good afternoon!';
+      timeGreeting = 'Good afternoon';
     } else {
-      return 'Good evening!';
+      timeGreeting = 'Good evening';
+    }
+    
+    if (firstName != null && firstName.isNotEmpty) {
+      return '$timeGreeting, $firstName!';
+    } else {
+      return '$timeGreeting!';
     }
   }
 
@@ -127,125 +134,50 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
 
   Widget _buildProfileSection(AsyncValue authState) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.grey[300]!,
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: authState.when(
-        data: (user) => user != null
-            ? PopupMenuButton<String>(
-                onSelected: (value) {
-                  if (value == 'logout') {
-                    ref.read(authNotifierProvider.notifier).signOut();
-                  }
-                },
-                itemBuilder: (context) => [
-                  const PopupMenuItem(
-                    value: 'logout',
-                    child: Row(
-                      children: [
-                        Icon(Icons.logout, color: Colors.red),
-                        SizedBox(width: 8),
-                        Text('Logout'),
-                      ],
-                    ),
-                  ),
-                ],
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CircleAvatar(
-                        radius: 16,
-                        backgroundColor: Colors.grey[200],
-                        backgroundImage: user.photoUrl != null
-                            ? NetworkImage(user.photoUrl!)
-                            : null,
-                        child: user.photoUrl == null
-                            ? Text(
-                                user.displayName.substring(0, 1).toUpperCase(),
-                                style: TextStyle(
-                                  color: Colors.grey[700],
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                              )
-                            : null,
+    return authState.when(
+      data: (user) => user != null
+          ? CircleAvatar(
+              radius: 20,
+              backgroundColor: Colors.grey[200],
+              backgroundImage: user.photoUrl != null
+                  ? NetworkImage(user.photoUrl!)
+                  : null,
+              child: user.photoUrl == null
+                  ? Text(
+                      user.displayName.substring(0, 1).toUpperCase(),
+                      style: TextStyle(
+                        color: Colors.grey[700],
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        user.displayName.split(' ').first,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Icon(
-                        Icons.keyboard_arrow_down,
-                        color: Colors.grey[600],
-                        size: 14,
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            : _buildGuestProfile(),
-        loading: () => Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: const SizedBox(
-            width: 16,
-            height: 16,
-            child: CircularProgressIndicator(
-              color: Colors.white,
-              strokeWidth: 2,
-            ),
+                    )
+                  : null,
+            )
+          : _buildGuestProfile(),
+      loading: () => CircleAvatar(
+        radius: 20,
+        backgroundColor: Colors.grey[200],
+        child: const SizedBox(
+          width: 16,
+          height: 16,
+          child: CircularProgressIndicator(
+            color: Colors.grey,
+            strokeWidth: 2,
           ),
         ),
-        error: (_, __) => _buildGuestProfile(),
       ),
+      error: (_, __) => _buildGuestProfile(),
     );
   }
 
   Widget _buildGuestProfile() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CircleAvatar(
-            radius: 16,
-            backgroundColor: Colors.grey[200],
-            child: Icon(
-              Icons.person,
-              color: Colors.grey[700],
-              size: 16,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            'Guest',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
-              fontSize: 14,
-            ),
-          ),
-        ],
+    return CircleAvatar(
+      radius: 20,
+      backgroundColor: Colors.grey[200],
+      child: Icon(
+        Icons.person,
+        color: Colors.grey[700],
+        size: 20,
       ),
     );
   }
@@ -280,16 +212,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                _getTimeBasedGreeting(),
+                                _getTimeBasedGreeting(authState.valueOrNull?.displayName.split(' ').first),
                                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black87,
                                   fontSize: 20,
                                 ),
                               ),
-                              const SizedBox(height: 4),
+                              const SizedBox(height: 2),
                               Text(
-                                'Your journey to recovery',
+                                'You\'re doing great today. Keep it up!',
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: Colors.grey[600],
                                   fontSize: 14,
@@ -319,124 +251,179 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       scale: _scaleAnimation ?? const AlwaysStoppedAnimation(1.0),
                       child: Column(
                         children: [
-                          // Insights Section - moved to top
-                          _buildInsightsSection(),
-                  
-                          const SizedBox(height: 24),
-                  
-                          // Side-by-side buttons row
+                          // Main buttons layout - left column with two buttons, right side with larger button
                           Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Urge help button - clean and concise
+                              // Left side - Column with Urge Help and AI Chat buttons
                               Expanded(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: const Color(0xFFE57373).withValues(alpha: 0.3),
-                                      width: 2,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.04),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 2),
+                                flex: 1,
+                                child: Column(
+                                  children: [
+                                    // Urge Help button
+                                    Container(
+                                      width: double.infinity,
+                                      height: 80,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: const Color(0xFFE57373).withValues(alpha: 0.3),
+                                          width: 2,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withValues(alpha: 0.04),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: InkWell(
-                                      onTap: () {
-                                        // Track analytics for urge-relapse button usage
-                                        final trackUrgeButton = ref.read(urgeRelapseButtonTrackingProvider);
-                                        trackUrgeButton();
-                                        _showUrgeHelpDialog();
-                                      },
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.psychology,
-                                              color: const Color(0xFFE57373),
-                                              size: 24,
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () {
+                                            // Track analytics for urge-relapse button usage
+                                            final trackUrgeButton = ref.read(urgeRelapseButtonTrackingProvider);
+                                            trackUrgeButton();
+                                            _showUrgeHelpDialog();
+                                          },
+                                          borderRadius: BorderRadius.circular(12),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(16),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.psychology,
+                                                  color: const Color(0xFFE57373),
+                                                  size: 35,
+                                                ),
+                                                const SizedBox(width: 12),
+                                                Text(
+                                                  'Urge Help',
+                                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: const Color(0xFFE57373),
+                                                    fontSize: 21,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ],
                                             ),
-                                            const SizedBox(width: 10),
-                                            Text(
-                                              'Urge Help',
-                                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                                fontWeight: FontWeight.w600,
-                                                color: const Color(0xFFE57373),
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                          ],
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
+                                    
+                                    const SizedBox(height: 16),
+                                    
+                                    // AI Chat button
+                                    Container(
+                                      width: double.infinity,
+                                      height: 80,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: const Color(0xFF64B5F6).withValues(alpha: 0.3),
+                                          width: 2,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withValues(alpha: 0.04),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () => context.go('/chat'),
+                                          borderRadius: BorderRadius.circular(12),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(16),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.chat,
+                                                  color: const Color(0xFF64B5F6),
+                                                  size: 35,
+                                                ),
+                                                const SizedBox(width: 12),
+                                                Text(
+                                                  'AI Chat',
+                                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: const Color(0xFF64B5F6),
+                                                    fontSize: 21,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                               
-                              const SizedBox(width: 12),
+                              const SizedBox(width: 16),
                               
-                              // AI Support Chat button - clean and concise
+                              // Right side - Larger Personalized Insights button
                               Expanded(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: const Color(0xFF64B5F6).withValues(alpha: 0.3),
-                                      width: 2,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.04),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: InkWell(
-                                      onTap: () => context.go('/chat'),
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.chat,
-                                              color: const Color(0xFF64B5F6),
-                                              size: 24,
-                                            ),
-                                            const SizedBox(width: 10),
-                                            Text(
-                                              'AI Chat',
-                                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                                fontWeight: FontWeight.w600,
-                                                color: const Color(0xFF64B5F6),
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                                flex: 1,
+                                child: _buildInsightsButton(),
                               ),
                             ],
                           ),
                   
-                  const SizedBox(height: 24),
+                          // Recommendations display (if any)
+                          if (_insightsRecommendations.isNotEmpty) ...[
+                            const SizedBox(height: 24),
+                            Container(
+                              constraints: const BoxConstraints(
+                                minHeight: 80,
+                                maxHeight: 200,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[50],
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Colors.grey[100]!,
+                                  width: 1,
+                                ),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Recommended for you',
+                                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black87,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      ..._insightsRecommendations.map((recommendation) => 
+                                        _buildInsightRecommendationCard(recommendation)
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                  
+                          const SizedBox(height: 24),
                   
                   // Next Lesson Recommendation
                   authState.when(
@@ -1189,66 +1176,41 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     context.push('/tools/urge-surfing');
   }
   
-  Widget _buildInsightsSection() {
+  Widget _buildInsightsButton() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4),
-      child: Column(
-        children: [
-          // Circular insights section
-          Container(
-            width: 280,
-            height: 280,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white,
-              border: Border.all(
-                color: Colors.grey[200]!,
-                width: 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Stack(
+      height: 180, // Height to match the combined height of the two left buttons (120 + 16 + 120)
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _isGeneratingInsights ? null : _generateInsights,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Background circles for visual effect
-                Positioned(
-                  top: 20,
-                  right: 20,
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: const Color(0xFF4CAF50).withValues(alpha: 0.05),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 30,
-                  left: 30,
-                  child: Container(
-                    width: 25,
-                    height: 25,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: const Color(0xFF4CAF50).withValues(alpha: 0.08),
-                    ),
-                  ),
-                ),
-                
-                // Main content
-                Center(
+                // Icon and Title stacked vertically
+                Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Icon
                       Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
                           color: const Color(0xFF4CAF50).withValues(alpha: 0.08),
                           shape: BoxShape.circle,
@@ -1256,129 +1218,91 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                         child: const Icon(
                           Icons.auto_awesome,
                           color: Color(0xFF4CAF50),
-                          size: 32,
+                          size: 20,
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      
-                      // Title
+                      const SizedBox(height: 6),
                       Text(
-                        'Personalized Insights',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        'Personalized',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                          fontSize: 18,
+                          color: const Color(0xFF4CAF50),
+                          fontSize: 20,
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 8),
-                      
-                      // Subtitle
-
-                      
-                      const SizedBox(height: 20),
-                      
-                      // Generate button
-                      Container(
-                        width: 200,
-                        child: ElevatedButton(
-                          onPressed: _isGeneratingInsights ? null : _generateInsights,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF4CAF50),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            elevation: 0,
-                            shadowColor: Colors.transparent,
-                          ),
-                          child: _isGeneratingInsights 
-                              ? Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const SizedBox(
-                                      width: 14,
-                                      height: 14,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      'Generating...',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Icon(Icons.auto_awesome, size: 16),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      'Generate insights',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                      Text(
+                        'Insights',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF4CAF50),
+                          fontSize: 20,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
+                  ),
+                ),
+                
+                // Generate button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _isGeneratingInsights ? null : _generateInsights,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF4CAF50),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                      shadowColor: Colors.transparent,
+                    ),
+                    child: _isGeneratingInsights 
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const SizedBox(
+                                width: 8,
+                                height: 8,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 1.5,
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Generating...',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 9,
+                                ),
+                              ),
+                            ],
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.auto_awesome, size: 12),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Generate',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ],
+                          ),
                   ),
                 ),
               ],
             ),
           ),
-          
-          // Recommendations display (if any)
-          if (_insightsRecommendations.isNotEmpty) ...[
-            const SizedBox(height: 24),
-            Container(
-              constraints: const BoxConstraints(
-                minHeight: 80,
-                maxHeight: 200,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.grey[50],
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Colors.grey[100]!,
-                  width: 1,
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Recommended for you',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      ..._insightsRecommendations.map((recommendation) => 
-                        _buildInsightRecommendationCard(recommendation)
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ],
+        ),
       ),
     );
   }
