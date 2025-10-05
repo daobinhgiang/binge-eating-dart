@@ -85,10 +85,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     }
   }
 
+  String _getCurrentDate() {
+    final now = DateTime.now();
+    final weekday = _getWeekdayName(now.weekday);
+    final day = now.day;
+    final month = _getMonthName(now.month);
+    final year = now.year;
+    
+    return '$weekday, $month $day, $year';
+  }
+
+  void _onNotificationBellTapped() {
+    // Handle notification bell tap
+    // This can be extended to show notifications or navigate to a notifications screen
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Notifications feature coming soon!'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
   Widget _buildAppLogo() {
     return Container(
-      width: 48,
-      height: 48,
+      width: 56,
+      height: 56,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
@@ -122,7 +143,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               child: const Icon(
                 Icons.psychology,
                 color: Colors.white,
-                size: 24,
+                size: 28,
               ),
             );
           },
@@ -136,48 +157,47 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   Widget _buildProfileSection(AsyncValue authState) {
     return authState.when(
       data: (user) => user != null
-          ? CircleAvatar(
-              radius: 20,
-              backgroundColor: Colors.grey[200],
-              backgroundImage: user.photoUrl != null
-                  ? NetworkImage(user.photoUrl!)
-                  : null,
-              child: user.photoUrl == null
-                  ? Text(
-                      user.displayName.substring(0, 1).toUpperCase(),
-                      style: TextStyle(
-                        color: Colors.grey[700],
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    )
-                  : null,
-            )
+          ? _buildNotificationBell()
           : _buildGuestProfile(),
-      loading: () => CircleAvatar(
-        radius: 20,
-        backgroundColor: Colors.grey[200],
-        child: const SizedBox(
-          width: 16,
-          height: 16,
-          child: CircularProgressIndicator(
-            color: Colors.grey,
-            strokeWidth: 2,
-          ),
-        ),
-      ),
+      loading: () => _buildNotificationBell(),
       error: (_, __) => _buildGuestProfile(),
     );
   }
 
+  Widget _buildNotificationBell() {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: _onNotificationBellTapped,
+        borderRadius: BorderRadius.circular(24),
+        child: CircleAvatar(
+          radius: 24,
+          backgroundColor: const Color(0xFF4CAF50).withValues(alpha: 0.1),
+          child: Icon(
+            Icons.notifications,
+            color: const Color(0xFF4CAF50),
+            size: 24,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildGuestProfile() {
-    return CircleAvatar(
-      radius: 20,
-      backgroundColor: Colors.grey[200],
-      child: Icon(
-        Icons.person,
-        color: Colors.grey[700],
-        size: 20,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: _onNotificationBellTapped,
+        borderRadius: BorderRadius.circular(24),
+        child: CircleAvatar(
+          radius: 24,
+          backgroundColor: const Color(0xFF4CAF50).withValues(alpha: 0.1),
+          child: Icon(
+            Icons.notifications,
+            color: const Color(0xFF4CAF50),
+            size: 24,
+          ),
+        ),
       ),
     );
   }
@@ -200,7 +220,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 ),
                 child: SafeArea(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
                     child: Row(
                       children: [
                         // App Logo
@@ -216,18 +236,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black87,
-                                  fontSize: 20,
+                                  fontSize: 24,
                                 ),
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                'You\'re doing great today. Keep it up!',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                _getCurrentDate(),
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                   color: Colors.grey[600],
                                   fontSize: 14,
                                 ),
                               ),
-                            ],
+                              ],
                           ),
                         ),
                         // Profile section
