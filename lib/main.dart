@@ -119,16 +119,30 @@ void main() async {
   runApp(const ProviderScope(child: BEDApp()));
 }
 
-class BEDApp extends ConsumerWidget {
+class BEDApp extends ConsumerStatefulWidget {
   const BEDApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<BEDApp> createState() => _BEDAppState();
+}
+
+class _BEDAppState extends ConsumerState<BEDApp> {
+  bool _initialized = false;
+
+  @override
+  void initState() {
+    super.initState();
     // Initialize auth state when the app starts
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(authNotifierProvider.notifier).initialize();
+      if (!_initialized) {
+        ref.read(authNotifierProvider.notifier).initialize();
+        _initialized = true;
+      }
     });
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return AnalyticsTracker(
       child: NotificationPopupOverlay(
         child: MaterialApp.router(

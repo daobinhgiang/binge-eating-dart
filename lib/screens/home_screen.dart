@@ -141,7 +141,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: CustomScrollView(
-          controller: _scrollController ?? ScrollController(),
+          controller: _scrollController,
           slivers: [
             // Combined header and Continue Learning Section with green background
             SliverToBoxAdapter(

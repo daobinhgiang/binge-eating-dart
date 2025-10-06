@@ -14,21 +14,17 @@ final currentUserProvider = StreamProvider<UserModel?>((ref) {
 
 // Auth state provider for managing authentication state
 class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
-  AuthNotifier(this._authService) : super(const AsyncValue.loading()) {
-    // Auto-initialize when the notifier is created
-    _initialize();
-  }
+  AuthNotifier(this._authService) : super(const AsyncValue.loading());
 
   final AuthService _authService;
   final FirebaseAnalyticsService _analytics = FirebaseAnalyticsService();
+  bool _hasInitialized = false;
 
   // Initialize auth state
   Future<void> initialize() async {
-    await _initialize();
-  }
-
-  // Private method to handle initialization
-  Future<void> _initialize() async {
+    if (_hasInitialized) return;
+    _hasInitialized = true;
+    
     state = const AsyncValue.loading();
     try {
       final user = await _authService.currentUser;
