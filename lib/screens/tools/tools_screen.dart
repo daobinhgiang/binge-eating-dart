@@ -86,7 +86,7 @@ class ToolsScreen extends ConsumerWidget {
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 children: [
-                  ...exercises.map((exercise) => _buildExerciseCard(context, exercise)).toList(),
+                  ...exercises.map((exercise) => _buildExerciseCard(context, exercise)),
                   const SizedBox(height: 24),
                 ],
               ),

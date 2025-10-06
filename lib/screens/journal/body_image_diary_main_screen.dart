@@ -338,7 +338,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
             ),
             const SizedBox(width: 12),
           ],
-          Container(
+          SizedBox(
             width: 200,
             child: _buildAddEntryCard(context),
           ),

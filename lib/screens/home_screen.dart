@@ -386,7 +386,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             children: [
               // Green background that extends from top
               if (shouldShowLearningSection)
-                Container(
+                SizedBox(
                   height: 420, // Increased to cover header + learning section
                   child: ClipPath(
                     clipper: CurvedHeaderClipper(depth: 60),
@@ -407,7 +407,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               
               // Content overlay - clipped to match the curved header
               if (shouldShowLearningSection)
-                Container(
+                SizedBox(
                   height: 420,
                   child: ClipPath(
                     clipper: CurvedHeaderClipper(depth: 60),
