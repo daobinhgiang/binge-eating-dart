@@ -5,7 +5,6 @@ import 'meal_planning_screen.dart';
 import 'urge_surfing_screen.dart';
 import 'addressing_overconcern_screen.dart';
 import 'addressing_setbacks_screen.dart';
-import '../../widgets/tools_background.dart';
 
 class ExerciseItem {
   final String title;
@@ -87,7 +86,7 @@ class ToolsScreen extends ConsumerWidget {
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 children: [
-                  ...exercises.map((exercise) => _buildExerciseCard(context, exercise)).toList(),
+                  ...exercises.map((exercise) => _buildExerciseCard(context, exercise)),
                   const SizedBox(height: 24),
                 ],
               ),

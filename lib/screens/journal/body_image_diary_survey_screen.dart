@@ -463,16 +463,8 @@ class _BodyImageDiarySurveyScreenState extends ConsumerState<BodyImageDiarySurve
             backgroundColor: Colors.green,
           ),
         );
-        // Clear the form after successful submission
-        _customHowController.clear();
-        _customWhereController.clear();
-        _contextController.clear();
-        _selectedTime = DateTime.now();
-        _selectedHowChecked = BodyImageDiary.howCheckedOptions.first;
-        _selectedWhereChecked = BodyImageDiary.whereCheckedOptions.first;
-        _currentPage = 0;
-        _pageController.animateToPage(0, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
-        // Don't navigate away - let user stay on the body image diary page
+        // Navigate back to the journal tab after successful submission
+        Navigator.of(context).pop();
       }
     } catch (e) {
       if (mounted) {

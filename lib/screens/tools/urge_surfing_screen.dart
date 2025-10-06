@@ -12,6 +12,8 @@ class UrgeSurfingScreen extends ConsumerStatefulWidget {
 }
 
 class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
+  final bool _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(currentUserDataProvider);

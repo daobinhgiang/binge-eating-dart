@@ -125,6 +125,11 @@ class BEDApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Initialize auth state when the app starts
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(authNotifierProvider.notifier).initialize();
+    });
+
     return AnalyticsTracker(
       child: NotificationPopupOverlay(
         child: MaterialApp.router(
