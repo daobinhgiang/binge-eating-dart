@@ -201,6 +201,23 @@ class UrgeSurfingService {
   // Get all activities across all exercises for a user
   Future<List<AlternativeActivity>> getAllUserActivities(String userId) async {
     try {
+      // First try to get activities from the new simplified structure
+      final activitiesDoc = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('urgeSurfingActivities')
+          .doc('activities')
+          .get();
+
+      if (activitiesDoc.exists && activitiesDoc.data() != null) {
+        final data = activitiesDoc.data()!;
+        final activitiesData = data['activities'] as List<dynamic>? ?? [];
+        return activitiesData
+            .map((activity) => AlternativeActivity.fromMap(activity as Map<String, dynamic>))
+            .toList();
+      }
+
+      // Fallback: get activities from old exercise structure for migration
       final exercises = await getUserUrgeSurfingExercises(userId);
       final allActivities = <AlternativeActivity>[];
       
@@ -208,9 +225,121 @@ class UrgeSurfingService {
         allActivities.addAll(exercise.activities);
       }
       
+      // If we have activities from the old structure, migrate them to the new structure
+      if (allActivities.isNotEmpty) {
+        await _migrateActivitiesToNewStructure(userId, allActivities);
+      }
+      
       return allActivities;
     } catch (e) {
       throw 'Failed to get all user activities: $e';
+    }
+  }
+
+  // Add a new individual activity
+  Future<AlternativeActivity> addUserActivity({
+    required String userId,
+    required String name,
+    required String description,
+    required bool isActive,
+    required bool isEnjoyable,
+    required bool isRealistic,
+  }) async {
+    try {
+      final activity = AlternativeActivity(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        name: name,
+        description: description,
+        isActive: isActive,
+        isEnjoyable: isEnjoyable,
+        isRealistic: isRealistic,
+      );
+
+      final currentActivities = await getAllUserActivities(userId);
+      currentActivities.add(activity);
+
+      await _saveUserActivities(userId, currentActivities);
+      return activity;
+    } catch (e) {
+      throw 'Failed to add user activity: $e';
+    }
+  }
+
+  // Update an individual activity
+  Future<void> updateUserActivity({
+    required String userId,
+    required String activityId,
+    required String name,
+    required String description,
+    required bool isActive,
+    required bool isEnjoyable,
+    required bool isRealistic,
+  }) async {
+    try {
+      final currentActivities = await getAllUserActivities(userId);
+      final index = currentActivities.indexWhere((activity) => activity.id == activityId);
+      
+      if (index == -1) {
+        throw 'Activity not found';
+      }
+
+      currentActivities[index] = AlternativeActivity(
+        id: activityId,
+        name: name,
+        description: description,
+        isActive: isActive,
+        isEnjoyable: isEnjoyable,
+        isRealistic: isRealistic,
+      );
+
+      await _saveUserActivities(userId, currentActivities);
+    } catch (e) {
+      throw 'Failed to update user activity: $e';
+    }
+  }
+
+  // Delete an individual activity
+  Future<void> deleteUserActivity(String userId, String activityId) async {
+    try {
+      final currentActivities = await getAllUserActivities(userId);
+      currentActivities.removeWhere((activity) => activity.id == activityId);
+      await _saveUserActivities(userId, currentActivities);
+    } catch (e) {
+      throw 'Failed to delete user activity: $e';
+    }
+  }
+
+  // Private helper method to save activities to Firestore
+  Future<void> _saveUserActivities(String userId, List<AlternativeActivity> activities) async {
+    await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('urgeSurfingActivities')
+        .doc('activities')
+        .set({
+      'activities': activities.map((activity) => activity.toMap()).toList(),
+      'updatedAt': DateTime.now().millisecondsSinceEpoch,
+    });
+  }
+
+  // Private helper method to migrate activities from old structure to new structure
+  Future<void> _migrateActivitiesToNewStructure(String userId, List<AlternativeActivity> activities) async {
+    try {
+      // Remove duplicates based on name and description
+      final uniqueActivities = <AlternativeActivity>[];
+      final seen = <String>{};
+      
+      for (final activity in activities) {
+        final key = '${activity.name.toLowerCase()}_${activity.description.toLowerCase()}';
+        if (!seen.contains(key)) {
+          seen.add(key);
+          uniqueActivities.add(activity);
+        }
+      }
+      
+      await _saveUserActivities(userId, uniqueActivities);
+    } catch (e) {
+      throw 'Failed to migrate activities: $e';
     }
   }
 
