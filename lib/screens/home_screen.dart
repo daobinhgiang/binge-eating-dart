@@ -130,57 +130,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
 
   Widget _buildProfileSection(AsyncValue authState, {bool onGreenBackground = false}) {
-    return authState.when(
-      data: (user) => user != null
-          ? _buildNotificationBell(onGreenBackground: onGreenBackground)
-          : _buildGuestProfile(onGreenBackground: onGreenBackground),
-      loading: () => _buildNotificationBell(onGreenBackground: onGreenBackground),
-      error: (_, __) => _buildGuestProfile(onGreenBackground: onGreenBackground),
-    );
+    // Notification bell removed - return empty space
+    return const SizedBox.shrink();
   }
-
-  Widget _buildNotificationBell({bool onGreenBackground = false}) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: _onNotificationBellTapped,
-        borderRadius: BorderRadius.circular(24),
-        child: CircleAvatar(
-          radius: 24,
-          backgroundColor: onGreenBackground 
-              ? Colors.white.withOpacity(0.2) 
-              : const Color(0xFF4CAF50).withOpacity(0.1),
-          child: Icon(
-            Icons.notifications,
-            color: onGreenBackground ? Colors.white : const Color(0xFF4CAF50),
-            size: 24,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGuestProfile({bool onGreenBackground = false}) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: _onNotificationBellTapped,
-        borderRadius: BorderRadius.circular(24),
-        child: CircleAvatar(
-          radius: 24,
-          backgroundColor: onGreenBackground 
-              ? Colors.white.withOpacity(0.2) 
-              : const Color(0xFF4CAF50).withOpacity(0.1),
-          child: Icon(
-            Icons.notifications,
-            color: onGreenBackground ? Colors.white : const Color(0xFF4CAF50),
-            size: 24,
-          ),
-        ),
-      ),
-    );
-  }
-
 
   @override
   Widget build(BuildContext context) {
