@@ -211,26 +211,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                           },
                                           borderRadius: BorderRadius.circular(12),
                                           child: Padding(
-                                            padding: const EdgeInsets.all(16),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                Icon(
-                                                  Icons.psychology,
+                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                                            child: Center(
+                                              child: Text(
+                                                'Urge Help',
+                                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                  fontWeight: FontWeight.w600,
                                                   color: const Color(0xFFE57373),
-                                                  size: 35,
+                                                  fontSize: 20,
                                                 ),
-                                                const SizedBox(width: 12),
-                                                Text(
-                                                  'Urge Help',
-                                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                                    fontWeight: FontWeight.w600,
-                                                    color: const Color(0xFFE57373),
-                                                    fontSize: 21,
-                                                  ),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ],
+                                                textAlign: TextAlign.center,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -264,26 +257,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                           onTap: () => context.go('/chat'),
                                           borderRadius: BorderRadius.circular(12),
                                           child: Padding(
-                                            padding: const EdgeInsets.all(16),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                Icon(
-                                                  Icons.chat,
+                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                                            child: Center(
+                                              child: Text(
+                                                'AI Chat',
+                                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                  fontWeight: FontWeight.w600,
                                                   color: const Color(0xFF64B5F6),
-                                                  size: 35,
+                                                  fontSize: 20,
                                                 ),
-                                                const SizedBox(width: 12),
-                                                Text(
-                                                  'AI Chat',
-                                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                                    fontWeight: FontWeight.w600,
-                                                    color: const Color(0xFF64B5F6),
-                                                    fontSize: 21,
-                                                  ),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ],
+                                                textAlign: TextAlign.center,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -383,11 +369,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         return Container(
           margin: const EdgeInsets.fromLTRB(0, 0, 0, 40),
           child: Stack(
+            clipBehavior: Clip.none,
             children: [
               // Green background that extends from top
               if (shouldShowLearningSection)
                 SizedBox(
-                  height: 420, // Increased to cover header + learning section
+                  height: 480, // Increased to overlay bottom 2% of lesson tiles
                   child: ClipPath(
                     clipper: CurvedHeaderClipper(depth: 60),
                     child: Container(
@@ -405,59 +392,53 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ),
               
-              // Content overlay - clipped to match the curved header
+              // Content overlay - NOT clipped so lesson cards extend beyond curve
               if (shouldShowLearningSection)
-                SizedBox(
-                  height: 420,
-                  child: ClipPath(
-                    clipper: CurvedHeaderClipper(depth: 60),
-                    child: Column(
-                      children: [
-                        // Header section with transparent background
-                        SafeArea(
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
-                            child: Row(
-                              children: [
-                                // App Logo
-                                _buildAppLogo(),
-                                const SizedBox(width: 16),
-                                // Greeting and user info
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        _getTimeBasedGreeting(authState.valueOrNull?.displayName.split(' ').first),
-                                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: shouldShowLearningSection ? Colors.white : Colors.black87,
-                                          fontSize: 24,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        _getCurrentDate(),
-                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                          color: shouldShowLearningSection ? Colors.white.withOpacity(0.95) : Colors.grey[600],
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    ],
+                Column(
+                  children: [
+                    // Header section with transparent background
+                    SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+                        child: Row(
+                          children: [
+                            // App Logo
+                            _buildAppLogo(),
+                            const SizedBox(width: 16),
+                            // Greeting and user info
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _getTimeBasedGreeting(authState.valueOrNull?.displayName.split(' ').first),
+                                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: shouldShowLearningSection ? Colors.white : Colors.black87,
+                                      fontSize: 24,
+                                    ),
                                   ),
-                                ),
-                                // Profile section
-                                _buildProfileSection(authState, onGreenBackground: shouldShowLearningSection),
-                              ],
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    _getCurrentDate(),
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: shouldShowLearningSection ? Colors.white.withOpacity(0.95) : Colors.grey[600],
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
+                            // Profile section
+                            _buildProfileSection(authState, onGreenBackground: shouldShowLearningSection),
+                          ],
                         ),
-                        
-                        // Continue Learning content (if logged in)
-                        _buildContinueLearningContentOnly(ref),
-                      ],
+                      ),
                     ),
-                  ),
+                    
+                    // Continue Learning content (if logged in) - extends beyond the curve
+                    _buildContinueLearningContentOnly(ref),
+                  ],
                 )
               else
                 // When not logged in, show header without clipping
@@ -1235,21 +1216,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Left side - Date card
-            Expanded(
-              flex: 1,
-              child: _buildDateCard(context, totalToday, completedToday.length),
-            ),
-            const SizedBox(width: 16),
-            // Right side - Todo list
-            Expanded(
-              flex: 2,
-              child: _buildCompactTodoListCard(context, todayTodos),
-            ),
-          ],
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Left side - Date card
+              Expanded(
+                flex: 1,
+                child: _buildDateCard(context, totalToday, completedToday.length),
+              ),
+              const SizedBox(width: 16),
+              // Right side - Todo list
+              Expanded(
+                flex: 2,
+                child: _buildCompactTodoListCard(context, todayTodos),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1274,21 +1257,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Left side - Date card
-            Expanded(
-              flex: 1,
-              child: _buildDateCard(context, 0, 0),
-            ),
-            const SizedBox(width: 16),
-            // Right side - Empty state
-            Expanded(
-              flex: 2,
-              child: _buildCompactEmptyTodoCard(context),
-            ),
-          ],
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Left side - Date card
+              Expanded(
+                flex: 1,
+                child: _buildDateCard(context, 0, 0),
+              ),
+              const SizedBox(width: 16),
+              // Right side - Empty state
+              Expanded(
+                flex: 2,
+                child: _buildCompactEmptyTodoCard(context),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1301,7 +1286,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final month = _getMonthName(now.month);
 
     return Container(
-      height: 125,
+      constraints: const BoxConstraints(minHeight: 120),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
@@ -1325,41 +1310,50 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   weekday,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
-                    fontSize: 14,
+                    fontSize: 13,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 Text(
                   '$month $day',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 24,
+                    fontSize: 22,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
+            const SizedBox(height: 8),
             if (totalTasks > 0)
               Text(
                 '$completedTasks/$totalTasks Tasks Done',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.w500,
-                  fontSize: 12,
+                  fontSize: 11,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
           ],
         ),
@@ -1393,6 +1387,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildCompactEmptyTodoCard(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           'To-Do List',
@@ -1401,38 +1396,41 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             color: Colors.black,
             fontSize: 16,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 8),
-        Expanded(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.task_alt,
-                  size: 32,
-                  color: Colors.grey[400],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'No tasks for today',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey[600],
-                    fontSize: 13,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Add lessons, tools, or journal activities',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[500],
-                    fontSize: 11,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.task_alt,
+              size: 28,
+              color: Colors.grey[400],
             ),
-          ),
+            const SizedBox(height: 6),
+            Text(
+              'No tasks for today',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.grey[600],
+                fontSize: 12,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Add lessons, tools, or journal activities',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Colors.grey[500],
+                fontSize: 10,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         ),
       ],
     );
@@ -1742,13 +1740,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           onTap: _isGeneratingInsights ? null : _generateInsights,
           borderRadius: BorderRadius.circular(12),
           child: Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(10),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Icon and Title stacked vertically
-                Expanded(
+                Flexible(
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
@@ -1760,31 +1760,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         child: const Icon(
                           Icons.auto_awesome,
                           color: Color(0xFF4CAF50),
-                          size: 20,
+                          size: 18,
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 4),
                       Text(
                         'Personalized',
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: const Color(0xFF4CAF50),
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                         textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       Text(
                         'Insights',
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: const Color(0xFF4CAF50),
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                         textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
+                
+                const SizedBox(height: 8),
                 
                 // Generate button
                 SizedBox(
@@ -1794,7 +1800,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF4CAF50),
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -1815,26 +1821,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              Text(
+                              const Text(
                                 'Generating...',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 9,
                                 ),
                               ),
                             ],
                           )
-                        : Row(
+                        : const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.auto_awesome, size: 12),
-                              const SizedBox(width: 4),
+                              Icon(Icons.auto_awesome, size: 12),
+                              SizedBox(width: 4),
                               Text(
                                 'Generate',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.w500,
-                                  fontSize: 15,
+                                  fontSize: 14,
                                 ),
                               ),
                             ],
