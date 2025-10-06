@@ -227,6 +227,8 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
                   .map((e) => (
                         time: e.createdAt,
                         valueKg: e.convertWeight('kg'),
+                        originalWeight: e.weight,
+                        originalUnit: e.unit,
                       ))
                   .toList()
                 ..sort((a, b) => a.time.compareTo(b.time));
@@ -244,6 +246,7 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
                       to: now,
                       points: normalized,
                       color: Colors.orange[700]!,
+                      originalUnit: entries.isNotEmpty ? entries.first.unit : 'kg',
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -386,20 +389,28 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
 class _WeightChart extends StatelessWidget {
   final DateTime from;
   final DateTime to;
-  final List<({DateTime time, double valueKg})> points;
+  final List<({DateTime time, double valueKg, double originalWeight, String originalUnit})> points;
   final Color color;
+  final String originalUnit;
 
   const _WeightChart({
     required this.from,
     required this.to,
     required this.points,
     required this.color,
+    required this.originalUnit,
   });
 
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      painter: _WeightChartPainter(from: from, to: to, points: points, color: color),
+      painter: _WeightChartPainter(
+        from: from,
+        to: to,
+        points: points,
+        color: color,
+        originalUnit: originalUnit,
+      ),
       child: Container(),
     );
   }
@@ -408,14 +419,16 @@ class _WeightChart extends StatelessWidget {
 class _WeightChartPainter extends CustomPainter {
   final DateTime from;
   final DateTime to;
-  final List<({DateTime time, double valueKg})> points;
+  final List<({DateTime time, double valueKg, double originalWeight, String originalUnit})> points;
   final Color color;
+  final String originalUnit;
 
   _WeightChartPainter({
     required this.from,
     required this.to,
     required this.points,
     required this.color,
+    required this.originalUnit,
   });
 
   @override
@@ -432,7 +445,7 @@ class _WeightChartPainter extends CustomPainter {
       ..color = color.withOpacity(0.15)
       ..style = PaintingStyle.fill;
 
-    final paddingLeft = 8.0;
+    final paddingLeft = 45.0; // Increased for Y-axis labels
     final paddingRight = 8.0;
     final paddingTop = 8.0;
     final paddingBottom = 16.0;
@@ -448,19 +461,35 @@ class _WeightChartPainter extends CustomPainter {
       paintAxis,
     );
 
+    // Y-axis
+    canvas.drawLine(
+      Offset(origin.dx, origin.dy),
+      Offset(origin.dx, origin.dy + chartHeight),
+      paintAxis,
+    );
+
     if (points.isEmpty) return;
 
-    // Y-range with padding
+    // Y-range with padding, ensuring minY never goes below 0 for weight
     double minY = points.map((e) => e.valueKg).reduce((a, b) => a < b ? a : b);
     double maxY = points.map((e) => e.valueKg).reduce((a, b) => a > b ? a : b);
+    
     if (minY == maxY) {
-      minY -= 0.5;
+      minY = (minY - 0.5).clamp(0.0, double.infinity);
       maxY += 0.5;
     } else {
       final pad = (maxY - minY) * 0.15;
-      minY -= pad;
+      minY = (minY - pad).clamp(0.0, double.infinity); // Ensure minY >= 0
       maxY += pad;
     }
+    
+    // If all weights are very close to 0, ensure we have a reasonable range
+    if (maxY < 5.0) {
+      maxY = 5.0;
+    }
+
+    // Draw Y-axis labels
+    _drawYAxisLabels(canvas, size, minY, maxY, origin, chartHeight);
 
     final totalMs = to.millisecondsSinceEpoch - from.millisecondsSinceEpoch;
     Offset mapPoint(DateTime t, double v) {
@@ -499,9 +528,59 @@ class _WeightChartPainter extends CustomPainter {
     }
   }
 
+  void _drawYAxisLabels(Canvas canvas, Size size, double minY, double maxY, Offset origin, double chartHeight) {
+    final textPainter = TextPainter(
+      textDirection: TextDirection.ltr,
+    );
+
+    // Number of Y-axis labels
+    const int numLabels = 5;
+    final step = (maxY - minY) / (numLabels - 1);
+
+    for (int i = 0; i < numLabels; i++) {
+      final value = minY + (step * i);
+      final displayValue = originalUnit == 'kg' ? value : value * 2.20462; // Convert back if needed
+      final labelText = originalUnit == 'kg' 
+          ? '${displayValue.toStringAsFixed(1)} kg'
+          : '${displayValue.toStringAsFixed(1)} lbs';
+
+      textPainter
+        ..text = TextSpan(
+          text: labelText,
+          style: const TextStyle(
+            color: Colors.grey,
+            fontSize: 10,
+          ),
+        )
+        ..layout();
+
+      final yPos = origin.dy + chartHeight - (i * chartHeight / (numLabels - 1));
+      
+      // Draw horizontal grid line
+      final gridPaint = Paint()
+        ..color = const Color(0xFFF0F0F0)
+        ..strokeWidth = 0.5;
+      canvas.drawLine(
+        Offset(origin.dx, yPos),
+        Offset(origin.dx + size.width - 45 - 8, yPos),
+        gridPaint,
+      );
+
+      // Draw label
+      textPainter.paint(
+        canvas, 
+        Offset(origin.dx - textPainter.width - 5, yPos - textPainter.height / 2)
+      );
+    }
+  }
+
   @override
   bool shouldRepaint(covariant _WeightChartPainter oldDelegate) {
-    return oldDelegate.points != points || oldDelegate.color != color || oldDelegate.from != from || oldDelegate.to != to;
+    return oldDelegate.points != points || 
+           oldDelegate.color != color || 
+           oldDelegate.from != from || 
+           oldDelegate.to != to ||
+           oldDelegate.originalUnit != originalUnit;
   }
 }
 

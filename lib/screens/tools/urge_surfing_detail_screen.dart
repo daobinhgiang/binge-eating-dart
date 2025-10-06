@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/urge_surfing.dart';
 import '../../providers/urge_surfing_provider.dart';
 import '../../providers/auth_provider.dart';
-import 'urge_surfing_survey_screen.dart';
+import 'urge_surfing_screen.dart';
 
 class UrgeSurfingDetailScreen extends ConsumerWidget {
   final UrgeSurfing exercise;
@@ -19,8 +19,9 @@ class UrgeSurfingDetailScreen extends ConsumerWidget {
         elevation: 0,
         actions: [
           IconButton(
-            onPressed: () => _editExercise(context),
-            icon: const Icon(Icons.edit),
+            onPressed: () => _navigateToActivities(context),
+            icon: const Icon(Icons.list),
+            tooltip: 'Manage Activities',
           ),
           IconButton(
             onPressed: () => _deleteExercise(context, ref),
@@ -494,10 +495,10 @@ class UrgeSurfingDetailScreen extends ConsumerWidget {
     return '$hour:$minute $period';
   }
 
-  void _editExercise(BuildContext context) {
+  void _navigateToActivities(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => UrgeSurfingSurveyScreen(existingExercise: exercise),
+        builder: (context) => const UrgeSurfingScreen(),
       ),
     );
   }

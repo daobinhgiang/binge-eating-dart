@@ -9,6 +9,7 @@ import 'screens/main_navigation.dart';
 import 'screens/education/article_detail_screen.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/register_screen.dart';
+import 'screens/auth/email_auth_screen.dart';
 import 'screens/admin/admin_screen.dart';
 import 'screens/onboarding/onboarding_screen.dart';
 import 'screens/onboarding/onboarding_review_screen.dart';
@@ -247,6 +248,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/register',
       builder: (context, state) => const RegisterScreen(),
+    ),
+    GoRoute(
+      path: '/email-auth',
+      builder: (context, state) => const EmailAuthScreen(),
     ),
     GoRoute(
       path: '/onboarding',

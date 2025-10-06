@@ -31,32 +31,35 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header Section with journal progress
-              _buildJournalHeader(context, user),
-              
-              const SizedBox(height: 24),
-              
-              // Weight Progress Graph
-              WeightGraphWidget(
-                userId: user.id,
-                onTap: () => _navigateToWeightDiarySurvey(context),
-                height: 200,
-                showTitle: true,
+        child: Column(
+          children: [
+            _buildHeader(context),
+            const SizedBox(height: 24),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Weight Progress Graph
+                    WeightGraphWidget(
+                      userId: user.id,
+                      onTap: () => _navigateToWeightDiarySurvey(context),
+                      height: 200,
+                      showTitle: true,
+                    ),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Diary Access Cards
+                    _buildDiaryAccessCards(context),
+                    
+                    const SizedBox(height: 100), // Extra space for floating action button
+                  ],
+                ),
               ),
-              
-              const SizedBox(height: 24),
-              
-              // Diary Access Cards
-              _buildDiaryAccessCards(context),
-              
-              const SizedBox(height: 100), // Extra space for floating action button
-            ],
-          ),
+            ),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -74,71 +77,36 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
     );
   }
 
-  Widget _buildJournalHeader(BuildContext context, dynamic user) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-        color: const Color(0xFF4CAF50), // Green color
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF4CAF50).withOpacity(0.3),
-            spreadRadius: 0,
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(40),
-              border: Border.all(
-                color: Colors.white,
-                width: 4,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  spreadRadius: 0,
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+  Widget _buildHeader(BuildContext context) {
+    return _buildHeaderContent(context);
+  }
+
+  Widget _buildHeaderContent(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Text(
+            'Journal',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 32,
+                ) ??
+                const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
-            ),
-            child: const Icon(
-              Icons.edit_note,
-              color: Color(0xFF4CAF50),
-              size: 40,
-            ),
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            'Your Recovery Journal',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 12),
-          const Text(
-            'Track your progress and build healthy habits',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.white,
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          width: double.infinity,
+          height: 1,
+          color: Colors.grey[300],
+        ),
+      ],
     );
   }
 
@@ -167,30 +135,26 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
   }
 
   Widget _buildDiaryAccessCards(BuildContext context) {
-    return Row(
+    return Column(
       children: [
         // Food Diary Card
-        Expanded(
-          child: _buildDiaryCard(
-            context,
-            title: 'Food Diary',
-            subtitle: 'Track your meals',
-            icon: Icons.restaurant,
-            color: const Color(0xFF4CAF50),
-            onTap: () => _navigateToFoodDiarySurvey(context),
-          ),
+        _buildDiaryCard(
+          context,
+          title: 'Food Diary',
+          subtitle: 'Track your meals',
+          icon: Icons.restaurant,
+          color: const Color(0xFF4CAF50),
+          onTap: () => _navigateToFoodDiarySurvey(context),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(height: 16),
         // Body Image Diary Card
-        Expanded(
-          child: _buildDiaryCard(
-            context,
-            title: 'Body Image',
-            subtitle: 'Track body checking',
-            icon: Icons.visibility,
-            color: Colors.teal[600]!,
-            onTap: () => _navigateToBodyImageDiarySurvey(context),
-          ),
+        _buildDiaryCard(
+          context,
+          title: 'Body Image',
+          subtitle: 'Track body checking',
+          icon: Icons.visibility,
+          color: Colors.teal[600]!,
+          onTap: () => _navigateToBodyImageDiarySurvey(context),
         ),
       ],
     );
@@ -204,81 +168,97 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
     required Color color,
     required VoidCallback onTap,
   }) {
-    return AspectRatio(
-      aspectRatio: 1.0, // Makes it square
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              spreadRadius: 0,
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-          border: Border.all(color: Colors.grey[200]!),
-        ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
-          child: Stack(
-            children: [
-              // Background icon
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      icon,
-                      color: color.withOpacity(0.15),
-                      size: 100,
+    return Container(
+      height: 280, // Increased height for better image display
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(16),
+            child: Column(
+              children: [
+                // Top image section - takes up more space
+                Expanded(
+                  flex: 4, // Increased from 3 to 4 for more image space
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(_getJournalImage(title)),
+                        fit: BoxFit.cover,
+                        alignment: Alignment.center, // Center the image
+                      ),
                     ),
                   ),
                 ),
-              ),
-              // Text overlay
-              Positioned.fill(
-                child: Container(
+                // Bottom white overlay section - sized to content
+                Container(
+                  width: double.infinity,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.06),
+                        blurRadius: 10,
+                        offset: const Offset(0, -2),
+                      ),
+                    ],
                   ),
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
                         title,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: color,
-                        ),
-                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 6),
                       Text(
                         subtitle,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: color.withOpacity(0.8),
-                        ),
-                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Colors.grey[700],
+                              height: 1.3,
+                            ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-    ));
+    );
+  }
+
+  String _getJournalImage(String title) {
+    if (title.toLowerCase().contains('food')) {
+      return 'assets/journal/food_diary.png';
+    } else if (title.toLowerCase().contains('body')) {
+      return 'assets/journal/body_image.png';
+    }
+    return 'assets/journal/food_diary.png'; // Default fallback
   }
 
 
