@@ -200,12 +200,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             
             // Content
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
               sliver: SliverToBoxAdapter(
                 child: Transform.translate(
-                  offset: const Offset(0, -50),
+                  offset: const Offset(0, -90),
                   child: Column(
                     children: [
+                          // Resources title
+                          Transform.translate(
+                            offset: const Offset(0, -20),
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Text(
+                                'Resources',
+                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                  fontSize: 24,
+                                ),
+                              ),
+                            ),
+                          ),
+                          
                           // Main buttons layout - left column with two buttons, right side with larger button
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -439,54 +455,105 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ),
               
-              // Content overlay
-              Column(
-                children: [
-                  // Header section with transparent background
-                  SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
-                      child: Row(
-                        children: [
-                          // App Logo
-                          _buildAppLogo(),
-                          const SizedBox(width: 16),
-                          // Greeting and user info
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+              // Content overlay - clipped to match the curved header
+              if (shouldShowLearningSection)
+                Container(
+                  height: 420,
+                  child: ClipPath(
+                    clipper: CurvedHeaderClipper(depth: 60),
+                    child: Column(
+                      children: [
+                        // Header section with transparent background
+                        SafeArea(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+                            child: Row(
                               children: [
-                                Text(
-                                  _getTimeBasedGreeting(authState.valueOrNull?.displayName.split(' ').first),
-                                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: shouldShowLearningSection ? Colors.white : Colors.black87,
-                                    fontSize: 24,
+                                // App Logo
+                                _buildAppLogo(),
+                                const SizedBox(width: 16),
+                                // Greeting and user info
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        _getTimeBasedGreeting(authState.valueOrNull?.displayName.split(' ').first),
+                                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: shouldShowLearningSection ? Colors.white : Colors.black87,
+                                          fontSize: 24,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        _getCurrentDate(),
+                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                          color: shouldShowLearningSection ? Colors.white.withOpacity(0.95) : Colors.grey[600],
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  _getCurrentDate(),
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: shouldShowLearningSection ? Colors.white.withOpacity(0.95) : Colors.grey[600],
-                                    fontSize: 14,
-                                  ),
-                                ),
+                                // Profile section
+                                _buildProfileSection(authState, onGreenBackground: shouldShowLearningSection),
                               ],
                             ),
                           ),
-                          // Profile section
-                          _buildProfileSection(authState, onGreenBackground: shouldShowLearningSection),
-                        ],
-                      ),
+                        ),
+                        
+                        // Continue Learning content (if logged in)
+                        _buildContinueLearningContentOnly(ref),
+                      ],
                     ),
                   ),
-                  
-                  // Continue Learning content (if logged in)
-                  if (shouldShowLearningSection)
-                    _buildContinueLearningContentOnly(ref),
-                ],
-              ),
+                )
+              else
+                // When not logged in, show header without clipping
+                Column(
+                  children: [
+                    // Header section with transparent background
+                    SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+                        child: Row(
+                          children: [
+                            // App Logo
+                            _buildAppLogo(),
+                            const SizedBox(width: 16),
+                            // Greeting and user info
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _getTimeBasedGreeting(authState.valueOrNull?.displayName.split(' ').first),
+                                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                      fontSize: 24,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    _getCurrentDate(),
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.grey[600],
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // Profile section
+                            _buildProfileSection(authState, onGreenBackground: false),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
             ],
           ),
         );
@@ -605,7 +672,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       height: 200,
       child: PageView.builder(
         controller: _lessonCarouselController,
-        padEnds: false,
         itemBuilder: (context, index) {
           // Use modulo to create infinite loop with the available lessons
           final lessonIndex = index % lessons.length;
