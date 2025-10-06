@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/urge_surfing.dart';
 import '../../providers/urge_surfing_provider.dart';
 import 'urge_surfing_detail_screen.dart';
-import 'urge_surfing_survey_screen.dart';
+import 'urge_surfing_screen.dart';
 
 class UrgeSurfingHistoryScreen extends ConsumerStatefulWidget {
   final String userId;
@@ -464,7 +464,7 @@ class _UrgeSurfingHistoryScreenState extends ConsumerState<UrgeSurfingHistoryScr
   void _navigateToNewExercise(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => const UrgeSurfingSurveyScreen(),
+        builder: (context) => const UrgeSurfingScreen(),
       ),
     );
   }

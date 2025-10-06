@@ -140,3 +140,96 @@ final latestUrgeSurfingExerciseProvider = FutureProvider.family<UrgeSurfing?, St
   final exercises = await service.getUserUrgeSurfingExercises(userId);
   return exercises.isNotEmpty ? exercises.first : null;
 });
+
+// Individual activity management notifier
+class UserActivitiesNotifier extends StateNotifier<AsyncValue<List<AlternativeActivity>>> {
+  final UrgeSurfingService _urgeSurfingService;
+  final String _userId;
+
+  UserActivitiesNotifier(this._urgeSurfingService, this._userId) : super(const AsyncValue.loading()) {
+    loadUserActivities();
+  }
+
+  Future<void> loadUserActivities() async {
+    try {
+      state = const AsyncValue.loading();
+      final activities = await _urgeSurfingService.getAllUserActivities(_userId);
+      state = AsyncValue.data(activities);
+    } catch (e) {
+      state = AsyncValue.error(e, StackTrace.current);
+    }
+  }
+
+  Future<AlternativeActivity?> addActivity({
+    required String name,
+    required String description,
+    required bool isActive,
+    required bool isEnjoyable,
+    required bool isRealistic,
+  }) async {
+    try {
+      final activity = await _urgeSurfingService.addUserActivity(
+        userId: _userId,
+        name: name,
+        description: description,
+        isActive: isActive,
+        isEnjoyable: isEnjoyable,
+        isRealistic: isRealistic,
+      );
+
+      // Refresh current state
+      await loadUserActivities();
+      
+      return activity;
+    } catch (e) {
+      state = AsyncValue.error(e, StackTrace.current);
+      return null;
+    }
+  }
+
+  Future<void> updateActivity({
+    required String activityId,
+    required String name,
+    required String description,
+    required bool isActive,
+    required bool isEnjoyable,
+    required bool isRealistic,
+  }) async {
+    try {
+      await _urgeSurfingService.updateUserActivity(
+        userId: _userId,
+        activityId: activityId,
+        name: name,
+        description: description,
+        isActive: isActive,
+        isEnjoyable: isEnjoyable,
+        isRealistic: isRealistic,
+      );
+
+      // Refresh current state
+      await loadUserActivities();
+    } catch (e) {
+      state = AsyncValue.error(e, StackTrace.current);
+    }
+  }
+
+  Future<void> deleteActivity(String activityId) async {
+    try {
+      await _urgeSurfingService.deleteUserActivity(_userId, activityId);
+      
+      // Refresh current state
+      await loadUserActivities();
+    } catch (e) {
+      state = AsyncValue.error(e, StackTrace.current);
+    }
+  }
+
+  Future<void> refreshActivities() async {
+    await loadUserActivities();
+  }
+}
+
+// User activities provider
+final userActivitiesProvider = StateNotifierProvider.family<UserActivitiesNotifier, AsyncValue<List<AlternativeActivity>>, String>((ref, userId) {
+  return UserActivitiesNotifier(ref.read(urgeSurfingServiceProvider), userId);
+});
