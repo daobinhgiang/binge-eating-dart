@@ -86,7 +86,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - .env
-    - logo.png
+    - assets/logo.png
     - assets/lessons/stages/
     - assets/exercises/
 
