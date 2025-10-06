@@ -1,11 +1,14 @@
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/auth_provider.dart';
 import '../providers/todo_provider.dart';
 import '../providers/firebase_analytics_provider.dart';
+import '../providers/lesson_progress_provider.dart';
 import '../core/services/openai_service.dart';
 import '../models/todo_item.dart';
+import '../models/lesson.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -14,12 +17,9 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStateMixin {
-  AnimationController? _fadeController;
-  AnimationController? _scaleController;
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   ScrollController? _scrollController;
-  Animation<double>? _fadeAnimation;
-  Animation<double>? _scaleAnimation;
+  PageController? _lessonCarouselController;
   
   // Insights section state
   bool _isGeneratingInsights = false;
@@ -29,40 +29,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    _fadeController = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
+    // Start at a large number to enable infinite scrolling in both directions
+    _lessonCarouselController = PageController(
+      viewportFraction: 0.6,
+      initialPage: 10000,
     );
-    _scaleController = AnimationController(
-      duration: const Duration(milliseconds: 600),
-      vsync: this,
-    );
-    
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _fadeController!,
-      curve: Curves.easeInOut,
-    ));
-    
-    _scaleAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _scaleController!,
-      curve: Curves.elasticOut,
-    ));
-    
-    _fadeController?.forward();
-    _scaleController?.forward();
   }
 
   @override
   void dispose() {
     _scrollController?.dispose();
-    _fadeController?.dispose();
-    _scaleController?.dispose();
+    _lessonCarouselController?.dispose();
     super.dispose();
   }
 
@@ -114,7 +91,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
+            color: Colors.black.withOpacity( 0.2),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -172,7 +149,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         borderRadius: BorderRadius.circular(24),
         child: CircleAvatar(
           radius: 24,
-          backgroundColor: const Color(0xFF4CAF50).withValues(alpha: 0.1),
+          backgroundColor: const Color(0xFF4CAF50).withOpacity( 0.1),
           child: Icon(
             Icons.notifications,
             color: const Color(0xFF4CAF50),
@@ -191,7 +168,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         borderRadius: BorderRadius.circular(24),
         child: CircleAvatar(
           radius: 24,
-          backgroundColor: const Color(0xFF4CAF50).withValues(alpha: 0.1),
+          backgroundColor: const Color(0xFF4CAF50).withOpacity( 0.1),
           child: Icon(
             Icons.notifications,
             color: const Color(0xFF4CAF50),
@@ -259,18 +236,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               ),
             ),
             
+            // Continue Learning Section with curved green background
+            SliverToBoxAdapter(
+              child: _buildContinueLearningSection(),
+            ),
+            
             // Content
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  // Animated content wrapper
-                  FadeTransition(
-                    opacity: _fadeAnimation ?? const AlwaysStoppedAnimation(1.0),
-                    child: ScaleTransition(
-                      scale: _scaleAnimation ?? const AlwaysStoppedAnimation(1.0),
-                      child: Column(
-                        children: [
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              sliver: SliverToBoxAdapter(
+                child: Transform.translate(
+                  offset: const Offset(0, -50),
+                  child: Column(
+                    children: [
                           // Main buttons layout - left column with two buttons, right side with larger button
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -288,12 +266,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                         color: Colors.white,
                                         borderRadius: BorderRadius.circular(12),
                                         border: Border.all(
-                                          color: const Color(0xFFE57373).withValues(alpha: 0.3),
+                                          color: const Color(0xFFE57373).withOpacity(0.3),
                                           width: 2,
                                         ),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.black.withValues(alpha: 0.04),
+                                            color: Colors.black.withOpacity( 0.04),
                                             blurRadius: 8,
                                             offset: const Offset(0, 2),
                                           ),
@@ -346,12 +324,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                         color: Colors.white,
                                         borderRadius: BorderRadius.circular(12),
                                         border: Border.all(
-                                          color: const Color(0xFF64B5F6).withValues(alpha: 0.3),
+                                          color: const Color(0xFF64B5F6).withOpacity( 0.3),
                                           width: 2,
                                         ),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.black.withValues(alpha: 0.04),
+                                            color: Colors.black.withOpacity( 0.04),
                                             blurRadius: 8,
                                             offset: const Offset(0, 2),
                                           ),
@@ -433,8 +411,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                         ),
                                       ),
                                       const SizedBox(height: 12),
-                                      ..._insightsRecommendations.map((recommendation) => 
-                                        _buildInsightRecommendationCard(recommendation)
+                                      ..._insightsRecommendations.asMap().entries.map((entry) => 
+                                        _buildInsightRecommendationCard(entry.value, key: ValueKey('insight_${entry.key}'))
                                       ),
                                     ],
                                   ),
@@ -453,11 +431,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     loading: () => const SizedBox.shrink(),
                     error: (_, __) => _buildGuestContentSection(),
                   ),
-                        ],
-                      ),
-                    ),
+                    ],
                   ),
-                ]),
+                ),
               ),
             ),
           ],
@@ -471,26 +447,384 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildTodoSection(),
-        const SizedBox(height: 32),
-        _buildNextLessonSection(),
       ],
     );
   }
 
-  Widget _buildNextLessonSection() {
-    return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-          'Continue Learning',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+  Widget _buildContinueLearningSection() {
+    return Consumer(
+      builder: (context, ref, child) {
+        final authState = ref.watch(authNotifierProvider);
+        
+        return authState.when(
+          data: (user) => user != null 
+              ? _buildContinueLearningContent(ref)
+              : const SizedBox.shrink(),
+          loading: () => const SizedBox.shrink(),
+          error: (_, __) => const SizedBox.shrink(),
+        );
+      },
+    );
+  }
+
+  Widget _buildContinueLearningContent(WidgetRef ref) {
+    final authState = ref.watch(authNotifierProvider);
+    final user = authState.valueOrNull;
+    
+    if (user == null) return const SizedBox.shrink();
+    
+    final nextLessonsAsync = ref.watch(nextUncompletedLessonsProvider(user.id));
+    
+    return Container(
+      margin: const EdgeInsets.fromLTRB(0, 0, 0, 40),
+      child: Stack(
+        children: [
+          // Curved green background with inward curve
+          Container(
+            height: 320,
+            child: ClipPath(
+              clipper: CurvedHeaderClipper(depth: 60),
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xFF4CAF50), // Green
+                      Color(0xFF66BB6A), // Light green
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          
+          // Content
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Header
+                  const Center(
+                    child: Text(
+                      'Continue Learning',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 25,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 12),
-        // Lesson recommendations removed with old system
-      ],
+                  ),
+                  
+                  const SizedBox(height: 20),
+                  
+                  // Lesson cards carousel
+                  nextLessonsAsync.when(
+                    data: (lessons) {
+                      print('DEBUG UI: Got ${lessons.length} lessons');
+                      if (lessons.isEmpty) {
+                        return _buildAllLessonsCompletedCard();
+                      } else {
+                        return _buildLessonCarousel(lessons);
+                      }
+                    },
+                    loading: () {
+                      print('DEBUG UI: Loading lessons...');
+                      return const SizedBox(
+                        height: 200,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        ),
+                      );
+                    },
+                    error: (error, stack) {
+                      print('DEBUG UI: Error loading lessons: $error');
+                      print('Stack: $stack');
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            const Icon(
+                              Icons.error_outline,
+                              color: Colors.white70,
+                              size: 48,
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Unable to load lessons',
+                              style: TextStyle(color: Colors.white70),
+                            ),
+                            Text(
+                              error.toString(),
+                              style: const TextStyle(color: Colors.white60, fontSize: 12),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
+  }
+
+  Widget _buildLessonCarousel(List<Lesson> lessons) {
+    // Ensure we have at least one lesson
+    if (lessons.isEmpty) {
+      print('DEBUG: No lessons available for carousel');
+      return const SizedBox.shrink();
+    }
+
+    // Check if controller is initialized
+    if (_lessonCarouselController == null) {
+      print('DEBUG: PageController not initialized');
+      return const SizedBox.shrink();
+    }
+
+    print('DEBUG: Building carousel with ${lessons.length} lessons');
+
+    return SizedBox(
+      height: 200,
+      child: PageView.builder(
+        controller: _lessonCarouselController,
+        padEnds: false,
+        itemBuilder: (context, index) {
+          // Use modulo to create infinite loop with the available lessons
+          final lessonIndex = index % lessons.length;
+          final lesson = lessons[lessonIndex];
+          
+          return AnimatedBuilder(
+            animation: _lessonCarouselController!,
+            builder: (context, child) {
+              double value = 1.0;
+              if (_lessonCarouselController!.position.haveDimensions) {
+                value = (_lessonCarouselController!.page ?? 0) - index;
+                value = (1 - (value.abs() * 0.3)).clamp(0.7, 1.0);
+              }
+              
+              // Calculate blur amount based on distance from center
+              final blurAmount = (1.0 - value) * 10; // 0 to 10 blur
+              
+              return Center(
+                child: SizedBox(
+                  height: Curves.easeOut.transform(value) * 200,
+                  child: _buildLessonVideoCard(
+                    lesson,
+                    blurAmount: blurAmount,
+                    isFirstLesson: lessonIndex == 0,
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildLessonVideoCard(
+    Lesson lesson, {
+    double blurAmount = 0.0,
+    bool isFirstLesson = false,
+  }) {
+    final cardContent = Container(
+      width: 200,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.4),
+          width: 1.5,
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Lesson icon and label row
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.school_outlined,
+                  color: Colors.white,
+                  size: 18,
+                ),
+              ),
+              const SizedBox(width: 8),
+              if (isFirstLesson)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: const Text(
+                    'Next Lesson',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          
+          const SizedBox(height: 10),
+          
+          // Lesson title
+          Text(
+            lesson.title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              height: 1.2,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          
+          const SizedBox(height: 10),
+          
+          // Start button/arrow
+          Row(
+            children: [
+              Text(
+                'Start',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.9),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                Icons.arrow_forward,
+                color: Colors.white.withOpacity(0.9),
+                size: 12,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+
+    // Apply blur if needed
+    if (blurAmount > 0.5) {
+      return ImageFiltered(
+        imageFilter: ui.ImageFilter.blur(
+          sigmaX: blurAmount,
+          sigmaY: blurAmount,
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => _navigateToLesson(lesson),
+            borderRadius: BorderRadius.circular(12),
+            child: cardContent,
+          ),
+        ),
+      );
+    }
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => _navigateToLesson(lesson),
+        borderRadius: BorderRadius.circular(12),
+        child: cardContent,
+      ),
+    );
+  }
+
+  Widget _buildAllLessonsCompletedCard() {
+    return Container(
+      height: 160,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.3),
+          width: 2,
+        ),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.check_circle,
+                color: Colors.white,
+                size: 48,
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'All lessons completed!',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Great job!',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.8),
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _navigateToLesson(Lesson lesson) {
+    // Navigate to the specific lesson based on lesson ID
+    final lessonId = lesson.id;
+    
+    // Convert lesson ID to route path
+    String routePath;
+    if (lessonId.startsWith('lesson_1_') || lessonId.startsWith('lesson_2_') || lessonId.startsWith('lesson_3_')) {
+      routePath = '/lesson/${lessonId.replaceFirst('lesson_', '')}';
+    } else if (lessonId.startsWith('lesson_s2_')) {
+      routePath = '/lesson/${lessonId.replaceFirst('lesson_s2_', 's2_')}';
+    } else if (lessonId.startsWith('lesson_s3_')) {
+      routePath = '/lesson/${lessonId.replaceFirst('lesson_s3_', 's3_')}';
+    } else {
+      routePath = '/lesson/${lessonId.replaceFirst('lesson_', '')}';
+    }
+    
+    context.push(routePath);
   }
 
 
@@ -524,7 +858,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF4CAF50).withValues(alpha:0.05),
+                color: const Color(0xFF4CAF50).withOpacity(0.05),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -548,7 +882,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF4CAF50).withValues(alpha:0.3),
+                            color: const Color(0xFF4CAF50).withOpacity(0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -585,7 +919,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha:0.8),
+                        color: Colors.white.withOpacity(0.8),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -618,7 +952,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF4CAF50).withValues(alpha:0.05),
+                color: const Color(0xFF4CAF50).withOpacity(0.05),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -642,7 +976,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF4CAF50).withValues(alpha:0.3),
+                            color: const Color(0xFF4CAF50).withOpacity(0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -679,7 +1013,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha:0.8),
+                        color: Colors.white.withOpacity(0.8),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -769,7 +1103,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withOpacity( 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -808,7 +1142,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withOpacity( 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -860,7 +1194,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
+            color: const Color(0xFF4CAF50).withOpacity( 0.3),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -925,7 +1259,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         if (todayTodos.isEmpty)
           _buildEmptyTodoState(context)
         else
-          ...todayTodos.take(2).map((todo) => _buildCompactTodoItem(context, todo)),
+          ...todayTodos.take(2).toList().asMap().entries.map((entry) => 
+            _buildCompactTodoItem(context, entry.value, key: ValueKey('todo_${entry.value.id}_${entry.key}'))
+          ),
       ],
     );
   }
@@ -992,10 +1328,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     );
   }
 
-  Widget _buildCompactTodoItem(BuildContext context, TodoItem todo) {
+  Widget _buildCompactTodoItem(BuildContext context, TodoItem todo, {Key? key}) {
     final timeText = _formatTodoTime(todo.dueDate);
     
     return Container(
+      key: key,
       margin: const EdgeInsets.only(bottom: 6),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
@@ -1264,12 +1601,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
+          color: const Color(0xFF4CAF50).withOpacity( 0.3),
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withOpacity( 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -1293,7 +1630,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF4CAF50).withValues(alpha: 0.08),
+                          color: const Color(0xFF4CAF50).withOpacity( 0.08),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -1417,7 +1754,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     }
   }
   
-  Widget _buildInsightRecommendationCard(Map<String, dynamic> recommendation) {
+  Widget _buildInsightRecommendationCard(Map<String, dynamic> recommendation, {Key? key}) {
     final type = recommendation['type'] as String? ?? '';
     final title = recommendation['title'] as String? ?? '';
     final description = recommendation['description'] as String? ?? '';
@@ -1448,6 +1785,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     }
 
     return Container(
+      key: key,
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -1458,7 +1796,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withOpacity( 0.02),
             blurRadius: 4,
             offset: const Offset(0, 1),
           ),
@@ -1476,7 +1814,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: typeColor.withValues(alpha: 0.1),
+                    color: typeColor.withOpacity( 0.1),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Icon(
@@ -1896,6 +2234,47 @@ class DashedLinePainter extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 
+// Custom clipper for curved header with inward curve
+class CurvedHeaderClipper extends CustomClipper<Path> {
+  final double depth;
+  
+  CurvedHeaderClipper({this.depth = 80});
+  
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    
+    // Start from top-left corner
+    path.moveTo(0, 0);
+    
+    // Go to top-right corner
+    path.lineTo(size.width, 0);
+    
+    // Go down the right side
+    path.lineTo(size.width, size.height - depth);
+    
+    // Create a smooth inward curve (concave) at the bottom
+    // Using quadraticBezierTo for a cleaner arch shape
+    path.quadraticBezierTo(
+      size.width / 2,              // Control point X (center)
+      size.height - depth * 2,      // Control point Y (pulls curve upward for inward effect)
+      0,                           // End point X (left side)
+      size.height - depth,          // End point Y (same height as right side)
+    );
+    
+    // Go up the left side
+    path.lineTo(0, 0);
+    
+    // Close the path
+    path.close();
+    
+    return path;
+  }
+  
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}
+
 // Custom painter for comforting background with subtle nature elements
 class ComfortingBackgroundPainter extends CustomPainter {
   @override
@@ -1903,28 +2282,28 @@ class ComfortingBackgroundPainter extends CustomPainter {
     final paint = Paint();
     
     // Draw subtle circles for a calming effect
-    paint.color = const Color(0xFF4CAF50).withValues(alpha:0.03);
+    paint.color = const Color(0xFF4CAF50).withOpacity(0.03);
     canvas.drawCircle(
       Offset(size.width * 0.1, size.height * 0.2),
       size.width * 0.15,
       paint,
     );
     
-    paint.color = const Color(0xFF66BB6A).withValues(alpha:0.02);
+    paint.color = const Color(0xFF66BB6A).withOpacity(0.02);
     canvas.drawCircle(
       Offset(size.width * 0.8, size.height * 0.3),
       size.width * 0.2,
       paint,
     );
     
-    paint.color = const Color(0xFF43A047).withValues(alpha:0.025);
+    paint.color = const Color(0xFF43A047).withOpacity(0.025);
     canvas.drawCircle(
       Offset(size.width * 0.9, size.height * 0.7),
       size.width * 0.12,
       paint,
     );
     
-    paint.color = const Color(0xFF388E3C).withValues(alpha:0.02);
+    paint.color = const Color(0xFF388E3C).withOpacity(0.02);
     canvas.drawCircle(
       Offset(size.width * 0.15, size.height * 0.8),
       size.width * 0.18,
@@ -1932,7 +2311,7 @@ class ComfortingBackgroundPainter extends CustomPainter {
     );
     
     // Draw subtle organic shapes for a nature-inspired feel
-    paint.color = const Color(0xFF4CAF50).withValues(alpha:0.015);
+    paint.color = const Color(0xFF4CAF50).withOpacity(0.015);
     final path = Path();
     path.moveTo(size.width * 0.3, size.height * 0.1);
     path.quadraticBezierTo(
@@ -1950,7 +2329,7 @@ class ComfortingBackgroundPainter extends CustomPainter {
     canvas.drawPath(path, paint);
     
     // Draw gentle hills at the bottom
-    paint.color = const Color(0xFF66BB6A).withValues(alpha:0.02);
+    paint.color = const Color(0xFF66BB6A).withOpacity(0.02);
     final hillsPath = Path();
     hillsPath.moveTo(0, size.height);
     hillsPath.quadraticBezierTo(
