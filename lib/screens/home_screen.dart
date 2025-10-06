@@ -131,17 +131,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
 
 
-  Widget _buildProfileSection(AsyncValue authState) {
+  Widget _buildProfileSection(AsyncValue authState, {bool onGreenBackground = false}) {
     return authState.when(
       data: (user) => user != null
-          ? _buildNotificationBell()
-          : _buildGuestProfile(),
-      loading: () => _buildNotificationBell(),
-      error: (_, __) => _buildGuestProfile(),
+          ? _buildNotificationBell(onGreenBackground: onGreenBackground)
+          : _buildGuestProfile(onGreenBackground: onGreenBackground),
+      loading: () => _buildNotificationBell(onGreenBackground: onGreenBackground),
+      error: (_, __) => _buildGuestProfile(onGreenBackground: onGreenBackground),
     );
   }
 
-  Widget _buildNotificationBell() {
+  Widget _buildNotificationBell({bool onGreenBackground = false}) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -149,10 +149,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         borderRadius: BorderRadius.circular(24),
         child: CircleAvatar(
           radius: 24,
-          backgroundColor: const Color(0xFF4CAF50).withOpacity( 0.1),
+          backgroundColor: onGreenBackground 
+              ? Colors.white.withOpacity(0.2) 
+              : const Color(0xFF4CAF50).withOpacity(0.1),
           child: Icon(
             Icons.notifications,
-            color: const Color(0xFF4CAF50),
+            color: onGreenBackground ? Colors.white : const Color(0xFF4CAF50),
             size: 24,
           ),
         ),
@@ -160,7 +162,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildGuestProfile() {
+  Widget _buildGuestProfile({bool onGreenBackground = false}) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -168,10 +170,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         borderRadius: BorderRadius.circular(24),
         child: CircleAvatar(
           radius: 24,
-          backgroundColor: const Color(0xFF4CAF50).withOpacity( 0.1),
+          backgroundColor: onGreenBackground 
+              ? Colors.white.withOpacity(0.2) 
+              : const Color(0xFF4CAF50).withOpacity(0.1),
           child: Icon(
             Icons.notifications,
-            color: const Color(0xFF4CAF50),
+            color: onGreenBackground ? Colors.white : const Color(0xFF4CAF50),
             size: 24,
           ),
         ),
@@ -189,56 +193,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       body: CustomScrollView(
           controller: _scrollController ?? ScrollController(),
           slivers: [
-            // Enhanced header with logo
+            // Combined header and Continue Learning Section with green background
             SliverToBoxAdapter(
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                ),
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
-                    child: Row(
-                      children: [
-                        // App Logo
-                        _buildAppLogo(),
-                        const SizedBox(width: 16),
-                        // Greeting and user info
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                _getTimeBasedGreeting(authState.valueOrNull?.displayName.split(' ').first),
-                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                  fontSize: 24,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                _getCurrentDate(),
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Colors.grey[600],
-                                  fontSize: 14,
-                                ),
-                              ),
-                              ],
-                          ),
-                        ),
-                        // Profile section
-                        _buildProfileSection(authState),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            
-            // Continue Learning Section with curved green background
-            SliverToBoxAdapter(
-              child: _buildContinueLearningSection(),
+              child: _buildCombinedHeaderAndLearningSection(authState),
             ),
             
             // Content
@@ -451,23 +408,93 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildContinueLearningSection() {
+  Widget _buildCombinedHeaderAndLearningSection(AsyncValue authState) {
     return Consumer(
       builder: (context, ref, child) {
-        final authState = ref.watch(authNotifierProvider);
+        final user = authState.valueOrNull;
+        final shouldShowLearningSection = user != null;
         
-        return authState.when(
-          data: (user) => user != null 
-              ? _buildContinueLearningContent(ref)
-              : const SizedBox.shrink(),
-          loading: () => const SizedBox.shrink(),
-          error: (_, __) => const SizedBox.shrink(),
+        return Container(
+          margin: const EdgeInsets.fromLTRB(0, 0, 0, 40),
+          child: Stack(
+            children: [
+              // Green background that extends from top
+              if (shouldShowLearningSection)
+                Container(
+                  height: 420, // Increased to cover header + learning section
+                  child: ClipPath(
+                    clipper: CurvedHeaderClipper(depth: 60),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Color(0xFF4CAF50), // Green
+                            Color(0xFF66BB6A), // Light green
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              
+              // Content overlay
+              Column(
+                children: [
+                  // Header section with transparent background
+                  SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+                      child: Row(
+                        children: [
+                          // App Logo
+                          _buildAppLogo(),
+                          const SizedBox(width: 16),
+                          // Greeting and user info
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _getTimeBasedGreeting(authState.valueOrNull?.displayName.split(' ').first),
+                                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: shouldShowLearningSection ? Colors.white : Colors.black87,
+                                    fontSize: 24,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  _getCurrentDate(),
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: shouldShowLearningSection ? Colors.white.withOpacity(0.95) : Colors.grey[600],
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Profile section
+                          _buildProfileSection(authState, onGreenBackground: shouldShowLearningSection),
+                        ],
+                      ),
+                    ),
+                  ),
+                  
+                  // Continue Learning content (if logged in)
+                  if (shouldShowLearningSection)
+                    _buildContinueLearningContentOnly(ref),
+                ],
+              ),
+            ],
+          ),
         );
       },
     );
   }
 
-  Widget _buildContinueLearningContent(WidgetRef ref) {
+  Widget _buildContinueLearningContentOnly(WidgetRef ref) {
     final authState = ref.watch(authNotifierProvider);
     final user = authState.valueOrNull;
     
@@ -475,110 +502,89 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     
     final nextLessonsAsync = ref.watch(nextUncompletedLessonsProvider(user.id));
     
-    return Container(
-      margin: const EdgeInsets.fromLTRB(0, 0, 0, 40),
-      child: Stack(
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Curved green background with inward curve
-          Container(
-            height: 320,
-            child: ClipPath(
-              clipper: CurvedHeaderClipper(depth: 60),
-              child: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xFF4CAF50), // Green
-                      Color(0xFF66BB6A), // Light green
-                    ],
+          // Header
+          Center(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.menu_book,
+                  color: Colors.white,
+                  size: 30,
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'Continue Learning',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
+              ]
             ),
           ),
           
-          // Content
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // Header
-                  const Center(
-                    child: Text(
-                      'Continue Learning',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                      ),
+          const SizedBox(height: 20),
+          
+          // Lesson cards carousel
+          nextLessonsAsync.when(
+            data: (lessons) {
+              print('DEBUG UI: Got ${lessons.length} lessons');
+              if (lessons.isEmpty) {
+                return _buildAllLessonsCompletedCard();
+              } else {
+                return _buildLessonCarousel(lessons);
+              }
+            },
+            loading: () {
+              print('DEBUG UI: Loading lessons...');
+              return const SizedBox(
+                height: 200,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                ),
+              );
+            },
+            error: (error, stack) {
+              print('DEBUG UI: Error loading lessons: $error');
+              print('Stack: $stack');
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      color: Colors.white70,
+                      size: 48,
                     ),
-                  ),
-                  
-                  const SizedBox(height: 20),
-                  
-                  // Lesson cards carousel
-                  nextLessonsAsync.when(
-                    data: (lessons) {
-                      print('DEBUG UI: Got ${lessons.length} lessons');
-                      if (lessons.isEmpty) {
-                        return _buildAllLessonsCompletedCard();
-                      } else {
-                        return _buildLessonCarousel(lessons);
-                      }
-                    },
-                    loading: () {
-                      print('DEBUG UI: Loading lessons...');
-                      return const SizedBox(
-                        height: 200,
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        ),
-                      );
-                    },
-                    error: (error, stack) {
-                      print('DEBUG UI: Error loading lessons: $error');
-                      print('Stack: $stack');
-                      return Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          children: [
-                            const Icon(
-                              Icons.error_outline,
-                              color: Colors.white70,
-                              size: 48,
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'Unable to load lessons',
-                              style: TextStyle(color: Colors.white70),
-                            ),
-                            Text(
-                              error.toString(),
-                              style: const TextStyle(color: Colors.white60, fontSize: 12),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Unable to load lessons',
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                    Text(
+                      error.toString(),
+                      style: const TextStyle(color: Colors.white60, fontSize: 12),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
         ],
       ),
     );
   }
+
 
   Widget _buildLessonCarousel(List<Lesson> lessons) {
     // Ensure we have at least one lesson
