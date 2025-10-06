@@ -5,7 +5,6 @@ import 'meal_planning_screen.dart';
 import 'urge_surfing_screen.dart';
 import 'addressing_overconcern_screen.dart';
 import 'addressing_setbacks_screen.dart';
-import '../../widgets/tools_background.dart';
 
 class ExerciseItem {
   final String title;

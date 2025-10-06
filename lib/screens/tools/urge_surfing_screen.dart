@@ -14,7 +14,7 @@ class UrgeSurfingScreen extends ConsumerStatefulWidget {
 }
 
 class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
-  bool _isLoading = false;
+  final bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
