@@ -69,6 +69,7 @@ import '../assessments/assessment_2_2_screen.dart';
 import '../assessments/assessment_2_3_screen.dart';
 import '../assessments/assessment_s3_0_3_screen.dart';
 import '../assessments/assessment_s3_0_4_screen.dart';
+import '../../core/services/user_learning_service.dart';
 
 class LessonsScreen extends StatefulWidget {
   final int? stageNumber;
@@ -124,6 +125,8 @@ class _LessonsScreenState extends State<LessonsScreen> {
     Widget? lessonScreen = _getLessonScreen(lesson.id);
     
     if (lessonScreen != null) {
+      // Save last clicked lesson for user
+      UserLearningService().saveLastLesson(lesson.id);
       Navigator.push(
         context,
         MaterialPageRoute(

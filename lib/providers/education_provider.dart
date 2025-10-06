@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/article.dart';
 import 'auth_provider.dart';
+import '../core/services/user_learning_service.dart';
 
 final firestoreProvider = Provider<FirebaseFirestore>((ref) => FirebaseFirestore.instance);
 
@@ -147,5 +148,16 @@ class EducationNotifier extends StateNotifier<AsyncValue<void>> {
 
 final educationNotifierProvider = StateNotifierProvider<EducationNotifier, AsyncValue<void>>((ref) {
   return EducationNotifier(ref.watch(firestoreProvider));
+});
+
+// Stream the last lesson id for the current user in realtime
+final lastLessonIdProvider = StreamProvider<String?>((ref) {
+  final isAuthenticated = ref.watch(isAuthenticatedProvider);
+  if (!isAuthenticated) return const Stream.empty();
+
+  final user = ref.watch(currentUserDataProvider);
+  if (user == null) return const Stream.empty();
+
+  return UserLearningService().lastLessonStream(user.id);
 });
 

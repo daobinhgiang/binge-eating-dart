@@ -3,9 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/auth_provider.dart';
 import '../providers/todo_provider.dart';
+import '../providers/education_provider.dart';
+import '../../data/stage_1_data.dart';
+import '../../data/stage_2_data.dart';
+import '../../data/stage_3_data.dart';
+import '../../models/stage.dart';
+import '../../models/chapter.dart';
+import '../../models/lesson.dart';
 import '../providers/firebase_analytics_provider.dart';
 import '../core/services/openai_service.dart';
 import '../models/todo_item.dart';
+import '../core/services/user_learning_service.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -95,16 +103,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     return '$weekday, $month $day, $year';
   }
 
-  void _onNotificationBellTapped() {
-    // Handle notification bell tap
-    // This can be extended to show notifications or navigate to a notifications screen
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Notifications feature coming soon!'),
-        duration: Duration(seconds: 2),
-      ),
-    );
-  }
+  
 
   Widget _buildAppLogo() {
     return Container(
@@ -154,53 +153,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
 
 
-  Widget _buildProfileSection(AsyncValue authState) {
-    return authState.when(
-      data: (user) => user != null
-          ? _buildNotificationBell()
-          : _buildGuestProfile(),
-      loading: () => _buildNotificationBell(),
-      error: (_, __) => _buildGuestProfile(),
-    );
-  }
-
-  Widget _buildNotificationBell() {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: _onNotificationBellTapped,
-        borderRadius: BorderRadius.circular(24),
-        child: CircleAvatar(
-          radius: 24,
-          backgroundColor: const Color(0xFF4CAF50).withValues(alpha: 0.1),
-          child: Icon(
-            Icons.notifications,
-            color: const Color(0xFF4CAF50),
-            size: 24,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGuestProfile() {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: _onNotificationBellTapped,
-        borderRadius: BorderRadius.circular(24),
-        child: CircleAvatar(
-          radius: 24,
-          backgroundColor: const Color(0xFF4CAF50).withValues(alpha: 0.1),
-          child: Icon(
-            Icons.notifications,
-            color: const Color(0xFF4CAF50),
-            size: 24,
-          ),
-        ),
-      ),
-    );
-  }
+  
 
 
   @override
@@ -250,8 +203,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                               ],
                           ),
                         ),
-                        // Profile section
-                        _buildProfileSection(authState),
+                        // Profile/notification section removed
+                        const SizedBox.shrink(),
                       ],
                     ),
                   ),
@@ -488,8 +441,139 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       ),
                     ),
                     const SizedBox(height: 12),
-        // Lesson recommendations removed with old system
+        Consumer(
+          builder: (context, ref, child) {
+            final lastLessonAsync = ref.watch(lastLessonIdProvider);
+            return lastLessonAsync.when(
+              data: (lastLessonId) {
+                // Build stages to compute next lesson
+                final List<Stage> stages = [
+                  Stage1Data.getStage1(),
+                  Stage2Data.getStage2(),
+                  Stage3Data.getStage3(),
+                ];
+
+                Lesson? nextLesson;
+                if (lastLessonId != null && lastLessonId.isNotEmpty) {
+                  nextLesson = _findNextLesson(stages, lastLessonId);
+                }
+
+                nextLesson ??= _firstLesson(stages);
+
+                if (nextLesson == null) {
+                  return const SizedBox.shrink();
+                }
+
+                return _buildNextLessonCard(nextLesson);
+              },
+              loading: () => const SizedBox.shrink(),
+              error: (_, __) => const SizedBox.shrink(),
+            );
+          },
+        ),
       ],
+    );
+  }
+
+  Lesson? _firstLesson(List<Stage> stages) {
+    for (final stage in stages) {
+      for (final chapter in stage.chapters) {
+        if (chapter.lessons.isNotEmpty) return chapter.lessons.first;
+      }
+    }
+    return null;
+  }
+
+  Lesson? _findNextLesson(List<Stage> stages, String currentLessonId) {
+    final flat = <Lesson>[];
+    for (final stage in stages) {
+      for (final chapter in stage.chapters) {
+        flat.addAll(chapter.lessons);
+      }
+    }
+    for (int i = 0; i < flat.length; i++) {
+      if (flat[i].id == currentLessonId) {
+        if (i + 1 < flat.length) return flat[i + 1];
+        return null; // No next lesson
+      }
+    }
+    return null; // Not found
+  }
+
+  Widget _buildNextLessonCard(Lesson lesson) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.grey[200]!,
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _navigateToInsightLesson(lesson.id),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF4CAF50).withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: const Color(0xFF4CAF50).withValues(alpha: 0.2),
+                      width: 1,
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.play_lesson,
+                    color: Color(0xFF4CAF50),
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Up Next',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: const Color(0xFF4CAF50),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        lesson.title,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Icon(Icons.arrow_forward_ios, size: 16, color: Color(0xFF4CAF50)),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -1551,6 +1635,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   }
   
   void _navigateToInsightLesson(String lessonId) {
+    // Save last clicked lesson so Home can update the next lesson in realtime
+    UserLearningService().saveLastLesson(lessonId);
     // Navigate to specific lesson based on lesson ID (same logic as chatbot)
     switch (lessonId) {
       // Stage 1 lessons

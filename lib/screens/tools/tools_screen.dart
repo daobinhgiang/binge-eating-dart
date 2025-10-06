@@ -80,91 +80,54 @@ class ToolsScreen extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              margin: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFF66BB6A), // Brighter, more vibrant green
-                    Color(0xFF4CAF50), // Material green
-                    Color(0xFF43A047), // Slightly darker green
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF66BB6A).withOpacity(0.3),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.white,
-                            width: 4,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Colors.white.withOpacity(0.2),
-                          child: const Icon(
-                            Icons.psychology,
-                            color: Colors.white,
-                            size: 28,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Recovery Tools',
-                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            _buildHeader(context),
+            const SizedBox(height: 24),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                children: exercises.map((exercise) => _buildExerciseCard(context, exercise)).toList(),
+                children: [
+                  ...exercises.map((exercise) => _buildExerciseCard(context, exercise)).toList(),
+                  const SizedBox(height: 24),
+                ],
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    return _buildHeaderContent(context);
+  }
+
+  Widget _buildHeaderContent(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Text(
+            'Exercises',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 32,
+                ) ??
+                const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          width: double.infinity,
+          height: 1,
+          color: Colors.grey[300],
+        ),
+      ],
     );
   }
 
@@ -187,13 +150,6 @@ class ToolsScreen extends ConsumerWidget {
                   duration: const Duration(milliseconds: 200),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
-                    image: DecorationImage(
-                      image: AssetImage(_assetForExercise(exercise.title)),
-                      fit: BoxFit.cover,
-                      colorFilter: isHovered
-                          ? ColorFilter.mode(Colors.black.withOpacity(0.05), BlendMode.darken)
-                          : null,
-                    ),
                     boxShadow: isHovered ? [
                       BoxShadow(
                         color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
@@ -213,12 +169,108 @@ class ToolsScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(16),
-                      onTap: () => exercise.onTap(context),
-                      child: Container(),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(16),
+                        onTap: () => exercise.onTap(context),
+                        child: Column(
+                          children: [
+                            // Top photo section
+                            Expanded(
+                              flex: 3,
+                              child: Container(
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage(_assetForExercise(exercise.title)),
+                                    fit: BoxFit.cover,
+                                    colorFilter: isHovered
+                                        ? ColorFilter.mode(Colors.black.withOpacity(0.05), BlendMode.darken)
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            // Bottom white overlay section - sized to content
+                            Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.06),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, -2),
+                                  ),
+                                ],
+                              ),
+                              padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    exercise.title,
+                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                          fontWeight: FontWeight.w700,
+                                          color: Theme.of(context).colorScheme.onSurface,
+                                        ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    exercise.description,
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                          color: Colors.grey[700],
+                                          height: 1.3,
+                                        ),
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Center(
+                                    child: Container(
+                                      width: double.infinity,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFF4CAF50),
+                                        borderRadius: BorderRadius.circular(20),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: const Color(0xFF4CAF50).withOpacity(0.3),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          borderRadius: BorderRadius.circular(20),
+                                          onTap: () => exercise.onTap(context),
+                                          child: Center(
+                                            child: Text(
+                                              'Start Exercise',
+                                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -248,5 +300,25 @@ class ToolsScreen extends ConsumerWidget {
       return 'assets/exercises/addressing_setbacks.png';
     }
     return 'assets/exercises/problem_solving.png';
+  }
+
+  int _getActivityCount(String title) {
+    final key = title.toLowerCase();
+    if (key.contains('problem') && key.contains('solving')) {
+      return 5; // Problem solving steps
+    }
+    if (key.contains('meal') && key.contains('planning')) {
+      return 4; // Meal planning activities
+    }
+    if (key.contains('urge') && (key.contains('surfing') || key.contains('activities'))) {
+      return 6; // Urge surfing techniques
+    }
+    if (key.contains('overconcern')) {
+      return 3; // Overconcern exercises
+    }
+    if (key.contains('setbacks')) {
+      return 4; // Setback recovery steps
+    }
+    return 3; // Default count
   }
 }

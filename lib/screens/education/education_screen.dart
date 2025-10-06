@@ -23,65 +23,6 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
           child: _buildStageHierarchy(context),
         ),
       ),
-      floatingActionButton: _buildFloatingActionButton(context),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-    );
-  }
-
-  Widget _buildFloatingActionButton(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF4CAF50).withOpacity(0.15),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          color: const Color(0xFF4CAF50), // Bright green to match theme
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: const Color(0xFF4CAF50), // Bright green to match theme
-            width: 1.5,
-          ),
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(16),
-            onTap: () {
-              // Navigate to journal
-              // This would be implemented based on your app's navigation structure
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.edit_note,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Journal',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 
@@ -90,19 +31,23 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
     final stage2 = Stage2Data.getStage2();
     final stage3 = Stage3Data.getStage3();
     
-    return ListView(
-      padding: const EdgeInsets.all(16),
+    return Column(
       children: [
         _buildHeader(context),
         const SizedBox(height: 24),
-        _buildStageCard(context, stage1),
-        const SizedBox(height: 12),
-        _buildStageCard(context, stage2),
-        const SizedBox(height: 12),
-        _buildStageCard(context, stage3),
-        const SizedBox(height: 24),
-        _buildMotivationalQuote(context),
-        const SizedBox(height: 24),
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            children: [
+              _buildStageCard(context, stage1),
+              const SizedBox(height: 12),
+              _buildStageCard(context, stage2),
+              const SizedBox(height: 12),
+              _buildStageCard(context, stage3),
+              const SizedBox(height: 24),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -112,68 +57,35 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
   }
 
   Widget _buildHeaderContent(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-        color: const Color(0xFF4CAF50), // Same green as journal tab
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF4CAF50).withOpacity(0.3),
-            spreadRadius: 0,
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(40),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  spreadRadius: 0,
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Text(
+            'Lessons',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 32,
+                ) ??
+                const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
-            ),
-            child: const Icon(
-              Icons.auto_stories,
-              color: Color(0xFF4CAF50),
-              size: 40,
-            ),
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            'Your Learning Journey',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 12),
-          const Text(
-            'Evidence-based treatment for lasting recovery',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.white,
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          width: double.infinity,
+          height: 1,
+          color: Colors.grey[300],
+        ),
+      ],
     );
   }
+  
+  
 
   Widget _buildProgressIndicator(BuildContext context, String label, int total, int completed) {
     return Column(
@@ -264,11 +176,70 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
                       child: (stage.stageNumber >= 1 && stage.stageNumber <= 3)
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(20),
-                              child: Image.asset(
-                                'assets/lessons/stages/stage_${stage.stageNumber}.png',
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                                height: double.infinity,
+                              child: Column(
+                                children: [
+                                  // Top photo section
+                                  Expanded(
+                                    flex: 3,
+                                    child: Container(
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image: AssetImage('assets/lessons/stages/stage_${stage.stageNumber}.png'),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  // Bottom white overlay section - sized to content
+                                  Container(
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.06),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, -2),
+                                        ),
+                                      ],
+                                    ),
+                                    padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          'Stage ${stage.stageNumber}: ${stage.title}',
+                                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                fontWeight: FontWeight.w700,
+                                                color: Theme.of(context).colorScheme.onSurface,
+                                              ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Text(
+                                          _getStageDescription(stage.stageNumber),
+                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                color: Colors.grey[700],
+                                                height: 1.3,
+                                              ),
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          '${stage.chapters.length} chapters',
+                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                color: Colors.blue,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                             )
                           : Padding(
@@ -398,61 +369,18 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
     }
   }
 
-  Widget _buildMotivationalQuote(BuildContext context) {
-    final quotes = [
-      "Recovery is not a destination, it's a journey of self-discovery and growth.",
-      "Every small step forward is progress worth celebrating.",
-      "You have the strength within you to overcome any challenge.",
-      "Healing begins with understanding, and understanding begins with learning.",
-    ];
-    
-    final randomQuote = quotes[DateTime.now().day % quotes.length];
-    
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.95),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.format_quote,
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
-            size: 32,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            randomQuote,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
-              fontStyle: FontStyle.italic,
-              height: 1.5,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Container(
-            width: 40,
-            height: 2,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(1),
-            ),
-          ),
-        ],
-      ),
-    );
+  String _getStageDescription(int stageNumber) {
+    switch (stageNumber) {
+      case 1:
+        return 'Introduce psychoeducation, regular eating and start monitoring to build momentum.';
+      case 2:
+        return 'Review progress, plan the core work, and strengthen key skills.';
+      case 3:
+        return 'Consolidate gains, prepare for setbacks, and sustain long-term change.';
+      default:
+        return 'Explore lessons designed to guide you through recovery.';
+    }
   }
+
+  
 }
