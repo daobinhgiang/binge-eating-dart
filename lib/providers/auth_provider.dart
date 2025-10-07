@@ -106,6 +106,24 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
     }
   }
 
+  // Sign in with Apple
+  Future<void> signInWithApple() async {
+    state = const AsyncValue.loading();
+    try {
+      final user = await _authService.signInWithApple();
+      state = AsyncValue.data(user);
+      
+      // Track login event
+      await _analytics.trackUserLogin('apple');
+      await _analytics.setUserProperties(
+        userRole: user?.role.name,
+        onboardingCompleted: user?.onboardingCompleted,
+      );
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
+    }
+  }
+
   // Sign out
   Future<void> signOut() async {
     state = const AsyncValue.loading();

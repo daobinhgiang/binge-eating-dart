@@ -150,6 +150,38 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               
               const SizedBox(height: 16),
               
+              // Apple Sign-In Button
+              if (Theme.of(context).platform == TargetPlatform.iOS)
+                SizedBox(
+                  height: 56,
+                  child: OutlinedButton.icon(
+                    onPressed: isLoading ? null : _signInWithApple,
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      foregroundColor: Colors.white,
+                      side: const BorderSide(color: Colors.black),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    icon: const Icon(
+                      Icons.apple,
+                      size: 24,
+                    ),
+                    label: const Text(
+                      'Continue with Apple',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              
+              if (Theme.of(context).platform == TargetPlatform.iOS)
+                const SizedBox(height: 16),
+              
               // Email Sign-In Button
               SizedBox(
                 height: 56,
@@ -209,5 +241,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   void _goToEmailAuth() {
     context.go('/email-auth');
+  }
+
+  Future<void> _signInWithApple() async {
+    // Clear any previous errors
+    ref.read(authNotifierProvider.notifier).clearError();
+    
+    await ref.read(authNotifierProvider.notifier).signInWithApple();
+    
+    if (mounted) {
+      final authState = ref.read(authNotifierProvider);
+      if (authState.hasValue && authState.value != null) {
+        context.go('/');
+      }
+    }
   }
 }

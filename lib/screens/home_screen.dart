@@ -99,7 +99,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: Image.asset(
-          'logo.png',
+          'assets/logo.png',
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) {
             // Fallback to a simple icon if image fails to load

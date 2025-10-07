@@ -796,14 +796,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Future<void> _updateUserOnboardingStatus(String userId) async {
     try {
-      // Update user's onboarding status in Firestore
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .update({'onboardingCompleted': true});
-      
-      // Refresh the auth state to reflect the change
-      ref.read(authNotifierProvider.notifier).initialize();
+      // Update user's onboarding status via auth provider to refresh local state
+      await ref
+          .read(authNotifierProvider.notifier)
+          .updateOnboardingStatus(onboardingCompleted: true);
     } catch (e) {
       throw 'Failed to update user onboarding status: $e';
     }
@@ -811,14 +807,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Future<void> _updateUserPartialOnboardingStatus(String userId) async {
     try {
-      // Update user's partial onboarding status in Firestore
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .update({'onboardingPartiallyCompleted': true});
-      
-      // Refresh the auth state to reflect the change
-      ref.read(authNotifierProvider.notifier).initialize();
+      // Update user's partial onboarding status via auth provider to refresh local state
+      await ref
+          .read(authNotifierProvider.notifier)
+          .updateOnboardingStatus(onboardingPartiallyCompleted: true);
     } catch (e) {
       throw 'Failed to update user partial onboarding status: $e';
     }
@@ -840,8 +832,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              // Navigate to main app - AuthGuard will handle redirecting back to onboarding if needed
-              context.go('/');
+              // Mark partial completion and navigate
+              _completePartialOnboarding();
             },
             child: const Text('Exit'),
           ),

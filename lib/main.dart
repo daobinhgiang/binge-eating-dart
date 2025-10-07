@@ -148,6 +148,7 @@ class _BEDAppState extends ConsumerState<BEDApp> {
       child: NotificationPopupOverlay(
         child: MaterialApp.router(
           title: 'BED Support App',
+          debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
             seedColor: const Color(0xFF4CAF50), // Bright vibrant green to match the photo
@@ -217,27 +218,45 @@ final _router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const AuthGuard(child: MainNavigation()),
+      pageBuilder: (context, state) => NoTransitionPage(
+        key: state.pageKey,
+        child: const AuthGuard(child: MainNavigation()),
+      ),
       routes: [
         GoRoute(
           path: 'home',
-          builder: (context, state) => const AuthGuard(child: MainNavigation()),
+          pageBuilder: (context, state) => NoTransitionPage(
+            key: state.pageKey,
+            child: const AuthGuard(child: MainNavigation()),
+          ),
         ),
         GoRoute(
           path: 'education',
-          builder: (context, state) => const AuthGuard(child: MainNavigation()),
+          pageBuilder: (context, state) => NoTransitionPage(
+            key: state.pageKey,
+            child: const AuthGuard(child: MainNavigation()),
+          ),
         ),
         GoRoute(
           path: 'tools',
-          builder: (context, state) => const AuthGuard(child: MainNavigation()),
+          pageBuilder: (context, state) => NoTransitionPage(
+            key: state.pageKey,
+            child: const AuthGuard(child: MainNavigation()),
+          ),
         ),
         GoRoute(
           path: 'journal',
-          builder: (context, state) => const AuthGuard(child: MainNavigation()),
+          pageBuilder: (context, state) => NoTransitionPage(
+            key: state.pageKey,
+            child: const AuthGuard(child: MainNavigation()),
+          ),
         ),
         GoRoute(
           path: 'profile',
-          builder: (context, state) => const AuthGuard(child: MainNavigation()),
+          pageBuilder: (context, state) => NoTransitionPage(
+            key: state.pageKey,
+            child: const AuthGuard(child: MainNavigation()),
+          ),
         ),
       ],
     ),

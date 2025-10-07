@@ -252,6 +252,86 @@ class AuthService {
     }
   }
 
+  // Sign in with Apple
+  Future<UserModel?> signInWithApple() async {
+    try {
+      print('Starting Apple Sign-in...');
+      
+      final appleProvider = AppleAuthProvider();
+      appleProvider.addScope('email');
+      appleProvider.addScope('name');
+      
+      final userCredential = await _auth.signInWithProvider(appleProvider);
+      print('Apple authentication successful: ${userCredential.user?.uid}');
+      
+      if (userCredential.user != null) {
+        // Check if user exists in Firestore
+        print('Checking if user exists in Firestore...');
+        final userDoc = await _firestore.collection('users').doc(userCredential.user!.uid).get();
+          
+        if (!userDoc.exists) {
+          print('User does not exist, creating new user...');
+          // Extract name parts from display name or additional user info
+          final displayName = userCredential.user!.displayName ?? '';
+          final nameParts = displayName.split(' ');
+          final firstName = nameParts.isNotEmpty ? nameParts.first : 'User';
+          final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+
+          print('Creating user with firstName: $firstName, lastName: $lastName');
+
+          // Create new user with default role as patient
+          final userModel = UserModel(
+            id: userCredential.user!.uid,
+            email: userCredential.user!.email ?? '',
+            firstName: firstName,
+            lastName: lastName,
+            role: UserRole.patient, // Default role for Apple sign-in
+            createdAt: DateTime.now(),
+            lastLoginAt: DateTime.now(),
+            photoUrl: userCredential.user!.photoURL,
+          );
+
+          print('Saving user to Firestore...');
+          await _firestore
+              .collection('users')
+              .doc(userCredential.user!.uid)
+              .set(userModel.toFirestore());
+          print('User saved to Firestore successfully');
+          
+          // Initialize todos for the new user
+          await _autoTodoService.initializeUserTodos(userCredential.user!.uid);
+          print('Auto todos initialized for new user');
+          
+          // Initialize FCM token for the new user
+          await _fcmTokenService.initializeForUser(userCredential.user!.uid);
+          print('FCM token initialized for new user');
+        } else {
+          print('User exists, updating last login...');
+          // Update last login time for existing user
+          await _updateLastLogin(userCredential.user!.uid);
+          
+          // Initialize FCM token for existing user
+          await _fcmTokenService.initializeForUser(userCredential.user!.uid);
+          print('FCM token initialized for existing user');
+        }
+
+        print('Retrieving user from Firestore...');
+        final user = await _getUserFromFirebaseUser(userCredential.user!);
+        print('User retrieved: ${user?.email}');
+        return user;
+      }
+      print('No user in credential');
+      return null;
+    } on FirebaseAuthException catch (e) {
+      print('Firebase Auth Exception: ${e.code} - ${e.message}');
+      throw _handleAuthException(e);
+    } catch (e, stackTrace) {
+      print('Apple Sign-in Error: $e');
+      print('Stack trace: $stackTrace');
+      throw 'Apple sign-in failed. Please try again.';
+    }
+  }
+
   // Reset password
   Future<void> resetPassword({required String email}) async {
     try {
