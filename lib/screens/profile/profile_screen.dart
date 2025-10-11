@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/exp_provider.dart';
 import '../../widgets/profile_background.dart';
+import '../../widgets/level_badge.dart';
+import '../../widgets/exp_progress_bar.dart';
+import '../../core/services/exp_service.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -29,7 +33,12 @@ class ProfileScreen extends ConsumerWidget {
                   // Beautiful profile header with gradient
                   _buildProfileHeader(context, user),
                   
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 24),
+                  
+                  // EXP and Level Stats Card
+                  _buildExpStatsCard(context, ref),
+                  
+                  const SizedBox(height: 8),
                   
                   // Profile options with modern design
                   _buildProfileOptions(context),
@@ -258,6 +267,225 @@ class ProfileScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildExpStatsCard(BuildContext context, WidgetRef ref) {
+    final userExp = ref.watch(userExpProvider);
+    
+    if (userExp == null) {
+      return const SizedBox.shrink();
+    }
+
+    final service = ExpService();
+    final progress = service.getCurrentLevelProgress(userExp.exp, userExp.level);
+    final expRemaining = service.getExpRemainingForNextLevel(userExp.exp, userExp.level);
+    final isMaxLevel = userExp.level >= 5;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            _getLevelColor(userExp.level),
+            _getLevelColor(userExp.level).withOpacity(0.7),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: _getLevelColor(userExp.level).withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          children: [
+            // Header
+            Row(
+              children: [
+                const Icon(
+                  Icons.emoji_events,
+                  color: Colors.white,
+                  size: 24,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Your Progress',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+            
+            const SizedBox(height: 20),
+            
+            // Level and EXP Stats
+            Row(
+              children: [
+                // Level Badge
+                LevelBadge(
+                  level: userExp.level,
+                  size: 80,
+                  showLabel: true,
+                ),
+                
+                const SizedBox(width: 20),
+                
+                // Stats
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${userExp.exp} EXP',
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      if (!isMaxLevel) ...[
+                        Text(
+                          '$expRemaining EXP to Level ${userExp.level + 1}',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.white.withValues(alpha: 0.9),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        // Progress Bar
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: LinearProgressIndicator(
+                            value: progress,
+                            minHeight: 8,
+                            backgroundColor: Colors.white.withValues(alpha: 0.3),
+                            valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        ),
+                      ] else
+                        Text(
+                          'Max Level Reached!',
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            
+            const SizedBox(height: 20),
+            
+            // Completed Quizzes Stats
+            Consumer(
+              builder: (context, ref, child) {
+                final completedQuizzesAsync = ref.watch(completedQuizzesCountProvider);
+                
+                return completedQuizzesAsync.when(
+                  data: (count) => Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _buildStatItem(
+                          context,
+                          Icons.quiz,
+                          count.toString(),
+                          'Quizzes\nCompleted',
+                        ),
+                        Container(
+                          width: 1,
+                          height: 40,
+                          color: Colors.white.withValues(alpha: 0.3),
+                        ),
+                        _buildStatItem(
+                          context,
+                          Icons.star,
+                          userExp.level.toString(),
+                          'Current\nLevel',
+                        ),
+                        Container(
+                          width: 1,
+                          height: 40,
+                          color: Colors.white.withValues(alpha: 0.3),
+                        ),
+                        _buildStatItem(
+                          context,
+                          Icons.trending_up,
+                          userExp.exp.toString(),
+                          'Total\nEXP',
+                        ),
+                      ],
+                    ),
+                  ),
+                  loading: () => const SizedBox.shrink(),
+                  error: (_, __) => const SizedBox.shrink(),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatItem(BuildContext context, IconData icon, String value, String label) {
+    return Column(
+      children: [
+        Icon(
+          icon,
+          color: Colors.white,
+          size: 24,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Colors.white.withValues(alpha: 0.9),
+            fontSize: 11,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Color _getLevelColor(int level) {
+    switch (level) {
+      case 1:
+        return const Color(0xFF9E9E9E);
+      case 2:
+        return const Color(0xFF4CAF50);
+      case 3:
+        return const Color(0xFF2196F3);
+      case 4:
+        return const Color(0xFF9C27B0);
+      case 5:
+        return const Color(0xFFFFD700);
+      default:
+        return const Color(0xFF9E9E9E);
+    }
   }
 
   Widget _buildProfileOptions(BuildContext context) {

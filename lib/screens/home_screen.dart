@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../providers/auth_provider.dart';
 import '../providers/todo_provider.dart';
 import '../providers/education_provider.dart';
+import '../providers/exp_provider.dart';
 import '../../data/stage_1_data.dart';
 import '../../data/stage_2_data.dart';
 import '../../data/stage_3_data.dart';
@@ -16,7 +17,7 @@ import '../providers/lesson_progress_provider.dart';
 import '../core/services/openai_service.dart';
 import '../models/todo_item.dart';
 import '../core/services/user_learning_service.dart';
-import '../models/lesson.dart';
+import '../widgets/level_badge.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -130,8 +131,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
 
   Widget _buildProfileSection(AsyncValue authState, {bool onGreenBackground = false}) {
-    // Notification bell removed - return empty space
-    return const SizedBox.shrink();
+    // Show level badge for logged in users
+    return authState.when(
+      data: (user) {
+        if (user == null) return const SizedBox.shrink();
+        
+        return Consumer(
+          builder: (context, ref, child) {
+            final userExp = ref.watch(userExpProvider);
+            if (userExp == null) return const SizedBox.shrink();
+            
+            return LevelBadge(
+              level: userExp.level,
+              size: 48,
+              showLabel: false,
+            );
+          },
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+    );
   }
 
   @override
