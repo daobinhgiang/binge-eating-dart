@@ -4,6 +4,9 @@ import * as admin from 'firebase-admin';
 // Initialize Firebase Admin
 admin.initializeApp();
 
+// Import and export quiz validation function
+export { validateQuiz } from './validateQuiz';
+
 // Helper function to format time as HH:mm in Central Time
 function formatTime(date: Date): string {
   // Convert to Central Time (handles both CST and CDT automatically)

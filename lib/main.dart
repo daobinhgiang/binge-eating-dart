@@ -108,10 +108,20 @@ void main() async {
   // Use path-based routing instead of hash-based routing
   usePathUrlStrategy();
   
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  print('✅ Firebase initialized successfully');
+  // Initialize Firebase (handle duplicate initialization gracefully)
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print('✅ Firebase initialized successfully');
+  } catch (e) {
+    if (e.toString().contains('duplicate-app')) {
+      print('⚠️ Firebase already initialized');
+    } else {
+      print('❌ Firebase initialization error: $e');
+      rethrow;
+    }
+  }
   
   final localNotificationsService = LocalNotificationsService.instance();
   await localNotificationsService.init();

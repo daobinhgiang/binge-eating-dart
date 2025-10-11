@@ -30,6 +30,8 @@ class UserModel {
   final Map<String, dynamic> preferences;
   final bool onboardingCompleted;
   final bool onboardingPartiallyCompleted;
+  final int level;
+  final int exp;
 
   const UserModel({
     required this.id,
@@ -45,6 +47,8 @@ class UserModel {
     this.preferences = const {},
     this.onboardingCompleted = false,
     this.onboardingPartiallyCompleted = false,
+    this.level = 1,
+    this.exp = 0,
   });
 
   String get fullName => '$firstName $lastName';
@@ -73,6 +77,8 @@ class UserModel {
       preferences: Map<String, dynamic>.from(data['preferences'] ?? {}),
       onboardingCompleted: data['onboardingCompleted'] ?? false,
       onboardingPartiallyCompleted: data['onboardingPartiallyCompleted'] ?? false,
+      level: data['level'] ?? 1,
+      exp: data['exp'] ?? 0,
     );
   }
 
@@ -90,6 +96,8 @@ class UserModel {
       'preferences': preferences,
       'onboardingCompleted': onboardingCompleted,
       'onboardingPartiallyCompleted': onboardingPartiallyCompleted,
+      'level': level,
+      'exp': exp,
     };
   }
 
@@ -107,6 +115,8 @@ class UserModel {
     Map<String, dynamic>? preferences,
     bool? onboardingCompleted,
     bool? onboardingPartiallyCompleted,
+    int? level,
+    int? exp,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -122,6 +132,8 @@ class UserModel {
       preferences: preferences ?? this.preferences,
       onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
       onboardingPartiallyCompleted: onboardingPartiallyCompleted ?? this.onboardingPartiallyCompleted,
+      level: level ?? this.level,
+      exp: exp ?? this.exp,
     );
   }
 

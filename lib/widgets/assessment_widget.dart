@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/assessment.dart';
 import '../models/assessment_question.dart';
 import '../models/assessment_response.dart';
 import '../core/services/assessment_service.dart';
+import '../core/services/exp_service.dart';
+import '../providers/exp_provider.dart';
+import '../models/quiz_submission.dart';
+import '../models/exp_ledger.dart';
+import './level_up_dialog.dart';
 
-class AssessmentWidget extends StatefulWidget {
+class AssessmentWidget extends ConsumerStatefulWidget {
   final Assessment assessment;
   final VoidCallback? onCompleted;
 
@@ -15,14 +21,18 @@ class AssessmentWidget extends StatefulWidget {
   });
 
   @override
-  State<AssessmentWidget> createState() => _AssessmentWidgetState();
+  ConsumerState<AssessmentWidget> createState() => _AssessmentWidgetState();
 }
 
-class _AssessmentWidgetState extends State<AssessmentWidget> {
+class _AssessmentWidgetState extends ConsumerState<AssessmentWidget> {
   final AssessmentService _assessmentService = AssessmentService();
+  final ExpService _expService = ExpService();
   final Map<String, String> _responses = {};
   int _currentQuestionIndex = 0;
   bool _isSubmitting = false;
+  
+  // Track if this is a quiz (for EXP system)
+  bool get _isQuiz => widget.assessment.lessonId.startsWith('quiz_');
 
   @override
   Widget build(BuildContext context) {
@@ -506,7 +516,23 @@ class _AssessmentWidgetState extends State<AssessmentWidget> {
         responses,
       );
 
-      if (success) {
+      if (!success) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to save assessment. Please try again.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return;
+      }
+
+      // If this is a quiz, submit for EXP validation
+      if (_isQuiz) {
+        await _submitQuizForExp();
+      } else {
+        // For non-quiz assessments, just show success
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -515,15 +541,6 @@ class _AssessmentWidgetState extends State<AssessmentWidget> {
             ),
           );
           widget.onCompleted?.call();
-        }
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to save assessment. Please try again.'),
-              backgroundColor: Colors.red,
-            ),
-          );
         }
       }
     } catch (e) {
@@ -542,6 +559,173 @@ class _AssessmentWidgetState extends State<AssessmentWidget> {
         });
       }
     }
+  }
+
+  Future<void> _submitQuizForExp() async {
+    // Convert answers to the format expected by EXP service
+    // Multiple choice answers need to be converted to option indices
+    final Map<String, int> quizAnswers = {};
+    
+    for (final entry in _responses.entries) {
+      final question = widget.assessment.questions.firstWhere(
+        (q) => q.id == entry.key,
+      );
+      
+      if (question.questionType == 'multiple_choice') {
+        // Find the index of the selected option
+        final selectedOption = entry.value;
+        final optionIndex = question.options?.indexOf(selectedOption) ?? -1;
+        
+        if (optionIndex != -1) {
+          quizAnswers[entry.key] = optionIndex;
+        }
+      }
+    }
+
+    if (quizAnswers.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No valid quiz answers to submit'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      return;
+    }
+
+    // Get user's current level before submission
+    final userExpBefore = ref.read(userExpProvider);
+    final oldLevel = userExpBefore?.level ?? 1;
+    final oldExp = userExpBefore?.exp ?? 0;
+
+    // Submit quiz for validation
+    final submissionRef = await _expService.submitQuizForValidation(
+      widget.assessment.lessonId,
+      quizAnswers,
+    );
+
+    if (submissionRef == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Quiz already completed or submission failed'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        widget.onCompleted?.call();
+      }
+      return;
+    }
+
+    // Show loading dialog while waiting for validation
+    if (mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: Card(
+            child: Padding(
+              padding: EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('quiz submission in progress...'),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Listen for validation result
+    final subscription = _expService.listenToSubmissionResult(submissionRef.id).listen(
+      (submission) async {
+        if (submission.status == SubmissionStatus.validated && mounted) {
+          // Close loading dialog
+          Navigator.of(context).pop();
+
+          // Get updated user data
+          final userExpAfter = ref.read(userExpProvider);
+          final newLevel = userExpAfter?.level ?? oldLevel;
+          final newExp = userExpAfter?.exp ?? oldExp;
+
+          // Show success message with EXP earned
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Quiz complete! +${submission.expAwarded} EXP earned!'),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+
+          // Check if user leveled up
+          if (newLevel > oldLevel) {
+            await Future.delayed(const Duration(milliseconds: 500));
+            
+            if (mounted) {
+              await showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => LevelUpDialog(
+                  oldLevel: oldLevel,
+                  newLevel: newLevel,
+                  expEarned: submission.expAwarded ?? 0,
+                  totalExp: newExp,
+                ),
+              );
+            }
+          }
+
+          widget.onCompleted?.call();
+        } else if (submission.status == SubmissionStatus.failed && mounted) {
+          // Close loading dialog
+          Navigator.of(context).pop();
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Quiz validation failed. Please try again.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+
+          widget.onCompleted?.call();
+        }
+      },
+      onError: (error) {
+        if (mounted) {
+          // Close loading dialog
+          Navigator.of(context).pop();
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error validating quiz: $error'),
+              backgroundColor: Colors.red,
+            ),
+          );
+
+          widget.onCompleted?.call();
+        }
+      },
+    );
+
+    // Cancel subscription after 30 seconds timeout
+    Future.delayed(const Duration(seconds: 30), () {
+      subscription.cancel();
+      if (mounted && _isSubmitting) {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Quiz validation timed out. Please check your progress later.'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        widget.onCompleted?.call();
+      }
+    });
   }
 }
 
