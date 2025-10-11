@@ -1,4 +1,5 @@
 import 'dart:ui' as ui;
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -10,13 +11,13 @@ import '../../data/stage_1_data.dart';
 import '../../data/stage_2_data.dart';
 import '../../data/stage_3_data.dart';
 import '../../models/stage.dart';
-import '../../models/chapter.dart';
 import '../../models/lesson.dart';
 import '../providers/firebase_analytics_provider.dart';
 import '../providers/lesson_progress_provider.dart';
 import '../core/services/openai_service.dart';
 import '../models/todo_item.dart';
 import '../core/services/user_learning_service.dart';
+import '../core/services/reset_timer_service.dart';
 import '../widgets/level_badge.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -33,6 +34,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   // Insights section state
   bool _isGeneratingInsights = false;
   List<Map<String, dynamic>> _insightsRecommendations = [];
+  
+  // Timer state
+  DateTime? _lastResetTime;
+  Timer? _updateTimer;
 
   @override
   void initState() {
@@ -43,13 +48,35 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       viewportFraction: 0.6,
       initialPage: 10000,
     );
+    _loadLastResetTime();
+    _startTimer();
   }
 
   @override
   void dispose() {
     _scrollController?.dispose();
     _lessonCarouselController?.dispose();
+    _updateTimer?.cancel();
     super.dispose();
+  }
+
+  Future<void> _loadLastResetTime() async {
+    final lastReset = await ResetTimerService().getLastResetTime();
+    if (mounted) {
+      setState(() {
+        _lastResetTime = lastReset;
+      });
+    }
+  }
+
+  void _startTimer() {
+    _updateTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (mounted) {
+        setState(() {
+          // Trigger rebuild every second to update the timer display
+        });
+      }
+    });
   }
 
   // Helper methods for enhanced header
@@ -192,110 +219,54 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                           ),
                           
-                          // Main buttons layout - left column with two buttons, right side with larger button
+                          // Main buttons layout - AI Chat and Personalized Insights
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Left side - Column with Urge Help and AI Chat buttons
+                              // AI Chat button
                               Expanded(
                                 flex: 1,
-                                child: Column(
-                                  children: [
-                                    // Urge Help button
-                                    Container(
-                                      width: double.infinity,
-                                      height: 80,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(
-                                          color: const Color(0xFFE57373).withOpacity(0.3),
-                                          width: 2,
-                                        ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity( 0.04),
-                                            blurRadius: 8,
-                                            offset: const Offset(0, 2),
-                                          ),
-                                        ],
+                                child: Container(
+                                  width: double.infinity,
+                                  height: 80,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: const Color(0xFF64B5F6).withOpacity( 0.3),
+                                      width: 2,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity( 0.04),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 2),
                                       ),
-                                      child: Material(
-                                        color: Colors.transparent,
-                                        child: InkWell(
-                                          onTap: () {
-                                            // Track analytics for urge-relapse button usage
-                                            final trackUrgeButton = ref.read(urgeRelapseButtonTrackingProvider);
-                                            trackUrgeButton();
-                                            _showUrgeHelpDialog();
-                                          },
-                                          borderRadius: BorderRadius.circular(12),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                                            child: Center(
-                                              child: Text(
-                                                'Urge Help',
-                                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                                  fontWeight: FontWeight.w600,
-                                                  color: const Color(0xFFE57373),
-                                                  fontSize: 20,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
+                                    ],
+                                  ),
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      onTap: () => context.go('/chat'),
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                                        child: Center(
+                                          child: Text(
+                                            'AI Chat',
+                                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                              color: const Color(0xFF64B5F6),
+                                              fontSize: 20,
                                             ),
+                                            textAlign: TextAlign.center,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                       ),
                                     ),
-                                    
-                                    const SizedBox(height: 16),
-                                    
-                                    // AI Chat button
-                                    Container(
-                                      width: double.infinity,
-                                      height: 80,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(
-                                          color: const Color(0xFF64B5F6).withOpacity( 0.3),
-                                          width: 2,
-                                        ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity( 0.04),
-                                            blurRadius: 8,
-                                            offset: const Offset(0, 2),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Material(
-                                        color: Colors.transparent,
-                                        child: InkWell(
-                                          onTap: () => context.go('/chat'),
-                                          borderRadius: BorderRadius.circular(12),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                                            child: Center(
-                                              child: Text(
-                                                'AI Chat',
-                                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                                  fontWeight: FontWeight.w600,
-                                                  color: const Color(0xFF64B5F6),
-                                                  fontSize: 20,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ),
                               
@@ -394,7 +365,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               // Green background that extends from top
               if (shouldShowLearningSection)
                 SizedBox(
-                  height: 480, // Increased to overlay bottom 2% of lesson tiles
+                  height: 720, // Increased to cover Reset button, Timer, and overlay lesson tiles
                   child: ClipPath(
                     clipper: CurvedHeaderClipper(depth: 60),
                     child: Container(
@@ -525,6 +496,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          // Binge-Free Timer
+          _buildBingeFreeTimer(),
+          
+          const SizedBox(height: 16),
+          
+          // Reset, Urge Help, and Motivation buttons in same row
+          Row(
+            children: [
+              Expanded(
+                child: _buildResetButton(),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _buildUrgeHelpButton(),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _buildMotivationButton(),
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 20),
+          
           // Header
           Center(
             child: Row(
@@ -2344,6 +2339,393 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         content: Text('Assessment "$assessmentName" is not available yet. Please try another recommendation.'),
         backgroundColor: Colors.orange,
       ),
+    );
+  }
+
+  Widget _buildResetButton() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.4),
+          width: 1.5,
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _handleResetButton,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.refresh,
+                  color: Colors.white,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  'Reset',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildUrgeHelpButton() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: const Color(0xFFE57373).withOpacity(0.4),
+          width: 1.5,
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            // Track analytics for urge-relapse button usage
+            final trackUrgeButton = ref.read(urgeRelapseButtonTrackingProvider);
+            trackUrgeButton();
+            _showUrgeHelpDialog();
+          },
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.psychology,
+                  color: Colors.white,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  'Urge Help',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMotivationButton() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: const Color(0xFF9C27B0).withOpacity(0.4),
+          width: 1.5,
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => context.go('/motivation'),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.favorite,
+                  color: Colors.white,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  'Motivation',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleResetButton() async {
+    try {
+      // Show confirmation dialog
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Row(
+            children: [
+              Icon(Icons.refresh, color: Colors.orange),
+              SizedBox(width: 8),
+              Text('Reset Timer'),
+            ],
+          ),
+          content: const Text(
+            'Are you sure you want to reset your timer? This will log a new reset time.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Reset'),
+            ),
+          ],
+        ),
+      );
+
+      if (confirmed == true) {
+        // Show loading indicator
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => const Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+
+        // Log the reset time
+        await ResetTimerService().logResetTime();
+
+        // Reload the last reset time
+        await _loadLastResetTime();
+
+        // Close loading dialog
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
+
+        // Show success message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Reset time logged successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      // Close loading dialog if it's open
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+
+      // Show error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to log reset time: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Widget _buildBingeFreeTimer() {
+    if (_lastResetTime == null) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: Colors.white.withOpacity(0.3),
+            width: 1,
+          ),
+        ),
+        child: const Center(
+          child: Text(
+            'Hit "Reset" to start tracking your progress',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+
+    final duration = DateTime.now().difference(_lastResetTime!);
+    
+    // Calculate time units
+    final years = duration.inDays ~/ 365;
+    final months = (duration.inDays % 365) ~/ 30;
+    final days = duration.inDays % 30;
+    final hours = duration.inHours % 24;
+    final minutes = duration.inMinutes % 60;
+    final seconds = duration.inSeconds % 60;
+
+    // Create list of timer lines with their values and metadata
+    final timerLines = [
+      {'label': 'Years', 'value': years, 'maxValue': 10, 'color': const Color(0xFF4CAF50)},
+      {'label': 'Months', 'value': months, 'maxValue': 12, 'color': const Color(0xFF2196F3)},
+      {'label': 'Days', 'value': days, 'maxValue': 30, 'color': const Color(0xFF9C27B0)},
+      {'label': 'Hours', 'value': hours, 'maxValue': 24, 'color': const Color(0xFFFF9800)},
+      {'label': 'Minutes', 'value': minutes, 'maxValue': 60, 'color': const Color(0xFFE91E63)},
+      {'label': 'Seconds', 'value': seconds, 'maxValue': 60, 'color': const Color(0xFF00BCD4)},
+    ];
+
+    // Filter out lines with value 0
+    final visibleLines = timerLines.where((line) => line['value'] as int > 0).toList();
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.3),
+          width: 1.5,
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.timeline,
+                color: Colors.white,
+                size: 20,
+              ),
+              SizedBox(width: 8),
+              Text(
+                'Binge-Free Timer',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // Display only visible timer lines
+          ...visibleLines.asMap().entries.map((entry) {
+            final index = entry.key;
+            final line = entry.value;
+            return Column(
+              children: [
+                _buildTimerLine(
+                  line['label'] as String,
+                  line['value'] as int,
+                  line['maxValue'] as int,
+                  line['color'] as Color,
+                ),
+                // Add spacing between lines (except for the last one)
+                if (index < visibleLines.length - 1) const SizedBox(height: 8),
+              ],
+            );
+          }).toList(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimerLine(String label, int value, int maxValue, Color color) {
+    final progress = value / maxValue;
+    
+    return Stack(
+      children: [
+        // Background bar
+        Container(
+          height: 20,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        // Progress bar
+        FractionallySizedBox(
+          widthFactor: progress,
+          child: Container(
+            height: 20,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  color.withOpacity(0.8),
+                  color,
+                ],
+              ),
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: color.withOpacity(0.3),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+          ),
+        ),
+        // Text overlay on the progress bar
+        Positioned.fill(
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Text(
+                '$value $label',
+                style: TextStyle(
+                  color: progress > 0.5 ? Colors.white : Colors.white.withOpacity(0.8),
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  shadows: [
+                    Shadow(
+                      color: Colors.black.withOpacity(0.5),
+                      blurRadius: 2,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
+                textAlign: TextAlign.left,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
   
