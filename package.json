@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@google-cloud/pubsub": "^5.2.0"
+    "@google-cloud/pubsub": "^5.2.0",
+    "firebase-tools": "^14.19.1"
   }
 }

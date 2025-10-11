@@ -208,9 +208,14 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
         return ListView.builder(
           padding: const EdgeInsets.all(16),
           itemCount: completedTodos.length,
+          addAutomaticKeepAlives: false,
+          addRepaintBoundaries: true,
+          cacheExtent: 100,
           itemBuilder: (context, index) {
             final todo = completedTodos[index];
-            return _buildTodoCard(context, todo, userId);
+            return RepaintBoundary(
+              child: _buildTodoCard(context, todo, userId),
+            );
           },
         );
       },

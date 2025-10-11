@@ -7,6 +7,9 @@ import '../core/services/firebase_analytics_service.dart';
 // Weight diary service provider
 final weightDiaryServiceProvider = Provider<WeightDiaryService>((ref) => WeightDiaryService());
 
+// Injectable Firestore instance for testability
+final firebaseFirestoreProvider = Provider<FirebaseFirestore>((ref) => FirebaseFirestore.instance);
+
 // Current week weight diaries provider
 final currentWeekWeightDiariesProvider = StateNotifierProvider.family<WeightDiaryNotifier, AsyncValue<List<WeightDiary>>, String>((ref, userId) {
   return WeightDiaryNotifier(ref.read(weightDiaryServiceProvider), userId);
@@ -31,15 +34,16 @@ final allWeightEntriesProvider = FutureProvider.family<List<WeightDiary>, String
 });
 
 // Real-time provider for all weight entries using Firestore streams
+final currentWeekNumberProvider = FutureProvider.family<int, String>((ref, userId) async {
+  return ref.read(weightDiaryServiceProvider).getCurrentWeekNumber(userId);
+});
+
 final allWeightEntriesStreamProvider = StreamProvider.family<List<WeightDiary>, String>((ref, userId) {
-  final firestore = FirebaseFirestore.instance;
-  
-  // Get current week number first, then listen to current week changes
-  // and combine with historical data
+  final firestore = ref.read(firebaseFirestoreProvider);
+
   return Stream.fromFuture(
-    ref.read(weightDiaryServiceProvider).getCurrentWeekNumber(userId)
+    ref.read(currentWeekNumberProvider(userId).future)
   ).asyncExpand((currentWeek) {
-    // Listen to current week weight diaries in real-time
     return firestore
         .collection('users')
         .doc(userId)
@@ -49,28 +53,26 @@ final allWeightEntriesStreamProvider = StreamProvider.family<List<WeightDiary>, 
         .orderBy('createdAt', descending: false)
         .snapshots()
         .asyncMap((currentWeekSnapshot) async {
-          // Get current week entries
           final currentWeekEntries = currentWeekSnapshot.docs
               .map((doc) => WeightDiary.fromFirestore(doc))
               .toList();
-          
-          // Get historical entries (previous weeks)
-          final service = ref.read(weightDiaryServiceProvider);
+
           final historicalEntries = <WeightDiary>[];
-          
-          for (int week = 1; week < currentWeek; week++) {
-            try {
-              final weekEntries = await service.getWeightDiariesForWeek(userId, week);
-              historicalEntries.addAll(weekEntries);
-            } catch (e) {
-              // Week might not exist, continue
+          if (currentWeek > 1) {
+            final service = ref.read(weightDiaryServiceProvider);
+            for (int week = 1; week < currentWeek; week++) {
+              try {
+                final weekEntries = await service.getWeightDiariesForWeek(userId, week);
+                historicalEntries.addAll(weekEntries);
+              } catch (_) {
+                // Ignore missing weeks
+              }
             }
           }
-          
-          // Combine and sort all entries
+
           final allEntries = [...historicalEntries, ...currentWeekEntries];
           allEntries.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-          
+
           return allEntries;
         });
   });

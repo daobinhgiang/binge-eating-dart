@@ -1,10 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendDailyNotification = void 0;
+exports.sendDailyNotification = exports.validateQuiz = void 0;
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 // Initialize Firebase Admin
 admin.initializeApp();
+// Import and export quiz validation function
+var validateQuiz_1 = require("./validateQuiz");
+Object.defineProperty(exports, "validateQuiz", { enumerable: true, get: function () { return validateQuiz_1.validateQuiz; } });
 // Helper function to format time as HH:mm in Central Time
 function formatTime(date) {
     // Convert to Central Time (handles both CST and CDT automatically)
@@ -139,8 +142,8 @@ exports.sendDailyNotification = functions.pubsub
                     // Try multicast first for each batch
                     const message = {
                         notification: {
-                            title: 'Daily Check-in',
-                            body: 'How are you feeling today? Take a moment to reflect on your progress.',
+                            title: 'Gentle reminder 🌱',
+                            body: 'Eating regularly helps your body and mind. It’s time for your meal.',
                         },
                         data: {
                             type: 'daily_reminder',
@@ -170,8 +173,8 @@ exports.sendDailyNotification = functions.pubsub
                         try {
                             const individualMessage = {
                                 notification: {
-                                    title: 'Daily Check-in',
-                                    body: 'How are you feeling today? Take a moment to reflect on your progress.',
+                                    title: 'Gentle reminder 🌱',
+                                    body: 'Eating regularly helps your body and mind. It’s time for your meal.',
                                 },
                                 data: {
                                     type: 'daily_reminder',

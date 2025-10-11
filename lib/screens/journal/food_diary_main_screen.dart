@@ -330,20 +330,27 @@ class FoodDiaryMainScreen extends ConsumerWidget {
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: entries.length + 1, // +1 for the add card
+        addAutomaticKeepAlives: false,
+        addRepaintBoundaries: true,
+        cacheExtent: 100,
         itemBuilder: (context, index) {
           if (index == entries.length) {
             // Add entry card at the end
-            return Container(
-              width: 200,
-              margin: const EdgeInsets.only(left: 12),
-              child: _buildAddEntryCard(context),
+            return RepaintBoundary(
+              child: Container(
+                width: 200,
+                margin: const EdgeInsets.only(left: 12),
+                child: _buildAddEntryCard(context),
+              ),
             );
           }
           
-          return Container(
-            width: 280,
-            margin: const EdgeInsets.only(right: 12),
-            child: _buildFoodDiaryCard(context, entries[index]),
+          return RepaintBoundary(
+            child: Container(
+              width: 280,
+              margin: const EdgeInsets.only(right: 12),
+              child: _buildFoodDiaryCard(context, entries[index]),
+            ),
           );
         },
       ),

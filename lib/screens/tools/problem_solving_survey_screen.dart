@@ -253,7 +253,12 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                   )
                 : ListView.builder(
                     itemCount: _specificProblems.length,
-                    itemBuilder: (context, index) => _buildProblemTile(index),
+                    addAutomaticKeepAlives: false,
+                    addRepaintBoundaries: true,
+                    cacheExtent: 100,
+                    itemBuilder: (context, index) => RepaintBoundary(
+                      child: _buildProblemTile(index),
+                    ),
                   ),
           ),
         ],
@@ -334,7 +339,12 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                   )
                 : ListView.builder(
                     itemCount: _potentialSolutions.length,
-                    itemBuilder: (context, index) => _buildSolutionTile(index, showImplications: false),
+                    addAutomaticKeepAlives: false,
+                    addRepaintBoundaries: true,
+                    cacheExtent: 100,
+                    itemBuilder: (context, index) => RepaintBoundary(
+                      child: _buildSolutionTile(index, showImplications: false),
+                    ),
                   ),
           ),
         ],
@@ -396,7 +406,12 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
             Expanded(
               child: ListView.builder(
                 itemCount: _potentialSolutions.length,
-                itemBuilder: (context, index) => _buildSolutionTile(index, showImplications: true),
+                addAutomaticKeepAlives: false,
+                addRepaintBoundaries: true,
+                cacheExtent: 100,
+                itemBuilder: (context, index) => RepaintBoundary(
+                  child: _buildSolutionTile(index, showImplications: true),
+                ),
               ),
             ),
         ],
@@ -469,7 +484,12 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                   Expanded(
                     child: ListView.builder(
                       itemCount: _potentialSolutions.length,
-                      itemBuilder: (context, index) => _buildChoosableSolutionTile(index),
+                      addAutomaticKeepAlives: false,
+                      addRepaintBoundaries: true,
+                      cacheExtent: 100,
+                      itemBuilder: (context, index) => RepaintBoundary(
+                        child: _buildChoosableSolutionTile(index),
+                      ),
                     ),
                   ),
                 ],

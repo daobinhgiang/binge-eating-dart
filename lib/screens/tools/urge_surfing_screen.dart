@@ -134,7 +134,12 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
           child: ListView.builder(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
             itemCount: activities.length,
-            itemBuilder: (context, index) => _buildActivityCard(context, activities[index], index),
+            addAutomaticKeepAlives: false,
+            addRepaintBoundaries: true,
+            cacheExtent: 100,
+            itemBuilder: (context, index) => RepaintBoundary(
+              child: _buildActivityCard(context, activities[index], index),
+            ),
           ),
         ),
       ],

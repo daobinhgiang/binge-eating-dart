@@ -15,6 +15,7 @@ import '../../models/lesson.dart';
 import '../providers/firebase_analytics_provider.dart';
 import '../providers/lesson_progress_provider.dart';
 import '../core/services/openai_service.dart';
+import '../core/services/exp_service.dart';
 import '../models/todo_item.dart';
 import '../core/services/user_learning_service.dart';
 import '../core/services/reset_timer_service.dart';
@@ -178,6 +179,93 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       },
       loading: () => const SizedBox.shrink(),
       error: (_, __) => const SizedBox.shrink(),
+    );
+  }
+
+  Widget _buildLevelExpDisplay(bool onGreenBackground) {
+    return Consumer(
+      builder: (context, ref, child) {
+        final authState = ref.watch(authNotifierProvider);
+        final user = authState.valueOrNull;
+        
+        if (user == null) {
+          return const SizedBox.shrink();
+        }
+        
+        final userExp = ref.watch(userExpProvider);
+        if (userExp == null) {
+          return const SizedBox.shrink();
+        }
+        
+        final service = ExpService();
+        final progress = service.getCurrentLevelProgress(userExp.exp, userExp.level);
+        final expRemaining = service.getExpRemainingForNextLevel(userExp.exp, userExp.level);
+        final isMaxLevel = userExp.level >= 5;
+        
+        final textColor = onGreenBackground ? Colors.white : Colors.black87;
+        final subtextColor = onGreenBackground ? Colors.white.withOpacity(0.9) : Colors.grey[600]!;
+        
+        return Row(
+          children: [
+            // Level badge
+            LevelBadge(
+              level: userExp.level,
+              size: 56,
+              showLabel: true,
+            ),
+            const SizedBox(width: 16),
+            // EXP info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${userExp.exp} EXP',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                      fontSize: 20,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  if (!isMaxLevel) ...[
+                    Text(
+                      '$expRemaining to Level ${userExp.level + 1}',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: subtextColor,
+                        fontSize: 12,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: LinearProgressIndicator(
+                        value: progress,
+                        minHeight: 6,
+                        backgroundColor: onGreenBackground 
+                            ? Colors.white.withOpacity(0.3)
+                            : Colors.grey[300],
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          onGreenBackground ? Colors.white : const Color(0xFF4CAF50),
+                        ),
+                      ),
+                    ),
+                  ] else
+                    Text(
+                      'Max Level!',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: subtextColor,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -393,35 +481,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
                         child: Row(
                           children: [
-                            // App Logo
-                            _buildAppLogo(),
-                            const SizedBox(width: 16),
-                            // Greeting and user info
+                            // Level and EXP display
                             Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _getTimeBasedGreeting(authState.valueOrNull?.displayName.split(' ').first),
-                                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: shouldShowLearningSection ? Colors.white : Colors.black87,
-                                      fontSize: 24,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    _getCurrentDate(),
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: shouldShowLearningSection ? Colors.white.withOpacity(0.95) : Colors.grey[600],
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              child: _buildLevelExpDisplay(shouldShowLearningSection),
                             ),
-                            // Profile section
-                            _buildProfileSection(authState, onGreenBackground: shouldShowLearningSection),
                           ],
                         ),
                       ),
@@ -441,35 +504,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
                         child: Row(
                           children: [
-                            // App Logo
-                            _buildAppLogo(),
-                            const SizedBox(width: 16),
-                            // Greeting and user info
+                            // Level and EXP display
                             Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _getTimeBasedGreeting(authState.valueOrNull?.displayName.split(' ').first),
-                                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                      fontSize: 24,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    _getCurrentDate(),
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: Colors.grey[600],
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              child: _buildLevelExpDisplay(false),
                             ),
-                            // Profile section
-                            _buildProfileSection(authState, onGreenBackground: false),
                           ],
                         ),
                       ),
@@ -548,7 +586,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           // Lesson cards carousel
           nextLessonsAsync.when(
             data: (lessons) {
-              print('DEBUG UI: Got ${lessons.length} lessons');
               if (lessons.isEmpty) {
                 return _buildAllLessonsCompletedCard();
               } else {
@@ -556,7 +593,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               }
             },
             loading: () {
-              print('DEBUG UI: Loading lessons...');
               return const SizedBox(
                 height: 200,
                 child: Center(
@@ -567,7 +603,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               );
             },
             error: (error, stack) {
-              print('DEBUG UI: Error loading lessons: $error');
               print('Stack: $stack');
               return Padding(
                 padding: const EdgeInsets.all(16.0),

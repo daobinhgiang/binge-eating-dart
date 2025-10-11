@@ -296,7 +296,12 @@ class _ProblemSolvingHistoryScreenState extends ConsumerState<ProblemSolvingHist
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       itemCount: exercises.length,
-      itemBuilder: (context, index) => _buildExerciseCard(context, exercises[index]),
+      addAutomaticKeepAlives: false,
+      addRepaintBoundaries: true,
+      cacheExtent: 100,
+      itemBuilder: (context, index) => RepaintBoundary(
+        child: _buildExerciseCard(context, exercises[index]),
+      ),
     );
   }
 

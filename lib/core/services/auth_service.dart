@@ -26,18 +26,25 @@ class AuthService {
 
   // Current user stream
   Stream<UserModel?> get currentUserStream {
-    return _auth.authStateChanges().asyncMap((User? firebaseUser) async {
-      if (firebaseUser == null) return null;
-      
-      try {
-        final doc = await _firestore.collection('users').doc(firebaseUser.uid).get();
-        if (doc.exists) {
-          return UserModel.fromFirestore(doc);
-        }
-        return null;
-      } catch (e) {
-        return null;
+    return _auth.authStateChanges().asyncExpand((User? firebaseUser) {
+      if (firebaseUser == null) {
+        return Stream.value(null);
       }
+      
+      return _firestore
+          .collection('users')
+          .doc(firebaseUser.uid)
+          .snapshots()
+          .map((doc) {
+            if (doc.exists) {
+              return UserModel.fromFirestore(doc);
+            }
+            return null;
+          })
+          .handleError((error) {
+            print('Error streaming user data: $error');
+            return null;
+          });
     });
   }
 

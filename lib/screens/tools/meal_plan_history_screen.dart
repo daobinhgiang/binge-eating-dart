@@ -296,7 +296,12 @@ class _MealPlanHistoryScreenState extends ConsumerState<MealPlanHistoryScreen> {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       itemCount: plans.length,
-      itemBuilder: (context, index) => _buildPlanCard(context, plans[index]),
+      addAutomaticKeepAlives: false,
+      addRepaintBoundaries: true,
+      cacheExtent: 100,
+      itemBuilder: (context, index) => RepaintBoundary(
+        child: _buildPlanCard(context, plans[index]),
+      ),
     );
   }
 

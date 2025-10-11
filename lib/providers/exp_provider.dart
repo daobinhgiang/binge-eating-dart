@@ -9,12 +9,17 @@ import 'auth_provider.dart';
 // EXP service provider
 final expServiceProvider = Provider<ExpService>((ref) => ExpService());
 
-// Current user's EXP and level provider (from auth)
+// Current user's EXP and level provider (from auth stream)
 final userExpProvider = Provider<({int exp, int level})?>((ref) {
-  final user = ref.watch(currentUserDataProvider);
-  if (user == null) return null;
-  
-  return (exp: user.exp, level: user.level);
+  final userAsync = ref.watch(currentUserProvider);
+  return userAsync.when(
+    data: (user) {
+      if (user == null) return null;
+      return (exp: user.exp, level: user.level);
+    },
+    loading: () => null,
+    error: (_, __) => null,
+  );
 });
 
 // EXP history provider
