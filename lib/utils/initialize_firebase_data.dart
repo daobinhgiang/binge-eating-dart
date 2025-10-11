@@ -4,9 +4,19 @@ import '../firebase_options.dart';
 /// Utility class to initialize Firebase data
 class FirebaseDataInitializer {
   static Future<void> initializeApp() async {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    try {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      print('✅ Firebase initialized successfully');
+    } catch (e) {
+      if (e.toString().contains('duplicate-app')) {
+        print('⚠️ Firebase already initialized');
+      } else {
+        print('❌ Firebase initialization error: $e');
+        rethrow;
+      }
+    }
   }
 
   static Future<void> initializeLessons() async {

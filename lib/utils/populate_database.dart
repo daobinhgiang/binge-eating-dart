@@ -4,10 +4,20 @@ import '../firebase_options.dart';
 import 'sample_data.dart';
 
 Future<void> populateDatabase() async {
-  // Initialize Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // Initialize Firebase (handle duplicate initialization gracefully)
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print('✅ Firebase initialized successfully');
+  } catch (e) {
+    if (e.toString().contains('duplicate-app')) {
+      print('⚠️ Firebase already initialized');
+    } else {
+      print('❌ Firebase initialization error: $e');
+      rethrow;
+    }
+  }
 
   final firestore = FirebaseFirestore.instance;
   final sampleArticles = SampleData.getSampleArticles();
