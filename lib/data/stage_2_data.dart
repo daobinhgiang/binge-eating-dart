@@ -350,6 +350,31 @@ class Stage2Data {
               createdAt: now,
               updatedAt: now,
             ),
+            
+            // Quiz: Chapter 0 Review
+            Lesson(
+              id: 'quiz_0_chapter_0',
+              title: 'Chapter 0 Review Quiz',
+              description: 'Test your understanding of the foundational concepts for beginning your recovery journey',
+              chapterNumber: 0,
+              lessonNumber: 7,
+              slides: [
+                LessonSlide(
+                  id: 'slide_quiz_0_1',
+                  title: 'Chapter 0 Review Quiz',
+                  content: 'Congratulations on completing Chapter 0! Before moving on, let\'s review what you\'ve learned about beginning your recovery journey and using Nurtra effectively.',
+                  slideNumber: 1,
+                  bulletPoints: [
+                    'This quiz covers motivation, timing, professional help, weight expectations, and program usage',
+                    'Focus on understanding the foundational principles',
+                    'Your responses are saved automatically',
+                    'You can always return to review the lessons if needed'
+                  ],
+                ),
+              ],
+              createdAt: now,
+              updatedAt: now,
+            ),
           ],
         ),
         
@@ -524,6 +549,31 @@ class Stage2Data {
                     'Track your "Change Days": A "Change Day" is any day where you did your best to monitor accurately and weigh in only once a week (if it was your weigh-in day). It doesn\'t matter if you binged or not.',
                     'Are you having 6-7 Change Days a week? If so, you\'ve built a solid foundation and you\'re ready to move on to Step 2!',
                     'Fewer than 6? No problem at all. Just spend another week practicing the habits from Step 1. Don\'t rush—it\'s more important to feel confident with each step.'
+                  ],
+                ),
+              ],
+              createdAt: now,
+              updatedAt: now,
+            ),
+            
+            // Quiz: Chapter 1 Review
+            Lesson(
+              id: 'quiz_1_stage_2',
+              title: 'Chapter 1 Review Quiz',
+              description: 'Test your understanding of self-monitoring, weighing, and progress tracking concepts',
+              chapterNumber: 1,
+              lessonNumber: 4,
+              slides: [
+                LessonSlide(
+                  id: 'slide_quiz_s2_1_1',
+                  title: 'Chapter 1 Review Quiz',
+                  content: 'Congratulations on completing Chapter 1! Before moving on, let\'s review what you\'ve learned about self-monitoring, weighing, and tracking your progress.',
+                  slideNumber: 1,
+                  bulletPoints: [
+                    'This quiz covers self-monitoring techniques, weighing practices, and progress tracking',
+                    'Focus on understanding the foundational tools for change',
+                    'Your responses are saved automatically',
+                    'You can always return to review the lessons if needed'
                   ],
                 ),
               ],
@@ -869,6 +919,31 @@ class Stage2Data {
               createdAt: now,
               updatedAt: now,
             ),
+            
+            // Quiz: Chapter 2 Review
+            Lesson(
+              id: 'quiz_2_stage_2',
+              title: 'Chapter 2 Review Quiz',
+              description: 'Test your understanding of regular eating patterns, purging behaviors, and meal planning strategies',
+              chapterNumber: 2,
+              lessonNumber: 6,
+              slides: [
+                LessonSlide(
+                  id: 'slide_quiz_s2_2_1',
+                  title: 'Chapter 2 Review Quiz',
+                  content: 'Congratulations on completing Chapter 2! Before moving on, let\'s review what you\'ve learned about regular eating patterns, purging behaviors, and meal planning strategies.',
+                  slideNumber: 1,
+                  bulletPoints: [
+                    'This quiz covers regular eating patterns, purging behaviors, and meal planning',
+                    'Focus on understanding the foundational tools for establishing healthy eating habits',
+                    'Your responses are saved automatically',
+                    'You can always return to review the lessons if needed'
+                  ],
+                ),
+              ],
+              createdAt: now,
+              updatedAt: now,
+            ),
           ],
         ),
         
@@ -1175,7 +1250,31 @@ class Stage2Data {
               createdAt: now,
               updatedAt: now,
             ),
-            // Additional lessons will be added here
+            
+            // Quiz: Chapter 3 Review
+            Lesson(
+              id: 'quiz_3_stage_2',
+              title: 'Chapter 3 Review Quiz',
+              description: 'Test your understanding of alternative activities, urge surfing, and weight management during recovery',
+              chapterNumber: 3,
+              lessonNumber: 5,
+              slides: [
+                LessonSlide(
+                  id: 'slide_quiz_s2_3_1',
+                  title: 'Chapter 3 Review Quiz',
+                  content: 'Congratulations on completing Chapter 3! Before moving on, let\'s review what you\'ve learned about alternative activities, urge surfing, and weight management during recovery.',
+                  slideNumber: 1,
+                  bulletPoints: [
+                    'This quiz covers alternative activities, urge surfing techniques, and weight management',
+                    'Focus on understanding how to handle urges and manage weight concerns',
+                    'Your responses are saved automatically',
+                    'You can always return to review the lessons if needed'
+                  ],
+                ),
+              ],
+              createdAt: now,
+              updatedAt: now,
+            ),
           ],
         ),
         
@@ -1356,6 +1455,31 @@ class Stage2Data {
               createdAt: now,
               updatedAt: now,
             ),
+            
+            // Quiz: Chapter 4 Review
+            Lesson(
+              id: 'quiz_4_stage_2',
+              title: 'Chapter 4 Review Quiz',
+              description: 'Test your understanding of problem-solving skills and their application in recovery',
+              chapterNumber: 4,
+              lessonNumber: 4,
+              slides: [
+                LessonSlide(
+                  id: 'slide_quiz_s2_4_1',
+                  title: 'Chapter 4 Review Quiz',
+                  content: 'Congratulations on completing Chapter 4! Before moving on, let\'s review what you\'ve learned about problem-solving skills and their application in recovery.',
+                  slideNumber: 1,
+                  bulletPoints: [
+                    'This quiz covers problem-solving techniques and their role in recovery',
+                    'Focus on understanding the systematic approach to addressing life challenges',
+                    'Your responses are saved automatically',
+                    'You can always return to review the lessons if needed'
+                  ],
+                ),
+              ],
+              createdAt: now,
+              updatedAt: now,
+            ),
           ],
         ),
         
@@ -1472,6 +1596,31 @@ class Stage2Data {
                     'Focus your energy on that single area for the next 3 to 4 weeks.',
                     'After that, you can begin to work on the second area. Tackling them one by one is the most effective approach.',
                     'Most importantly, remember to keep practicing all the great skills you learned in Steps 1 through 4! They are your foundation for success.'
+                  ],
+                ),
+              ],
+              createdAt: now,
+              updatedAt: now,
+            ),
+            
+            // Quiz: Chapter 5 Review
+            Lesson(
+              id: 'quiz_5_stage_2',
+              title: 'Chapter 5 Review Quiz',
+              description: 'Test your understanding of taking stock and planning your recovery journey',
+              chapterNumber: 5,
+              lessonNumber: 3,
+              slides: [
+                LessonSlide(
+                  id: 'slide_quiz_s2_5_1',
+                  title: 'Chapter 5 Review Quiz',
+                  content: 'Congratulations on completing Chapter 5! Before moving on, let\'s review what you\'ve learned about taking stock and planning your recovery journey.',
+                  slideNumber: 1,
+                  bulletPoints: [
+                    'This quiz covers taking stock, progress evaluation, and next steps planning',
+                    'Focus on understanding how to assess your progress and choose your path forward',
+                    'Your responses are saved automatically',
+                    'You can always return to review the lessons if needed'
                   ],
                 ),
               ],
@@ -1657,6 +1806,31 @@ class Stage2Data {
                     'You\'re almost there: You\'ve made incredible progress on your journey.',
                     'Don\'t forget the final step: The last module, "Ending Well," is designed to help you maintain your new skills.',
                     'This is for the long haul: This final step will help you feel confident in your ability to handle challenges and stay on track in the future.'
+                  ],
+                ),
+              ],
+              createdAt: now,
+              updatedAt: now,
+            ),
+            
+            // Quiz: Chapter 6 Review
+            Lesson(
+              id: 'quiz_6_stage_2',
+              title: 'Chapter 6 Review Quiz',
+              description: 'Test your understanding of making peace with food and addressing strict dieting patterns',
+              chapterNumber: 6,
+              lessonNumber: 4,
+              slides: [
+                LessonSlide(
+                  id: 'slide_quiz_s2_6_1',
+                  title: 'Chapter 6 Review Quiz',
+                  content: 'Congratulations on completing Chapter 6! Before moving on, let\'s review what you\'ve learned about making peace with food and addressing strict dieting patterns.',
+                  slideNumber: 1,
+                  bulletPoints: [
+                    'This quiz covers strict dieting patterns, forbidden foods, and making peace with food',
+                    'Focus on understanding how to break free from restrictive eating patterns',
+                    'Your responses are saved automatically',
+                    'You can always return to review the lessons if needed'
                   ],
                 ),
               ],
@@ -2177,7 +2351,31 @@ class Stage2Data {
               createdAt: now,
               updatedAt: now,
             ),
-            // Additional lessons will be added here
+            
+            // Quiz: Chapter 7 Review
+            Lesson(
+              id: 'quiz_7_stage_2',
+              title: 'Chapter 7 Review Quiz',
+              description: 'Test your understanding of body image concerns and developing a healthier relationship with your body',
+              chapterNumber: 7,
+              lessonNumber: 9,
+              slides: [
+                LessonSlide(
+                  id: 'slide_quiz_s2_7_1',
+                  title: 'Chapter 7 Review Quiz',
+                  content: 'Congratulations on completing Chapter 7! Before moving on, let\'s review what you\'ve learned about body image concerns and developing a healthier relationship with your body.',
+                  slideNumber: 1,
+                  bulletPoints: [
+                    'This quiz covers body image concerns, shape checking, avoidance, and "feeling fat"',
+                    'Focus on understanding how to develop a healthier relationship with your body',
+                    'Your responses are saved automatically',
+                    'You can always return to review the lessons if needed'
+                  ],
+                ),
+              ],
+              createdAt: now,
+              updatedAt: now,
+            ),
           ],
         ),
       ],

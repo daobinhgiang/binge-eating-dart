@@ -258,6 +258,31 @@ class Stage1Data {
               createdAt: now,
               updatedAt: now,
             ),
+            
+            // Quiz: Chapter 1 Review
+            Lesson(
+              id: 'quiz_1_chapter_1',
+              title: 'Chapter 1 Review Quiz',
+              description: 'Test your understanding of the key concepts from Chapter 1',
+              chapterNumber: 1,
+              lessonNumber: 4,
+              slides: [
+                LessonSlide(
+                  id: 'slide_quiz_1_1',
+                  title: 'Chapter 1 Review Quiz',
+                  content: 'Congratulations on completing Chapter 1! Before moving on, let\'s review what you\'ve learned about starting your treatment journey, monitoring, and regular eating.',
+                  slideNumber: 1,
+                  bulletPoints: [
+                    'This quiz will help reinforce the key concepts',
+                    'Take your time with each question',
+                    'Your responses are saved automatically',
+                    'You can always return to review the lessons if needed'
+                  ],
+                ),
+              ],
+              createdAt: now,
+              updatedAt: now,
+            ),
           ],
         ),
         
@@ -1056,6 +1081,31 @@ class Stage1Data {
                     'Stage 1 of the treatment immediately targets the behavioral cycle by helping you establish a pattern of regular eating, which displaces most binges.',
                     'Stage 2 then focuses on the underlying engines by tackling the tendency to diet and finding new ways to cope with difficult moods.',
                     'Stage 3 helps you create a plan to maintain your progress and handle future setbacks so you don\'t fall back into the old cycles.'
+                  ],
+                ),
+              ],
+              createdAt: now,
+              updatedAt: now,
+            ),
+            
+            // Quiz: Chapter 3 Review
+            Lesson(
+              id: 'quiz_3_chapter_3',
+              title: 'Chapter 3 Review Quiz',
+              description: 'Test your understanding of the key psychoeducational concepts',
+              chapterNumber: 3,
+              lessonNumber: 11,
+              slides: [
+                LessonSlide(
+                  id: 'slide_quiz_3_1',
+                  title: 'Chapter 3 Review Quiz',
+                  content: 'Congratulations on completing Chapter 3! Before moving on, let\'s review what you\'ve learned about the psychoeducational concepts that form the foundation of understanding eating disorders.',
+                  slideNumber: 1,
+                  bulletPoints: [
+                    'This quiz covers dieting, self-worth, binge eating, and recovery concepts',
+                    'Focus on understanding the underlying mechanisms',
+                    'Your responses are saved automatically',
+                    'You can always return to review the lessons if needed'
                   ],
                 ),
               ],

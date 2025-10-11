@@ -145,7 +145,7 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => LessonsScreen(stageNumber: stage.stageNumber),
+                            builder: (context) => const LessonsScreen(),
                           ),
                         );
                       },

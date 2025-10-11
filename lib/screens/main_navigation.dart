@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'home_screen.dart';
-import 'education/education_screen.dart';
+import 'education/lessons_screen.dart';
 import 'tools/tools_screen.dart';
 import 'journal/journal_screen.dart';
 import 'profile/profile_screen.dart';
@@ -92,7 +92,7 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
                 index: _currentIndex,
                 children: const [
                   HomeScreen(),
-                  EducationScreen(),
+                  LessonsScreen(),
                   ToolsScreen(),
                   JournalScreen(),
                   ProfileScreen(),
@@ -104,7 +104,7 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
                 index: _currentIndex,
                 children: const [
                   HomeScreen(),
-                  EducationScreen(),
+                  LessonsScreen(),
                   ToolsScreen(),
                   JournalScreen(),
                   ProfileScreen(),
