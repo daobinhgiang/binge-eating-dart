@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/problem_solving_provider.dart';
 import '../../models/problem_solving.dart';
@@ -176,63 +177,46 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
 
   Widget _buildNavigationBar(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 0,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.deepOrange[600]!,
+            Colors.deepOrange[500]!,
+          ],
+        ),
       ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: Colors.deepOrange,
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.deepOrange.withValues(alpha: 0.3),
-                  spreadRadius: 0,
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () => Navigator.of(context).pop(),
-                borderRadius: BorderRadius.circular(8),
-                child: const Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
-                  size: 20,
-                ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
               ),
-            ),
-          ),
-          const SizedBox(width: 16),
-          Text(
-            'Problem Solving',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+              const SizedBox(height: 8),
+              Text(
+                'Problem Solving',
+                style: GoogleFonts.fredoka(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
                 ),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
-          const Spacer(),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.psychology, color: Colors.black54),
-            tooltip: 'Problem Solving',
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -240,62 +224,28 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
   Widget _buildHeaderCard(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.deepOrange,
+        color: Colors.deepOrange[50],
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.deepOrange.withValues(alpha: 0.3),
-            spreadRadius: 0,
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        border: Border.all(
+          color: Colors.deepOrange[100]!,
+          width: 2,
+        ),
       ),
       child: Column(
         children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(40),
-              border: Border.all(
-                color: Colors.white,
-                width: 4,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  spreadRadius: 0,
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: const Icon(
-              Icons.psychology,
-              color: Colors.deepOrange,
-              size: 40,
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            'Problem Solving',
-            style: const TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-            textAlign: TextAlign.center,
+          Icon(
+            Icons.psychology,
+            color: Colors.deepOrange[600],
+            size: 48,
           ),
           const SizedBox(height: 12),
-          const Text(
+          Text(
             'Tackle challenges with a clear, structured plan',
-            style: TextStyle(
+            style: GoogleFonts.fredoka(
               fontSize: 16,
-              color: Colors.white,
+              color: Colors.deepOrange[700],
               fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,

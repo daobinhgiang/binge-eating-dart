@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/addressing_overconcern_provider.dart';
 import '../../models/addressing_overconcern.dart';
@@ -65,34 +66,88 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Addressing Overconcern'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: _isLoading ? null : () => _saveImportanceItems(user.id),
-            icon: _isLoading 
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.save),
-          ),
-        ],
-      ),
       body: Column(
         children: [
-          // Guide Section
+          // Duolingo-style Header
           Container(
             width: double.infinity,
-            margin: const EdgeInsets.all(16),
-            child: _buildGuideSection(context),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.orange[600]!,
+                  Colors.orange[500]!,
+                ],
+              ),
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          icon: const Icon(Icons.arrow_back, color: Colors.white),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                        const Spacer(),
+                        IconButton(
+                          onPressed: _isLoading ? null : () => _saveImportanceItems(user.id),
+                          icon: _isLoading 
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  ),
+                                )
+                              : const Icon(Icons.save, color: Colors.white),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                    child: Text(
+                      'Addressing Overconcern',
+                      style: GoogleFonts.fredoka(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
 
           // Content
           Expanded(
-            child: _importanceItems.isEmpty ? _buildEmptyState(context) : _buildContentWithChart(context),
+            child: Column(
+              children: [
+                // Guide Section
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.all(16),
+                  child: _buildGuideSection(context),
+                ),
+
+                // Content
+                Expanded(
+                  child: _importanceItems.isEmpty ? _buildEmptyState(context) : _buildContentWithChart(context),
+                ),
+              ],
+            ),
           ),
         ],
       ),

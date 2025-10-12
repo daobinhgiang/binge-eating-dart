@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/addressing_setbacks_provider.dart';
 import '../../models/addressing_setbacks.dart';
@@ -163,65 +164,55 @@ class AddressingSetbacksScreen extends ConsumerWidget {
 
   Widget _buildNavigationBar(BuildContext context, WidgetRef ref, String userId) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 0,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.purple[600]!,
+            Colors.purple[500]!,
+          ],
+        ),
       ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.red.withOpacity(0.3),
-                  spreadRadius: 0,
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () => Navigator.of(context).pop(),
-                borderRadius: BorderRadius.circular(8),
-                child: const Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
-                  size: 20,
-                ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () {
+                      ref.read(userAddressingSetbacksExercisesProvider(userId).notifier).refreshExercises();
+                    },
+                    icon: const Icon(Icons.refresh, color: Colors.white),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
               ),
-            ),
-          ),
-          const SizedBox(width: 16),
-          Text(
-            'Addressing Setbacks',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+              const SizedBox(height: 8),
+              Text(
+                'Addressing Setbacks',
+                style: GoogleFonts.fredoka(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
                 ),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
-          const Spacer(),
-          IconButton(
-            onPressed: () {
-              ref.read(userAddressingSetbacksExercisesProvider(userId).notifier).refreshExercises();
-            },
-            icon: const Icon(Icons.refresh, color: Colors.black54),
-            tooltip: 'Refresh',
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -229,62 +220,28 @@ class AddressingSetbacksScreen extends ConsumerWidget {
   Widget _buildHeaderCard(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.red,
+        color: Colors.purple[50],
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.red.withOpacity(0.3),
-            spreadRadius: 0,
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        border: Border.all(
+          color: Colors.purple[100]!,
+          width: 2,
+        ),
       ),
       child: Column(
         children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(40),
-              border: Border.all(
-                color: Colors.white,
-                width: 4,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  spreadRadius: 0,
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: const Icon(
-              Icons.trending_down,
-              color: Colors.red,
-              size: 40,
-            ),
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            'Addressing Setbacks',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-            textAlign: TextAlign.center,
+          Icon(
+            Icons.trending_down,
+            color: Colors.purple[600],
+            size: 48,
           ),
           const SizedBox(height: 12),
-          const Text(
+          Text(
             'Learn from setbacks and plan your response',
-            style: TextStyle(
+            style: GoogleFonts.fredoka(
               fontSize: 16,
-              color: Colors.white,
+              color: Colors.purple[700],
               fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,

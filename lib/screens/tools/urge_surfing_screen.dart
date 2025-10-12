@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/urge_surfing_provider.dart';
 import '../../models/urge_surfing.dart';
@@ -29,19 +30,67 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
     final activitiesAsync = ref.watch(userActivitiesProvider(user.id));
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Urge Surfing Activities'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () {
-              ref.read(userActivitiesProvider(user.id).notifier).refreshActivities();
-            },
-            icon: const Icon(Icons.refresh),
+      body: Column(
+        children: [
+          // Duolingo-style Header
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.teal[600]!,
+                  Colors.teal[500]!,
+                ],
+              ),
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          icon: const Icon(Icons.arrow_back, color: Colors.white),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                        const Spacer(),
+                        IconButton(
+                          onPressed: () {
+                            ref.read(userActivitiesProvider(user.id).notifier).refreshActivities();
+                          },
+                          icon: const Icon(Icons.refresh, color: Colors.white),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                    child: Text(
+                      'Urge Surfing',
+                      style: GoogleFonts.fredoka(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ],
-      ),
-      body: activitiesAsync.when(
+
+          // Content
+          Expanded(
+            child: activitiesAsync.when(
         data: (activities) {
           if (activities.isEmpty) {
             return _buildEmptyState(context);
@@ -59,6 +108,9 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
             ],
           ),
         ),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddActivityDialog(context),
