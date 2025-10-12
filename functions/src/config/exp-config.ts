@@ -37,10 +37,10 @@ export const QUIZ_BASE_EXP: Record<string, ExpConfig> = {
  */
 export const LEVEL_THRESHOLDS: Record<number, number> = {
   1: 0,       // Level 1 starts at 0 EXP
-  2: 500,     // Level 2 requires 500 EXP
-  3: 1000,    // Level 3 requires 1000 more (1500 total)
-  4: 2000,    // Level 4 requires 2000 more (3500 total)
-  5: 4000,    // Level 5 requires 4000 more (7500 total) - max level
+  2: 50,      // Level 2 requires 50 EXP
+  3: 100,     // Level 3 requires 100 more (150 total)
+  4: 200,     // Level 4 requires 200 more (350 total)
+  5: 400,     // Level 5 requires 400 more (750 total) - max level
 };
 
 /**

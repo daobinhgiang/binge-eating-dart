@@ -30,10 +30,10 @@ class ExpService {
   // Level thresholds (cumulative EXP required)
   static const Map<int, int> _levelThresholds = {
     1: 0,
-    2: 500,
-    3: 1500,   // 500 + 1000
-    4: 3500,   // 500 + 1000 + 2000
-    5: 7500,   // 500 + 1000 + 2000 + 4000
+    2: 50,     // 50
+    3: 150,    // 50 + 100
+    4: 350,    // 50 + 100 + 200
+    5: 750,    // 50 + 100 + 200 + 400
   };
 
   /// Submit quiz for validation
