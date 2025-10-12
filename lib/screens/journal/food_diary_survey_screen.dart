@@ -1,8 +1,14 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/food_diary_provider.dart';
 import '../../models/food_diary.dart';
+import '../../core/services/openai_service.dart';
+import '../../data/food_database.dart';
 
 class FoodDiarySurveyScreen extends ConsumerStatefulWidget {
   const FoodDiarySurveyScreen({super.key});
@@ -24,6 +30,16 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
   bool _isBinge = false;
   String _purgeMethod = FoodDiary.purgeMethodOptions.first;
   final TextEditingController _contextController = TextEditingController();
+  
+  // Image capture and analysis
+  final ImagePicker _imagePicker = ImagePicker();
+  bool _isAnalyzingImage = false;
+  final OpenAIService _openAIService = OpenAIService();
+  
+  // Food selection
+  final TextEditingController _foodSearchController = TextEditingController();
+  List<String> _searchResults = [];
+  bool _showFoodSearch = false;
 
   @override
   void dispose() {
@@ -31,6 +47,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
     _foodController.dispose();
     _customLocationController.dispose();
     _contextController.dispose();
+    _foodSearchController.dispose();
     super.dispose();
   }
 
@@ -301,6 +318,179 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 16),
+          // Action buttons row
+          Row(
+            children: [
+              // Photo button for AI analysis
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _isAnalyzingImage ? null : _showImageSourceDialog,
+                  icon: _isAnalyzingImage
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Icon(Icons.camera_alt),
+                  label: Text(
+                    _isAnalyzingImage ? 'Analyzing...' : 'Take Photo',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontFamily: 'SF Pro Text',
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    side: BorderSide(
+                      color: _isAnalyzingImage ? Colors.grey[400]! : Theme.of(context).primaryColor,
+                      width: 1.5,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Food search button
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _toggleFoodSearch,
+                  icon: const Icon(Icons.search),
+                  label: const Text(
+                    'Search Foods',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontFamily: 'SF Pro Text',
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    side: BorderSide(
+                      color: Theme.of(context).primaryColor,
+                      width: 1.5,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (_isAnalyzingImage)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Text(
+                'AI is analyzing your food photo...',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey[600],
+                  fontStyle: FontStyle.italic,
+                  fontFamily: 'SF Pro Text',
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          // Food search section
+          if (_showFoodSearch) ...[
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.blue[50],
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.blue[200]!,
+                  width: 1,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.search, color: Colors.blue[700], size: 20),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Search and Add Foods',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue[700],
+                          fontFamily: 'SF Pro Text',
+                        ),
+                      ),
+                      const Spacer(),
+                      IconButton(
+                        onPressed: _toggleFoodSearch,
+                        icon: Icon(Icons.close, color: Colors.blue[700]),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _foodSearchController,
+                    onChanged: _onFoodSearchChanged,
+                    decoration: InputDecoration(
+                      hintText: 'Search for foods (e.g., "chicken", "apple")',
+                      hintStyle: TextStyle(
+                        color: Colors.grey[500],
+                        fontFamily: 'SF Pro Text',
+                      ),
+                      prefixIcon: const Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.blue[300]!),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.blue[500]!, width: 2),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    ),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontFamily: 'SF Pro Text',
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  if (_searchResults.isNotEmpty)
+                    Container(
+                      height: 200,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.blue[200]!),
+                      ),
+                      child: ListView.builder(
+                        itemCount: _searchResults.length,
+                        itemBuilder: (context, index) {
+                          final food = _searchResults[index];
+                          return ListTile(
+                            title: Text(
+                              food,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontFamily: 'SF Pro Text',
+                              ),
+                            ),
+                            trailing: const Icon(Icons.add, size: 20),
+                            onTap: () => _selectFood(food),
+                            dense: true,
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -862,6 +1052,145 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
     final minute = dateTime.minute.toString().padLeft(2, '0');
     final period = dateTime.hour < 12 ? 'AM' : 'PM';
     return '$hour:$minute $period';
+  }
+
+  Future<void> _showImageSourceDialog() async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Choose Image Source'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Take Photo'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _captureAndAnalyzeFood(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Choose from Gallery'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _captureAndAnalyzeFood(ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _captureAndAnalyzeFood(ImageSource source) async {
+    try {
+      // Pick image from camera or gallery
+      final XFile? image = await _imagePicker.pickImage(
+        source: source,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
+      );
+
+      if (image == null) return;
+
+      setState(() {
+        _isAnalyzingImage = true;
+      });
+
+      String result;
+      if (kIsWeb) {
+        // For web, use bytes
+        final bytes = await image.readAsBytes();
+        result = await _openAIService.analyzeFoodImage(imageBytes: bytes);
+      } else {
+        // For mobile, use file
+        final file = File(image.path);
+        result = await _openAIService.analyzeFoodImage(imageFile: file);
+      }
+
+      if (mounted) {
+        setState(() {
+          _foodController.text = result;
+          _isAnalyzingImage = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Food image analyzed successfully! You can edit the text if needed.'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isAnalyzingImage = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error analyzing image: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    }
+  }
+
+  void _onFoodSearchChanged(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        _searchResults = FoodDatabase.getPopularFoods();
+      } else {
+        _searchResults = FoodDatabase.searchFoods(query);
+      }
+    });
+  }
+
+  void _toggleFoodSearch() {
+    setState(() {
+      _showFoodSearch = !_showFoodSearch;
+      if (_showFoodSearch) {
+        _searchResults = FoodDatabase.getPopularFoods();
+        _foodSearchController.clear();
+      }
+    });
+  }
+
+  void _selectFood(String food) {
+    final currentText = _foodController.text.trim();
+    if (currentText.isEmpty) {
+      _foodController.text = food;
+    } else {
+      _foodController.text = '$currentText, $food';
+    }
+    
+    // Close the search
+    setState(() {
+      _showFoodSearch = false;
+    });
+    
+    // Show success message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Added "$food" to your food list'),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
   Future<void> _submitSurvey() async {

@@ -277,6 +277,13 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> with TickerProvid
         'icon': Icons.psychology,
         'color': Colors.purple,
       },
+      {
+        'id': 'money_diary',
+        'title': 'Spending Diary Entry',
+        'description': 'Track spending on binge eating',
+        'icon': Icons.account_balance_wallet,
+        'color': Colors.amber,
+      },
     ];
 
     return ListView.builder(

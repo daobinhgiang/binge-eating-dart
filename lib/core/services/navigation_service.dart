@@ -33,6 +33,7 @@ import '../../screens/assessments/assessment_2_1_screen.dart';
 import '../../screens/journal/food_diary_survey_screen.dart';
 import '../../screens/journal/body_image_diary_survey_screen.dart';
 import '../../screens/journal/weight_diary_survey_screen.dart';
+import '../../screens/journal/money_diary_main_screen.dart';
 import '../../screens/assessments/assessment_2_2_screen.dart';
 import '../../screens/assessments/assessment_2_3_screen.dart';
 
@@ -226,6 +227,9 @@ class NavigationService {
       case 'weight_diary':
         _navigateToWeightDiarySurvey(context);
         break;
+      case 'money_diary':
+        _navigateToMoneyDiary(context);
+        break;
       default:
         // Fallback to main journal screen
         context.go('/journal');
@@ -255,6 +259,15 @@ class NavigationService {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => const BodyImageDiarySurveyScreen(),
+      ),
+    );
+  }
+  
+  // Navigate to money diary
+  void _navigateToMoneyDiary(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const MoneyDiaryMainScreen(),
       ),
     );
   }

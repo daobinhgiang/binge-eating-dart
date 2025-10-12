@@ -5,6 +5,7 @@ import '../../widgets/weight_graph_widget.dart';
 import 'food_diary_main_screen.dart';
 import 'body_image_diary_main_screen.dart';
 import 'weight_diary_survey_screen.dart';
+import 'money_diary_main_screen.dart';
 
 class JournalScreen extends ConsumerStatefulWidget {
   const JournalScreen({super.key});
@@ -156,6 +157,16 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
           color: Colors.teal[600]!,
           onTap: () => _navigateToBodyImageDiarySurvey(context),
         ),
+        const SizedBox(height: 16),
+        // Spending Diary Card
+        _buildDiaryCard(
+          context,
+          title: 'Spending Diary',
+          subtitle: 'Track spending on binging',
+          icon: Icons.account_balance_wallet,
+          color: Colors.amber[600]!,
+          onTap: () => _navigateToMoneyDiary(context),
+        ),
       ],
     );
   }
@@ -257,6 +268,8 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
       return 'assets/journal/food_diary.png';
     } else if (title.toLowerCase().contains('body')) {
       return 'assets/journal/body_image.png';
+    } else if (title.toLowerCase().contains('spending') || title.toLowerCase().contains('money')) {
+      return 'assets/journal/spending_diary.png';
     }
     return 'assets/journal/food_diary.png'; // Default fallback
   }
@@ -327,6 +340,15 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                       Icons.visibility,
                       Colors.teal[600]!,
                       () => _navigateToBodyImageDiarySurvey(context),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildAddOption(
+                      context,
+                      'Spending Diary',
+                      'Track spending on binge eating',
+                      Icons.account_balance_wallet,
+                      Colors.amber[600]!,
+                      () => _navigateToMoneyDiary(context),
                     ),
                   ],
                 ),
@@ -422,6 +444,14 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => const BodyImageDiaryMainScreen(),
+      ),
+    );
+  }
+
+  void _navigateToMoneyDiary(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const MoneyDiaryMainScreen(),
       ),
     );
   }
