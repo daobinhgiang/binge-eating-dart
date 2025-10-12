@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 import '../../data/stage_1_data.dart';
 import '../../data/stage_2_data.dart';
 import '../../data/stage_3_data.dart';
@@ -91,11 +90,56 @@ class LessonsScreen extends StatefulWidget {
 
 class _LessonsScreenState extends State<LessonsScreen> {
   List<Stage> _stages = [];
+  final ScrollController _scrollController = ScrollController();
+  Stage? _currentStage;
+  Chapter? _currentChapter;
+  final Map<String, GlobalKey> _sectionKeys = {};
 
   @override
   void initState() {
     super.initState();
     _loadStages();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    // Update the current stage and chapter based on scroll position
+    _updateCurrentSection();
+  }
+
+  void _updateCurrentSection() {
+    // Calculate the threshold position (Learning Path header + Sticky header)
+    const double headerHeight = 56.0 + 122.0; // AppBar + Sticky header height (with divider)
+    
+    for (var stage in _stages) {
+      for (var chapter in stage.chapters) {
+        final key = _sectionKeys['${stage.stageNumber}_${chapter.chapterNumber}'];
+        if (key?.currentContext != null) {
+          final RenderBox? box = key!.currentContext!.findRenderObject() as RenderBox?;
+          if (box != null) {
+            final position = box.localToGlobal(Offset.zero);
+            // Update header when the section divider line reaches the sticky header divider line
+            // Position.dy represents the top of the section (where the divider line is)
+            if (position.dy <= headerHeight && position.dy + box.size.height >= headerHeight - 50) {
+              if (_currentStage != stage || _currentChapter != chapter) {
+                setState(() {
+                  _currentStage = stage;
+                  _currentChapter = chapter;
+                });
+              }
+              return;
+            }
+          }
+        }
+      }
+    }
   }
 
   void _loadStages() {
@@ -105,6 +149,18 @@ class _LessonsScreenState extends State<LessonsScreen> {
         Stage2Data.getStage2(),
         Stage3Data.getStage3(),
       ];
+      // Initialize section keys for each chapter
+      _sectionKeys.clear();
+      for (var stage in _stages) {
+        for (var chapter in stage.chapters) {
+          _sectionKeys['${stage.stageNumber}_${chapter.chapterNumber}'] = GlobalKey();
+        }
+      }
+      // Set initial stage and chapter
+      if (_stages.isNotEmpty && _stages[0].chapters.isNotEmpty) {
+        _currentStage = _stages[0];
+        _currentChapter = _stages[0].chapters[0];
+      }
     });
   }
 
@@ -317,21 +373,31 @@ class _LessonsScreenState extends State<LessonsScreen> {
         ),
         child: SafeArea(
           child: CustomScrollView(
+            controller: _scrollController,
             slivers: [
               SliverAppBar(
-                floating: true,
-                backgroundColor: Colors.transparent,
-                elevation: 0,
+                pinned: true,
+                backgroundColor: const Color(0xFFF5F5F5),
+                elevation: 2,
                 automaticallyImplyLeading: false,
                 title: const Text(
                   'Learning Path',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 24,
+                    color: Colors.black87,
                   ),
                 ),
                 centerTitle: true,
               ),
+              // Sticky header showing current stage and chapter
+              if (_currentStage != null && _currentChapter != null)
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: _StickyHeaderDelegate(
+                    child: _buildStickyHeader(_currentStage!, _currentChapter!),
+                  ),
+                ),
               SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                 sliver: SliverList(
@@ -352,307 +418,305 @@ class _LessonsScreenState extends State<LessonsScreen> {
   }
 
 
+  // Build sticky header for current section with two tiles
+  Widget _buildStickyHeader(Stage stage, Chapter chapter) {
+    return Container(
+      color: const Color(0xFFF5F5F5),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Stage Tile
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: _getStageColor(stage.stageNumber),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: _getStageColor(stage.stageNumber).withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'STAGE ${stage.stageNumber}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.8,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              stage.title,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(
+                        _getStageIcon(stage.stageNumber),
+                        color: Colors.white.withOpacity(0.8),
+                        size: 18,
+                      ),
+                    ],
+                  ),
+                ),
+                
+                const SizedBox(height: 6),
+                
+                // Chapter Tile
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: _getStageColor(stage.stageNumber).withOpacity(0.85),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: _getStageColor(stage.stageNumber).withOpacity(0.2),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'CHAPTER ${chapter.chapterNumber}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.8,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              chapter.title,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(
+                        Icons.menu_book,
+                        color: Colors.white.withOpacity(0.8),
+                        size: 18,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Divider line below sticky header
+          Container(
+            height: 2,
+            color: Colors.grey.shade300,
+          ),
+        ],
+      ),
+    );
+  }
+
   // Build the storyline path with all stages, chapters, and lessons
   List<Widget> _buildStorylinePath() {
     List<Widget> widgets = [];
     int lessonIndex = 0;
 
     for (var stage in _stages) {
-      // Add stage header
-      widgets.add(_buildStageHeader(stage));
-      widgets.add(const SizedBox(height: 30));
-
-      for (var chapter in stage.chapters) {
-        // Add chapter header
-        widgets.add(_buildChapterHeader(chapter, stage));
-        widgets.add(const SizedBox(height: 20));
-
-        // Add lessons in the chapter
-        for (var i = 0; i < chapter.lessons.length; i++) {
-          var lesson = chapter.lessons[i];
-          bool isLeft = lessonIndex % 2 == 0;
-          
-          widgets.add(_buildLessonNode(lesson, isLeft, lessonIndex));
-          
-          // Add connecting line if not the last lesson in this chapter
-          if (i < chapter.lessons.length - 1) {
-            widgets.add(_buildConnectingLine());
-          }
-          
-          lessonIndex++;
-        }
-
-        // Add spacing between chapters
-        widgets.add(const SizedBox(height: 40));
+      for (var i = 0; i < stage.chapters.length; i++) {
+        final chapter = stage.chapters[i];
+        // Wrap chapter section with a key for tracking
+        final sectionKey = _sectionKeys['${stage.stageNumber}_${chapter.chapterNumber}'];
+        
+        widgets.add(
+          Column(
+            key: sectionKey,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Add spacing before divider (except for first chapter)
+              if (i > 0 || stage.stageNumber > 1)
+                const SizedBox(height: 100),
+              // Section divider line to mark the start of each section
+              Container(
+                height: 2,
+                color: Colors.grey.shade300,
+              ),
+              const SizedBox(height: 100),
+              // Add lessons in the chapter with Duolingo-style layout
+              _buildChapterLessons(chapter, stage, lessonIndex),
+            ],
+          ),
+        );
+        
+        lessonIndex += chapter.lessons.length;
       }
 
       // Add spacing between stages
-      widgets.add(const SizedBox(height: 20));
+      widgets.add(const SizedBox(height: 50));
     }
 
     return widgets;
   }
 
-  // Build stage header
-  Widget _buildStageHeader(Stage stage) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            _getStageColor(stage.stageNumber),
-            _getStageColor(stage.stageNumber).withOpacity(0.7),
+
+  // Build all lessons for a chapter in Duolingo-style winding path
+  Widget _buildChapterLessons(Chapter chapter, Stage stage, int startIndex) {
+    return Column(
+      children: List.generate(chapter.lessons.length, (index) {
+        final lesson = chapter.lessons[index];
+        final lessonNumber = startIndex + index + 1;
+        final isCompleted = lesson.isCompleted;
+        final isLocked = false; // Implement lock logic as needed
+        
+        // Calculate position (0 = center, -1 = left, 1 = right)
+        final position = _getLessonPosition(index);
+        
+        return Column(
+          children: [
+            _buildDuolingoLessonButton(
+              lesson: lesson,
+              lessonNumber: lessonNumber,
+              isCompleted: isCompleted,
+              isLocked: isLocked,
+              position: position,
+              stageColor: _getStageColor(stage.stageNumber),
+            ),
+            if (index < chapter.lessons.length - 1)
+              _buildConnectingPath(position, _getLessonPosition(index + 1)),
           ],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: _getStageColor(stage.stageNumber).withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              _getStageIcon(stage.stageNumber),
-              color: Colors.white,
-              size: 32,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Stage ${stage.stageNumber}',
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 1.2,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  stage.title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        );
+      }),
     );
   }
 
-  // Build chapter header
-  Widget _buildChapterHeader(Chapter chapter, Stage stage) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        color: _getStageColor(stage.stageNumber).withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: _getStageColor(stage.stageNumber).withOpacity(0.3),
-          width: 2,
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: _getStageColor(stage.stageNumber).withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              Icons.auto_stories,
-              color: _getStageColor(stage.stageNumber),
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Chapter ${chapter.chapterNumber}',
-                  style: TextStyle(
-                    color: _getStageColor(stage.stageNumber).withOpacity(0.7),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  chapter.title,
-                  style: TextStyle(
-                    color: _getStageColor(stage.stageNumber),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+  // Get lesson position in the path (-1 = left, 0 = center, 1 = right)
+  int _getLessonPosition(int index) {
+    // Create a winding path like Duolingo
+    final pattern = [0, -1, 0, 1, 0, -1, 1, 0, -1, 0, 1, 0];
+    return pattern[index % pattern.length];
   }
 
-  // Build lesson node (circle)
-  Widget _buildLessonNode(Lesson lesson, bool isLeft, int index) {
-    bool isCompleted = lesson.isCompleted;
-    bool isLocked = false; // You can implement lock logic based on your requirements
-    
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          if (isLeft) ...[
-            Expanded(
-              child: _buildLessonInfo(lesson, isLeft),
-            ),
-            const SizedBox(width: 16),
-            _buildLessonCircle(lesson, isCompleted, isLocked),
-            const SizedBox(width: 16),
-            const Expanded(child: SizedBox()),
-          ] else ...[
-            const Expanded(child: SizedBox()),
-            const SizedBox(width: 16),
-            _buildLessonCircle(lesson, isCompleted, isLocked),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildLessonInfo(lesson, isLeft),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  // Build lesson circle button
-  Widget _buildLessonCircle(Lesson lesson, bool isCompleted, bool isLocked) {
-    Color circleColor = isCompleted 
-        ? const Color(0xFF4CAF50)
+  // Build a single Duolingo-style lesson button with lesson number
+  Widget _buildDuolingoLessonButton({
+    required Lesson lesson,
+    required int lessonNumber,
+    required bool isCompleted,
+    required bool isLocked,
+    required int position,
+    required Color stageColor,
+  }) {
+    Color buttonColor = isCompleted 
+        ? stageColor
         : isLocked 
             ? Colors.grey.shade400
-            : const Color(0xFF66BB6A);
+            : stageColor.withOpacity(0.7);
 
-    return GestureDetector(
-      onTap: isLocked ? null : () => _navigateToLesson(lesson),
-      child: Container(
-        width: 80,
-        height: 80,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: circleColor,
-          boxShadow: [
-            BoxShadow(
-              color: circleColor.withOpacity(0.4),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-          border: Border.all(
-            color: Colors.white,
-            width: 4,
-          ),
-        ),
-        child: Icon(
-          isCompleted 
-              ? Icons.check_circle
-              : isLocked
-                  ? Icons.lock
-                  : Icons.play_arrow,
-          color: Colors.white,
-          size: 32,
-        ),
-      ),
-    );
-  }
+    // Calculate alignment based on position
+    Alignment alignment;
+    if (position < 0) {
+      alignment = Alignment.centerLeft;
+    } else if (position > 0) {
+      alignment = Alignment.centerRight;
+    } else {
+      alignment = Alignment.center;
+    }
 
-  // Build lesson info card
-  Widget _buildLessonInfo(Lesson lesson, bool isLeft) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: isLeft ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: [
-          Text(
-            lesson.title,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF4CAF50),
-            ),
-            textAlign: isLeft ? TextAlign.right : TextAlign.left,
-          ),
-          if (lesson.description.isNotEmpty) ...[
-            const SizedBox(height: 4),
-            Text(
-              lesson.description,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey.shade600,
+    return Align(
+      alignment: alignment,
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: position == -1 ? 40 : position == 0 ? 0 : 0,
+          right: position == 1 ? 40 : position == 0 ? 0 : 0,
+        ),
+        child: GestureDetector(
+          onTap: isLocked ? null : () => _navigateToLesson(lesson),
+          child: Container(
+            width: 70,
+            height: 70,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: buttonColor,
+              boxShadow: [
+                BoxShadow(
+                  color: buttonColor.withOpacity(0.4),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+              border: Border.all(
+                color: Colors.white,
+                width: 3,
               ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              textAlign: isLeft ? TextAlign.right : TextAlign.left,
             ),
-          ],
-        ],
+            child: Center(
+              child: isCompleted
+                  ? const Icon(
+                      Icons.star,
+                      color: Colors.white,
+                      size: 32,
+                    )
+                  : isLocked
+                      ? const Icon(
+                          Icons.lock,
+                          color: Colors.white,
+                          size: 28,
+                        )
+                      : Text(
+                          '$lessonNumber',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  // Build connecting line between lessons
-  Widget _buildConnectingLine() {
-    return Center(
-      child: Container(
-        width: 4,
-        height: 40,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              const Color(0xFF66BB6A).withOpacity(0.5),
-              const Color(0xFF66BB6A).withOpacity(0.3),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(2),
-        ),
+  // Build connecting path between lessons
+  Widget _buildConnectingPath(int fromPosition, int toPosition) {
+    return CustomPaint(
+      size: const Size(double.infinity, 40),
+      painter: PathPainter(
+        fromPosition: fromPosition,
+        toPosition: toPosition,
+        color: const Color(0xFF66BB6A).withOpacity(0.3),
       ),
     );
   }
@@ -683,5 +747,92 @@ class _LessonsScreenState extends State<LessonsScreen> {
       default:
         return Icons.flag;
     }
+  }
+}
+
+// Delegate for sticky header
+class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+
+  _StickyHeaderDelegate({required this.child});
+
+  @override
+  double get minExtent => 122.0; // Height for two tiles + padding + divider
+
+  @override
+  double get maxExtent => 122.0; // Height for two tiles + padding + divider
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return child;
+  }
+
+  @override
+  bool shouldRebuild(_StickyHeaderDelegate oldDelegate) {
+    return child != oldDelegate.child;
+  }
+}
+
+// Custom painter for drawing paths between lesson buttons
+class PathPainter extends CustomPainter {
+  final int fromPosition;
+  final int toPosition;
+  final Color color;
+
+  PathPainter({
+    required this.fromPosition,
+    required this.toPosition,
+    required this.color,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 4
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    final path = Path();
+
+    // Calculate start and end positions
+    double startX;
+    double endX;
+
+    if (fromPosition == -1) {
+      startX = 75; // Left position (40 padding + 35 half of button)
+    } else if (fromPosition == 0) {
+      startX = size.width / 2;
+    } else {
+      startX = size.width - 75; // Right position
+    }
+
+    if (toPosition == -1) {
+      endX = 75;
+    } else if (toPosition == 0) {
+      endX = size.width / 2;
+    } else {
+      endX = size.width - 75;
+    }
+
+    // Draw curved path
+    path.moveTo(startX, 0);
+    
+    // Add curve for smoother transition
+    final controlPoint1Y = size.height * 0.33;
+    final controlPoint2Y = size.height * 0.67;
+    
+    path.cubicTo(
+      startX, controlPoint1Y,
+      endX, controlPoint2Y,
+      endX, size.height,
+    );
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
   }
 }

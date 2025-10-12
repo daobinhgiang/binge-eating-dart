@@ -23,6 +23,7 @@ import 'screens/todos/add_todo_screen.dart';
 import 'screens/profile/regular_eating_screen.dart';
 import 'screens/chat/chat_screen.dart';
 import 'screens/chat/realtime_journaling_screen.dart';
+import 'screens/chat/accountability_partner_screen.dart';
 import 'screens/motivation/motivation_screen.dart';
 // Journal imports
 import 'screens/journal/food_diary_survey_screen.dart';
@@ -346,6 +347,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/realtime-journaling',
       builder: (context, state) => const AuthGuard(child: RealtimeJournalingScreen()),
+    ),
+    GoRoute(
+      path: '/accountability-partner',
+      builder: (context, state) => const AuthGuard(child: AccountabilityPartnerScreen()),
     ),
     GoRoute(
       path: '/motivation',
