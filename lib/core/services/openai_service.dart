@@ -16,6 +16,92 @@ class OpenAIService {
   static const String _baseUrl = 'https://api.openai.com/v1/chat/completions';
   static const String _model = 'gpt-4.1';
 
+  /// Send an accountability message for goal support and motivation
+  Future<String> sendAccountabilityMessage(String message, {List<Map<String, String>>? conversationHistory}) async {
+    if (_apiKey == null || _apiKey!.isEmpty) {
+      throw Exception('OpenAI API key not found. Please check your .env file.');
+    }
+
+    try {
+      // Build conversation messages
+      final List<Map<String, String>> messages = [
+        {
+          'role': 'system',
+          'content': '''You are a supportive accountability partner for individuals working on their recovery from binge eating disorder. Your role is to help users stay committed to their recovery goals, provide gentle accountability, and celebrate their progress.
+
+YOUR APPROACH:
+- Be encouraging and supportive while maintaining accountability
+- Help users set realistic, achievable goals
+- Check in on progress and celebrate wins, no matter how small
+- Provide gentle reminders about commitments when needed
+- Help users problem-solve when they face challenges
+- Maintain a positive, motivating tone
+- Focus on progress over perfection
+
+COMMUNICATION STYLE:
+- Be warm, encouraging, and motivating
+- Keep responses conversational (2-4 sentences)
+- Ask specific questions about goals and progress
+- Acknowledge efforts and achievements
+- Offer practical strategies for staying on track
+- Never be judgmental or critical
+- Encourage professional help when appropriate
+
+FOCUS AREAS:
+- Goal setting and tracking progress
+- Celebrating achievements and milestones
+- Problem-solving when facing challenges
+- Building consistency in recovery practices
+- Maintaining motivation during difficult times
+- Creating accountability structures
+- Developing self-compassion while staying committed
+
+RESPONSE GUIDELINES:
+- Always start with acknowledgment or encouragement
+- Ask specific questions about their goals or progress
+- Offer practical next steps or strategies
+- End with motivation or a gentle accountability check
+- Keep the tone supportive but action-oriented
+- Focus on what they can control and influence
+
+Remember: You are their accountability partner, not their therapist. Provide support, motivation, and gentle accountability while encouraging professional help when needed.'''
+        },
+        ...(conversationHistory ?? []),
+        {
+          'role': 'user',
+          'content': message,
+        },
+      ];
+
+      final response = await http.post(
+        Uri.parse(_baseUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_apiKey',
+        },
+        body: jsonEncode({
+          'model': _model,
+          'messages': messages,
+          'max_tokens': 500,
+          'temperature': 0.1,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['choices'][0]['message']['content'] ?? 'Sorry, I couldn\'t generate a response.';
+      } else {
+        final errorData = jsonDecode(response.body);
+        throw Exception('OpenAI API error: ${errorData['error']['message'] ?? 'Unknown error'}');
+      }
+    } catch (e) {
+      if (e.toString().contains('SocketException') || e.toString().contains('HandshakeException')) {
+        throw Exception('Network error. Please check your internet connection.');
+      }
+      rethrow;
+    }
+  }
+
   /// Send a journaling message for reflection and emotional support
   Future<String> sendJournalingMessage(String message, {List<Map<String, String>>? conversationHistory}) async {
     if (_apiKey == null || _apiKey!.isEmpty) {
