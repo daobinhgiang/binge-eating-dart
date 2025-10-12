@@ -53,7 +53,8 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
     if (todo.type == TodoType.journal && (
         todo.activityId.contains('food_diary_') ||
         todo.activityId.contains('body_image_diary_') ||
-        todo.activityId.contains('weight_diary_')
+        todo.activityId.contains('weight_diary_') ||
+        todo.activityId.contains('money_diary_')
     )) {
       return true;
     }

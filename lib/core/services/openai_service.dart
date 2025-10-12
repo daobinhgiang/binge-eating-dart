@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'week_data_service.dart';
@@ -12,6 +15,80 @@ class OpenAIService {
   
   static const String _baseUrl = 'https://api.openai.com/v1/chat/completions';
   static const String _model = 'gpt-4.1';
+
+  /// Send a journaling message for reflection and emotional support
+  Future<String> sendJournalingMessage(String message, {List<Map<String, String>>? conversationHistory}) async {
+    if (_apiKey == null || _apiKey!.isEmpty) {
+      throw Exception('OpenAI API key not found. Please check your .env file.');
+    }
+
+    try {
+      // Build conversation messages
+      final List<Map<String, String>> messages = [
+        {
+          'role': 'system',
+          'content': '''You are a compassionate and empathetic journaling companion for individuals working on their recovery from binge eating disorder. Your role is to provide a safe, non-judgmental space for users to explore and express their thoughts and feelings.
+
+YOUR APPROACH:
+- Listen actively and reflect back what you hear
+- Ask open-ended questions to help users explore their feelings more deeply
+- Validate emotions without judgment
+- Help users identify patterns in their thoughts and behaviors
+- Encourage self-compassion and mindful awareness
+- Check in on their emotional and physical well-being
+- Use a warm, supportive, and conversational tone
+
+COMMUNICATION STYLE:
+- Be empathetic and understanding
+- Keep responses conversational (2-4 sentences)
+- Ask thoughtful follow-up questions
+- Acknowledge their experiences and feelings
+- Offer gentle reflections and observations
+- Never prescribe medical advice or diagnose
+- Encourage professional help when appropriate
+
+FOCUS AREAS:
+- Current emotions and feelings
+- Thoughts about eating, body image, and self-worth
+- Stress, triggers, and coping mechanisms
+- Daily experiences and challenges
+- Progress and positive moments
+- Self-care and compassion practices
+
+RESPONSE FORMAT:
+Provide natural, conversational responses. No JSON, no structured recommendations. Just be present and supportive, like a trusted friend who understands the recovery journey.'''
+        },
+        ...?conversationHistory,
+        {'role': 'user', 'content': message},
+      ];
+
+      final response = await http.post(
+        Uri.parse(_baseUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_apiKey',
+        },
+        body: jsonEncode({
+          'model': _model,
+          'messages': messages,
+          'temperature': 0.8, // More creative and empathetic responses
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['choices'][0]['message']['content'] ?? 'I\'m here with you. Tell me more about how you\'re feeling.';
+      } else {
+        final errorData = jsonDecode(response.body);
+        throw Exception('OpenAI API error: ${errorData['error']['message'] ?? 'Unknown error'}');
+      }
+    } catch (e) {
+      if (e.toString().contains('SocketException') || e.toString().contains('HandshakeException')) {
+        throw Exception('Network error. Please check your internet connection.');
+      }
+      rethrow;
+    }
+  }
 
   /// Send a message to OpenAI and get a response
   Future<String> sendMessage(String message, {List<Map<String, String>>? conversationHistory}) async {
@@ -379,4 +456,80 @@ RESPONSE GUIDELINES:
 
   /// Check if the service is properly configured
   bool get isConfigured => _apiKey != null && _apiKey!.isNotEmpty;
+
+  /// Analyze a food image using GPT-4o Vision and return text description
+  Future<String> analyzeFoodImage({
+    File? imageFile,
+    Uint8List? imageBytes,
+  }) async {
+    if (_apiKey == null || _apiKey!.isEmpty) {
+      throw Exception('OpenAI API key not found. Please check your .env file.');
+    }
+
+    if (imageFile == null && imageBytes == null) {
+      throw Exception('Either imageFile or imageBytes must be provided');
+    }
+
+    try {
+      // Convert image to base64
+      String base64Image;
+      if (kIsWeb && imageBytes != null) {
+        base64Image = base64Encode(imageBytes);
+      } else if (imageFile != null) {
+        final bytes = await imageFile.readAsBytes();
+        base64Image = base64Encode(bytes);
+      } else {
+        throw Exception('Invalid image input for platform');
+      }
+
+      // Build the request with vision capabilities
+      final response = await http.post(
+        Uri.parse(_baseUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_apiKey',
+        },
+        body: jsonEncode({
+          'model': 'gpt-4o',
+          'messages': [
+            {
+              'role': 'system',
+              'content': 'You are a food recognition assistant. Your ONLY task is to identify and list foods and drinks visible in the image. Do not provide any commentary, analysis, or additional information. List ONLY the foods and drinks you can see, separated by commas. Be specific about what you observe but keep descriptions concise.'
+            },
+            {
+              'role': 'user',
+              'content': [
+                {
+                  'type': 'text',
+                  'text': 'List ONLY the foods and drinks visible in this image. Do not include any commentary, analysis, or additional text. Just list the items separated by commas.'
+                },
+                {
+                  'type': 'image_url',
+                  'image_url': {
+                    'url': 'data:image/jpeg;base64,$base64Image'
+                  }
+                }
+              ]
+            }
+          ],
+          'max_tokens': 300,
+          'temperature': 0.3,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final content = data['choices'][0]['message']['content'] ?? 'Could not identify foods in the image.';
+        return content.trim();
+      } else {
+        final errorData = jsonDecode(response.body);
+        throw Exception('OpenAI API error: ${errorData['error']['message'] ?? 'Unknown error'}');
+      }
+    } catch (e) {
+      if (e.toString().contains('SocketException') || e.toString().contains('HandshakeException')) {
+        throw Exception('Network error. Please check your internet connection.');
+      }
+      rethrow;
+    }
+  }
 }

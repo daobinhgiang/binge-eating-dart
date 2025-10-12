@@ -219,60 +219,111 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                           ),
                           
-                          // Main buttons layout - AI Chat and Personalized Insights
+                          // Main buttons layout - 2x2 Grid
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // AI Chat button
+                              // Left column - Recovery Guide and Realtime Journaling
                               Expanded(
                                 flex: 1,
-                                child: Container(
-                                  width: double.infinity,
-                                  height: 80,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: const Color(0xFF64B5F6).withOpacity( 0.3),
-                                      width: 2,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity( 0.04),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 2),
+                                child: Column(
+                                  children: [
+                                    // Recovery Guide button
+                                    Container(
+                                      width: double.infinity,
+                                      height: 80,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: const Color(0xFF64B5F6).withOpacity( 0.3),
+                                          width: 2,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity( 0.04),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: InkWell(
-                                      onTap: () => context.go('/chat'),
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                                        child: Center(
-                                          child: Text(
-                                            'AI Chat',
-                                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                              fontWeight: FontWeight.w600,
-                                              color: const Color(0xFF64B5F6),
-                                              fontSize: 20,
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () => context.go('/chat'),
+                                          borderRadius: BorderRadius.circular(12),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                                            child: Center(
+                                              child: Text(
+                                                'Recovery Guide',
+                                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                  fontWeight: FontWeight.w600,
+                                                  color: const Color(0xFF64B5F6),
+                                                  fontSize: 20,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
                                             ),
-                                            textAlign: TextAlign.center,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ),
+                                    
+                                    const SizedBox(height: 16),
+                                    
+                                    // Realtime Journaling button
+                                    Container(
+                                      width: double.infinity,
+                                      height: 80,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: const Color(0xFF9C27B0).withOpacity(0.3),
+                                          width: 2,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.04),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () => context.go('/realtime-journaling'),
+                                          borderRadius: BorderRadius.circular(12),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                                            child: Center(
+                                              child: Text(
+                                                'Realtime Journaling',
+                                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                  fontWeight: FontWeight.w600,
+                                                  color: const Color(0xFF9C27B0),
+                                                  fontSize: 20,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                               
                               const SizedBox(width: 16),
                               
-                              // Right side - Larger Personalized Insights button
+                              // Right column - Personalized Insights
                               Expanded(
                                 flex: 1,
                                 child: _buildInsightsButton(),

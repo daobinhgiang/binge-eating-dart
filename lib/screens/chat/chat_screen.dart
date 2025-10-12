@@ -172,7 +172,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AI Support Chat'),
+        title: const Text('Recovery Guide'),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
