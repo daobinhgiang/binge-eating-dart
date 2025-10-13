@@ -120,7 +120,11 @@ class _LessonsScreenState extends State<LessonsScreen> {
     
     for (var stage in _stages) {
       for (var chapter in stage.chapters) {
-        final key = _sectionKeys['${stage.stageNumber}_${chapter.chapterNumber}'];
+        final keyString = '${stage.stageNumber}_${chapter.chapterNumber}';
+        if (!_sectionKeys.containsKey(keyString)) {
+          continue;
+        }
+        final key = _sectionKeys[keyString];
         if (key?.currentContext != null) {
           final RenderBox? box = key!.currentContext!.findRenderObject() as RenderBox?;
           if (box != null) {
@@ -150,10 +154,12 @@ class _LessonsScreenState extends State<LessonsScreen> {
         Stage3Data.getStage3(),
       ];
       // Initialize section keys for each chapter
-      _sectionKeys.clear();
       for (var stage in _stages) {
         for (var chapter in stage.chapters) {
-          _sectionKeys['${stage.stageNumber}_${chapter.chapterNumber}'] = GlobalKey();
+          final keyString = '${stage.stageNumber}_${chapter.chapterNumber}';
+          if (!_sectionKeys.containsKey(keyString)) {
+            _sectionKeys[keyString] = GlobalKey();
+          }
         }
       }
       // Set initial stage and chapter
@@ -559,7 +565,13 @@ class _LessonsScreenState extends State<LessonsScreen> {
       for (var i = 0; i < stage.chapters.length; i++) {
         final chapter = stage.chapters[i];
         // Wrap chapter section with a key for tracking
-        final sectionKey = _sectionKeys['${stage.stageNumber}_${chapter.chapterNumber}'];
+        final keyString = '${stage.stageNumber}_${chapter.chapterNumber}';
+        
+        // Ensure key exists before accessing
+        if (!_sectionKeys.containsKey(keyString)) {
+          _sectionKeys[keyString] = GlobalKey();
+        }
+        final sectionKey = _sectionKeys[keyString];
         
         widgets.add(
           Column(

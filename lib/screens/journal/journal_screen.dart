@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/weight_graph_widget.dart';
 import 'food_diary_main_screen.dart';
@@ -83,31 +84,33 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
   }
 
   Widget _buildHeaderContent(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.blue[600]!,
+            Colors.blue[500]!,
+          ],
+        ),
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
           child: Text(
             'Journal',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 32,
-                ) ??
-                const TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                ),
+            style: GoogleFonts.fredoka(
+              fontSize: 36,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
             textAlign: TextAlign.center,
           ),
         ),
-        const SizedBox(height: 12),
-        Container(
-          width: double.infinity,
-          height: 1,
-          color: Colors.grey[300],
-        ),
-      ],
+      ),
     );
   }
 

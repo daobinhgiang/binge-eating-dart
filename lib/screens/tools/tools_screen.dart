@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'problem_solving_main_screen.dart';
 import 'meal_planning_screen.dart';
 import 'urge_surfing_screen.dart';
@@ -25,13 +26,30 @@ class ExerciseItem {
 class ToolsScreen extends ConsumerWidget {
   const ToolsScreen({super.key});
 
+  // Custom color for Problem Solving
+  static const MaterialColor _problemSolvingColor = MaterialColor(
+    0xFFfa5420,
+    <int, Color>{
+      50: Color(0xFFFFEDE8),
+      100: Color(0xFFFFD2C5),
+      200: Color(0xFFFFB49E),
+      300: Color(0xFFFF9577),
+      400: Color(0xFFFF7E5A),
+      500: Color(0xFFFF663D),
+      600: Color(0xFFfa5420),
+      700: Color(0xFFEF4D1B),
+      800: Color(0xFFE44316),
+      900: Color(0xFFD6320D),
+    },
+  );
+
   // Exercise data
   static final List<ExerciseItem> exercises = [
     ExerciseItem(
       title: 'Problem Solving',
       description: 'Structured approach to solving challenges',
       icon: Icons.psychology,
-      color: Colors.deepOrange,
+      color: _problemSolvingColor,
       onTap: (context) => Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => const ProblemSolvingMainScreen()),
       ),
@@ -49,7 +67,7 @@ class ToolsScreen extends ConsumerWidget {
       title: 'Urge Surfing Activities',
       description: 'Learn to ride out urges and cravings',
       icon: Icons.waves,
-      color: Colors.blue,
+      color: Colors.teal,
       onTap: (context) => Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => const UrgeSurfingScreen()),
       ),
@@ -58,7 +76,7 @@ class ToolsScreen extends ConsumerWidget {
       title: 'Addressing Overconcern',
       description: 'Work through excessive concerns about weight and shape',
       icon: Icons.balance,
-      color: Colors.teal,
+      color: Colors.orange,
       onTap: (context) => Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => const AddressingOverconcernScreen()),
       ),
@@ -67,7 +85,7 @@ class ToolsScreen extends ConsumerWidget {
       title: 'Addressing Setbacks',
       description: 'Navigate and learn from recovery setbacks',
       icon: Icons.trending_up,
-      color: Colors.cyan,
+      color: Colors.purple,
       onTap: (context) => Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => const AddressingSetbacksScreen()),
       ),
@@ -102,31 +120,33 @@ class ToolsScreen extends ConsumerWidget {
   }
 
   Widget _buildHeaderContent(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.indigo[600]!,
+            Colors.indigo[500]!,
+          ],
+        ),
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
           child: Text(
             'Exercises',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 32,
-                ) ??
-                const TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                ),
+            style: GoogleFonts.fredoka(
+              fontSize: 36,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
             textAlign: TextAlign.center,
           ),
         ),
-        const SizedBox(height: 12),
-        Container(
-          width: double.infinity,
-          height: 1,
-          color: Colors.grey[300],
-        ),
-      ],
+      ),
     );
   }
 
@@ -236,11 +256,11 @@ class ToolsScreen extends ConsumerWidget {
                                       width: double.infinity,
                                       height: 40,
                                       decoration: BoxDecoration(
-                                        color: const Color(0xFF4CAF50),
+                                        color: exercise.color[600],
                                         borderRadius: BorderRadius.circular(20),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: const Color(0xFF4CAF50).withOpacity(0.3),
+                                            color: exercise.color[600]!.withOpacity(0.3),
                                             blurRadius: 8,
                                             offset: const Offset(0, 2),
                                           ),
