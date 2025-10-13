@@ -22,6 +22,8 @@ import 'screens/tools/addressing_setbacks_screen.dart';
 import 'screens/todos/todos_screen.dart';
 import 'screens/todos/add_todo_screen.dart';
 import 'screens/profile/regular_eating_screen.dart';
+import 'screens/profile/app_blocker_screen.dart';
+import 'screens/profile/web_blocker_screen.dart';
 import 'screens/chat/chat_screen.dart';
 import 'screens/chat/realtime_journaling_screen.dart';
 import 'screens/chat/accountability_partner_screen.dart';
@@ -372,6 +374,14 @@ final _router = GoRouter(
     GoRoute(
       path: '/profile/regular-eating',
       builder: (context, state) => const AuthGuard(child: RegularEatingScreen()),
+    ),
+    GoRoute(
+      path: '/profile/app-blocker',
+      builder: (context, state) => const AuthGuard(child: AppBlockerScreen()),
+    ),
+    GoRoute(
+      path: '/profile/web-blocker',
+      builder: (context, state) => const AuthGuard(child: WebBlockerScreen()),
     ),
     GoRoute(
       path: '/chat',

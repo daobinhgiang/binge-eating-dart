@@ -39,6 +39,8 @@
 	<string>169581897180-7qgjh3sfoc95qhm72laduhg752teila6.apps.googleusercontent.com</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSFamilyActivityReportingDescription</key>
+	<string>This app helps you manage screen time by allowing you to restrict access to specific apps and websites.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>

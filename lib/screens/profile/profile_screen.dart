@@ -426,6 +426,20 @@ class ProfileScreen extends ConsumerWidget {
         onTap: () => context.go('/profile/regular-eating'),
       ),
       _ProfileOption(
+        icon: Icons.app_blocking,
+        title: 'App Blocker',
+        subtitle: 'Block distracting apps (iOS only)',
+        color: const Color(0xFFFF5722),
+        onTap: () => context.go('/profile/app-blocker'),
+      ),
+      _ProfileOption(
+        icon: Icons.web,
+        title: 'Website Blocker',
+        subtitle: 'Block distracting websites (iOS only)',
+        color: const Color(0xFFFF9800),
+        onTap: () => context.go('/profile/web-blocker'),
+      ),
+      _ProfileOption(
         icon: Icons.quiz_outlined,
         title: 'Review Assessment',
         subtitle: 'Update your onboarding responses',
