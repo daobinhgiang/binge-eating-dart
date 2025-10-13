@@ -277,6 +277,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       backgroundColor: Colors.white,
       body: CustomScrollView(
           controller: _scrollController,
+          physics: const ClampingScrollPhysics(),
+          clipBehavior: Clip.none,
           slivers: [
             // Combined header and Continue Learning Section with green background
             SliverToBoxAdapter(

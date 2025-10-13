@@ -142,361 +142,419 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
   }
 
   Widget _buildIdentifyProblemStep() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Step 1: Identify the Problem',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.deepOrange[600],
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Take a moment to describe the situation or challenge you\'re facing. Be as detailed as possible.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
-          ),
-          const SizedBox(height: 24),
-          Expanded(
-            child: TextField(
-              controller: _problemDescriptionController,
-              maxLines: null,
-              expands: true,
-              textAlignVertical: TextAlignVertical.top,
-              decoration: const InputDecoration(
-                hintText: 'Describe the problem or situation you\'re facing...\n\nFor example: "I\'m struggling with time management at work. I often feel overwhelmed by my workload and find myself procrastinating on important tasks."',
-                border: OutlineInputBorder(),
-                alignLabelWithHint: true,
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Step 1: Identify the Problem',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.deepOrange[600],
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 16),
+            Text(
+              'Take a moment to describe the situation or challenge you\'re facing. Be as detailed as possible.',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.grey[600],
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              height: 300,
+              child: TextField(
+                controller: _problemDescriptionController,
+                maxLines: null,
+                expands: true,
+                textAlignVertical: TextAlignVertical.top,
+                decoration: const InputDecoration(
+                  hintText: 'Describe the problem or situation you\'re facing...\n\nFor example: "I\'m struggling with time management at work. I often feel overwhelmed by my workload and find myself procrastinating on important tasks."',
+                  border: OutlineInputBorder(),
+                  alignLabelWithHint: true,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildSpecifyProblemsStep() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Step 2: Specify the Problem Accurately',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.deepOrange[600],
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'What were the root causes of the problem? Break down the main problem into specific, concrete root causes. Add each specific root cause as a separate item.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
-          ),
-          const SizedBox(height: 24),
-          Row(
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Text(
-                  'Specific Problems (${_specificProblems.length})',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              Text(
+                'Step 2: Specify the Problem Accurately',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepOrange[600],
                 ),
               ),
-              ElevatedButton.icon(
-                onPressed: _addSpecificProblem,
-                icon: const Icon(Icons.add),
-                label: const Text('Add Problem'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepOrange[600],
-                  foregroundColor: Colors.white,
+              const SizedBox(height: 6),
+              Text(
+                'What were the root causes of the problem? Break down the main problem into specific, concrete root causes. Add each specific root cause as a separate item.',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.grey[600],
                 ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Specific Problems (${_specificProblems.length})',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: _addSpecificProblem,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add Problem'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepOrange[600],
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: _specificProblems.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.psychology_outlined,
-                          size: 64,
-                          color: Colors.grey[400],
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No specific problems added yet',
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Colors.grey[600],
+        ),
+        const SizedBox(height: 8),
+        Expanded(
+          child: _specificProblems.isEmpty
+              ? SingleChildScrollView(
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.psychology_outlined,
+                            size: 40,
+                            color: Colors.grey[400],
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Tap "Add Problem" to break down your main issue',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey[500],
+                          const SizedBox(height: 8),
+                          Text(
+                            'No specific problems added yet',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Colors.grey[600],
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                        ),
-                      ],
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: _specificProblems.length,
-                    addAutomaticKeepAlives: false,
-                    addRepaintBoundaries: true,
-                    cacheExtent: 100,
-                    itemBuilder: (context, index) => RepaintBoundary(
-                      child: _buildProblemTile(index),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Tap "Add Problem" to break down your main issue',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Colors.grey[500],
+                              fontSize: 12,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-          ),
-        ],
-      ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: _specificProblems.length,
+                  addAutomaticKeepAlives: false,
+                  addRepaintBoundaries: true,
+                  cacheExtent: 100,
+                  itemBuilder: (context, index) => RepaintBoundary(
+                    child: _buildProblemTile(index),
+                  ),
+                ),
+        ),
+      ],
     );
   }
 
   Widget _buildConsiderSolutionsStep() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Step 3: Consider as Many Solutions as Possible',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.deepOrange[600],
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Brainstorm potential solutions. Don\'t judge them yet - just think of as many options as possible.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
-          ),
-          const SizedBox(height: 24),
-          Row(
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Text(
-                  'Potential Solutions (${_potentialSolutions.length})',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              Text(
+                'Step 3: Consider as Many Solutions as Possible',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepOrange[600],
                 ),
               ),
-              ElevatedButton.icon(
-                onPressed: _addPotentialSolution,
-                icon: const Icon(Icons.add),
-                label: const Text('Add Solution'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepOrange[600],
-                  foregroundColor: Colors.white,
+              const SizedBox(height: 6),
+              Text(
+                'Brainstorm potential solutions. Don\'t judge them yet - just think of as many options as possible.',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.grey[600],
                 ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Potential Solutions (${_potentialSolutions.length})',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: _addPotentialSolution,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add Solution'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepOrange[600],
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: _potentialSolutions.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.lightbulb_outlined,
-                          size: 64,
-                          color: Colors.grey[400],
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No solutions added yet',
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Colors.grey[600],
+        ),
+        const SizedBox(height: 8),
+        Expanded(
+          child: _potentialSolutions.isEmpty
+              ? SingleChildScrollView(
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.lightbulb_outlined,
+                            size: 40,
+                            color: Colors.grey[400],
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Tap "Add Solution" to brainstorm options',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey[500],
+                          const SizedBox(height: 8),
+                          Text(
+                            'No solutions added yet',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Colors.grey[600],
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                        ),
-                      ],
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: _potentialSolutions.length,
-                    addAutomaticKeepAlives: false,
-                    addRepaintBoundaries: true,
-                    cacheExtent: 100,
-                    itemBuilder: (context, index) => RepaintBoundary(
-                      child: _buildSolutionTile(index, showImplications: false),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Tap "Add Solution" to brainstorm options',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Colors.grey[500],
+                              fontSize: 12,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-          ),
-        ],
-      ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: _potentialSolutions.length,
+                  addAutomaticKeepAlives: false,
+                  addRepaintBoundaries: true,
+                  cacheExtent: 100,
+                  itemBuilder: (context, index) => RepaintBoundary(
+                    child: _buildSolutionTile(index, showImplications: false),
+                  ),
+                ),
+        ),
+      ],
     );
   }
 
   Widget _buildImplicationsStep() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Step 4: Think Through the Implications',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.deepOrange[600],
-            ),
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Step 4: Think Through the Implications',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepOrange[600],
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'For each solution, consider the potential consequences, pros and cons, and what might happen if you implement it.',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.grey[600],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-          Text(
-            'For each solution, consider the potential consequences, pros and cons, and what might happen if you implement it.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
-          ),
-          const SizedBox(height: 24),
-          if (_potentialSolutions.isEmpty)
-            Expanded(
+        ),
+        const SizedBox(height: 8),
+        if (_potentialSolutions.isEmpty)
+          Expanded(
+            child: SingleChildScrollView(
               child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.warning_outlined,
-                      size: 64,
-                      color: Colors.grey[400],
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'No solutions to analyze',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.grey[600],
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.warning_outlined,
+                        size: 40,
+                        color: Colors.grey[400],
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Go back to Step 3 to add solutions first',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[500],
+                      const SizedBox(height: 8),
+                      Text(
+                        'No solutions to analyze',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.grey[600],
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          else
-            Expanded(
-              child: ListView.builder(
-                itemCount: _potentialSolutions.length,
-                addAutomaticKeepAlives: false,
-                addRepaintBoundaries: true,
-                cacheExtent: 100,
-                itemBuilder: (context, index) => RepaintBoundary(
-                  child: _buildSolutionTile(index, showImplications: true),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Go back to Step 3 to add solutions first',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.grey[500],
+                          fontSize: 12,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-        ],
-      ),
+          )
+        else
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: _potentialSolutions.length,
+              addAutomaticKeepAlives: false,
+              addRepaintBoundaries: true,
+              cacheExtent: 100,
+              itemBuilder: (context, index) => RepaintBoundary(
+                child: _buildSolutionTile(index, showImplications: true),
+              ),
+            ),
+          ),
+      ],
     );
   }
 
   Widget _buildChooseSolutionsStep() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Step 5: Choose the Best Solution(s)',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.deepOrange[600],
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Select the solution(s) you want to implement. You can choose multiple solutions that work well together.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
-          ),
-          const SizedBox(height: 24),
-          if (_potentialSolutions.isEmpty)
-            Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.warning_outlined,
-                      size: 64,
-                      color: Colors.grey[400],
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'No solutions to choose from',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Go back to Step 3 to add solutions first',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[500],
-                      ),
-                    ),
-                  ],
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Step 5: Choose the Best Solution(s)',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepOrange[600],
                 ),
               ),
-            )
-          else
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
+              const SizedBox(height: 6),
+              Text(
+                'Select the solution(s) you want to implement. You can choose multiple solutions that work well together.',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.grey[600],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        if (_potentialSolutions.isEmpty)
+          Expanded(
+            child: SingleChildScrollView(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.warning_outlined,
+                        size: 40,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'No solutions to choose from',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.grey[600],
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Go back to Step 3 to add solutions first',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.grey[500],
+                          fontSize: 12,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          )
+        else
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
                     'Selected Solutions (${_chosenSolutionIds.length}/${_potentialSolutions.length})',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: _potentialSolutions.length,
-                      addAutomaticKeepAlives: false,
-                      addRepaintBoundaries: true,
-                      cacheExtent: 100,
-                      itemBuilder: (context, index) => RepaintBoundary(
-                        child: _buildChoosableSolutionTile(index),
-                      ),
+                ),
+                const SizedBox(height: 8),
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: _potentialSolutions.length,
+                    addAutomaticKeepAlives: false,
+                    addRepaintBoundaries: true,
+                    cacheExtent: 100,
+                    itemBuilder: (context, index) => RepaintBoundary(
+                      child: _buildChoosableSolutionTile(index),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 
