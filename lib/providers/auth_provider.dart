@@ -93,13 +93,20 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
     state = const AsyncValue.loading();
     try {
       final user = await _authService.signInWithGoogle();
+      
+      // If user is null, it means sign-in was cancelled - reset to data state
+      if (user == null) {
+        state = const AsyncValue.data(null);
+        return;
+      }
+      
       state = AsyncValue.data(user);
       
       // Track login event
       await _analytics.trackUserLogin('google');
       await _analytics.setUserProperties(
-        userRole: user?.role.name,
-        onboardingCompleted: user?.onboardingCompleted,
+        userRole: user.role.name,
+        onboardingCompleted: user.onboardingCompleted,
       );
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
@@ -111,13 +118,20 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
     state = const AsyncValue.loading();
     try {
       final user = await _authService.signInWithApple();
+      
+      // If user is null, it means sign-in was cancelled - reset to data state
+      if (user == null) {
+        state = const AsyncValue.data(null);
+        return;
+      }
+      
       state = AsyncValue.data(user);
       
       // Track login event
       await _analytics.trackUserLogin('apple');
       await _analytics.setUserProperties(
-        userRole: user?.role.name,
-        onboardingCompleted: user?.onboardingCompleted,
+        userRole: user.role.name,
+        onboardingCompleted: user.onboardingCompleted,
       );
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
