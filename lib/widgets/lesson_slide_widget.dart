@@ -13,6 +13,7 @@ class LessonSlideWidget extends StatelessWidget {
   const LessonSlideWidget({
     super.key,
     required this.slide,
+    required this.scrollController,
     this.isFirstSlide = false,
     this.isLastSlide = false,
     this.onPrevious,
@@ -21,24 +22,40 @@ class LessonSlideWidget extends StatelessWidget {
     this.totalSlides = 10,
   });
 
+  final ScrollController scrollController;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header Section
-            _buildHeader(context),
-            
-            // Content Section
-            Expanded(
-              child: _buildContent(context),
-            ),
-            
-            // Footer Section
-            _buildFooter(context),
-          ],
+      backgroundColor: const Color(0xFFF5F7FA),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              const Color(0xFF66BB6A).withOpacity(0.02),
+              const Color(0xFFF5F7FA),
+              Colors.white,
+            ],
+            stops: const [0.0, 0.3, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Header Section
+              _buildHeader(context),
+              
+              // Content Section
+              Expanded(
+                child: _buildContent(context),
+              ),
+              
+              // Footer Section
+              _buildFooter(context),
+            ],
+          ),
         ),
       ),
     );
@@ -46,14 +63,13 @@ class LessonSlideWidget extends StatelessWidget {
 
   Widget _buildHeader(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.black.withOpacity(0.04),
             spreadRadius: 0,
-            blurRadius: 4,
+            blurRadius: 15,
             offset: const Offset(0, 2),
           ),
         ],
@@ -61,61 +77,91 @@ class LessonSlideWidget extends StatelessWidget {
       child: Column(
         children: [
           // Top row with back button and lesson title
-          Row(
-            children: [
-              // Back button
-              IconButton(
-                onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.black87,
-                  size: 20,
-                ),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-              ),
-              const SizedBox(width: 16),
-              
-              // Lesson title
-              Expanded(
-                child: Text(
-                  slide.title,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+            child: Row(
+              children: [
+                // Back button with sleek design
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF66BB6A).withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => Navigator.of(context).pop(),
+                      borderRadius: BorderRadius.circular(14),
+                      child: Icon(
+                        Icons.arrow_back_ios_new,
+                        color: const Color(0xFF66BB6A),
+                        size: 20,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: 12),
-          
-          // Progress indicator
-          Row(
-            children: [
-              Text(
-                'Slide ${slide.slideNumber} of $totalSlides',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
+                const SizedBox(width: 16),
+                
+                // Lesson title with stunning typography
+                Expanded(
+                  child: Text(
+                    slide.title,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF1A1A1A),
+                      letterSpacing: -0.8,
+                      height: 1.2,
+                    ),
+                  ),
                 ),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: 8),
-          
-          // Progress bar
-          LinearProgressIndicator(
-            value: slide.slideNumber / totalSlides,
-            backgroundColor: Colors.grey[300],
-            valueColor: AlwaysStoppedAnimation<Color>(
-              Theme.of(context).primaryColor,
+              ],
             ),
-            minHeight: 4,
           ),
+          
+          // Beautiful animated progress bar
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Stack(
+              children: [
+                // Background track
+                Container(
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF66BB6A).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                // Progress fill with shimmer effect
+                FractionallySizedBox(
+                  widthFactor: slide.slideNumber / totalSlides,
+                  child: Container(
+                    height: 8,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          const Color(0xFF66BB6A),
+                          const Color(0xFF66BB6A).withOpacity(0.8),
+                          const Color(0xFF66BB6A),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF66BB6A).withOpacity(0.4),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
         ],
       ),
     );
@@ -123,96 +169,164 @@ class LessonSlideWidget extends StatelessWidget {
 
   Widget _buildContent(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(20),
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 0,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+      margin: const EdgeInsets.fromLTRB(20, 8, 20, 16),
       child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Main content
-            Text(
-              slide.content,
-              style: const TextStyle(
-                fontSize: 16,
-                height: 1.6,
-                color: Colors.black87,
-                fontFamily: 'SF Pro Text', // Modern sans-serif font
+        controller: scrollController,
+        physics: const BouncingScrollPhysics(),
+        child: Container(
+          padding: const EdgeInsets.all(32),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(28),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF66BB6A).withOpacity(0.06),
+                spreadRadius: 0,
+                blurRadius: 30,
+                offset: const Offset(0, 8),
               ),
-            ),
-            
-            const SizedBox(height: 20),
-            
-            // Bullet points if any
-            if (slide.bulletPoints.isNotEmpty) ...[
-              ...slide.bulletPoints.map((point) => _BulletPoint(text: point)),
-              const SizedBox(height: 20),
             ],
-            
-            // Additional info if any
-            if (slide.additionalInfo != null) ...[
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Colors.blue.withOpacity(0.2),
-                    width: 1,
-                  ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Main content with beautiful typography
+              Text(
+                slide.content,
+                style: const TextStyle(
+                  fontSize: 18,
+                  height: 1.8,
+                  color: Color(0xFF2D3748),
+                  letterSpacing: 0.1,
+                  fontWeight: FontWeight.w400,
                 ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.lightbulb_outline,
-                      color: Theme.of(context).primaryColor,
-                      size: 20,
+              ),
+              
+              if (slide.bulletPoints.isNotEmpty || slide.additionalInfo != null || slide.imageUrl != null)
+                const SizedBox(height: 32),
+              
+              // Stunning bullet points design
+              if (slide.bulletPoints.isNotEmpty) ...[
+                ...slide.bulletPoints.asMap().entries.map((entry) {
+                  return _BulletPoint(
+                    text: entry.value,
+                    index: entry.key,
+                  );
+                }),
+                const SizedBox(height: 8),
+              ],
+              
+              // Premium additional info box
+              if (slide.additionalInfo != null) ...[
+                Container(
+                  margin: const EdgeInsets.only(top: 16),
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        const Color(0xFFFFF8E1),
+                        const Color(0xFFFFECB3).withOpacity(0.5),
+                      ],
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        slide.additionalInfo!,
-                        style: TextStyle(
-                          fontSize: 14,
-                          height: 1.5,
-                          color: Colors.grey[700],
-                          fontStyle: FontStyle.italic,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: const Color(0xFFFFD54F).withOpacity(0.4),
+                      width: 2,
+                    ),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Color(0xFFFFA726),
+                              Color(0xFFFF9800),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(14),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFFFF9800).withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.lightbulb_rounded,
+                          color: Colors.white,
+                          size: 26,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-            ],
-            
-            // Image if any
-            if (slide.imageUrl != null) ...[
-              Container(
-                width: double.infinity,
-                height: 200,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  image: DecorationImage(
-                    image: NetworkImage(slide.imageUrl!),
-                    fit: BoxFit.cover,
+                      const SizedBox(width: 18),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              '💡 Key Insight',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF1A1A1A),
+                                letterSpacing: 0.2,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              slide.additionalInfo!,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                height: 1.7,
+                                color: Color(0xFF4A5568),
+                                letterSpacing: 0.1,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 20),
+                const SizedBox(height: 24),
+              ],
+              
+              // Premium image display with caption style
+              if (slide.imageUrl != null) ...[
+                Container(
+                  margin: const EdgeInsets.only(top: 8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF66BB6A).withOpacity(0.15),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.network(
+                      slide.imageUrl!,
+                      width: double.infinity,
+                      height: 240,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
@@ -220,71 +334,120 @@ class LessonSlideWidget extends StatelessWidget {
 
   Widget _buildFooter(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.black.withOpacity(0.04),
             spreadRadius: 0,
-            blurRadius: 4,
-            offset: const Offset(0, -2),
+            blurRadius: 20,
+            offset: const Offset(0, -4),
           ),
         ],
       ),
-      child: Row(
-        children: [
-          // Previous button
-          if (!isFirstSlide)
+      child: SafeArea(
+        top: false,
+        child: Row(
+          children: [
+            // Previous button - sleek minimal design
+            if (!isFirstSlide)
+              Expanded(
+                child: Container(
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF66BB6A).withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: onPrevious,
+                      borderRadius: BorderRadius.circular(18),
+                      child: Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.arrow_back_ios_new_rounded,
+                              size: 20,
+                              color: const Color(0xFF66BB6A),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Back',
+                              style: const TextStyle(
+                                color: Color(0xFF66BB6A),
+                                fontWeight: FontWeight.w700,
+                                fontSize: 17,
+                                letterSpacing: 0.2,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            
+            if (!isFirstSlide) const SizedBox(width: 14),
+            
+            // Next/Finish button - premium gradient with hover effect
             Expanded(
-              child: OutlinedButton(
-                onPressed: onPrevious,
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  side: BorderSide(
-                    color: Theme.of(context).primaryColor.withOpacity(0.3),
-                    width: 1.5,
+              child: Container(
+                height: 56,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      const Color(0xFF66BB6A),
+                      const Color(0xFF66BB6A).withOpacity(0.8),
+                    ],
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF66BB6A).withOpacity(0.4),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
                 ),
-                child: Text(
-                  'Previous',
-                  style: TextStyle(
-                    color: Theme.of(context).primaryColor,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: isLastSlide ? onFinish : onNext,
+                    borderRadius: BorderRadius.circular(18),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            isLastSlide ? '✨ Complete' : 'Continue',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 17,
+                              letterSpacing: 0.3,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Icon(
+                            isLastSlide ? Icons.check_circle_rounded : Icons.arrow_forward_rounded,
+                            size: 22,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
-          
-          if (!isFirstSlide) const SizedBox(width: 16),
-          
-          // Next/Finish button
-          Expanded(
-            child: ElevatedButton(
-              onPressed: isLastSlide ? onFinish : onNext,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: Theme.of(context).primaryColor,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 0,
-              ),
-              child: Text(
-                isLastSlide ? 'Finish Lesson' : 'Next',
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -293,33 +456,81 @@ class LessonSlideWidget extends StatelessWidget {
 
 class _BulletPoint extends StatelessWidget {
   final String text;
+  final int index;
 
-  const _BulletPoint({required this.text});
+  const _BulletPoint({
+    required this.text,
+    required this.index,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+    // Beautiful color palette for bullet points
+    final colors = [
+      const Color(0xFF667EEA), // Purple
+      const Color(0xFF34D399), // Green
+      const Color(0xFFF59E0B), // Amber
+      const Color(0xFFEC4899), // Pink
+      const Color(0xFF3B82F6), // Blue
+    ];
+    
+    final bulletColor = colors[index % colors.length];
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: bulletColor.withOpacity(0.15),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: bulletColor.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Beautiful gradient dot indicator
           Container(
-            margin: const EdgeInsets.only(top: 8, right: 16),
-            width: 8,
-            height: 8,
+            width: 10,
+            height: 10,
+            margin: const EdgeInsets.only(top: 6, right: 16),
             decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  bulletColor,
+                  bulletColor.withOpacity(0.7),
+                ],
+              ),
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: bulletColor.withOpacity(0.4),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
           ),
+          // Text content
           Expanded(
             child: Text(
               text,
               style: const TextStyle(
-                fontSize: 16,
-                height: 1.6,
-                color: Colors.black87,
-                fontFamily: 'SF Pro Text',
+                fontSize: 17,
+                height: 1.7,
+                color: Color(0xFF2D3748),
+                letterSpacing: 0.1,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),

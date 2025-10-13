@@ -13,6 +13,7 @@ class LessonS225Screen extends StatefulWidget {
 
 class _LessonS225ScreenState extends State<LessonS225Screen> {
   final LessonService _lessonService = LessonService();
+  final ScrollController _scrollController = ScrollController();
   Lesson? _lesson;
   int _currentSlideIndex = 0;
   bool _isLoading = true;
@@ -49,6 +50,12 @@ class _LessonS225ScreenState extends State<LessonS225Screen> {
       setState(() {
         _currentSlideIndex++;
       });
+      // Reset scroll position to top
+      _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
     }
   }
 
@@ -57,6 +64,12 @@ class _LessonS225ScreenState extends State<LessonS225Screen> {
       setState(() {
         _currentSlideIndex--;
       });
+      // Reset scroll position to top
+      _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
     }
   }
 
@@ -88,6 +101,7 @@ class _LessonS225ScreenState extends State<LessonS225Screen> {
 
     return LessonSlideWidget(
       slide: currentSlide,
+      scrollController: _scrollController,
       isFirstSlide: isFirstSlide,
       isLastSlide: isLastSlide,
       onPrevious: isFirstSlide ? null : _goToPreviousSlide,

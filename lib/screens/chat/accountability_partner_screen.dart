@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../models/chat_message.dart';
 import '../../core/services/openai_service.dart';
+import '../../core/services/user_context_service.dart';
 import '../../widgets/comforting_background.dart';
+import '../../providers/auth_provider.dart';
 
 class AccountabilityPartnerScreen extends ConsumerStatefulWidget {
   const AccountabilityPartnerScreen({super.key});
@@ -18,10 +20,14 @@ class _AccountabilityPartnerScreenState extends ConsumerState<AccountabilityPart
   final List<ChatMessage> _messages = [];
   bool _isLoading = false;
   final OpenAIService _openAIService = OpenAIService();
+  final UserContextService _userContextService = UserContextService();
+  Map<String, dynamic>? _userContext;
+  bool _isLoadingContext = false;
 
   @override
   void initState() {
     super.initState();
+    _loadUserContext();
     _addWelcomeMessage();
   }
 
@@ -32,11 +38,71 @@ class _AccountabilityPartnerScreenState extends ConsumerState<AccountabilityPart
     super.dispose();
   }
 
+  Future<void> _loadUserContext() async {
+    setState(() {
+      _isLoadingContext = true;
+    });
+
+    try {
+      // Get current user ID
+      final authState = ref.read(authNotifierProvider);
+      final user = authState.valueOrNull;
+      
+      if (user != null) {
+        final context = await _userContextService.getUserContext(user.id);
+        setState(() {
+          _userContext = context;
+          _isLoadingContext = false;
+        });
+        
+        // Update welcome message with personalized greeting
+        if (_messages.isNotEmpty && !_messages.first.isUser) {
+          final user = context['user'] as Map<String, dynamic>?;
+          if (user != null) {
+            final firstName = user['firstName'] as String?;
+            if (firstName != null && firstName.isNotEmpty) {
+              setState(() {
+                _messages[0] = ChatMessage(
+                  id: _messages[0].id,
+                  content: "Hi $firstName! I'm your accountability partner, here to support you on your recovery journey. I'll help you stay committed to your goals, check in on your progress, and provide gentle accountability when you need it. What would you like to work on together today?",
+                  isUser: false,
+                  timestamp: _messages[0].timestamp,
+                );
+              });
+            }
+          }
+        }
+      } else {
+        setState(() {
+          _isLoadingContext = false;
+        });
+      }
+    } catch (e) {
+      print('Error loading user context: $e');
+      setState(() {
+        _isLoadingContext = false;
+      });
+    }
+  }
+
   void _addWelcomeMessage() {
     setState(() {
+      String welcomeMessage = "I'm your accountability partner, here to support you on your recovery journey. I'll help you stay committed to your goals, check in on your progress, and provide gentle accountability when you need it. What would you like to work on together today?";
+      
+      // Personalize welcome message if user context is available
+      if (_userContext != null) {
+        final user = _userContext!['user'] as Map<String, dynamic>?;
+        if (user != null) {
+          final firstName = user['firstName'] as String?;
+          if (firstName != null && firstName.isNotEmpty) {
+            welcomeMessage = "Hi $firstName! I'm your accountability partner, here to support you on your recovery journey. I'll help you stay committed to your goals, check in on your progress, and provide gentle accountability when you need it. What would you like to work on together today?";
+          }
+        }
+      }
+      
       _messages.add(ChatMessage(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
-        content: "I'm your accountability partner, here to support you on your recovery journey. I'll help you stay committed to your goals, check in on your progress, and provide gentle accountability when you need it. What would you like to work on together today?",
+        content: welcomeMessage,
         isUser: false,
         timestamp: DateTime.now(),
       ));
@@ -78,10 +144,11 @@ class _AccountabilityPartnerScreenState extends ConsumerState<AccountabilityPart
               })
           .toList();
 
-      // Get AI response for accountability
+      // Get AI response for accountability with user context
       final response = await _openAIService.sendAccountabilityMessage(
         message,
         conversationHistory: conversationHistory,
+        userContext: _userContext,
       );
 
       // Add AI response
@@ -153,8 +220,9 @@ class _AccountabilityPartnerScreenState extends ConsumerState<AccountabilityPart
             onPressed: () {
               setState(() {
                 _messages.clear();
-                _addWelcomeMessage();
               });
+              _loadUserContext();
+              _addWelcomeMessage();
             },
             icon: const Icon(Icons.refresh),
             tooltip: 'Start new conversation',
@@ -164,6 +232,37 @@ class _AccountabilityPartnerScreenState extends ConsumerState<AccountabilityPart
       body: ComfortingBackground(
         child: Column(
           children: [
+            // Loading context indicator
+            if (_isLoadingContext)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          const Color(0xFF4CAF50),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Text(
+                        'Loading your accountability context...',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFF4CAF50),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             // Info banner
             Container(
               width: double.infinity,

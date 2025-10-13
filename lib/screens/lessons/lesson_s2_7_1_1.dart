@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../providers/auth_provider.dart';
+import '../../core/services/lesson_service.dart';
 import '../../models/lesson.dart';
 import '../../data/stage_2_data.dart';
-import '../../widgets/forest_background.dart';
+import '../../widgets/exercise_prep_slide_widget.dart';
 
 class LessonS2711Screen extends ConsumerStatefulWidget {
   const LessonS2711Screen({super.key});
@@ -14,59 +14,87 @@ class LessonS2711Screen extends ConsumerStatefulWidget {
 }
 
 class _LessonS2711ScreenState extends ConsumerState<LessonS2711Screen> {
+  final LessonService _lessonService = LessonService();
+  final ScrollController _scrollController = ScrollController();
+  Lesson? _lesson;
   int _currentSlideIndex = 0;
-  final PageController _pageController = PageController();
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLesson();
+  }
 
   @override
   void dispose() {
-    _pageController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
-  void _nextSlide() {
-    if (_currentSlideIndex < _getLesson().slides.length - 1) {
+  Future<void> _loadLesson() async {
+    try {
+      final stage2 = Stage2Data.getStage2();
+      final lesson = stage2.chapters
+          .firstWhere((chapter) => chapter.chapterNumber == 7)
+          .lessons
+          .firstWhere((lesson) => lesson.id == 'lesson_s2_7_1_1');
+      
+      setState(() {
+        _lesson = lesson;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading lesson: $e')),
+        );
+      }
+    }
+  }
+
+  void _goToNextSlide() {
+    if (_lesson != null && _currentSlideIndex < _lesson!.slides.length - 1) {
       setState(() {
         _currentSlideIndex++;
       });
-      _pageController.nextPage(
+      _scrollController.animateTo(
+        0,
         duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
+        curve: Curves.easeOut,
       );
     }
   }
 
-  void _previousSlide() {
+  void _goToPreviousSlide() {
     if (_currentSlideIndex > 0) {
       setState(() {
         _currentSlideIndex--;
       });
-      _pageController.previousPage(
+      _scrollController.animateTo(
+        0,
         duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
+        curve: Curves.easeOut,
       );
     }
   }
 
-  Lesson _getLesson() {
-    final stage2 = Stage2Data.getStage2();
-    return stage2.chapters
-        .firstWhere((chapter) => chapter.chapterNumber == 7)
-        .lessons
-        .firstWhere((lesson) => lesson.id == 'lesson_s2_7_1_1');
-  }
-
   void _navigateToAddressingOverconcern() {
+    // Mark lesson as completed
+    if (_lesson != null) {
+      _lessonService.markLessonCompleted(_lesson!.id);
+    }
+    
     // Navigate to the Addressing Overconcern tool
     context.go('/tools/addressing-overconcern');
   }
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(currentUserDataProvider);
-    final lesson = _getLesson();
-    final currentSlide = lesson.slides[_currentSlideIndex];
-
-    if (user == null) {
+    if (_isLoading) {
       return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(),
@@ -74,193 +102,33 @@ class _LessonS2711ScreenState extends ConsumerState<LessonS2711Screen> {
       );
     }
 
-    return Scaffold(
-      body: ForestBackground(
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Header
-              Container(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            lesson.title,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            'Slide ${_currentSlideIndex + 1} of ${lesson.slides.length}',
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              
-              // Progress bar
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                child: LinearProgressIndicator(
-                  value: (_currentSlideIndex + 1) / lesson.slides.length,
-                  backgroundColor: Colors.white30,
-                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
-              ),
-              
-              const SizedBox(height: 20),
-              
-              // Content
-              Expanded(
-                child: PageView.builder(
-                  controller: _pageController,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _currentSlideIndex = index;
-                    });
-                  },
-                  itemCount: lesson.slides.length,
-                  itemBuilder: (context, index) {
-                    final slide = lesson.slides[index];
-                    return Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 16),
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.95),
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            slide.title,
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            slide.content,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.black87,
-                              height: 1.5,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          if (slide.bulletPoints.isNotEmpty) ...[
-                            const Text(
-                              'Key Points:',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            ...slide.bulletPoints.map((point) => Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    '• ',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Text(
-                                      point,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.black87,
-                                        height: 1.4,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )),
-                          ],
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-              
-              // Navigation buttons
-              Container(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    if (_currentSlideIndex > 0)
-                      ElevatedButton(
-                        onPressed: _previousSlide,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white.withOpacity(0.2),
-                          foregroundColor: Colors.white,
-                        ),
-                        child: const Text('Previous'),
-                      )
-                    else
-                      const SizedBox(),
-                    
-                    // Special button for the last slide to navigate to Addressing Overconcern
-                    if (_currentSlideIndex == lesson.slides.length - 1)
-                      ElevatedButton(
-                        onPressed: _navigateToAddressingOverconcern,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.purple,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                        ),
-                        child: const Text('Start Exercise'),
-                      )
-                    else
-                      ElevatedButton(
-                        onPressed: _nextSlide,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.purple,
-                          foregroundColor: Colors.white,
-                        ),
-                        child: const Text('Next'),
-                      ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+    if (_lesson == null || _lesson!.slides.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Addressing Overconcern Exercise'),
         ),
-      ),
+        body: const Center(
+          child: Text('Lesson not found'),
+        ),
+      );
+    }
+
+    final currentSlide = _lesson!.slides[_currentSlideIndex];
+    final isFirstSlide = _currentSlideIndex == 0;
+    final isLastSlide = _currentSlideIndex == _lesson!.slides.length - 1;
+
+    return ExercisePrepSlideWidget(
+      slide: currentSlide,
+      scrollController: _scrollController,
+      isFirstSlide: isFirstSlide,
+      isLastSlide: isLastSlide,
+      onPrevious: isFirstSlide ? null : _goToPreviousSlide,
+      onNext: isLastSlide ? null : _goToNextSlide,
+      onStartExercise: isLastSlide ? _navigateToAddressingOverconcern : null,
+      totalSlides: _lesson!.slides.length,
+      exerciseButtonText: 'Start Exercise',
+      exerciseIcon: Icons.self_improvement_rounded,
+      accentColor: const Color(0xFF42A5F5), // Blue for stage 2
     );
   }
 }

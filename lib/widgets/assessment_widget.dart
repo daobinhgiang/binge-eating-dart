@@ -64,7 +64,14 @@ class _AssessmentWidgetState extends ConsumerState<AssessmentWidget> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Theme.of(context).primaryColor,
+            Theme.of(context).primaryColor.withOpacity(0.85),
+          ],
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
@@ -84,7 +91,7 @@ class _AssessmentWidgetState extends ConsumerState<AssessmentWidget> {
                 onPressed: () => Navigator.of(context).pop(),
                 icon: const Icon(
                   Icons.arrow_back_ios,
-                  color: Colors.black87,
+                  color: Colors.white,
                   size: 20,
                 ),
                 padding: EdgeInsets.zero,
@@ -99,7 +106,7 @@ class _AssessmentWidgetState extends ConsumerState<AssessmentWidget> {
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -108,29 +115,15 @@ class _AssessmentWidgetState extends ConsumerState<AssessmentWidget> {
           
           const SizedBox(height: 12),
           
-          // Progress indicator
-          Row(
-            children: [
-              Text(
-                'Question ${_currentQuestionIndex + 1} of ${widget.assessment.questions.length}',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                ),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: 8),
-          
-          // Progress bar
-          LinearProgressIndicator(
-            value: (_currentQuestionIndex + 1) / widget.assessment.questions.length,
-            backgroundColor: Colors.grey[300],
-            valueColor: AlwaysStoppedAnimation<Color>(
-              Theme.of(context).primaryColor,
+          // Progress bar (rounded, no numbers)
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: (_currentQuestionIndex + 1) / widget.assessment.questions.length,
+              backgroundColor: Colors.white.withOpacity(0.25),
+              valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+              minHeight: 6,
             ),
-            minHeight: 4,
           ),
         ],
       ),

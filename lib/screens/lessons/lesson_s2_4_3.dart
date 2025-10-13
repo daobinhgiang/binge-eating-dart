@@ -4,6 +4,7 @@ import '../../data/stage_2_data.dart';
 import '../../models/lesson.dart';
 import '../../screens/tools/problem_solving_main_screen.dart';
 import '../../core/services/lesson_service.dart';
+import '../../widgets/exercise_prep_slide_widget.dart';
 
 class LessonS243Screen extends ConsumerStatefulWidget {
   const LessonS243Screen({super.key});
@@ -14,6 +15,7 @@ class LessonS243Screen extends ConsumerStatefulWidget {
 
 class _LessonS243ScreenState extends ConsumerState<LessonS243Screen> {
   final LessonService _lessonService = LessonService();
+  final ScrollController _scrollController = ScrollController();
   Lesson? _lesson;
   int _currentSlideIndex = 0;
   bool _isLoading = true;
@@ -22,6 +24,12 @@ class _LessonS243ScreenState extends ConsumerState<LessonS243Screen> {
   void initState() {
     super.initState();
     _loadLesson();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadLesson() async {
@@ -51,6 +59,11 @@ class _LessonS243ScreenState extends ConsumerState<LessonS243Screen> {
       setState(() {
         _currentSlideIndex++;
       });
+      _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
     }
   }
 
@@ -59,16 +72,12 @@ class _LessonS243ScreenState extends ConsumerState<LessonS243Screen> {
       setState(() {
         _currentSlideIndex--;
       });
+      _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
     }
-  }
-
-  void _finishLesson() {
-    if (_lesson != null) {
-      _lessonService.markLessonCompleted(_lesson!.id);
-    }
-    
-    // Navigate to Problem Solving tool instead of going back
-    _navigateToProblemSolvingTool();
   }
 
   void _navigateToProblemSolvingTool() {
@@ -106,152 +115,18 @@ class _LessonS243ScreenState extends ConsumerState<LessonS243Screen> {
     final isFirstSlide = _currentSlideIndex == 0;
     final isLastSlide = _currentSlideIndex == _lesson!.slides.length - 1;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(currentSlide.title),
-        backgroundColor: Colors.blue.shade50,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Slide content
-            Text(
-              currentSlide.content,
-              style: const TextStyle(
-                fontSize: 16,
-                height: 1.6,
-                color: Colors.black87,
-              ),
-            ),
-            
-            const SizedBox(height: 20),
-            
-            // Bullet points if any
-            if (currentSlide.bulletPoints.isNotEmpty) ...[
-              ...currentSlide.bulletPoints.map((point) => Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(top: 6),
-                      width: 6,
-                      height: 6,
-                      decoration: const BoxDecoration(
-                        color: Colors.blue,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        point,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          height: 1.5,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              )),
-              const SizedBox(height: 20),
-            ],
-            
-            // Special action button for last slide
-            if (isLastSlide) ...[
-              const SizedBox(height: 32),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.deepOrange[50],
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.deepOrange[200]!),
-                ),
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.psychology,
-                      size: 48,
-                      color: Colors.deepOrange[600],
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Ready to Practice?',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.deepOrange[700],
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Complete an interactive problem-solving exercise to practice the techniques you\'ve learned.',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[600],
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton.icon(
-                      onPressed: _startProblemSolvingExercise,
-                      icon: const Icon(Icons.psychology),
-                      label: const Text('Start Problem-Solving Exercise'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepOrange[600],
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withValues(alpha: 0.3),
-              blurRadius: 4,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            if (!isFirstSlide)
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: _goToPreviousSlide,
-                  child: const Text('Previous'),
-                ),
-              ),
-            if (!isFirstSlide) const SizedBox(width: 16),
-            Expanded(
-              child: ElevatedButton(
-                onPressed: isLastSlide ? null : _goToNextSlide,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue[600],
-                  foregroundColor: Colors.white,
-                ),
-                child: Text(isLastSlide ? 'Complete' : 'Next'),
-              ),
-            ),
-          ],
-        ),
-      ),
+    return ExercisePrepSlideWidget(
+      slide: currentSlide,
+      scrollController: _scrollController,
+      isFirstSlide: isFirstSlide,
+      isLastSlide: isLastSlide,
+      onPrevious: isFirstSlide ? null : _goToPreviousSlide,
+      onNext: isLastSlide ? null : _goToNextSlide,
+      onStartExercise: isLastSlide ? _startProblemSolvingExercise : null,
+      totalSlides: _lesson!.slides.length,
+      exerciseButtonText: 'Start Problem Solving',
+      exerciseIcon: Icons.psychology_rounded,
+      accentColor: const Color(0xFF42A5F5), // Blue for stage 2
     );
   }
 }
