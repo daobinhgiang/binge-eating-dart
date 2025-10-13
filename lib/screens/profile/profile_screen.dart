@@ -30,15 +30,10 @@ class ProfileScreen extends ConsumerWidget {
                 children: [
                   const SizedBox(height: 20),
                   
-                  // Beautiful profile header with gradient
+                  // Beautiful profile header with level and EXP integrated - Duolingo style
                   _buildProfileHeader(context, user),
                   
                   const SizedBox(height: 24),
-                  
-                  // EXP and Level Stats Card
-                  _buildExpStatsCard(context, ref),
-                  
-                  const SizedBox(height: 8),
                   
                   // Profile options with modern design
                   _buildProfileOptions(context),
@@ -188,44 +183,49 @@ class ProfileScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(32),
         child: Column(
           children: [
-            // Profile picture with beautiful styling
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.white,
-                  width: 4,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
+            // Profile picture with level badge overlay
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 4,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              child: CircleAvatar(
-                radius: 50,
-                backgroundColor: Colors.white.withValues(alpha: 0.2),
-                backgroundImage: user.photoUrl != null
-                    ? NetworkImage(user.photoUrl!)
-                    : null,
-                child: user.photoUrl == null
-                    ? Text(
-                        user.displayName.substring(0, 1).toUpperCase(),
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      )
-                    : null,
-              ),
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundColor: Colors.white.withValues(alpha: 0.2),
+                    backgroundImage: user.photoUrl != null
+                        ? NetworkImage(user.photoUrl!)
+                        : null,
+                    child: user.photoUrl == null
+                        ? Text(
+                            user.displayName.substring(0, 1).toUpperCase(),
+                            style: const TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          )
+                        : null,
+                  ),
+                ),
+              ],
             ),
             
             const SizedBox(height: 20),
             
-            // User name with beautiful typography
+            // User name
             Text(
               user.displayName,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -237,196 +237,73 @@ class ProfileScreen extends ConsumerWidget {
             
             const SizedBox(height: 8),
             
-            // Email with subtle styling
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                user.email,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.white.withValues(alpha: 0.9),
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            
-            const SizedBox(height: 16),
-            
-            // Welcome message
+            // Email
             Text(
-              'Welcome back! You\'re doing great on your recovery journey.',
+              user.email,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.white.withValues(alpha: 0.9),
+                color: Colors.white.withValues(alpha: 0.8),
               ),
               textAlign: TextAlign.center,
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildExpStatsCard(BuildContext context, WidgetRef ref) {
-    final userExp = ref.watch(userExpProvider);
-    
-    if (userExp == null) {
-      return const SizedBox.shrink();
-    }
-
-    final service = ExpService();
-    final progress = service.getCurrentLevelProgress(userExp.exp, userExp.level);
-    final expRemaining = service.getExpRemainingForNextLevel(userExp.exp, userExp.level);
-    final isMaxLevel = userExp.level >= 5;
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            _getLevelColor(userExp.level),
-            _getLevelColor(userExp.level).withOpacity(0.7),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: _getLevelColor(userExp.level).withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            // Header
-            Row(
-              children: [
-                const Icon(
-                  Icons.emoji_events,
-                  color: Colors.white,
-                  size: 24,
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  'Your Progress',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
             
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             
-            // Level and EXP Stats
-            Row(
-              children: [
-                // Level Badge
-                LevelBadge(
-                  level: userExp.level,
-                  size: 80,
-                  showLabel: true,
-                ),
-                
-                const SizedBox(width: 20),
-                
-                // Stats
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${userExp.exp} EXP',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      if (!isMaxLevel) ...[
-                        Text(
-                          '$expRemaining EXP to Level ${userExp.level + 1}',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.white.withValues(alpha: 0.9),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        // Progress Bar
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: LinearProgressIndicator(
-                            value: progress,
-                            minHeight: 8,
-                            backgroundColor: Colors.white.withValues(alpha: 0.3),
-                            valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        ),
-                      ] else
-                        Text(
-                          'Max Level Reached!',
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 20),
-            
-            // Completed Quizzes Stats
+            // Stats Row (Level, EXP, Quizzes) - Duolingo style
             Consumer(
               builder: (context, ref, child) {
+                final userExp = ref.watch(userExpProvider);
                 final completedQuizzesAsync = ref.watch(completedQuizzesCountProvider);
                 
+                if (userExp == null) {
+                  return const SizedBox.shrink();
+                }
+                
                 return completedQuizzesAsync.when(
-                  data: (count) => Container(
-                    padding: const EdgeInsets.all(16),
+                  data: (quizCount) => Container(
+                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        _buildStatItem(
+                        _buildCompactStatItem(
                           context,
-                          Icons.quiz,
-                          count.toString(),
-                          'Quizzes\nCompleted',
+                          LevelBadge(
+                            level: userExp.level,
+                            size: 32,
+                            showLabel: false,
+                          ),
+                          'Level ${userExp.level}',
                         ),
                         Container(
                           width: 1,
                           height: 40,
                           color: Colors.white.withValues(alpha: 0.3),
                         ),
-                        _buildStatItem(
+                        _buildCompactStatItem(
                           context,
-                          Icons.star,
-                          userExp.level.toString(),
-                          'Current\nLevel',
+                          const Icon(
+                            Icons.star,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                          '${userExp.exp} EXP',
                         ),
                         Container(
                           width: 1,
                           height: 40,
                           color: Colors.white.withValues(alpha: 0.3),
                         ),
-                        _buildStatItem(
+                        _buildCompactStatItem(
                           context,
-                          Icons.trending_up,
-                          userExp.exp.toString(),
-                          'Total\nEXP',
+                          const Icon(
+                            Icons.quiz,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                          '$quizCount Quizzes',
                         ),
                       ],
                     ),
@@ -436,57 +313,97 @@ class ProfileScreen extends ConsumerWidget {
                 );
               },
             ),
+            
+            const SizedBox(height: 20),
+            
+            // Progress bar for next level
+            Consumer(
+              builder: (context, ref, child) {
+                final userExp = ref.watch(userExpProvider);
+                
+                if (userExp == null) {
+                  return const SizedBox.shrink();
+                }
+                
+                final service = ExpService();
+                final progress = service.getCurrentLevelProgress(userExp.exp, userExp.level);
+                final expRemaining = service.getExpRemainingForNextLevel(userExp.exp, userExp.level);
+                final isMaxLevel = userExp.level >= 5;
+                
+                if (isMaxLevel) {
+                  return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.emoji_events,
+                          color: Colors.amber,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Max Level Reached!',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                
+                return Column(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: LinearProgressIndicator(
+                        value: progress,
+                        minHeight: 8,
+                        backgroundColor: Colors.white.withValues(alpha: 0.3),
+                        valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '$expRemaining EXP to Level ${userExp.level + 1}',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.white.withValues(alpha: 0.9),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
           ],
         ),
       ),
     );
   }
-
-  Widget _buildStatItem(BuildContext context, IconData icon, String value, String label) {
+  
+  Widget _buildCompactStatItem(BuildContext context, Widget icon, String label) {
     return Column(
       children: [
-        Icon(
-          icon,
-          color: Colors.white,
-          size: 24,
-        ),
+        icon,
         const SizedBox(height: 8),
-        Text(
-          value,
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(height: 4),
         Text(
           label,
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Colors.white.withValues(alpha: 0.9),
-            fontSize: 11,
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+            fontSize: 12,
           ),
         ),
       ],
     );
   }
 
-  Color _getLevelColor(int level) {
-    switch (level) {
-      case 1:
-        return const Color(0xFF9E9E9E);
-      case 2:
-        return const Color(0xFF4CAF50);
-      case 3:
-        return const Color(0xFF2196F3);
-      case 4:
-        return const Color(0xFF9C27B0);
-      case 5:
-        return const Color(0xFFFFD700);
-      default:
-        return const Color(0xFF9E9E9E);
-    }
-  }
 
   Widget _buildProfileOptions(BuildContext context) {
     final options = [

@@ -87,13 +87,12 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.blue[600]!,
-            Colors.blue[500]!,
-          ],
+        color: Colors.white,
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.grey[300]!,
+            width: 1.0,
+          ),
         ),
       ),
       child: SafeArea(
@@ -105,7 +104,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
             style: GoogleFonts.fredoka(
               fontSize: 36,
               fontWeight: FontWeight.w600,
-              color: Colors.white,
+              color: Colors.black,
             ),
             textAlign: TextAlign.center,
           ),
@@ -270,9 +269,9 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
     if (title.toLowerCase().contains('food')) {
       return 'assets/journal/food_diary.png';
     } else if (title.toLowerCase().contains('body')) {
-      return 'assets/journal/body_image.png';
+      return 'assets/journal/body_image2.png';
     } else if (title.toLowerCase().contains('spending') || title.toLowerCase().contains('money')) {
-      return 'assets/journal/spending_diary.png';
+      return 'assets/journal/spending_diary2.png';
     }
     return 'assets/journal/food_diary.png'; // Default fallback
   }

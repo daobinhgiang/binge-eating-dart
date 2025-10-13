@@ -123,13 +123,12 @@ class ToolsScreen extends ConsumerWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.indigo[600]!,
-            Colors.indigo[500]!,
-          ],
+        color: Theme.of(context).scaffoldBackgroundColor,
+        border: const Border(
+          bottom: BorderSide(
+            color: Colors.grey,
+            width: 1.0,
+          ),
         ),
       ),
       child: SafeArea(
@@ -141,7 +140,7 @@ class ToolsScreen extends ConsumerWidget {
             style: GoogleFonts.fredoka(
               fontSize: 36,
               fontWeight: FontWeight.w600,
-              color: Colors.white,
+              color: Colors.black,
             ),
             textAlign: TextAlign.center,
           ),
@@ -304,21 +303,21 @@ class ToolsScreen extends ConsumerWidget {
   String _assetForExercise(String title) {
     final key = title.toLowerCase();
     if (key.contains('problem') && key.contains('solving')) {
-      return 'assets/exercises/problem_solving.png';
+      return 'assets/exercises/problem_solving2.png';
     }
     if (key.contains('meal') && key.contains('planning')) {
       return 'assets/exercises/meal_planning.png';
     }
     if (key.contains('urge') && (key.contains('surfing') || key.contains('activities')) ) {
-      return 'assets/exercises/urge_surfing.png';
+      return 'assets/exercises/urge_surfing2.png';
     }
     if (key.contains('overconcern')) {
-      return 'assets/exercises/addressing_overconcern.png';
+      return 'assets/exercises/addressing_overconcern2.png';
     }
     if (key.contains('setbacks')) {
-      return 'assets/exercises/addressing_setbacks.png';
+      return 'assets/exercises/addressing_setbacks2.png';
     }
-    return 'assets/exercises/problem_solving.png';
+    return 'assets/exercises/problem_solving2.png';
   }
 
   int _getActivityCount(String title) {
