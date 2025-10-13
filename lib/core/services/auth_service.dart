@@ -460,6 +460,29 @@ class AuthService {
     }
   }
 
+  // Update tutorial status
+  Future<void> updateTutorialStatus({
+    bool? hasSeenAppTutorial,
+    bool? hasCompletedFirstLesson,
+  }) async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) throw 'No user signed in';
+
+      final userDoc = _firestore.collection('users').doc(user.uid);
+      final updateData = <String, dynamic>{};
+
+      if (hasSeenAppTutorial != null) updateData['hasSeenAppTutorial'] = hasSeenAppTutorial;
+      if (hasCompletedFirstLesson != null) updateData['hasCompletedFirstLesson'] = hasCompletedFirstLesson;
+
+      if (updateData.isNotEmpty) {
+        await userDoc.update(updateData);
+      }
+    } catch (e) {
+      throw 'Failed to update tutorial status. Please try again.';
+    }
+  }
+
   // Delete user account
   Future<void> deleteAccount() async {
     try {

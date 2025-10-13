@@ -31,6 +31,8 @@ class UserModel {
   final bool onboardingCompleted;
   final bool onboardingPartiallyCompleted;
   final bool hasSeenIntro;
+  final bool hasSeenAppTutorial;
+  final bool hasCompletedFirstLesson;
   final int level;
   final int exp;
 
@@ -49,6 +51,8 @@ class UserModel {
     this.onboardingCompleted = false,
     this.onboardingPartiallyCompleted = false,
     this.hasSeenIntro = false,
+    this.hasSeenAppTutorial = false,
+    this.hasCompletedFirstLesson = false,
     this.level = 1,
     this.exp = 0,
   });
@@ -80,6 +84,8 @@ class UserModel {
       onboardingCompleted: data['onboardingCompleted'] ?? false,
       onboardingPartiallyCompleted: data['onboardingPartiallyCompleted'] ?? false,
       hasSeenIntro: data['hasSeenIntro'] ?? false,
+      hasSeenAppTutorial: data['hasSeenAppTutorial'] ?? false,
+      hasCompletedFirstLesson: data['hasCompletedFirstLesson'] ?? false,
       level: data['level'] ?? 1,
       exp: data['exp'] ?? 0,
     );
@@ -100,6 +106,8 @@ class UserModel {
       'onboardingCompleted': onboardingCompleted,
       'onboardingPartiallyCompleted': onboardingPartiallyCompleted,
       'hasSeenIntro': hasSeenIntro,
+      'hasSeenAppTutorial': hasSeenAppTutorial,
+      'hasCompletedFirstLesson': hasCompletedFirstLesson,
       'level': level,
       'exp': exp,
     };
@@ -120,6 +128,8 @@ class UserModel {
     bool? onboardingCompleted,
     bool? onboardingPartiallyCompleted,
     bool? hasSeenIntro,
+    bool? hasSeenAppTutorial,
+    bool? hasCompletedFirstLesson,
     int? level,
     int? exp,
   }) {
@@ -138,6 +148,8 @@ class UserModel {
       onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
       onboardingPartiallyCompleted: onboardingPartiallyCompleted ?? this.onboardingPartiallyCompleted,
       hasSeenIntro: hasSeenIntro ?? this.hasSeenIntro,
+      hasSeenAppTutorial: hasSeenAppTutorial ?? this.hasSeenAppTutorial,
+      hasCompletedFirstLesson: hasCompletedFirstLesson ?? this.hasCompletedFirstLesson,
       level: level ?? this.level,
       exp: exp ?? this.exp,
     );

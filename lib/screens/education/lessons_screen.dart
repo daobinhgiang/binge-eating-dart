@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/stage_1_data.dart';
 import '../../data/stage_2_data.dart';
 import '../../data/stage_3_data.dart';
 import '../../models/stage.dart';
 import '../../models/chapter.dart';
 import '../../models/lesson.dart';
+import '../../providers/auth_provider.dart';
+import '../../core/services/app_tutorial_service.dart';
 import '../lessons/lesson_1_1.dart';
 import '../lessons/lesson_1_2.dart';
 import '../lessons/lesson_1_2_1.dart';
@@ -81,25 +84,58 @@ import '../assessments/quiz_chapter_6_stage_2_screen.dart';
 import '../assessments/quiz_chapter_7_stage_2_screen.dart';
 import '../../core/services/user_learning_service.dart';
 
-class LessonsScreen extends StatefulWidget {
+class LessonsScreen extends ConsumerStatefulWidget {
   const LessonsScreen({super.key});
 
   @override
-  State<LessonsScreen> createState() => _LessonsScreenState();
+  ConsumerState<LessonsScreen> createState() => _LessonsScreenState();
 }
 
-class _LessonsScreenState extends State<LessonsScreen> {
+class _LessonsScreenState extends ConsumerState<LessonsScreen> {
   List<Stage> _stages = [];
   final ScrollController _scrollController = ScrollController();
   Stage? _currentStage;
   Chapter? _currentChapter;
   final Map<String, GlobalKey> _sectionKeys = {};
+  final GlobalKey _firstLessonKey = GlobalKey();
+  bool _hasShownTutorial = false;
 
   @override
   void initState() {
     super.initState();
     _loadStages();
     _scrollController.addListener(_onScroll);
+    
+    // Show tutorial after first frame is rendered
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAndShowTutorial();
+    });
+  }
+
+  void _checkAndShowTutorial() async {
+    final user = ref.read(authNotifierProvider).value;
+    if (user == null || !mounted || _hasShownTutorial) return;
+
+    // Show first lesson tutorial if user hasn't completed first lesson
+    if (!user.hasCompletedFirstLesson && !user.hasSeenAppTutorial) {
+      _hasShownTutorial = true;
+      
+      // Wait a bit for the layout to settle
+      await Future.delayed(const Duration(milliseconds: 800));
+      
+      if (!mounted) return;
+      
+      AppTutorialService().showFirstLessonTutorial(
+        context: context,
+        firstLessonKey: _firstLessonKey,
+        onFinish: () async {
+          // Mark that user has seen the tutorial
+          await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
+            hasSeenAppTutorial: true,
+          );
+        },
+      );
+    }
   }
 
   @override
@@ -555,6 +591,9 @@ class _LessonsScreenState extends State<LessonsScreen> {
         // Calculate position (0 = center, -1 = left, 1 = right)
         final position = _getLessonPosition(index);
         
+        // Check if this is the first lesson (lesson_1_1)
+        final isFirstLesson = lesson.id == 'lesson_1_1';
+        
         return Column(
           children: [
             _buildDuolingoLessonButton(
@@ -564,6 +603,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
               isLocked: isLocked,
               position: position,
               stageColor: _getStageColor(stage.stageNumber),
+              lessonKey: isFirstLesson ? _firstLessonKey : null,
             ),
             if (index < chapter.lessons.length - 1)
               _buildConnectingPath(position, _getLessonPosition(index + 1)),
@@ -588,6 +628,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
     required bool isLocked,
     required int position,
     required Color stageColor,
+    GlobalKey? lessonKey,
   }) {
     Color buttonColor = isCompleted 
         ? stageColor
@@ -613,6 +654,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
           right: position == 1 ? 40 : position == 0 ? 0 : 0,
         ),
         child: GestureDetector(
+          key: lessonKey,
           onTap: isLocked ? null : () => _navigateToLesson(lesson),
           child: Container(
             width: 70,

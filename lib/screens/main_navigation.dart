@@ -8,6 +8,8 @@ import 'journal/journal_screen.dart';
 import 'profile/profile_screen.dart';
 import '../widgets/comforting_background.dart';
 import '../widgets/forest_background.dart';
+import '../core/services/app_tutorial_service.dart';
+import '../providers/auth_provider.dart';
 
 class MainNavigation extends ConsumerStatefulWidget {
   const MainNavigation({super.key});
@@ -18,6 +20,12 @@ class MainNavigation extends ConsumerStatefulWidget {
 
 class _MainNavigationState extends ConsumerState<MainNavigation> {
   int _currentIndex = 0;
+  bool _hasShownEducationTutorial = false;
+  bool _hasShownToolsTutorial = false;
+
+  // Global keys for tutorial targets
+  final GlobalKey _educationTabKey = GlobalKey();
+  final GlobalKey _toolsTabKey = GlobalKey();
 
   final List<NavigationItem> _navigationItems = [
     NavigationItem(
@@ -55,6 +63,42 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
   @override
   void initState() {
     super.initState();
+    // Show tutorial after first frame is rendered
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAndShowTutorial();
+    });
+  }
+
+  void _checkAndShowTutorial() async {
+    final user = ref.read(authNotifierProvider).value;
+    if (user == null || !mounted) return;
+
+    // Show education tutorial if user hasn't seen app tutorial
+    if (!user.hasSeenAppTutorial && !_hasShownEducationTutorial) {
+      _hasShownEducationTutorial = true;
+      AppTutorialService().showEducationTabTutorial(
+        context: context,
+        educationTabKey: _educationTabKey,
+        onFinish: () {},
+      );
+    }
+    // Show tools tutorial if user has completed first lesson but hasn't seen the tutorial yet
+    else if (user.hasCompletedFirstLesson && 
+             user.hasSeenAppTutorial && 
+             !_hasShownToolsTutorial) {
+      _hasShownToolsTutorial = true;
+      
+      // Mark tutorial as fully seen after tools tutorial
+      await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
+        hasSeenAppTutorial: true,
+      );
+      
+      AppTutorialService().showToolsTabTutorial(
+        context: context,
+        toolsTabKey: _toolsTabKey,
+        onFinish: () {},
+      );
+    }
   }
 
   void _updateCurrentIndex(String location) {
@@ -131,8 +175,17 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
                 final item = entry.value;
                 final isSelected = _currentIndex == index;
                 
+                // Add keys to education and tools tabs for tutorial
+                GlobalKey? tabKey;
+                if (index == 1) { // Education tab
+                  tabKey = _educationTabKey;
+                } else if (index == 2) { // Tools tab
+                  tabKey = _toolsTabKey;
+                }
+                
                 return Expanded(
                   child: GestureDetector(
+                    key: tabKey,
                     onTap: () {
                       context.go(item.route);
                     },
