@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'week_data_service.dart';
+import 'user_context_service.dart';
 
 class OpenAIService {
   static final OpenAIService _instance = OpenAIService._internal();
@@ -17,17 +18,29 @@ class OpenAIService {
   static const String _model = 'gpt-4.1';
 
   /// Send an accountability message for goal support and motivation
-  Future<String> sendAccountabilityMessage(String message, {List<Map<String, String>>? conversationHistory}) async {
+  Future<String> sendAccountabilityMessage(
+    String message, {
+    List<Map<String, String>>? conversationHistory,
+    Map<String, dynamic>? userContext,
+  }) async {
     if (_apiKey == null || _apiKey!.isEmpty) {
       throw Exception('OpenAI API key not found. Please check your .env file.');
     }
 
     try {
+      // Build user context string if available
+      String userContextString = '';
+      if (userContext != null) {
+        final contextService = UserContextService();
+        userContextString = '\n\n${contextService.formatUserContextForAI(userContext)}';
+      }
+
       // Build conversation messages
       final List<Map<String, String>> messages = [
         {
           'role': 'system',
           'content': '''You are a supportive accountability partner for individuals working on their recovery from binge eating disorder. Your role is to help users stay committed to their recovery goals, provide gentle accountability, and celebrate their progress.
+$userContextString
 
 YOUR APPROACH:
 - Be encouraging and supportive while maintaining accountability
@@ -103,17 +116,29 @@ Remember: You are their accountability partner, not their therapist. Provide sup
   }
 
   /// Send a journaling message for reflection and emotional support
-  Future<String> sendJournalingMessage(String message, {List<Map<String, String>>? conversationHistory}) async {
+  Future<String> sendJournalingMessage(
+    String message, {
+    List<Map<String, String>>? conversationHistory,
+    Map<String, dynamic>? userContext,
+  }) async {
     if (_apiKey == null || _apiKey!.isEmpty) {
       throw Exception('OpenAI API key not found. Please check your .env file.');
     }
 
     try {
+      // Build user context string if available
+      String userContextString = '';
+      if (userContext != null) {
+        final contextService = UserContextService();
+        userContextString = '\n\n${contextService.formatUserContextForAI(userContext)}';
+      }
+
       // Build conversation messages
       final List<Map<String, String>> messages = [
         {
           'role': 'system',
           'content': '''You are a compassionate and empathetic journaling companion for individuals working on their recovery from binge eating disorder. Your role is to provide a safe, non-judgmental space for users to explore and express their thoughts and feelings.
+$userContextString
 
 YOUR APPROACH:
 - Listen actively and reflect back what you hear
@@ -177,17 +202,29 @@ Provide natural, conversational responses. No JSON, no structured recommendation
   }
 
   /// Send a message to OpenAI and get a response
-  Future<String> sendMessage(String message, {List<Map<String, String>>? conversationHistory}) async {
+  Future<String> sendMessage(
+    String message, {
+    List<Map<String, String>>? conversationHistory,
+    Map<String, dynamic>? userContext,
+  }) async {
     if (_apiKey == null || _apiKey!.isEmpty) {
       throw Exception('OpenAI API key not found. Please check your .env file.');
     }
 
     try {
+      // Build user context string if available
+      String userContextString = '';
+      if (userContext != null) {
+        final contextService = UserContextService();
+        userContextString = '\n\n${contextService.formatUserContextForAI(userContext)}';
+      }
+
       // Build conversation messages
       final List<Map<String, String>> messages = [
         {
           'role': 'system',
           'content': '''You are a supportive AI assistant specialized in helping people with binge eating disorder (BED) recovery. You have comprehensive knowledge of the Nurtra recovery program and can guide users through their journey.
+$userContextString
 
 PROGRAM OVERVIEW:
 This is a comprehensive CBT-E (Cognitive Behavioral Therapy Enhanced) program organized into 3 stages:
