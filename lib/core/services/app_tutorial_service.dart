@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
-import '../../providers/auth_provider.dart';
 
 enum TutorialStep {
   educationTab,
   firstLesson,
   toolsTab,
+  journalTab,
 }
 
 class AppTutorialService {
@@ -22,6 +21,7 @@ class AppTutorialService {
     required BuildContext context,
     required GlobalKey educationTabKey,
     required VoidCallback onFinish,
+    required VoidCallback onTabClick,
   }) {
     _currentStep = TutorialStep.educationTab;
     
@@ -87,8 +87,20 @@ class AppTutorialService {
       colorShadow: Colors.black,
       paddingFocus: 10,
       opacityShadow: 0.8,
+      onClickTarget: (target) {
+        // Allow clicking on the highlighted education tab
+        if (target.identify == "education_tab") {
+          // Navigate and finish immediately - the tutorial will handle the transition
+          onTabClick();
+          _tutorialCoachMark?.finish();
+          onFinish();
+        }
+      },
       onFinish: onFinish,
-      onSkip: onFinish,
+      onSkip: () {
+        onFinish();
+        return true;
+      },
     );
 
     Future.delayed(const Duration(milliseconds: 500), () {
@@ -101,6 +113,7 @@ class AppTutorialService {
     required BuildContext context,
     required GlobalKey firstLessonKey,
     required VoidCallback onFinish,
+    required VoidCallback onLessonClick,
   }) {
     _currentStep = TutorialStep.firstLesson;
     
@@ -167,8 +180,20 @@ class AppTutorialService {
       colorShadow: Colors.black,
       paddingFocus: 10,
       opacityShadow: 0.8,
+      onClickTarget: (target) {
+        // Allow clicking on the highlighted first lesson
+        if (target.identify == "first_lesson") {
+          // Navigate and finish immediately - the tutorial will handle the transition
+          onLessonClick();
+          _tutorialCoachMark?.finish();
+          onFinish();
+        }
+      },
       onFinish: onFinish,
-      onSkip: onFinish,
+      onSkip: () {
+        onFinish();
+        return true;
+      },
     );
 
     Future.delayed(const Duration(milliseconds: 500), () {
@@ -181,6 +206,7 @@ class AppTutorialService {
     required BuildContext context,
     required GlobalKey toolsTabKey,
     required VoidCallback onFinish,
+    required VoidCallback onTabClick,
   }) {
     _currentStep = TutorialStep.toolsTab;
     
@@ -246,8 +272,112 @@ class AppTutorialService {
       colorShadow: Colors.black,
       paddingFocus: 10,
       opacityShadow: 0.8,
+      onClickTarget: (target) {
+        // Allow clicking on the highlighted tools tab
+        if (target.identify == "tools_tab") {
+          // Navigate and finish immediately - the tutorial will handle the transition
+          onTabClick();
+          _tutorialCoachMark?.finish();
+          onFinish();
+        }
+      },
       onFinish: onFinish,
-      onSkip: onFinish,
+      onSkip: () {
+        onFinish();
+        return true;
+      },
+    );
+
+    Future.delayed(const Duration(milliseconds: 500), () {
+      _tutorialCoachMark?.show(context: context);
+    });
+  }
+
+  // Show tutorial for journal tab
+  void showJournalTabTutorial({
+    required BuildContext context,
+    required GlobalKey journalTabKey,
+    required VoidCallback onFinish,
+    required VoidCallback onTabClick,
+  }) {
+    _currentStep = TutorialStep.journalTab;
+    
+    final targets = [
+      TargetFocus(
+        identify: "journal_tab",
+        keyTarget: journalTabKey,
+        alignSkip: Alignment.topRight,
+        shape: ShapeLightFocus.Circle,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            builder: (context, controller) {
+              return Container(
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Excellent Progress! 🌟",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 24.0,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      "Now let's explore the Journal tab where you can track your daily progress, mood, and eating patterns. This is a key part of your recovery journey.",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16.0,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        controller.next();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF66BB6A),
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      ),
+                      child: const Text(
+                        "Explore Journal!",
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    ];
+
+    _tutorialCoachMark = TutorialCoachMark(
+      targets: targets,
+      colorShadow: Colors.black,
+      paddingFocus: 10,
+      opacityShadow: 0.8,
+      onClickTarget: (target) {
+        // Allow clicking on the highlighted journal tab
+        if (target.identify == "journal_tab") {
+          // Navigate and finish immediately - the tutorial will handle the transition
+          onTabClick();
+          _tutorialCoachMark?.finish();
+          onFinish();
+        }
+      },
+      onFinish: onFinish,
+      onSkip: () {
+        onFinish();
+        return true;
+      },
     );
 
     Future.delayed(const Duration(milliseconds: 500), () {
@@ -257,6 +387,7 @@ class AppTutorialService {
 
   // Dispose tutorial
   void dispose() {
+    _tutorialCoachMark?.finish();
     _tutorialCoachMark = null;
     _currentStep = null;
   }

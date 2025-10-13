@@ -158,7 +158,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
 
-  Widget _buildProfileSection(AsyncValue authState, {bool onGreenBackground = false}) {
+  Widget _buildProfileSection(AsyncValue authState) {
     // Show level badge for logged in users
     return authState.when(
       data: (user) {
@@ -2801,7 +2801,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 if (index < visibleLines.length - 1) const SizedBox(height: 8),
               ],
             );
-          }).toList(),
+          }),
         ],
       ),
     );

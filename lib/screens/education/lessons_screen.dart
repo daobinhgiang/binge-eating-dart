@@ -116,8 +116,10 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
     final user = ref.read(authNotifierProvider).value;
     if (user == null || !mounted || _hasShownTutorial) return;
 
-    // Show first lesson tutorial if user hasn't completed first lesson
-    if (!user.hasCompletedFirstLesson && !user.hasSeenAppTutorial) {
+    // Show first lesson tutorial ONLY if:
+    // 1. User HAS seen the app tutorial (meaning they clicked on the education tab)
+    // 2. User has NOT completed the first lesson yet
+    if (user.hasSeenAppTutorial && !user.hasCompletedFirstLesson) {
       _hasShownTutorial = true;
       
       // Wait a bit for the layout to settle
@@ -128,11 +130,20 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
       AppTutorialService().showFirstLessonTutorial(
         context: context,
         firstLessonKey: _firstLessonKey,
-        onFinish: () async {
-          // Mark that user has seen the tutorial
-          await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
-            hasSeenAppTutorial: true,
-          );
+        onFinish: () {
+          // Tutorial completed - no need to update status here
+          // The hasSeenAppTutorial is already true from the education tab tutorial
+        },
+        onLessonClick: () {
+          // Navigate to the first lesson when user clicks the highlighted lesson card
+          final firstLesson = _stages.isNotEmpty && 
+                             _stages.first.chapters.isNotEmpty && 
+                             _stages.first.chapters.first.lessons.isNotEmpty
+              ? _stages.first.chapters.first.lessons.first
+              : null;
+          if (firstLesson != null) {
+            _navigateToLesson(firstLesson);
+          }
         },
       );
     }

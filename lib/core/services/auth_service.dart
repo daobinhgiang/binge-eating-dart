@@ -464,6 +464,8 @@ class AuthService {
   Future<void> updateTutorialStatus({
     bool? hasSeenAppTutorial,
     bool? hasCompletedFirstLesson,
+    bool? hasSeenToolsTutorial,
+    bool? hasSeenJournalTutorial,
   }) async {
     try {
       final user = _auth.currentUser;
@@ -474,6 +476,8 @@ class AuthService {
 
       if (hasSeenAppTutorial != null) updateData['hasSeenAppTutorial'] = hasSeenAppTutorial;
       if (hasCompletedFirstLesson != null) updateData['hasCompletedFirstLesson'] = hasCompletedFirstLesson;
+      if (hasSeenToolsTutorial != null) updateData['hasSeenToolsTutorial'] = hasSeenToolsTutorial;
+      if (hasSeenJournalTutorial != null) updateData['hasSeenJournalTutorial'] = hasSeenJournalTutorial;
 
       if (updateData.isNotEmpty) {
         await userDoc.update(updateData);

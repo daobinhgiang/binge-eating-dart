@@ -33,6 +33,8 @@ class UserModel {
   final bool hasSeenIntro;
   final bool hasSeenAppTutorial;
   final bool hasCompletedFirstLesson;
+  final bool hasSeenToolsTutorial;
+  final bool hasSeenJournalTutorial;
   final int level;
   final int exp;
 
@@ -53,6 +55,8 @@ class UserModel {
     this.hasSeenIntro = false,
     this.hasSeenAppTutorial = false,
     this.hasCompletedFirstLesson = false,
+    this.hasSeenToolsTutorial = false,
+    this.hasSeenJournalTutorial = false,
     this.level = 1,
     this.exp = 0,
   });
@@ -86,6 +90,8 @@ class UserModel {
       hasSeenIntro: data['hasSeenIntro'] ?? false,
       hasSeenAppTutorial: data['hasSeenAppTutorial'] ?? false,
       hasCompletedFirstLesson: data['hasCompletedFirstLesson'] ?? false,
+      hasSeenToolsTutorial: data['hasSeenToolsTutorial'] ?? false,
+      hasSeenJournalTutorial: data['hasSeenJournalTutorial'] ?? false,
       level: data['level'] ?? 1,
       exp: data['exp'] ?? 0,
     );
@@ -108,6 +114,8 @@ class UserModel {
       'hasSeenIntro': hasSeenIntro,
       'hasSeenAppTutorial': hasSeenAppTutorial,
       'hasCompletedFirstLesson': hasCompletedFirstLesson,
+      'hasSeenToolsTutorial': hasSeenToolsTutorial,
+      'hasSeenJournalTutorial': hasSeenJournalTutorial,
       'level': level,
       'exp': exp,
     };
@@ -130,6 +138,8 @@ class UserModel {
     bool? hasSeenIntro,
     bool? hasSeenAppTutorial,
     bool? hasCompletedFirstLesson,
+    bool? hasSeenToolsTutorial,
+    bool? hasSeenJournalTutorial,
     int? level,
     int? exp,
   }) {
@@ -150,6 +160,8 @@ class UserModel {
       hasSeenIntro: hasSeenIntro ?? this.hasSeenIntro,
       hasSeenAppTutorial: hasSeenAppTutorial ?? this.hasSeenAppTutorial,
       hasCompletedFirstLesson: hasCompletedFirstLesson ?? this.hasCompletedFirstLesson,
+      hasSeenToolsTutorial: hasSeenToolsTutorial ?? this.hasSeenToolsTutorial,
+      hasSeenJournalTutorial: hasSeenJournalTutorial ?? this.hasSeenJournalTutorial,
       level: level ?? this.level,
       exp: exp ?? this.exp,
     );

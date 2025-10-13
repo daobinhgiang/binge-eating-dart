@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../core/services/exp_service.dart';
 import '../models/exp_ledger.dart';
 import '../models/quiz_submission.dart';

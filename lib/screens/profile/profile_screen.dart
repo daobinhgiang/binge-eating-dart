@@ -5,7 +5,6 @@ import '../../providers/auth_provider.dart';
 import '../../providers/exp_provider.dart';
 import '../../widgets/profile_background.dart';
 import '../../widgets/level_badge.dart';
-import '../../widgets/exp_progress_bar.dart';
 import '../../core/services/exp_service.dart';
 
 class ProfileScreen extends ConsumerWidget {
