@@ -1,8 +1,19 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import OpenAI from 'openai';
 
 // Initialize Firebase Admin
 admin.initializeApp();
+
+// Lazy initialization of OpenAI
+let openaiClient: OpenAI | null = null;
+function getOpenAI(): OpenAI {
+  if (!openaiClient) {
+    const apiKey = process.env.OPENAI_API_KEY || functions.config().openai?.key;
+    openaiClient = new OpenAI({ apiKey });
+  }
+  return openaiClient;
+}
 
 // Import and export quiz validation function
 export { validateQuiz } from './validateQuiz';
@@ -37,6 +48,112 @@ async function sendFCMMessageWithRetry(message: any, maxRetries: number = 3): Pr
       console.log(`Waiting ${delay}ms before retry...`);
       await new Promise(resolve => setTimeout(resolve, delay));
     }
+  }
+}
+
+// Helper function to fetch user context data from Firestore
+async function fetchUserContext(userId: string): Promise<any> {
+  try {
+    // Get user data
+    const userDoc = await admin.firestore().collection('users').doc(userId).get();
+    if (!userDoc.exists) {
+      return null;
+    }
+    
+    const userData = userDoc.data();
+    
+    // Get recent food diary entries (last 7 days)
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    const foodDiariesSnapshot = await admin.firestore()
+      .collection('users')
+      .doc(userId)
+      .collection('food_diary')
+      .where('createdAt', '>=', weekAgo.getTime())
+      .orderBy('createdAt', 'desc')
+      .limit(10)
+      .get();
+    
+    const bingeCount = foodDiariesSnapshot.docs.filter(doc => doc.data().isBinge === true).length;
+    const totalMeals = foodDiariesSnapshot.docs.length;
+    
+    // Get latest weight entry
+    const weightDiariesSnapshot = await admin.firestore()
+      .collection('users')
+      .doc(userId)
+      .collection('weight_diary')
+      .orderBy('createdAt', 'desc')
+      .limit(1)
+      .get();
+    
+    const latestWeight = !weightDiariesSnapshot.empty ? weightDiariesSnapshot.docs[0].data() : null;
+    
+    // Get completed lessons count
+    const completedLessonsSnapshot = await admin.firestore()
+      .collection('users')
+      .doc(userId)
+      .collection('completed_lessons')
+      .get();
+    
+    return {
+      firstName: userData?.firstName || 'there',
+      level: userData?.level || 1,
+      exp: userData?.exp || 0,
+      totalMeals: totalMeals,
+      bingeCount: bingeCount,
+      bingeRate: totalMeals > 0 ? (bingeCount / totalMeals * 100).toFixed(1) : 0,
+      latestWeight: latestWeight ? `${latestWeight.weight} ${latestWeight.unit}` : null,
+      completedLessons: completedLessonsSnapshot.size,
+    };
+  } catch (error) {
+    console.error(`Error fetching user context for ${userId}:`, error);
+    return null;
+  }
+}
+
+// Helper function to generate personalized motivational message with OpenAI
+async function generateMotivationalMessage(userContext: any): Promise<string> {
+  try {
+    const contextString = userContext ? `
+User Context:
+- Name: ${userContext.firstName}
+- Level: ${userContext.level} (${userContext.exp} XP)
+- Recent meals logged: ${userContext.totalMeals}
+- Binge episodes in last 7 days: ${userContext.bingeCount}
+- Binge rate: ${userContext.bingeRate}%
+- Completed lessons: ${userContext.completedLessons}
+${userContext.latestWeight ? `- Latest weight: ${userContext.latestWeight}` : ''}
+` : '';
+
+    const openai = getOpenAI();
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: `You are a compassionate recovery companion for someone with binge eating disorder. Generate a brief, personalized motivational message (2-3 sentences max) that:
+- Acknowledges their progress and efforts
+- Offers gentle encouragement
+- Is warm and supportive
+- Avoids mentioning specific numbers or data
+- Focuses on one positive aspect
+- Ends with hope or motivation
+Keep it conversational and authentic.`
+        },
+        {
+          role: 'user',
+          content: `Generate a personalized motivational message for this user's check-in today.\n\n${contextString}`
+        }
+      ],
+      max_tokens: 150,
+      temperature: 0.8,
+    });
+
+    return completion.choices[0]?.message?.content || 'You\'re doing great on your recovery journey. Keep taking it one day at a time! 💚';
+  } catch (error) {
+    console.error('Error generating motivational message:', error);
+    // Return a default encouraging message if OpenAI fails
+    return 'You\'re doing great on your recovery journey. Keep taking it one day at a time! 💚';
   }
 }
 
@@ -168,7 +285,7 @@ export const sendDailyNotification = functions.pubsub
             // Try multicast first for each batch
             const message = {
               notification: {
-                title: 'Gentle reminder 🌱',
+                title: 'Fuck You reminder 🌱',
                 body: 'Eating regularly helps your body and mind. It\'s time for your meal.',
               },
               data: {
@@ -321,18 +438,18 @@ export const sendDailyNotification = functions.pubsub
     }
   });
 
+// Motivational notification function - sends personalized AI-generated messages to all users
 export const sendDailyMotivationalNotification = functions.pubsub
-  .schedule('0,30 6-23 * * *') // Every 30 minutes from 6am to 11:30pm
+  .schedule('0 8,18 * * *') // At 8am and 6pm daily
   .timeZone('America/Chicago')
   .onRun(async (context) => {
     const startTime = new Date();
-    console.log('Starting motivational notification at:', startTime.toISOString());
+    console.log('Starting personalized motivational notification at:', startTime.toISOString());
 
     try {
-      // Array to collect FCM tokens for all users
-      const arrayTokens: string[] = [];
+      // Array to collect users with their data
+      const users: Array<{userId: string, fcmToken: string}> = [];
       let processedUsers = 0;
-      let usersWithTokens = 0;
 
       // Get all users with pagination to handle large user bases
       let lastDoc: admin.firestore.QueryDocumentSnapshot | null = null;
@@ -353,7 +470,7 @@ export const sendDailyMotivationalNotification = functions.pubsub
           break;
         }
 
-        console.log(`Processing batch of ${usersSnapshot.size} users for motivational notification`);
+        console.log(`Fetching batch of ${usersSnapshot.size} users for motivational notification`);
 
         for (const userDoc of usersSnapshot.docs) {
           const userId = userDoc.id;
@@ -365,9 +482,8 @@ export const sendDailyMotivationalNotification = functions.pubsub
             const fcmToken = userData.fcmToken;
 
             if (isValidFCMToken(fcmToken)) {
-              arrayTokens.push(fcmToken);
-              usersWithTokens++;
-              console.log(`Added FCM token for user ${userId}`);
+              users.push({ userId, fcmToken });
+              console.log(`Added user ${userId} for personalized notification`);
             } else {
               console.log(`No valid FCM token found for user ${userId}`);
             }
@@ -386,87 +502,54 @@ export const sendDailyMotivationalNotification = functions.pubsub
         }
       }
 
-      // Send push notifications to all users
-      if (arrayTokens.length > 0) {
-        console.log(`Attempting to send motivational notifications to ${arrayTokens.length} users`);
+      // Send personalized push notifications to each user
+      if (users.length > 0) {
+        console.log(`Generating personalized messages for ${users.length} users`);
 
         let successCount = 0;
         let failureCount = 0;
-        const failedTokens: string[] = [];
-        const successfulTokens: string[] = [];
+        const successfulUsers: string[] = [];
+        const failedUsers: string[] = [];
 
-        // Process tokens in smaller batches to avoid 404 errors
-        const batchSize = 500; // FCM multicast supports up to 500 tokens
-        const batches = [];
-        
-        for (let i = 0; i < arrayTokens.length; i += batchSize) {
-          batches.push(arrayTokens.slice(i, i + batchSize));
-        }
-
-        console.log(`Processing ${batches.length} batches of tokens`);
-
-        for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
-          const batch = batches[batchIndex];
-          console.log(`Processing batch ${batchIndex + 1}/${batches.length} with ${batch.length} tokens`);
+        // Process users individually to generate personalized messages
+        for (let i = 0; i < users.length; i++) {
+          const user = users[i];
+          console.log(`[${i + 1}/${users.length}] Processing user ${user.userId}`);
 
           try {
-            // Try multicast first for each batch
+            // Fetch user context from Firestore
+            const userContext = await fetchUserContext(user.userId);
+            
+            // Generate personalized message with OpenAI
+            const personalizedMessage = await generateMotivationalMessage(userContext);
+            console.log(`Generated message for ${user.userId}: ${personalizedMessage.substring(0, 50)}...`);
+
+            // Send personalized notification
             const message = {
               notification: {
-                title: 'Gentle reminder 🌱',
-                body: 'Eating regularly helps your body and mind. It\'s time for your meal.',
+                title: 'Your Daily Motivation 💚',
+                body: personalizedMessage,
               },
               data: {
                 type: 'motivational_reminder',
                 timestamp: new Date().toISOString(),
               },
-              tokens: batch,
+              token: user.fcmToken,
             };
 
-            const response = await sendFCMMessageWithRetry(message);
-            successCount += response.successCount;
-            failureCount += response.failureCount;
+            await admin.messaging().send(message);
+            successCount++;
+            successfulUsers.push(user.userId);
+            console.log(`✓ Successfully sent personalized notification to ${user.userId}`);
+          } catch (individualError) {
+            failureCount++;
+            failedUsers.push(user.userId);
+            console.error(`✗ Failed to send to ${user.userId}:`, individualError);
+          }
 
-            console.log(`Batch ${batchIndex + 1}: Successfully sent to ${response.successCount} users, failed: ${response.failureCount}`);
-
-            // Track successful and failed tokens
-            response.responses.forEach((resp: any, idx: number) => {
-              if (resp.success) {
-                successfulTokens.push(batch[idx]);
-              } else {
-                failedTokens.push(batch[idx]);
-                console.error(`Failed to send to token in batch ${batchIndex + 1}:`, resp.error);
-              }
-            });
-
-          } catch (batchError) {
-            console.error(`Batch ${batchIndex + 1} failed with multicast, trying individual sends:`, batchError);
-            
-            // If multicast fails for this batch, try individual sends
-            for (const token of batch) {
-              try {
-                const individualMessage = {
-                  notification: {
-                    title: 'Gentle reminder 🌱',
-                    body: 'Eating regularly helps your body and mind. It\'s time for your meal.',
-                  },
-                  data: {
-                    type: 'motivational_reminder',
-                    timestamp: new Date().toISOString(),
-                  },
-                  token: token,
-                };
-
-                await admin.messaging().send(individualMessage);
-                successCount++;
-                successfulTokens.push(token);
-                console.log(`Individual message sent successfully`);
-              } catch (individualError) {
-                failureCount++;
-                failedTokens.push(token);
-                console.error(`Individual message failed:`, individualError);
-              }
-            }
+          // Add a small delay to avoid rate limiting
+          if (i < users.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 100));
           }
         }
 
@@ -475,17 +558,16 @@ export const sendDailyMotivationalNotification = functions.pubsub
         // Save notification results to Firestore
         const notificationData = {
           timestamp: admin.firestore.FieldValue.serverTimestamp(),
-          type: 'motivational_reminder',
-          totalTokens: arrayTokens.length,
+          type: 'motivational_reminder_personalized',
+          totalUsers: users.length,
           successCount: successCount,
           failureCount: failureCount,
           processedUsers: processedUsers,
-          usersWithTokens: usersWithTokens,
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
           executionTime: new Date().getTime() - startTime.getTime(),
-          method: 'batch_with_individual_fallback',
-          successfulTokens: successfulTokens.length,
-          failedTokens: failedTokens.length
+          method: 'personalized_ai_generated',
+          successfulUsers: successfulUsers.length,
+          failedUsers: failedUsers.length
         };
 
         await admin.firestore()
@@ -493,20 +575,19 @@ export const sendDailyMotivationalNotification = functions.pubsub
           .doc('motivationalNotification')
           .set(notificationData, { merge: true });
 
-        console.log(`Motivational notification completed:`);
+        console.log(`Personalized motivational notification completed:`);
         console.log(`- Processed ${processedUsers} users`);
-        console.log(`- ${usersWithTokens} users have valid FCM tokens`);
+        console.log(`- ${users.length} users have valid FCM tokens`);
         console.log(`- Successfully sent to ${successCount} users`);
         console.log(`- Failed to send to ${failureCount} users`);
         console.log(`- Execution time: ${notificationData.executionTime}ms`);
 
         return {
           success: true,
-          totalTokens: arrayTokens.length,
+          totalUsers: users.length,
           successCount: successCount,
           failureCount: failureCount,
           processedUsers,
-          usersWithTokens
         };
       } else {
         console.log('No users with valid FCM tokens found. Skipping notification send.');
@@ -514,12 +595,11 @@ export const sendDailyMotivationalNotification = functions.pubsub
         // Still save the results even if no tokens
         const notificationData = {
           timestamp: admin.firestore.FieldValue.serverTimestamp(),
-          type: 'motivational_reminder',
-          totalTokens: 0,
+          type: 'motivational_reminder_personalized',
+          totalUsers: 0,
           successCount: 0,
           failureCount: 0,
           processedUsers: processedUsers,
-          usersWithTokens: 0,
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
           executionTime: new Date().getTime() - startTime.getTime(),
           message: 'No users with valid FCM tokens found'
@@ -532,16 +612,15 @@ export const sendDailyMotivationalNotification = functions.pubsub
 
         return {
           success: true,
-          totalTokens: 0,
+          totalUsers: 0,
           successCount: 0,
           failureCount: 0,
           processedUsers,
-          usersWithTokens: 0
         };
       }
 
     } catch (error) {
-      console.error('Error in motivational notification:', error);
+      console.error('Error in personalized motivational notification:', error);
 
       // Save error information to Firestore for debugging
       const errorMessage = error instanceof Error ? error.message : String(error);
@@ -551,7 +630,7 @@ export const sendDailyMotivationalNotification = functions.pubsub
         .set({
           error: errorMessage,
           errorTime: admin.firestore.FieldValue.serverTimestamp(),
-          type: 'motivational_reminder'
+          type: 'motivational_reminder_personalized'
         }, { merge: true });
 
       throw error;
