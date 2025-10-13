@@ -62,13 +62,15 @@ class _LessonS227ScreenState extends ConsumerState<LessonS227Screen> {
     }
   }
 
-  void _finishLesson() {
+  Future<void> _finishLesson() async {
     if (_lesson != null) {
-      _lessonService.markLessonCompleted(_lesson!.id);
+      await _lessonService.markLessonCompleted(_lesson!.id);
     }
     
     // Navigate to Meal Planning tool instead of going back
-    _navigateToMealPlanningTool();
+    if (mounted) {
+      _navigateToMealPlanningTool();
+    }
   }
 
   void _navigateToMealPlanningTool() {
@@ -79,12 +81,14 @@ class _LessonS227ScreenState extends ConsumerState<LessonS227Screen> {
     );
   }
 
-  void _startMealPlanningExercise() {
+  Future<void> _startMealPlanningExercise() async {
     // Mark lesson as completed and navigate to meal planning tool
     if (_lesson != null) {
-      _lessonService.markLessonCompleted(_lesson!.id);
+      await _lessonService.markLessonCompleted(_lesson!.id);
     }
-    _navigateToMealPlanningTool();
+    if (mounted) {
+      _navigateToMealPlanningTool();
+    }
   }
 
   @override

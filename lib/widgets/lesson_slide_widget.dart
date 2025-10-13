@@ -81,23 +81,29 @@ class LessonSlideWidget extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
             child: Row(
               children: [
-                // Back button with sleek design
+                // Minimalistic back button
                 Container(
-                  width: 44,
-                  height: 44,
+                  width: 36,
+                  height: 36,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF66BB6A).withOpacity(0.08),
-                    borderRadius: BorderRadius.circular(14),
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: const Color(0xFF66BB6A).withOpacity(0.15),
+                      width: 1,
+                    ),
                   ),
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () => Navigator.of(context).pop(),
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(10),
+                      splashColor: const Color(0xFF66BB6A).withOpacity(0.1),
+                      highlightColor: const Color(0xFF66BB6A).withOpacity(0.05),
                       child: Icon(
-                        Icons.arrow_back_ios_new,
-                        color: const Color(0xFF66BB6A),
-                        size: 20,
+                        Icons.arrow_back_ios_new_rounded,
+                        color: const Color(0xFF66BB6A).withOpacity(0.8),
+                        size: 18,
                       ),
                     ),
                   ),

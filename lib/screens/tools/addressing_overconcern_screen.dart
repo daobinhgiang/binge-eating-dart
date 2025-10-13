@@ -66,185 +66,253 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
     }
 
     return Scaffold(
-      body: Column(
-        children: [
-          // Duolingo-style Header
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.orange[600]!,
-                  Colors.orange[500]!,
-                ],
+      backgroundColor: Colors.grey[50],
+      appBar: AppBar(
+        title: const Text(
+          'Addressing Overconcern',
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.orange[600]),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ElevatedButton.icon(
+              onPressed: _isLoading ? null : () => _saveImportanceItems(user.id),
+              icon: _isLoading
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                  : const Icon(Icons.save, size: 18),
+              label: const Text('Save'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange[600],
+                foregroundColor: Colors.white,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
-            child: SafeArea(
-              bottom: false,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          icon: const Icon(Icons.arrow_back, color: Colors.white),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                        ),
-                        const Spacer(),
-                        IconButton(
-                          onPressed: _isLoading ? null : () => _saveImportanceItems(user.id),
-                          icon: _isLoading 
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                  ),
-                                )
-                              : const Icon(Icons.save, color: Colors.white),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                    child: Text(
-                      'Addressing Overconcern',
-                      style: GoogleFonts.fredoka(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ],
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Header Section
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.orange[50]!, Colors.deepOrange[50]!],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.pie_chart,
+                    size: 32,
+                    color: Colors.orange[600],
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Self-Evaluation Exercise',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.orange[800],
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Visualize your self-worth distribution',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.orange[700],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
 
           // Content
           Expanded(
-            child: Column(
-              children: [
-                // Guide Section
-                Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.all(16),
-                  child: _buildGuideSection(context),
-                ),
-
-                // Content
-                Expanded(
-                  child: _importanceItems.isEmpty ? _buildEmptyState(context) : _buildContentWithChart(context),
-                ),
-              ],
-            ),
+            child: _importanceItems.isEmpty ? _buildEmptyState(context) : _buildContentWithChart(context),
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: _addImportanceItem,
         backgroundColor: Colors.orange[600],
-        child: const Icon(Icons.add, color: Colors.white),
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.add),
+        label: const Text('Add Item', style: TextStyle(fontWeight: FontWeight.w600)),
+        elevation: 4,
       ),
     );
   }
 
   Widget _buildGuideSection(BuildContext context) {
-    return Card(
-      color: Colors.orange[50],
-      elevation: 2,
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.blue[50]!, Colors.lightBlue[50]!],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.blue[100]!),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(Icons.info, color: Colors.orange[700], size: 20),
-                const SizedBox(width: 8),
-                Text(
-                  'Self-Evaluation Exercise',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.orange[700],
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.blue[100],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'How to Use',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue[800],
+                    ),
                   ),
                 ),
               ],
             ),
+            const SizedBox(height: 16),
+            _buildGuideStep('1', 'List the things that are important to you in how you evaluate yourself'),
             const SizedBox(height: 12),
-            Text(
-              '1. List the things that are important to you in how you evaluate or judge yourself as a person.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '2. Rate each item in terms of its relative importance (percentages should total 100%).',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '3. View the pie chart to visualize how you distribute your self-worth.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            _buildGuideStep('2', 'Rate each item in terms of relative importance (total should be 100%)'),
+            const SizedBox(height: 12),
+            _buildGuideStep('3', 'View the pie chart to visualize your self-worth distribution'),
           ],
         ),
       ),
     );
   }
 
+  Widget _buildGuideStep(String number, String text) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 24,
+            height: 24,
+            decoration: BoxDecoration(
+              color: Colors.blue[600],
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Center(
+              child: Text(
+                number,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              text,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.grey[800],
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildEmptyState(BuildContext context) {
     return Center(
-        child: Padding(
-        padding: const EdgeInsets.all(32),
+      child: Padding(
+        padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.pie_chart_outline,
-              size: 80,
-              color: Colors.grey[400],
+            Container(
+              padding: const EdgeInsets.all(32),
+              decoration: BoxDecoration(
+                color: Colors.orange[50],
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.pie_chart_outline,
+                size: 64,
+                color: Colors.orange[400],
+              ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             Text(
               'No Items Yet',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: Colors.grey[600],
+                color: Colors.grey[800],
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             Text(
               'Add the things that are important to you in how you evaluate yourself.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey[500],
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Colors.grey[600],
+                height: 1.5,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 40),
             ElevatedButton.icon(
               onPressed: _addImportanceItem,
-              icon: const Icon(Icons.add),
+              icon: const Icon(Icons.add, size: 20),
               label: const Text('Add First Item'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange[600],
                 foregroundColor: Colors.white,
+                elevation: 0,
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -259,58 +327,97 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
 
   Widget _buildContentWithChart(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Guide Section
+          Container(
+            margin: const EdgeInsets.only(bottom: 20),
+            child: _buildGuideSection(context),
+          ),
+
           // Summary Row
           Row(
             children: [
               Expanded(
                 child: Text(
-                  'Your Self-Evaluation Items (${_importanceItems.length})',
+                  'Your Items (${_importanceItems.length})',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
+                    color: Colors.grey[800],
                   ),
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
                   color: _isBalanced() ? Colors.green[50] : Colors.orange[50],
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: _isBalanced() ? Colors.green[200]! : Colors.orange[200]!),
-                ),
-                child: Text(
-                  'Total: ${_getTotalPercentage().toStringAsFixed(1)}%',
-                  style: TextStyle(
-                    color: _isBalanced() ? Colors.green[700] : Colors.orange[700],
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: _isBalanced() ? Colors.green[200]! : Colors.orange[200]!,
+                    width: 2,
                   ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      _isBalanced() ? Icons.check_circle : Icons.warning,
+                      size: 16,
+                      color: _isBalanced() ? Colors.green[700] : Colors.orange[700],
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      '${_getTotalPercentage().toStringAsFixed(1)}%',
+                      style: TextStyle(
+                        color: _isBalanced() ? Colors.green[700] : Colors.orange[700],
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
           
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
 
           // Pie Chart
           if (_importanceItems.isNotEmpty) ...[
-            Card(
-              elevation: 2,
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.grey[200]!),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Self-Worth Distribution',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      children: [
+                        Icon(Icons.donut_large, color: Colors.orange[600], size: 20),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Self-Worth Distribution',
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 24),
                     SizedBox(
                       height: 250,
                       child: PieChart(
@@ -318,11 +425,11 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                           sections: _buildPieChartSections(),
                           borderData: FlBorderData(show: false),
                           sectionsSpace: 2,
-                          centerSpaceRadius: 40,
+                          centerSpaceRadius: 45,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 24),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
@@ -332,7 +439,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
           ],
 
           // Items List
@@ -342,84 +449,105 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
               child: _buildImportanceItemCard(context, _importanceItems[index], index),
             );
           }),
-          const SizedBox(height: 80), // Space for FAB
+          const SizedBox(height: 100), // Space for FAB
         ],
       ),
     );
   }
 
   Widget _buildImportanceItemCard(BuildContext context, ImportanceItem item, int index) {
-    return Card(
-      elevation: 2,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Row(
-              children: [
-                Container(
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    color: _getItemColor(index),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Center(
-                    child: Text(
-                      '${index + 1}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    item.description,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.orange[100],
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Text(
-                    '${item.importance.toStringAsFixed(1)}%',
-                    style: TextStyle(
-                      color: Colors.orange[700],
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      onPressed: () => _editImportanceItem(index),
-                      icon: const Icon(Icons.edit, size: 18),
-                      padding: const EdgeInsets.all(4),
-                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                    ),
-                    IconButton(
-                      onPressed: () => _removeImportanceItem(index),
-                      icon: const Icon(Icons.delete, size: 18),
-                      padding: const EdgeInsets.all(4),
-                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                      color: Colors.red[600],
-                    ),
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    _getItemColor(index).withOpacity(0.8),
+                    _getItemColor(index),
                   ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-              ],
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: _getItemColor(index).withOpacity(0.3),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Text(
+                  '${index + 1}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                item.description,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[800],
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.orange[50],
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.orange[200]!),
+              ),
+              child: Text(
+                '${item.importance.toStringAsFixed(1)}%',
+                style: TextStyle(
+                  color: Colors.orange[700],
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            InkWell(
+              onTap: () => _editImportanceItem(index),
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                child: Icon(Icons.edit, size: 18, color: Colors.grey[600]),
+              ),
+            ),
+            InkWell(
+              onTap: () => _removeImportanceItem(index),
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                child: Icon(Icons.delete_outline, size: 18, color: Colors.red[400]),
+              ),
             ),
           ],
         ),
@@ -456,28 +584,39 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
       final item = entry.value;
       
       return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.grey[100],
-          borderRadius: BorderRadius.circular(12),
+          color: Colors.grey[50],
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.grey[200]!),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 12,
-              height: 12,
+              width: 14,
+              height: 14,
               decoration: BoxDecoration(
                 color: _getItemColor(index),
                 shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: _getItemColor(index).withOpacity(0.3),
+                    blurRadius: 2,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: 8),
             Text(
-              item.description.length > 20 
-                  ? '${item.description.substring(0, 20)}...' 
+              item.description.length > 18 
+                  ? '${item.description.substring(0, 18)}...' 
                   : item.description,
-              style: Theme.of(context).textTheme.bodySmall,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Colors.grey[700],
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
         ),
@@ -535,95 +674,226 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(existingItem != null ? 'Edit Item' : 'Add Item'),
-        content: SingleChildScrollView(
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 500),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextField(
-                controller: descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Description *',
-                  hintText: 'e.g., How I look, Academic success, Relationships',
-                  border: OutlineInputBorder(),
+              // Header
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.orange[50]!, Colors.deepOrange[50]!],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
                 ),
-                maxLines: 2,
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: importanceController,
-                decoration: const InputDecoration(
-                  labelText: 'Importance (%) *',
-                  hintText: '0.0 - 100.0',
-                  border: OutlineInputBorder(),
-                  suffixText: '%',
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.orange[100],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(
+                        existingItem != null ? Icons.edit : Icons.add_circle_outline,
+                        color: Colors.orange[700],
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      existingItem != null ? 'Edit Item' : 'Add New Item',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange[800],
+                      ),
+                    ),
+                  ],
                 ),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
               ),
-              const SizedBox(height: 12),
-              Text(
-                'Tip: All percentages should add up to 100%',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[600],
-                  fontStyle: FontStyle.italic,
+
+              // Content
+              SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Description',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey[300]!),
+                      ),
+                      child: TextField(
+                        controller: descriptionController,
+                        decoration: const InputDecoration(
+                          hintText: 'e.g., How I look, Academic success, Relationships',
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.all(16),
+                        ),
+                        maxLines: 2,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Importance (%)',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey[300]!),
+                      ),
+                      child: TextField(
+                        controller: importanceController,
+                        decoration: const InputDecoration(
+                          hintText: '0.0 - 100.0',
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.all(16),
+                          suffixText: '%',
+                        ),
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.blue[50],
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.blue[100]!),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.lightbulb_outline, color: Colors.blue[700], size: 18),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Tip: All percentages should add up to 100%',
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Colors.blue[700],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Actions
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    OutlinedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        side: BorderSide(color: Colors.grey[300]!),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: const Text('Cancel'),
+                    ),
+                    const SizedBox(width: 12),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (descriptionController.text.trim().isEmpty) {
+                          _showValidationError('Please enter a description');
+                          return;
+                        }
+
+                        final importance = double.tryParse(importanceController.text.trim()) ?? 0.0;
+                        if (importance < 0 || importance > 100) {
+                          _showValidationError('Importance must be between 0 and 100');
+                          return;
+                        }
+
+                        final item = ImportanceItem(
+                          id: existingItem?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+                          description: descriptionController.text.trim(),
+                          importance: importance,
+                        );
+
+                        setState(() {
+                          if (index != null) {
+                            _importanceItems[index] = item;
+                          } else {
+                            _importanceItems.add(item);
+                          }
+                        });
+
+                        Navigator.of(context).pop();
+                        
+                        // Auto-save after adding/editing item
+                        final user = ref.read(currentUserDataProvider);
+                        if (user != null) {
+                          _saveImportanceItems(user.id, showSuccessMessage: false);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange[600],
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(existingItem != null ? 'Update' : 'Add'),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (descriptionController.text.trim().isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Please enter a description')),
-                );
-                return;
-              }
+      ),
+    );
+  }
 
-              final importance = double.tryParse(importanceController.text.trim()) ?? 0.0;
-              if (importance < 0 || importance > 100) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Importance must be between 0 and 100')),
-                );
-                return;
-              }
-
-              final item = ImportanceItem(
-                id: existingItem?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
-                description: descriptionController.text.trim(),
-                importance: importance,
-              );
-
-              setState(() {
-                if (index != null) {
-                  _importanceItems[index] = item;
-                } else {
-                  _importanceItems.add(item);
-                }
-              });
-
-              Navigator.of(context).pop();
-              
-              // Auto-save after adding/editing item
-              final user = ref.read(currentUserDataProvider);
-              if (user != null) {
-                _saveImportanceItems(user.id, showSuccessMessage: false);
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange[600],
-              foregroundColor: Colors.white,
-            ),
-            child: Text(existingItem != null ? 'Update' : 'Add'),
-          ),
-        ],
+  void _showValidationError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: Colors.red[600],
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: const EdgeInsets.all(16),
       ),
     );
   }
@@ -669,10 +939,19 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
 
       if (mounted && showSuccessMessage) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Items saved successfully!'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(child: Text('Items saved successfully!')),
+              ],
+            ),
+            backgroundColor: Colors.green[600],
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            margin: const EdgeInsets.all(16),
+            duration: const Duration(seconds: 2),
           ),
         );
       }
@@ -680,9 +959,18 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error saving items: $e'),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 3),
+            content: Row(
+              children: [
+                Icon(Icons.error_outline, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(child: Text('Error saving items: $e')),
+              ],
+            ),
+            backgroundColor: Colors.red[600],
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            margin: const EdgeInsets.all(16),
+            duration: const Duration(seconds: 3),
           ),
         );
       }

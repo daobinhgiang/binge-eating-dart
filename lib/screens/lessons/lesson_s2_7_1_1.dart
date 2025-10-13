@@ -82,14 +82,16 @@ class _LessonS2711ScreenState extends ConsumerState<LessonS2711Screen> {
     }
   }
 
-  void _navigateToAddressingOverconcern() {
+  Future<void> _navigateToAddressingOverconcern() async {
     // Mark lesson as completed
     if (_lesson != null) {
-      _lessonService.markLessonCompleted(_lesson!.id);
+      await _lessonService.markLessonCompleted(_lesson!.id);
     }
     
     // Navigate to the Addressing Overconcern tool
-    context.go('/tools/addressing-overconcern');
+    if (mounted) {
+      context.go('/tools/addressing-overconcern');
+    }
   }
 
   @override

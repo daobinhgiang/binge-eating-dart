@@ -495,109 +495,238 @@ class _ResourcesSectionState extends ConsumerState<ResourcesSection> {
     
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            Icon(Icons.psychology, color: Colors.red[700]),
-            const SizedBox(width: 10),
-            const Expanded(
-              child: Text('Coping with Urges'),
-            ),
-          ],
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
         ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'When you experience urges to relapse, these resources can help:',
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                '1. Learn about urges and coping strategies:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                '2. Practice practical coping skills:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              _buildHelpOptionCard(
-                'Urge Surfing Activity',
-                'Practical exercises to manage urges as they arise',
-                Icons.waves,
-                Colors.teal,
-                () {
-                  Navigator.of(context).pop();
-                  context.push('/tools/urge-surfing');
-                },
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 400),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
               ),
             ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              final trackDialog = ref.read(urgeHelpDialogTrackingProvider);
-              trackDialog('dialog_closed');
-              Navigator.of(context).pop();
-            },
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHelpOptionCard(String title, String description, IconData icon, MaterialColor color, VoidCallback onTap) {
-    return Card(
-      margin: EdgeInsets.zero,
-      color: color[50],
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
+              // Header with gradient background
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: color[100],
-                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [
+                      const Color(0xFFE57373).withOpacity(0.15),
+                      const Color(0xFFEF5350).withOpacity(0.10),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
+                  ),
                 ),
-                child: Icon(icon, color: color[700], size: 20),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
                   children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: color[700],
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFE57373).withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.psychology,
+                        color: Color(0xFFE57373),
+                        size: 28,
                       ),
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      description,
-                      style: TextStyle(
-                        color: Colors.grey[700],
-                        fontSize: 12,
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Coping with Urges',
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFFE57373),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Take control with these tools',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 14,
-                color: color[700],
+              // Content
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'When you experience urges, these resources can help you stay on track:',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.grey[700],
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    _buildHelpOptionCard(
+                      'Urge Surfing Activity',
+                      'Practical exercises to manage urges as they arise',
+                      Icons.waves,
+                      const Color(0xFFE57373),
+                      () {
+                        Navigator.of(context).pop();
+                        context.push('/tools/urge-surfing');
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              // Actions
+              Padding(
+                padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      final trackDialog = ref.read(urgeHelpDialogTrackingProvider);
+                      trackDialog('dialog_closed');
+                      Navigator.of(context).pop();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFE57373),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      'Got it',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHelpOptionCard(String title, String description, IconData icon, Color color, VoidCallback onTap) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: color.withOpacity(0.3),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        color.withOpacity(0.15),
+                        color.withOpacity(0.10),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: color,
+                    size: 28,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: color,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        description,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.grey[600],
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.arrow_forward,
+                    size: 18,
+                    color: color,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

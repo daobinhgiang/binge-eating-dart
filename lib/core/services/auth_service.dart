@@ -229,7 +229,17 @@ class AuthService {
     } catch (e, stackTrace) {
       print('Google Sign-in Error: $e');
       print('Stack trace: $stackTrace');
-      throw 'Google sign-in failed. Please try again.';
+      
+      // Provide more specific error messages
+      if (e.toString().contains('sign_in_failed')) {
+        throw 'Google Sign-In failed. This is likely due to SHA-1 fingerprint mismatch. Please contact support.';
+      } else if (e.toString().contains('network_error')) {
+        throw 'Network error. Please check your internet connection and try again.';
+      } else if (e.toString().contains('sign_in_canceled')) {
+        throw 'Sign-in was cancelled. Please try again.';
+      } else {
+        throw 'Google sign-in failed. Please try again.';
+      }
     }
   }
 
@@ -471,6 +481,10 @@ class AuthService {
         return 'Invalid verification ID. Please try again.';
       case 'network-request-failed':
         return 'Network error. Please check your connection and try again.';
+      case 'invalid-credential':
+        return 'Invalid credentials. This may be due to SHA-1 fingerprint mismatch.';
+      case 'operation-not-allowed':
+        return 'Google Sign-In is not enabled. Please contact support.';
       default:
         return 'Authentication failed. Please try again.';
     }

@@ -64,4 +64,21 @@ class LessonService {
       return {};
     }
   }
+
+  // Get completed lessons stream for real-time updates
+  Stream<Set<String>> getCompletedLessonsStream() {
+    final user = _auth.currentUser;
+    if (user == null) {
+      return Stream.value({});
+    }
+
+    return _firestore
+        .collection('user_progress')
+        .doc(user.uid)
+        .collection('completed_lessons')
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) => doc.data()['lessonId'] as String).toSet();
+    });
+  }
 }

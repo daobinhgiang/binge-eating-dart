@@ -1,5 +1,5 @@
-import 'dart:ui' as ui;
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -14,7 +14,6 @@ import '../../models/stage.dart';
 import '../../models/lesson.dart';
 import '../providers/firebase_analytics_provider.dart';
 import '../providers/lesson_progress_provider.dart';
-import '../core/services/openai_service.dart';
 import '../core/services/exp_service.dart';
 import '../models/todo_item.dart';
 import '../core/services/user_learning_service.dart';
@@ -30,11 +29,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   ScrollController? _scrollController;
-  PageController? _lessonCarouselController;
   
-  // Insights section state
-  bool _isGeneratingInsights = false;
-  List<Map<String, dynamic>> _insightsRecommendations = [];
   
   // Timer state
   DateTime? _lastResetTime;
@@ -44,11 +39,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    // Start at a large number to enable infinite scrolling in both directions
-    _lessonCarouselController = PageController(
-      viewportFraction: 0.6,
-      initialPage: 10000,
-    );
     _loadLastResetTime();
     _startTimer();
   }
@@ -56,7 +46,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void dispose() {
     _scrollController?.dispose();
-    _lessonCarouselController?.dispose();
     _updateTimer?.cancel();
     super.dispose();
   }
@@ -277,6 +266,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       backgroundColor: Colors.white,
       body: CustomScrollView(
           controller: _scrollController,
+          physics: const ClampingScrollPhysics(),
+          clipBehavior: Clip.none,
           slivers: [
             // Combined header and Continue Learning Section with green background
             SliverToBoxAdapter(
@@ -285,19 +276,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             
             // Content
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
               sliver: SliverToBoxAdapter(
-                child: Transform.translate(
-                  offset: const Offset(0, -90),
                   child: Column(
                     children: [
-                          // Resources title
-                          Transform.translate(
-                            offset: const Offset(0, -20),
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
+                        // Recovery Tools section with header inside container
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[50],
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Colors.grey[200]!,
+                              width: 1,
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Recovery Tools header
+                        Padding(
+                                padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
                               child: Text(
-                                'Resources',
+                                  'Recovery Tools',
                                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black87,
@@ -305,206 +305,50 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 ),
                               ),
                             ),
-                          ),
-                          
-                          // Main buttons layout - 2x2 Grid
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                              // Recovery Tools list
+                              Column(
                             children: [
-                              // Left column - Recovery Guide and Realtime Journaling
-                              Expanded(
-                                flex: 1,
-                                child: Column(
-                                  children: [
-                                    // Recovery Guide button
-                                    Container(
-                                      width: double.infinity,
-                                      height: 80,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(
-                                          color: const Color(0xFF64B5F6).withOpacity( 0.3),
-                                          width: 2,
-                                        ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity( 0.04),
-                                            blurRadius: 8,
-                                            offset: const Offset(0, 2),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Material(
-                                        color: Colors.transparent,
-                                        child: InkWell(
-                                          onTap: () => context.go('/chat'),
-                                          borderRadius: BorderRadius.circular(12),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                                            child: Center(
-                                              child: Text(
-                                                'Recovery Guide',
-                                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                                  fontWeight: FontWeight.w600,
-                                                  color: const Color(0xFF64B5F6),
-                                                  fontSize: 20,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    
-                                    const SizedBox(height: 16),
-                                    
-                                    // Realtime Journaling button
-                                    Container(
-                                      width: double.infinity,
-                                      height: 80,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(
-                                          color: const Color(0xFF9C27B0).withOpacity(0.3),
-                                          width: 2,
-                                        ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity(0.04),
-                                            blurRadius: 8,
-                                            offset: const Offset(0, 2),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Material(
-                                        color: Colors.transparent,
-                                        child: InkWell(
-                                          onTap: () => context.go('/realtime-journaling'),
-                                          borderRadius: BorderRadius.circular(12),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                                            child: Center(
-                                              child: Text(
-                                                'Realtime Journaling',
-                                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                                  fontWeight: FontWeight.w600,
-                                                  color: const Color(0xFF9C27B0),
-                                                  fontSize: 20,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    
-                                    const SizedBox(height: 16),
-                                    
-                                    // Accountability Partner button
-                                    Container(
-                                      width: double.infinity,
-                                      height: 80,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(
-                                          color: const Color(0xFF4CAF50).withOpacity(0.3),
-                                          width: 2,
-                                        ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity(0.04),
-                                            blurRadius: 8,
-                                            offset: const Offset(0, 2),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Material(
-                                        color: Colors.transparent,
-                                        child: InkWell(
-                                          onTap: () => context.go('/accountability-partner'),
-                                          borderRadius: BorderRadius.circular(12),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                                            child: Center(
-                                              child: Text(
-                                                'Accountability Partner',
-                                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                                  fontWeight: FontWeight.w600,
-                                                  color: const Color(0xFF4CAF50),
-                                                  fontSize: 20,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+                                  _buildToolItem(
+                                    icon: Icons.psychology_outlined,
+                                    title: 'Recovery Guide',
+                                    description: 'Your personalized guide',
+                                    onTap: () => context.push('/chat'),
+                                    iconColor: const Color(0xFF4CAF50),
+                                    iconBgColor: const Color(0xFFE8F5E8),
+                                  ),
+                                  _buildDivider(),
+                                  _buildToolItem(
+                                    icon: Icons.edit_note_outlined,
+                                    title: 'Journaling Partner',
+                                    description: 'Track your progress',
+                                    onTap: () => context.push('/realtime-journaling'),
+                                    iconColor: const Color(0xFF4CAF50),
+                                    iconBgColor: const Color(0xFFE8F5E8),
+                                  ),
+                                  _buildDivider(),
+                                  _buildToolItem(
+                                    icon: Icons.people_outline,
+                                    title: 'Accountability Partner',
+                                    description: 'Connect with support',
+                                    onTap: () => context.push('/accountability-partner'),
+                                    iconColor: const Color(0xFF4CAF50),
+                                    iconBgColor: const Color(0xFFE8F5E8),
+                                  ),
+                                  _buildDivider(),
+                                  _buildToolItem(
+                                    icon: Icons.insights_outlined,
+                                    title: 'Insights',
+                                    description: 'Understand your patterns',
+                                    onTap: () => context.push('/insights'),
+                                    iconColor: const Color(0xFF4CAF50),
+                                    iconBgColor: const Color(0xFFE8F5E8),
+                                  ),
+                                ],
                                     ),
                                   ],
                                 ),
                               ),
                               
-                              const SizedBox(width: 16),
-                              
-                              // Right column - Personalized Insights
-                              Expanded(
-                                flex: 1,
-                                child: _buildInsightsButton(),
-                              ),
-                            ],
-                          ),
-                  
-                          // Recommendations display (if any)
-                          if (_insightsRecommendations.isNotEmpty) ...[
-                            const SizedBox(height: 24),
-                            Container(
-                              constraints: const BoxConstraints(
-                                minHeight: 80,
-                                maxHeight: 200,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[50],
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: Colors.grey[100]!,
-                                  width: 1,
-                                ),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: SingleChildScrollView(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Recommended for you',
-                                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.black87,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 12),
-                                      ..._insightsRecommendations.asMap().entries.map((entry) => 
-                                        _buildInsightRecommendationCard(entry.value, key: ValueKey('insight_${entry.key}'))
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
                   
                           const SizedBox(height: 24),
                   
@@ -517,7 +361,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     error: (_, __) => _buildGuestContentSection(),
                   ),
                     ],
-                  ),
                 ),
               ),
             ),
@@ -543,36 +386,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         final shouldShowLearningSection = user != null;
         
         return Container(
-          margin: const EdgeInsets.fromLTRB(0, 0, 0, 40),
-          child: Stack(
-            clipBehavior: Clip.none,
+          margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+          child: Column(
             children: [
-              // Green background that extends from top
-              if (shouldShowLearningSection)
-                SizedBox(
-                  height: 720, // Increased to cover Reset button, Timer, and overlay lesson tiles
-                  child: ClipPath(
-                    clipper: CurvedHeaderClipper(depth: 60),
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Color(0xFF4CAF50), // Green
-                            Color(0xFF66BB6A), // Light green
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              
-              // Content overlay - NOT clipped so lesson cards extend beyond curve
-              if (shouldShowLearningSection)
-                Column(
-                  children: [
-                    // Header section with transparent background
+              // Header section
                     SafeArea(
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
@@ -587,30 +404,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ),
                     
-                    // Continue Learning content (if logged in) - extends beyond the curve
+              // Continue Learning content (if logged in)
+              if (shouldShowLearningSection)
                     _buildContinueLearningContentOnly(ref),
-                  ],
-                )
-              else
-                // When not logged in, show header without clipping
-                Column(
-                  children: [
-                    // Header section with transparent background
-                    SafeArea(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
-                        child: Row(
-                          children: [
-                            // Level and EXP display
-                            Expanded(
-                              child: _buildLevelExpDisplay(false),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
             ],
           ),
         );
@@ -624,10 +420,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     
     if (user == null) return const SizedBox.shrink();
     
-    final nextLessonsAsync = ref.watch(nextUncompletedLessonsProvider(user.id));
-    
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -636,13 +430,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           
           const SizedBox(height: 16),
           
-          // Reset, Urge Help, and Motivation buttons in same row
+          // Urge Help and Motivation buttons in same row
           Row(
             children: [
-              Expanded(
-                child: _buildResetButton(),
-              ),
-              const SizedBox(width: 8),
               Expanded(
                 child: _buildUrgeHelpButton(),
               ),
@@ -653,78 +443,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ],
           ),
           
-          const SizedBox(height: 20),
-          
-          // Header
-          Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(
-                  Icons.menu_book,
-                  color: Colors.white,
-                  size: 30,
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Continue Learning',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ]
-            ),
-          ),
-          
-          const SizedBox(height: 20),
-          
-          // Lesson cards carousel
-          nextLessonsAsync.when(
-            data: (lessons) {
-              if (lessons.isEmpty) {
-                return _buildAllLessonsCompletedCard();
-              } else {
-                return _buildLessonCarousel(lessons);
-              }
-            },
-            loading: () {
-              return const SizedBox(
-                height: 200,
-                child: Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                ),
-              );
-            },
-            error: (error, stack) {
-              print('Stack: $stack');
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    const Icon(
-                      Icons.error_outline,
-                      color: Colors.white70,
-                      size: 48,
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Unable to load lessons',
-                      style: TextStyle(color: Colors.white70),
-                    ),
-                    Text(
-                      error.toString(),
-                      style: const TextStyle(color: Colors.white60, fontSize: 12),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
         ],
       ),
     );
@@ -775,7 +493,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => _navigateToInsightLesson(lesson.id),
+          onTap: () => _navigateToLesson(lesson),
           borderRadius: BorderRadius.circular(12),
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -833,232 +551,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
 
-  Widget _buildLessonCarousel(List<Lesson> lessons) {
-    // Ensure we have at least one lesson
-    if (lessons.isEmpty) {
-      print('DEBUG: No lessons available for carousel');
-      return const SizedBox.shrink();
-    }
 
-    // Check if controller is initialized
-    if (_lessonCarouselController == null) {
-      print('DEBUG: PageController not initialized');
-      return const SizedBox.shrink();
-    }
 
-    print('DEBUG: Building carousel with ${lessons.length} lessons');
-
-    return SizedBox(
-      height: 200,
-      child: PageView.builder(
-        controller: _lessonCarouselController,
-        itemBuilder: (context, index) {
-          // Use modulo to create infinite loop with the available lessons
-          final lessonIndex = index % lessons.length;
-          final lesson = lessons[lessonIndex];
-          
-          return AnimatedBuilder(
-            animation: _lessonCarouselController!,
-            builder: (context, child) {
-              double value = 1.0;
-              if (_lessonCarouselController!.position.haveDimensions) {
-                value = (_lessonCarouselController!.page ?? 0) - index;
-                value = (1 - (value.abs() * 0.3)).clamp(0.7, 1.0);
-              }
-              
-              // Calculate blur amount based on distance from center
-              final blurAmount = (1.0 - value) * 10; // 0 to 10 blur
-              
-              return Center(
-                child: SizedBox(
-                  height: Curves.easeOut.transform(value) * 200,
-                  child: _buildLessonVideoCard(
-                    lesson,
-                    blurAmount: blurAmount,
-                    isFirstLesson: lessonIndex == 0,
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildLessonVideoCard(
-    Lesson lesson, {
-    double blurAmount = 0.0,
-    bool isFirstLesson = false,
-  }) {
-    final cardContent = Container(
-      width: 200,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.4),
-          width: 1.5,
-        ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Lesson icon and label row
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(
-                  Icons.school_outlined,
-                  color: Colors.white,
-                  size: 18,
-                ),
-              ),
-              const SizedBox(width: 8),
-              if (isFirstLesson)
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: const Text(
-                    'Next Lesson',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 9,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          
-          const SizedBox(height: 10),
-          
-          // Lesson title
-          Text(
-            lesson.title,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              height: 1.2,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          
-          const SizedBox(height: 10),
-          
-          // Start button/arrow
-          Row(
-            children: [
-              Text(
-                'Start',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.9),
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(width: 4),
-              Icon(
-                Icons.arrow_forward,
-                color: Colors.white.withOpacity(0.9),
-                size: 12,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-
-    // Apply blur if needed
-    if (blurAmount > 0.5) {
-      return ImageFiltered(
-        imageFilter: ui.ImageFilter.blur(
-          sigmaX: blurAmount,
-          sigmaY: blurAmount,
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: () => _navigateToLesson(lesson),
-            borderRadius: BorderRadius.circular(12),
-            child: cardContent,
-          ),
-        ),
-      );
-    }
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () => _navigateToLesson(lesson),
-        borderRadius: BorderRadius.circular(12),
-        child: cardContent,
-      ),
-    );
-  }
-
-  Widget _buildAllLessonsCompletedCard() {
-    return Container(
-      height: 160,
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.3),
-          width: 2,
-        ),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.check_circle,
-                color: Colors.white,
-                size: 48,
-              ),
-            ),
-            const SizedBox(height: 12),
-            const Text(
-              'All lessons completed!',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Great job!',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.8),
-                fontSize: 14,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   void _navigateToLesson(Lesson lesson) {
     // Navigate to the specific lesson based on lesson ID
@@ -1301,31 +795,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             
             final userTodosAsync = ref.watch(userTodosProvider(user.id));
             
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Your To-Do List',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () => context.go('/todos'),
-                      child: const Text('View All'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                userTodosAsync.when(
-                  data: (todos) => _buildRefinedTodoLayout(context, todos),
+            return userTodosAsync.when(
+              data: (todos) => _buildDailyTasksWidget(context, todos, ref),
                   loading: () => _buildTodoLoadingCard(context),
                   error: (error, stack) => _buildTodoErrorCard(context),
-                ),
-              ],
             );
           },
           loading: () => const SizedBox.shrink(),
@@ -1335,313 +808,203 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildRefinedTodoLayout(BuildContext context, List<TodoItem> todos) {
-    if (todos.isEmpty) {
-      return _buildEmptyTodoLayout(context);
+  Widget _buildDailyTasksWidget(BuildContext context, List<TodoItem> todos, WidgetRef ref) {
+    // Get all today's todos (both completed and incomplete)
+    final todayTodos = todos.where((todo) => todo.isDueToday).toList();
+    
+    if (todayTodos.isEmpty) {
+      return const SizedBox.shrink();
     }
 
-    // Get today's todos in the same order as the main todo list
-    final todayTodos = todos.where((todo) => todo.isDueToday && !todo.isCompleted).toList();
-    final completedToday = todos.where((todo) => todo.isDueToday && todo.isCompleted).toList();
-    final totalToday = todayTodos.length + completedToday.length;
-
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: Colors.grey[200]!,
           width: 1,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity( 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Left side - Date card
-              Expanded(
-                flex: 1,
-                child: _buildDateCard(context, totalToday, completedToday.length),
-              ),
-              const SizedBox(width: 16),
-              // Right side - Todo list
-              Expanded(
-                flex: 2,
-                child: _buildCompactTodoListCard(context, todayTodos),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEmptyTodoLayout(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.grey[200]!,
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity( 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Left side - Date card
-              Expanded(
-                flex: 1,
-                child: _buildDateCard(context, 0, 0),
-              ),
-              const SizedBox(width: 16),
-              // Right side - Empty state
-              Expanded(
-                flex: 2,
-                child: _buildCompactEmptyTodoCard(context),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDateCard(BuildContext context, int totalTasks, int completedTasks) {
-    final now = DateTime.now();
-    final weekday = _getWeekdayName(now.weekday);
-    final day = now.day;
-    final month = _getMonthName(now.month);
-
-    return Container(
-      constraints: const BoxConstraints(minHeight: 120),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF81C784), // Light green
-            Color(0xFF4CAF50), // Green
-          ],
-        ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.white,
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF4CAF50).withOpacity( 0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  weekday,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '$month $day',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 22,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            if (totalTasks > 0)
-              Text(
-                '$completedTasks/$totalTasks Tasks Done',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 11,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCompactTodoListCard(BuildContext context, List<TodoItem> todayTodos) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'To-Do List',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-            fontSize: 16,
-          ),
-        ),
-        const SizedBox(height: 8),
-        if (todayTodos.isEmpty)
-          _buildEmptyTodoState(context)
-        else
-          ...todayTodos.take(2).toList().asMap().entries.map((entry) => 
-            _buildCompactTodoItem(context, entry.value, key: ValueKey('todo_${entry.value.id}_${entry.key}'))
-          ),
-      ],
-    );
-  }
-
-  Widget _buildCompactEmptyTodoCard(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          'To-Do List',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-            fontSize: 16,
-          ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        const SizedBox(height: 8),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.task_alt,
-              size: 28,
-              color: Colors.grey[400],
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'No tasks for today',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey[600],
-                fontSize: 12,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Add lessons, tools, or journal activities',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[500],
-                fontSize: 10,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-
-  Widget _buildEmptyTodoState(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Text(
-        'No tasks scheduled for today',
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color: Colors.grey[600],
-          fontStyle: FontStyle.italic,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCompactTodoItem(BuildContext context, TodoItem todo, {Key? key}) {
-    final timeText = _formatTodoTime(todo.dueDate);
-    
-    return Container(
-      key: key,
-      margin: const EdgeInsets.only(bottom: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Row(
         children: [
-          // Type icon
-          _buildTodoTypeIcon(todo.type),
-          const SizedBox(width: 8),
-          // Task content
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          // Header with title and "See All" button
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+          child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  todo.title,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
-                    fontSize: 13,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  timeText,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                    fontSize: 10,
+                  'Daily Tasks',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                    fontSize: 24,
                   ),
                 ),
-              ],
-            ),
+                TextButton(
+                  onPressed: () => context.push('/todos'),
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: const Size(0, 0),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text(
+                    'See all tasks',
+                    style: TextStyle(
+                      color: const Color(0xFF4CAF50),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
           ),
         ],
       ),
+          ),
+          // Tasks list
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+            child: Column(
+              children: todayTodos.map((todo) => _buildDailyTaskItem(context, todo, ref)).toList(),
+            ),
+            ),
+          ],
+        ),
     );
+  }
+
+  Widget _buildDailyTaskItem(BuildContext context, TodoItem todo, WidgetRef ref) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: InkWell(
+        onTap: () => _navigateToTodoItem(todo),
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Row(
+            children: [
+              // Checkbox
+              GestureDetector(
+                onTap: () => _toggleTodoCompletion(todo, ref),
+                child: Container(
+                  width: 32,
+                  height: 32,
+      decoration: BoxDecoration(
+                    color: todo.isCompleted ? const Color(0xFF4CAF50) : Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+                      color: todo.isCompleted ? const Color(0xFF4CAF50) : Colors.grey[300]!,
+                      width: 2,
+                    ),
+                  ),
+                  child: todo.isCompleted
+                      ? const Icon(
+                          Icons.check,
+                    color: Colors.white,
+                          size: 20,
+                        )
+                      : null,
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Task text
+          Expanded(
+                child: Text(
+                  todo.title,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Colors.black87,
+                    fontSize: 16,
+                    decoration: todo.isCompleted ? TextDecoration.lineThrough : null,
+                    decorationColor: Colors.grey[400],
+                    decorationThickness: 2,
+                  ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ),
+    );
+  }
+
+  Future<void> _toggleTodoCompletion(TodoItem todo, WidgetRef ref) async {
+    final authState = ref.read(authNotifierProvider);
+    final user = authState.valueOrNull;
+    if (user == null) return;
+    
+    final todoNotifier = ref.read(userTodosProvider(user.id).notifier);
+    await todoNotifier.toggleCompletion(todo.id);
+  }
+
+  void _navigateToTodoItem(TodoItem todo) {
+    // Navigate based on the todo type and activity ID
+    switch (todo.type) {
+      case TodoType.lesson:
+        if (todo.activityId.isNotEmpty) {
+          _navigateToLessonById(todo.activityId);
+        }
+        break;
+      case TodoType.journal:
+        if (todo.activityId.isNotEmpty) {
+          _navigateToJournalById(todo.activityId);
+        }
+        break;
+      case TodoType.tool:
+        if (todo.activityId.isNotEmpty) {
+          _navigateToToolById(todo.activityId);
+        }
+        break;
+    }
+  }
+
+  void _navigateToLessonById(String lessonId) {
+    // Same logic as existing lesson navigation
+    if (lessonId.startsWith('lesson_1_') || lessonId.startsWith('lesson_2_') || lessonId.startsWith('lesson_3_')) {
+      context.push('/lesson/${lessonId.replaceFirst('lesson_', '')}');
+    } else if (lessonId.startsWith('lesson_s2_')) {
+      context.push('/lesson/${lessonId.replaceFirst('lesson_s2_', 's2_')}');
+    } else if (lessonId.startsWith('lesson_s3_')) {
+      context.push('/lesson/${lessonId.replaceFirst('lesson_s3_', 's3_')}');
+    } else {
+      context.push('/lesson/${lessonId.replaceFirst('lesson_', '')}');
+    }
+  }
+
+  void _navigateToJournalById(String journalType) {
+    // Normalize the journal type string
+    final normalized = journalType.toLowerCase().replaceAll(' ', '_').replaceAll('-', '_');
+    
+    switch (normalized) {
+      case 'food_diary':
+      case 'food':
+        context.push('/journal/food-diary');
+        break;
+      case 'weight_diary':
+      case 'weight':
+        context.push('/journal/weight-diary');
+        break;
+      case 'body_image_diary':
+      case 'body_image':
+        context.push('/journal/body-image-diary');
+        break;
+      default:
+        // Try to construct the route from the journalType
+        if (normalized.contains('food')) {
+          context.push('/journal/food-diary');
+        } else if (normalized.contains('weight')) {
+          context.push('/journal/weight-diary');
+        } else if (normalized.contains('body') || normalized.contains('image')) {
+          context.push('/journal/body-image-diary');
+        } else {
+          // Fallback to generic journal page if we can't determine the type
+          context.push('/journal');
+        }
+    }
+  }
+
+  void _navigateToToolById(String toolName) {
+    final normalized = toolName.toLowerCase().replaceAll(' ', '-');
+    context.push('/tools/$normalized');
   }
 
 
@@ -1655,49 +1018,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return months[month - 1];
   }
 
-  Widget _buildTodoTypeIcon(TodoType type) {
-    IconData iconData;
-    
-    switch (type) {
-      case TodoType.journal:
-        iconData = Icons.edit_note;
-        break;
-      case TodoType.lesson:
-        iconData = Icons.school;
-        break;
-      case TodoType.tool:
-        iconData = Icons.build;
-        break;
-    }
-    
-    return Container(
-      width: 24,
-      height: 24,
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(
-          color: const Color(0xFF4CAF50), // Green outline
-          width: 2,
-        ),
-      ),
-      child: Icon(
-        iconData,
-        color: const Color(0xFF4CAF50), // Green icon
-        size: 14,
-      ),
-    );
-  }
-
-  String _formatTodoTime(DateTime dueDate) {
-    final hour = dueDate.hour;
-    final minute = dueDate.minute;
-    final period = hour >= 12 ? 'PM' : 'AM';
-    final displayHour = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
-    final displayMinute = minute.toString().padLeft(2, '0');
-    
-    return '$displayHour:$displayMinute $period';
-  }
 
 
 
@@ -1741,113 +1061,240 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            Icon(Icons.psychology, color: Colors.red[700]),
-            const SizedBox(width: 10),
-            const Expanded(
-              child: Text('Coping with Urges'),
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 400),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
             ),
           ],
         ),
-        content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header with gradient background
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      const Color(0xFFE57373).withOpacity(0.15),
+                      const Color(0xFFEF5350).withOpacity(0.10),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFE57373).withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.psychology,
+                        color: Color(0xFFE57373),
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'When you experience urges to relapse, these resources can help:',
-                style: Theme.of(context).textTheme.bodyMedium,
+                            'Coping with Urges',
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFFE57373),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Take control with these tools',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 16),
-              const Text(
-                '1. Learn about urges and coping strategies:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              // Old lesson navigation options removed
-              const SizedBox(height: 16),
-              const Text(
-                '2. Practice practical coping skills:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
+              // Content
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'When you experience urges, these resources can help you stay on track:',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.grey[700],
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
               _buildHelpOptionCard(
                 context,
                 'Urge Surfing Activity',
                 'Practical exercises to manage urges as they arise',
                 Icons.waves,
-                Colors.teal,
+                      const Color(0xFFE57373),
                 () => _navigateToUrgeSurfing(),
               ),
             ],
           ),
         ),
-        actions: [
-          TextButton(
+              // Actions
+              Padding(
+                padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
             onPressed: () {
               // Track dialog close
               final trackDialog = ref.read(urgeHelpDialogTrackingProvider);
               trackDialog('dialog_closed');
               Navigator.of(context).pop();
             },
-            child: const Text('Close'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFE57373),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      'Got it',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
   
-  Widget _buildHelpOptionCard(BuildContext context, String title, String description, IconData icon, MaterialColor color, VoidCallback onTap) {
-    return Card(
-      margin: EdgeInsets.zero,
-      color: color[50],
-      child: InkWell(
-        onTap: () {
-          Navigator.of(context).pop(); // Close dialog first
-          onTap();
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: color[100],
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(icon, color: color[700], size: 20),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: color[700],
-                      ),
+  Widget _buildHelpOptionCard(BuildContext context, String title, String description, IconData icon, Color color, VoidCallback onTap) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: color.withOpacity(0.3),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            Navigator.of(context).pop(); // Close dialog first
+            onTap();
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+                    children: [
+                      Container(
+                  padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        color.withOpacity(0.15),
+                        color.withOpacity(0.10),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      description,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[700],
-                      ),
-                    ),
-                  ],
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: color,
+                    size: 28,
+                  ),
                 ),
-              ),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 14,
-                color: color[700],
-              ),
-            ],
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: color,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        description,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.grey[600],
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.arrow_forward,
+                    size: 18,
+                    color: color,
+                                ),
+                              ),
+                            ],
+            ),
           ),
         ),
       ),
@@ -1863,625 +1310,92 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     context.push('/tools/urge-surfing');
   }
   
-  Widget _buildInsightsButton() {
-    return Container(
-      height: 177, // Height to match the combined height of the two left buttons (120 + 16 + 120)
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color(0xFF4CAF50).withOpacity( 0.3),
-          width: 2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity( 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Material(
+  Widget _buildToolItem({
+    required IconData icon,
+    required String title,
+    required String description,
+    required VoidCallback? onTap,
+    required Color iconColor,
+    required Color iconBgColor,
+  }) {
+    return Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: _isGeneratingInsights ? null : _generateInsights,
+        onTap: onTap,
           borderRadius: BorderRadius.circular(12),
           child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Icon and Title stacked vertically
-                Flexible(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF4CAF50).withOpacity( 0.08),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.auto_awesome,
-                          color: Color(0xFF4CAF50),
-                          size: 18,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Personalized',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF4CAF50),
-                          fontSize: 18,
-                        ),
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        'Insights',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF4CAF50),
-                          fontSize: 18,
-                        ),
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-                
-                const SizedBox(height: 8),
-                
-                // Generate button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _isGeneratingInsights ? null : _generateInsights,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF4CAF50),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                      shadowColor: Colors.transparent,
-                    ),
-                    child: _isGeneratingInsights 
-                        ? Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const SizedBox(
-                                width: 8,
-                                height: 8,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 1.5,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                              const Text(
-                                'Generating...',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 9,
-                                ),
-                              ),
-                            ],
-                          )
-                        : const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.auto_awesome, size: 12),
-                              SizedBox(width: 4),
-                              Text(
-                                'Generate',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-  
-  Future<void> _generateInsights() async {
-    setState(() {
-      _isGeneratingInsights = true;
-    });
-    
-    try {
-      // Get the current user ID
-      final authState = ref.read(authNotifierProvider);
-      final user = authState.valueOrNull;
-      
-      if (user == null) {
-        return;
-      }
-      
-      final openaiService = OpenAIService();
-      final response = await openaiService.generateInsights(user.id);
-      
-      setState(() {
-        _insightsRecommendations = List<Map<String, dynamic>>.from(response['recommendations'] ?? []);
-      });
-    } catch (e) {
-      // Handle error silently or show a snackbar if needed
-    } finally {
-      setState(() {
-        _isGeneratingInsights = false;
-      });
-    }
-  }
-  
-  Widget _buildInsightRecommendationCard(Map<String, dynamic> recommendation, {Key? key}) {
-    final type = recommendation['type'] as String? ?? '';
-    final title = recommendation['title'] as String? ?? '';
-    final description = recommendation['description'] as String? ?? '';
-
-    IconData typeIcon;
-    Color typeColor;
-    
-    switch (type) {
-      case 'lesson':
-        typeIcon = Icons.school_outlined;
-        typeColor = const Color(0xFF4CAF50);
-        break;
-      case 'tool':
-        typeIcon = Icons.build_outlined;
-        typeColor = const Color(0xFF2196F3);
-        break;
-      case 'journal':
-        typeIcon = Icons.edit_note_outlined;
-        typeColor = const Color(0xFF9C27B0);
-        break;
-      case 'assessment':
-        typeIcon = Icons.quiz_outlined;
-        typeColor = const Color(0xFFFF9800);
-        break;
-      default:
-        typeIcon = Icons.help_outline;
-        typeColor = Colors.grey;
-    }
-
-    return Container(
-      key: key,
-      margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: Colors.grey[200]!,
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity( 0.02),
-            blurRadius: 4,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => _navigateToInsightRecommendation(recommendation),
-          borderRadius: BorderRadius.circular(10),
-          child: Padding(
-            padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(16),
             child: Row(
               children: [
+              // Icon with circular background
                 Container(
-                  padding: const EdgeInsets.all(6),
+                width: 48,
+                height: 48,
                   decoration: BoxDecoration(
-                    color: typeColor.withOpacity( 0.1),
-                    borderRadius: BorderRadius.circular(6),
+                  color: iconBgColor,
+                          shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    typeIcon, 
-                    color: typeColor, 
-                    size: 16,
-                  ),
+                  icon,
+                  color: iconColor,
+                  size: 24,
                 ),
-                const SizedBox(width: 12),
+              ),
+              const SizedBox(width: 16),
+              // Title and description
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         title,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
                           color: Colors.black87,
-                          fontSize: 14,
+                        fontSize: 16,
                         ),
                       ),
-                      if (description.isNotEmpty) ...[
                         const SizedBox(height: 4),
                         Text(
                           description,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Colors.grey[600],
-                            fontSize: 12,
+                        fontSize: 14,
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
                         ),
-                      ],
                     ],
                   ),
                 ),
-                const SizedBox(width: 8),
+              // Navigation arrow
                 Icon(
                   Icons.arrow_forward_ios,
                   color: Colors.grey[400],
-                  size: 14,
+                size: 16,
                 ),
               ],
-            ),
           ),
         ),
       ),
     );
   }
   
-  void _navigateToInsightRecommendation(Map<String, dynamic> recommendation) {
-    final type = recommendation['type'] ?? '';
-    final id = recommendation['id'] ?? '';
-    
-    switch (type) {
-      case 'lesson':
-        _navigateToInsightLesson(id);
-        break;
-      case 'tool':
-        _navigateToInsightTool(id);
-        break;
-      case 'journal':
-        _navigateToInsightJournal(id);
-        break;
-      case 'assessment':
-        _navigateToInsightAssessment(id);
-        break;
-      default:
-        // Fallback to home
-        break;
-    }
-  }
-  
-  void _navigateToInsightLesson(String lessonId) {
-    // Save last clicked lesson so Home can update the next lesson in realtime
-    UserLearningService().saveLastLesson(lessonId);
-    // Navigate to specific lesson based on lesson ID (same logic as chatbot)
-    switch (lessonId) {
-      // Stage 1 lessons
-      case 'lesson_1_1':
-        context.push('/lesson/1_1');
-        break;
-      case 'lesson_1_2':
-        context.push('/lesson/1_2');
-        break;
-      case 'lesson_1_2_1':
-        context.push('/lesson/1_2_1');
-        break;
-      case 'lesson_1_3':
-        context.push('/lesson/1_3');
-        break;
-      case 'lesson_2_1':
-        context.push('/lesson/2_1');
-        break;
-      case 'lesson_2_2':
-        context.push('/lesson/2_2');
-        break;
-      case 'lesson_2_3':
-        context.push('/lesson/2_3');
-        break;
-      case 'lesson_3_1':
-        context.push('/lesson/3_1');
-        break;
-      case 'lesson_3_2':
-        context.push('/lesson/3_2');
-        break;
-      case 'lesson_3_3':
-        context.push('/lesson/3_3');
-        break;
-      case 'lesson_3_4':
-        context.push('/lesson/3_4');
-        break;
-      case 'lesson_3_5':
-        context.push('/lesson/3_5');
-        break;
-      case 'lesson_3_6':
-        context.push('/lesson/3_6');
-        break;
-      case 'lesson_3_7':
-        context.push('/lesson/3_7');
-        break;
-      case 'lesson_3_8':
-        context.push('/lesson/3_8');
-        break;
-      case 'lesson_3_9':
-        context.push('/lesson/3_9');
-        break;
-      case 'lesson_3_10':
-        context.push('/lesson/3_10');
-        break;
-      
-      // Stage 2 lessons
-      case 'lesson_s2_0_1':
-        context.push('/lesson/s2_0_1');
-        break;
-      case 'lesson_s2_0_2':
-        context.push('/lesson/s2_0_2');
-        break;
-      case 'lesson_s2_0_3':
-        context.push('/lesson/s2_0_3');
-        break;
-      case 'lesson_s2_0_4':
-        context.push('/lesson/s2_0_4');
-        break;
-      case 'lesson_s2_0_5':
-        context.push('/lesson/s2_0_5');
-        break;
-      case 'lesson_s2_0_6':
-        context.push('/lesson/s2_0_6');
-        break;
-      case 'lesson_s2_1_1':
-        context.push('/lesson/s2_1_1');
-        break;
-      case 'lesson_s2_1_2':
-        context.push('/lesson/s2_1_2');
-        break;
-      case 'lesson_s2_1_3':
-        context.push('/lesson/s2_1_3');
-        break;
-      case 'lesson_s2_2_1':
-        context.push('/lesson/s2_2_1');
-        break;
-      case 'lesson_s2_2_2':
-        context.push('/lesson/s2_2_2');
-        break;
-      case 'lesson_s2_2_3':
-        context.push('/lesson/s2_2_3');
-        break;
-      case 'lesson_s2_2_4':
-        context.push('/lesson/s2_2_4');
-        break;
-      case 'lesson_s2_2_5':
-        context.push('/lesson/s2_2_5');
-        break;
-      case 'lesson_s2_2_5_1':
-        context.push('/lesson/s2_2_5_1');
-        break;
-      case 'lesson_s2_2_7':
-        context.push('/lesson/s2_2_7');
-        break;
-      case 'lesson_s2_3_1':
-        context.push('/lesson/s2_3_1');
-        break;
-      case 'lesson_s2_3_2':
-        context.push('/lesson/s2_3_2');
-        break;
-      case 'lesson_s2_3_2_1':
-        context.push('/lesson/s2_3_2_1');
-        break;
-      case 'lesson_s2_3_3':
-        context.push('/lesson/s2_3_3');
-        break;
-      case 'lesson_s2_3_4':
-        context.push('/lesson/s2_3_4');
-        break;
-      case 'lesson_s2_3_5':
-        context.push('/lesson/s2_3_5');
-        break;
-      case 'lesson_s2_4_1':
-        context.push('/lesson/s2_4_1');
-        break;
-      case 'lesson_s2_4_2':
-        context.push('/lesson/s2_4_2');
-        break;
-      case 'lesson_s2_4_2_1':
-        context.push('/lesson/s2_4_2_1');
-        break;
-      case 'lesson_s2_4_3':
-        context.push('/lesson/s2_4_3');
-        break;
-      case 'lesson_s2_5_1':
-        context.push('/lesson/s2_5_1');
-        break;
-      case 'lesson_s2_5_2':
-        context.push('/lesson/s2_5_2');
-        break;
-      case 'lesson_s2_6_1':
-        context.push('/lesson/s2_6_1');
-        break;
-      case 'lesson_s2_6_2':
-        context.push('/lesson/s2_6_2');
-        break;
-      case 'lesson_s2_6_3':
-        context.push('/lesson/s2_6_3');
-        break;
-      case 'lesson_s2_7_1':
-        context.push('/lesson/s2_7_1');
-        break;
-      case 'lesson_s2_7_1_1':
-        context.push('/lesson/s2_7_1_1');
-        break;
-      case 'lesson_s2_7_2':
-        context.push('/lesson/s2_7_2');
-        break;
-      case 'lesson_s2_7_3':
-        context.push('/lesson/s2_7_3');
-        break;
-      case 'lesson_s2_7_4':
-        context.push('/lesson/s2_7_4');
-        break;
-      case 'lesson_s2_7_5':
-        context.push('/lesson/s2_7_5');
-        break;
-      case 'lesson_s2_7_6':
-        context.push('/lesson/s2_7_6');
-        break;
-      case 'lesson_s2_7_7':
-        context.push('/lesson/s2_7_7');
-        break;
-      case 'lesson_s2_7_8':
-        context.push('/lesson/s2_7_8');
-        break;
-      case 'lesson_s2_7_2_1':
-        context.push('/lesson/s2_7_2_1');
-        break;
-      
-      // Stage 3 lessons
-      case 'lesson_s3_0_1':
-        context.push('/lesson/s3_0_1');
-        break;
-      case 'lesson_s3_0_2':
-        context.push('/lesson/s3_0_2');
-        break;
-      case 'lesson_s3_0_2_1':
-        context.push('/lesson/s3_0_2_1');
-        break;
-      default:
-        _showInsightLessonNotAvailable(lessonId);
-    }
-  }
-  
-  void _navigateToInsightTool(String toolName) {
-    // Use the same logic as the chatbot for tool navigation
-    // Handle different formats: "Problem Solving", "problem solving", "problem_solving", etc.
-    final normalizedName = toolName.toLowerCase().replaceAll('_', ' ');
-    
-    switch (normalizedName) {
-      case 'problem solving':
-        context.push('/tools/problem-solving');
-        break;
-      case 'meal planning':
-        context.push('/tools/meal-planning');
-        break;
-      case 'urge surfing activities':
-        context.push('/tools/urge-surfing');
-        break;
-      case 'addressing overconcern':
-        context.push('/tools/addressing-overconcern');
-        break;
-      case 'addressing setbacks':
-        context.push('/tools/addressing-setbacks');
-        break;
-      default:
-        // Try to match partial names for better compatibility
-        if (normalizedName.contains('problem') && normalizedName.contains('solving')) {
-          context.push('/tools/problem-solving');
-        } else if (normalizedName.contains('meal') && normalizedName.contains('planning')) {
-          context.push('/tools/meal-planning');
-        } else if (normalizedName.contains('urge') && (normalizedName.contains('surfing') || normalizedName.contains('activities'))) {
-          context.push('/tools/urge-surfing');
-        } else if (normalizedName.contains('overconcern')) {
-          context.push('/tools/addressing-overconcern');
-        } else if (normalizedName.contains('setbacks')) {
-          context.push('/tools/addressing-setbacks');
-        } else {
-          _showInsightToolNotAvailable(toolName);
-        }
-    }
-  }
-  
-  void _navigateToInsightJournal(String journalType) {
-    // Use the same logic as the chatbot for journal navigation
-    // Handle different formats: "Food Diary", "food diary", "food_diary", etc.
-    final normalizedType = journalType.toLowerCase().replaceAll('_', ' ');
-    
-    switch (normalizedType) {
-      case 'food diary':
-        context.push('/journal/food-diary');
-        break;
-      case 'weight diary':
-        context.push('/journal/weight-diary');
-        break;
-      case 'body image diary':
-        context.push('/journal/body-image-diary');
-        break;
-      default:
-        // Try to match partial names
-        if (normalizedType.contains('food')) {
-          context.push('/journal/food-diary');
-        } else if (normalizedType.contains('weight')) {
-          context.push('/journal/weight-diary');
-        } else if (normalizedType.contains('body') || normalizedType.contains('image')) {
-          context.push('/journal/body-image-diary');
-        } else {
-          context.push('/journal');
-        }
-    }
-  }
-  
-  void _navigateToInsightAssessment(String assessmentName) {
-    switch (assessmentName.toLowerCase()) {
-      case 'ede-q':
-        context.push('/lesson/2_1'); // EDE-Q assessment
-        break;
-      case 'cia':
-        context.push('/lesson/2_2'); // CIA assessment
-        break;
-      case 'general psychiatric':
-        context.push('/lesson/2_3'); // General psychiatric assessment
-        break;
-      default:
-        _showInsightAssessmentNotAvailable(assessmentName);
-    }
-  }
-  
-  void _showInsightLessonNotAvailable(String lessonId) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Lesson "$lessonId" is not available yet. Please try another recommendation.'),
-        backgroundColor: Colors.orange,
-      ),
+  Widget _buildDivider() {
+    return Container(
+      height: 1,
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      color: Colors.grey[200],
     );
   }
   
-  void _showInsightToolNotAvailable(String toolName) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Tool "$toolName" is not available yet. Please try another recommendation.'),
-        backgroundColor: Colors.orange,
-      ),
-    );
-  }
-  
-  void _showInsightAssessmentNotAvailable(String assessmentName) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Assessment "$assessmentName" is not available yet. Please try another recommendation.'),
-        backgroundColor: Colors.orange,
-      ),
-    );
-  }
 
   Widget _buildResetButton() {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.grey[100],
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.white.withOpacity(0.4),
+          color: Colors.grey[300]!,
           width: 1.5,
         ),
       ),
@@ -2491,22 +1405,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           onTap: _handleResetButton,
           borderRadius: BorderRadius.circular(12),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Icon(
                   Icons.refresh,
-                  color: Colors.white,
-                  size: 20,
+                  color: Colors.black,
+                  size: 18,
                 ),
-                const SizedBox(width: 8),
-                const Text(
-                  'Reset',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    'Reset',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -2521,7 +1438,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.grey[100],
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: const Color(0xFFE57373).withOpacity(0.4),
@@ -2539,22 +1456,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           },
           borderRadius: BorderRadius.circular(12),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Icon(
                   Icons.psychology,
-                  color: Colors.white,
-                  size: 20,
+                  color: Colors.black,
+                  size: 18,
                 ),
-                const SizedBox(width: 8),
-                const Text(
-                  'Urge Help',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    'Urge Help',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -2569,7 +1489,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.grey[100],
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: const Color(0xFF9C27B0).withOpacity(0.4),
@@ -2582,22 +1502,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           onTap: () => context.go('/motivation'),
           borderRadius: BorderRadius.circular(12),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Icon(
                   Icons.favorite,
-                  color: Colors.white,
-                  size: 20,
+                  color: Colors.black,
+                  size: 18,
                 ),
-                const SizedBox(width: 8),
-                const Text(
-                  'Motivation',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    'Motivation',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -2696,10 +1619,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         width: double.infinity,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.15),
+          color: Colors.grey[100],
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: Colors.white.withOpacity(0.3),
+            color: Colors.grey[300]!,
             width: 1,
           ),
         ),
@@ -2707,7 +1630,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           child: Text(
             'Hit "Reset" to start tracking your progress',
             style: TextStyle(
-              color: Colors.white,
+              color: Colors.black,
               fontSize: 14,
               fontWeight: FontWeight.w500,
             ),
@@ -2720,141 +1643,204 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final duration = DateTime.now().difference(_lastResetTime!);
     
     // Calculate time units
-    final years = duration.inDays ~/ 365;
-    final months = (duration.inDays % 365) ~/ 30;
-    final days = duration.inDays % 30;
+    final days = duration.inDays;
     final hours = duration.inHours % 24;
     final minutes = duration.inMinutes % 60;
     final seconds = duration.inSeconds % 60;
 
-    // Create list of timer lines with their values and metadata
-    final timerLines = [
-      {'label': 'Years', 'value': years, 'maxValue': 10, 'color': const Color(0xFF4CAF50)},
-      {'label': 'Months', 'value': months, 'maxValue': 12, 'color': const Color(0xFF2196F3)},
-      {'label': 'Days', 'value': days, 'maxValue': 30, 'color': const Color(0xFF9C27B0)},
-      {'label': 'Hours', 'value': hours, 'maxValue': 24, 'color': const Color(0xFFFF9800)},
-      {'label': 'Minutes', 'value': minutes, 'maxValue': 60, 'color': const Color(0xFFE91E63)},
-      {'label': 'Seconds', 'value': seconds, 'maxValue': 60, 'color': const Color(0xFF00BCD4)},
-    ];
-
-    // Filter out lines with value 0
-    final visibleLines = timerLines.where((line) => line['value'] as int > 0).toList();
+    // Build list of all non-zero time units to display
+    List<Map<String, dynamic>> timeUnits = [];
+    
+    // Determine font size based on how many units we'll show
+    double fontSize;
+    if (days > 0) {
+      fontSize = 36.0; // 4 units: days, hours, minutes, seconds
+    } else if (hours > 0) {
+      fontSize = 42.0; // 3 units: hours, minutes, seconds
+    } else if (minutes > 0) {
+      fontSize = 48.0; // 2 units: minutes, seconds
+    } else {
+      fontSize = 72.0; // 1 unit: seconds only
+    }
+    
+    if (days > 0) {
+      timeUnits.add({
+        'value': days.toString().padLeft(2, '0'),
+        'label': days == 1 ? 'day' : 'days',
+        'size': fontSize,
+      });
+    }
+    if (hours > 0 || days > 0) {
+      timeUnits.add({
+        'value': hours.toString().padLeft(2, '0'),
+        'label': 'hrs',
+        'size': fontSize,
+      });
+    }
+    if (minutes > 0 || hours > 0 || days > 0) {
+      timeUnits.add({
+        'value': minutes.toString().padLeft(2, '0'),
+        'label': 'min',
+        'size': fontSize,
+      });
+    }
+    // Always show seconds
+    timeUnits.add({
+      'value': seconds.toString().padLeft(2, '0'),
+      'label': 'sec',
+      'size': fontSize,
+    });
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
+        color: Colors.grey[100],
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.white.withOpacity(0.3),
+          color: Colors.grey[300]!,
           width: 1.5,
         ),
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.timeline,
-                color: Colors.white,
-                size: 20,
-              ),
-              SizedBox(width: 8),
-              Text(
-                'Binge-Free Timer',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
+          // Title
+          const Text(
+            'Binge-Free For',
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
           ),
-          const SizedBox(height: 16),
-          // Display only visible timer lines
-          ...visibleLines.asMap().entries.map((entry) {
-            final index = entry.key;
-            final line = entry.value;
-            return Column(
+          const SizedBox(height: 24),
+          
+          // Circular progress indicator
+          SizedBox(
+            width: 320,
+            height: 320,
+            child: Stack(
+              alignment: Alignment.center,
               children: [
-                _buildTimerLine(
-                  line['label'] as String,
-                  line['value'] as int,
-                  line['maxValue'] as int,
-                  line['color'] as Color,
+                // Circular progress rings
+                CustomPaint(
+                  size: const Size(320, 320),
+                  painter: CircularTimerPainter(
+                    days: days,
+                    hours: hours,
+                    minutes: minutes,
+                    seconds: seconds,
+                  ),
                 ),
-                // Add spacing between lines (except for the last one)
-                if (index < visibleLines.length - 1) const SizedBox(height: 8),
+                
+                // Center text - display all non-zero time units
+                Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+                  children: timeUnits.asMap().entries.map((entry) {
+                    final unit = entry.value;
+                    final index = entry.key;
+                    final fontSize = unit['size'] as double;
+                    final labelSize = fontSize * 0.35;
+                    
+                    return Column(
+        children: [
+                        if (index > 0) const SizedBox(height: 4),
+                        Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(
+                              unit['value'] as String,
+                style: TextStyle(
+                                fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                                color: const Color(0xFF5B9FED),
+                                height: 1,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              unit['label'] as String,
+                              style: TextStyle(
+                                fontSize: labelSize,
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
               ],
             );
           }).toList(),
+                ),
         ],
       ),
-    );
-  }
+          ),
 
-  Widget _buildTimerLine(String label, int value, int maxValue, Color color) {
-    final progress = value / maxValue;
+          const SizedBox(height: 24),
     
-    return Stack(
+          // Legend
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Background bar
-        Container(
-          height: 20,
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(10),
+              _buildLegendItem('Days', const Color(0xFF4CAF50)),
+              const SizedBox(width: 16),
+              _buildLegendItem('Hours', const Color(0xFF9C27B0)),
+              const SizedBox(width: 16),
+              _buildLegendItem('Minutes', const Color(0xFFFF9800)),
+              const SizedBox(width: 16),
+              _buildLegendItem('Seconds', const Color(0xFF2196F3)),
+            ],
           ),
-        ),
-        // Progress bar
-        FractionallySizedBox(
-          widthFactor: progress,
-          child: Container(
-            height: 20,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  color.withOpacity(0.8),
-                  color,
-                ],
+          
+          const SizedBox(height: 16),
+          
+          // Reset Timer button
+          ElevatedButton.icon(
+            onPressed: _handleResetButton,
+            icon: const Icon(Icons.refresh, size: 20),
+            label: const Text(
+              'Reset Timer',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
               ),
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(
-                  color: color.withOpacity(0.3),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
             ),
-          ),
-        ),
-        // Text overlay on the progress bar
-        Positioned.fill(
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: Text(
-                '$value $label',
-                style: TextStyle(
-                  color: progress > 0.5 ? Colors.white : Colors.white.withOpacity(0.8),
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  shadows: [
-                    Shadow(
-                      color: Colors.black.withOpacity(0.5),
-                      blurRadius: 2,
-                      offset: const Offset(0, 1),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF4CAF50),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              elevation: 2,
+            ),
                     ),
                   ],
                 ),
-                textAlign: TextAlign.left,
-              ),
-            ),
+    );
+  }
+  
+  Widget _buildLegendItem(String label, Color color) {
+    return Row(
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.grey,
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],
@@ -2862,6 +1848,129 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
   
   
+}
+
+// Custom painter for circular timer rings
+class CircularTimerPainter extends CustomPainter {
+  final int days;
+  final int hours;
+  final int minutes;
+  final int seconds;
+
+  CircularTimerPainter({
+    required this.days,
+    required this.hours,
+    required this.minutes,
+    required this.seconds,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final strokeWidth = 16.0;
+    
+    // Calculate progress values (normalized to 0-1)
+    // Seconds: Progress through current minute (resets every 60 seconds)
+    final secondsProgress = (seconds / 60).clamp(0.0, 1.0);
+    
+    // Minutes: Progress through current hour (resets every 60 minutes)
+    final minutesProgress = (minutes / 60).clamp(0.0, 1.0);
+    
+    // Hours: Progress through current day (resets every 24 hours)
+    final hoursProgress = (hours / 24).clamp(0.0, 1.0);
+    
+    // Days: Progress through current month (resets every 30 days)
+    final daysProgress = (days % 30 / 30).clamp(0.0, 1.0);
+    
+    // Define ring radii (from outer to inner)
+    final daysRadius = size.width / 2 - strokeWidth / 2;
+    final hoursRadius = daysRadius - strokeWidth - 8;
+    final minutesRadius = hoursRadius - strokeWidth - 8;
+    final secondsRadius = minutesRadius - strokeWidth - 8;
+    
+    // App-themed colors for better visual variety
+    final daysColor = const Color(0xFF4CAF50); // Light Green (matches app theme)
+    final hoursColor = const Color(0xFF9C27B0); // Purple
+    final minutesColor = const Color(0xFFFF9800); // Orange
+    final secondsColor = const Color(0xFF2196F3); // Blue
+    
+    // Background rings (light gray)
+    _drawRing(canvas, center, daysRadius, strokeWidth, Colors.grey[200]!, 1.0, false);
+    _drawRing(canvas, center, hoursRadius, strokeWidth, Colors.grey[200]!, 1.0, false);
+    _drawRing(canvas, center, minutesRadius, strokeWidth, Colors.grey[200]!, 1.0, false);
+    _drawRing(canvas, center, secondsRadius, strokeWidth, Colors.grey[200]!, 1.0, false);
+    
+    // Progress rings with glow
+    _drawRing(canvas, center, daysRadius, strokeWidth, daysColor, daysProgress, true);
+    _drawRing(canvas, center, hoursRadius, strokeWidth, hoursColor, hoursProgress, true);
+    _drawRing(canvas, center, minutesRadius, strokeWidth, minutesColor, minutesProgress, true);
+    _drawRing(canvas, center, secondsRadius, strokeWidth, secondsColor, secondsProgress, true);
+  }
+
+  void _drawRing(Canvas canvas, Offset center, double radius, double strokeWidth, Color color, double progress, bool addGlow) {
+    const startAngle = -pi / 2; // Start from top
+    final sweepAngle = 2 * pi * progress;
+    final rect = Rect.fromCircle(center: center, radius: radius);
+
+    // Draw effects for progress rings
+    if (addGlow && progress > 0) {
+      // Outer shadow (drop shadow)
+      final outerShadowPaint = Paint()
+        ..color = Colors.black.withOpacity(0.4)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth
+        ..strokeCap = StrokeCap.round
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
+
+      canvas.drawArc(rect, startAngle, sweepAngle, false, outerShadowPaint);
+
+      // Outer glow (reduced by 2/3)
+      final glowPaint1 = Paint()
+        ..color = color.withOpacity(0.13) // 0.4 * 1/3 ≈ 0.13
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth + 2 // 6 * 1/3 = 2
+        ..strokeCap = StrokeCap.round
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1.7); // 5 * 1/3 ≈ 1.7
+
+      canvas.drawArc(rect, startAngle, sweepAngle, false, glowPaint1);
+
+      // Inner glow (reduced by 2/3)
+      final glowPaint2 = Paint()
+        ..color = color.withOpacity(0.2) // 0.6 * 1/3 = 0.2
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth + 1 // 3 * 1/3 = 1
+        ..strokeCap = StrokeCap.round
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 0.7); // 2 * 1/3 ≈ 0.7
+
+      canvas.drawArc(rect, startAngle, sweepAngle, false, glowPaint2);
+
+      // Outer stroke (border)
+      final outerStrokePaint = Paint()
+        ..color = color.withOpacity(0.8)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth + 2
+        ..strokeCap = StrokeCap.round;
+
+      canvas.drawArc(rect, startAngle, sweepAngle, false, outerStrokePaint);
+    }
+
+    // Main ring
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
+  }
+
+  @override
+  bool shouldRepaint(CircularTimerPainter oldDelegate) {
+    return oldDelegate.days != days ||
+        oldDelegate.hours != hours ||
+        oldDelegate.minutes != minutes ||
+        oldDelegate.seconds != seconds;
+  }
 }
 
 // Custom painter for dashed lines
@@ -3016,4 +2125,3 @@ class ComfortingBackgroundPainter extends CustomPainter {
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
-

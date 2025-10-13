@@ -1,4 +1,4 @@
-package com.example.bed_app_1
+package com.bingeeating.app
 
 import io.flutter.embedding.android.FlutterActivity
 

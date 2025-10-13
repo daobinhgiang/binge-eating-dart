@@ -62,13 +62,15 @@ class _LessonS2721ScreenState extends ConsumerState<LessonS2721Screen> {
     }
   }
 
-  void _finishLesson() {
+  Future<void> _finishLesson() async {
     if (_lesson != null) {
-      _lessonService.markLessonCompleted(_lesson!.id);
+      await _lessonService.markLessonCompleted(_lesson!.id);
     }
     
     // Navigate to Addressing Overconcern tool instead of going back
-    _navigateToAddressingOverconcernTool();
+    if (mounted) {
+      _navigateToAddressingOverconcernTool();
+    }
   }
 
   void _navigateToAddressingOverconcernTool() {
@@ -79,12 +81,14 @@ class _LessonS2721ScreenState extends ConsumerState<LessonS2721Screen> {
     );
   }
 
-  void _startAddressingOverconcernExercise() {
+  Future<void> _startAddressingOverconcernExercise() async {
     // Mark lesson as completed and navigate to addressing overconcern tool
     if (_lesson != null) {
-      _lessonService.markLessonCompleted(_lesson!.id);
+      await _lessonService.markLessonCompleted(_lesson!.id);
     }
-    _navigateToAddressingOverconcernTool();
+    if (mounted) {
+      _navigateToAddressingOverconcernTool();
+    }
   }
 
   @override

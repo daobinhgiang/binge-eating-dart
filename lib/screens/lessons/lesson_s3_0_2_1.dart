@@ -62,13 +62,15 @@ class _LessonS3021ScreenState extends ConsumerState<LessonS3021Screen> {
     }
   }
 
-  void _finishLesson() {
+  Future<void> _finishLesson() async {
     if (_lesson != null) {
-      _lessonService.markLessonCompleted(_lesson!.id);
+      await _lessonService.markLessonCompleted(_lesson!.id);
     }
     
     // Navigate to Addressing Setbacks tool instead of going back
-    _navigateToAddressingSetbacksTool();
+    if (mounted) {
+      _navigateToAddressingSetbacksTool();
+    }
   }
 
   void _navigateToAddressingSetbacksTool() {
@@ -76,12 +78,14 @@ class _LessonS3021ScreenState extends ConsumerState<LessonS3021Screen> {
     context.go('/tools/addressing-setbacks');
   }
 
-  void _startAddressingSetbacksExercise() {
+  Future<void> _startAddressingSetbacksExercise() async {
     // Mark lesson as completed and navigate to addressing setbacks tool
     if (_lesson != null) {
-      _lessonService.markLessonCompleted(_lesson!.id);
+      await _lessonService.markLessonCompleted(_lesson!.id);
     }
-    _navigateToAddressingSetbacksTool();
+    if (mounted) {
+      _navigateToAddressingSetbacksTool();
+    }
   }
 
   @override

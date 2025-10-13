@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../data/stage_1_data.dart';
 import '../../data/stage_2_data.dart';
 import '../../data/stage_3_data.dart';
 import '../../models/stage.dart';
 import '../../models/chapter.dart';
 import '../../models/lesson.dart';
+import '../../providers/lesson_progress_provider.dart';
 import '../lessons/lesson_1_1.dart';
 import '../lessons/lesson_1_2.dart';
 import '../lessons/lesson_1_2_1.dart';
@@ -81,14 +84,14 @@ import '../assessments/quiz_chapter_6_stage_2_screen.dart';
 import '../assessments/quiz_chapter_7_stage_2_screen.dart';
 import '../../core/services/user_learning_service.dart';
 
-class LessonsScreen extends StatefulWidget {
+class LessonsScreen extends ConsumerStatefulWidget {
   const LessonsScreen({super.key});
 
   @override
-  State<LessonsScreen> createState() => _LessonsScreenState();
+  ConsumerState<LessonsScreen> createState() => _LessonsScreenState();
 }
 
-class _LessonsScreenState extends State<LessonsScreen> {
+class _LessonsScreenState extends ConsumerState<LessonsScreen> {
   List<Stage> _stages = [];
   final ScrollController _scrollController = ScrollController();
   Stage? _currentStage;
@@ -545,31 +548,48 @@ class _LessonsScreenState extends State<LessonsScreen> {
 
   // Build all lessons for a chapter in Duolingo-style winding path
   Widget _buildChapterLessons(Chapter chapter, Stage stage, int startIndex) {
-    return Column(
-      children: List.generate(chapter.lessons.length, (index) {
-        final lesson = chapter.lessons[index];
-        final lessonNumber = startIndex + index + 1;
-        final isCompleted = lesson.isCompleted;
-        final isLocked = false; // Implement lock logic as needed
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Consumer(
+      builder: (context, ref, child) {
+        final completedLessonsAsync = ref.watch(completedLessonsStreamProvider(user.uid));
         
-        // Calculate position (0 = center, -1 = left, 1 = right)
-        final position = _getLessonPosition(index);
-        
-        return Column(
-          children: [
-            _buildDuolingoLessonButton(
-              lesson: lesson,
-              lessonNumber: lessonNumber,
-              isCompleted: isCompleted,
-              isLocked: isLocked,
-              position: position,
-              stageColor: _getStageColor(stage.stageNumber),
-            ),
-            if (index < chapter.lessons.length - 1)
-              _buildConnectingPath(position, _getLessonPosition(index + 1)),
-          ],
+        return completedLessonsAsync.when(
+          data: (completedLessons) {
+            return Column(
+              children: List.generate(chapter.lessons.length, (index) {
+                final lesson = chapter.lessons[index];
+                final lessonNumber = startIndex + index + 1;
+                final isCompleted = completedLessons.contains(lesson.id);
+                final isLocked = false; // Implement lock logic as needed
+                
+                // Calculate position (0 = center, -1 = left, 1 = right)
+                final position = _getLessonPosition(index);
+                
+                return Column(
+                  children: [
+                    _buildDuolingoLessonButton(
+                      lesson: lesson,
+                      lessonNumber: lessonNumber,
+                      isCompleted: isCompleted,
+                      isLocked: isLocked,
+                      position: position,
+                      stageColor: _getStageColor(stage.stageNumber),
+                    ),
+                    if (index < chapter.lessons.length - 1)
+                      _buildConnectingPath(position, _getLessonPosition(index + 1)),
+                  ],
+                );
+              }),
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stack) => Center(child: Text('Error: $error')),
         );
-      }),
+      },
     );
   }
 
@@ -593,7 +613,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
         ? stageColor
         : isLocked 
             ? Colors.grey.shade400
-            : stageColor.withOpacity(0.7);
+            : Colors.grey.shade500; // Grey for uncompleted lessons
 
     // Calculate alignment based on position
     Alignment alignment;

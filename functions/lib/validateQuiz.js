@@ -92,6 +92,17 @@ exports.validateQuiz = functions.firestore
                 newLevel: levelResult.newLevel,
                 createdAt: admin.firestore.FieldValue.serverTimestamp(),
             });
+            // Mark quiz lesson as completed in user_progress
+            const completedLessonRef = admin.firestore()
+                .collection('user_progress')
+                .doc(userId)
+                .collection('completed_lessons')
+                .doc(quizId);
+            transaction.set(completedLessonRef, {
+                lessonId: quizId,
+                completedAt: admin.firestore.FieldValue.serverTimestamp(),
+                userId: userId,
+            });
             // Update submission status
             transaction.update(snapshot.ref, {
                 status: 'validated',

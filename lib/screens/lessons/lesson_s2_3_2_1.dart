@@ -82,14 +82,16 @@ class _LessonS2321ScreenState extends ConsumerState<LessonS2321Screen> {
     }
   }
 
-  void _navigateToUrgeSurfing() {
+  Future<void> _navigateToUrgeSurfing() async {
     // Mark lesson as completed
     if (_lesson != null) {
-      _lessonService.markLessonCompleted(_lesson!.id);
+      await _lessonService.markLessonCompleted(_lesson!.id);
     }
     
     // Navigate to the Urge Surfing tool
-    context.go('/tools/urge-surfing');
+    if (mounted) {
+      context.go('/tools/urge-surfing');
+    }
   }
 
   @override
