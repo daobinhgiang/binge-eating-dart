@@ -179,6 +179,19 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
     }
   }
 
+  // Update intro status
+  Future<void> updateIntroStatus({required bool hasSeenIntro}) async {
+    try {
+      await _authService.updateIntroStatus(hasSeenIntro: hasSeenIntro);
+      
+      // Refresh current user state
+      final user = await _authService.currentUser;
+      state = AsyncValue.data(user);
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
+    }
+  }
+
   // Reset password
   Future<void> resetPassword({required String email}) async {
     try {

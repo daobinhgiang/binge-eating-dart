@@ -486,23 +486,23 @@ class MealPlanningScreen extends ConsumerWidget {
                 color: Colors.white.withOpacity(0.95),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: Colors.green.withValues(alpha: 0.2),
+                  color: Colors.green.withOpacity(0.2),
                   width: 1,
                 ),
                 boxShadow: isHovered ? [
                   BoxShadow(
-                    color: Colors.green.withValues(alpha: 0.15),
+                    color: Colors.green.withOpacity(0.15),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
                   BoxShadow(
-                    color: Colors.green.withValues(alpha: 0.08),
+                    color: Colors.green.withOpacity(0.08),
                     blurRadius: 20,
                     offset: const Offset(0, 8),
                   ),
                 ] : [
                   BoxShadow(
-                    color: Colors.green.withValues(alpha: 0.08),
+                    color: Colors.green.withOpacity(0.08),
                     blurRadius: 6,
                     offset: const Offset(0, 2),
                   ),
@@ -521,10 +521,10 @@ class MealPlanningScreen extends ConsumerWidget {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: Colors.green.withValues(alpha: 0.08),
+                            color: Colors.green.withOpacity(0.08),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: Colors.green.withValues(alpha: 0.2),
+                              color: Colors.green.withOpacity(0.2),
                               width: 1,
                             ),
                           ),
@@ -542,7 +542,7 @@ class MealPlanningScreen extends ConsumerWidget {
                               Text(
                                 'Meal Plan',
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Colors.green.withValues(alpha: 0.7),
+                                  color: Colors.green.withOpacity(0.7),
                                   fontWeight: FontWeight.w600,
                                   letterSpacing: 0.5,
                                 ),
@@ -570,10 +570,10 @@ class MealPlanningScreen extends ConsumerWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.green.withValues(alpha: 0.1),
+                            color: Colors.green.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: Colors.green.withValues(alpha: 0.3),
+                              color: Colors.green.withOpacity(0.3),
                               width: 1,
                             ),
                           ),

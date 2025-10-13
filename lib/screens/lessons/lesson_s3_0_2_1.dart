@@ -220,7 +220,7 @@ class _LessonS3021ScreenState extends ConsumerState<LessonS3021Screen> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withValues(alpha: 0.3),
+              color: Colors.grey.withOpacity(0.3),
               blurRadius: 4,
               offset: const Offset(0, -2),
             ),

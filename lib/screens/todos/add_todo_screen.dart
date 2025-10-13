@@ -235,7 +235,7 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> with TickerProvid
             leading: CircleAvatar(
               backgroundColor: isSelected 
                   ? exercise.color
-                  : exercise.color.withValues(alpha: 0.1),
+                  : exercise.color.withOpacity(0.1),
               child: Icon(
                 exercise.icon,
                 color: isSelected ? Colors.white : exercise.color,
@@ -300,7 +300,7 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> with TickerProvid
             leading: CircleAvatar(
               backgroundColor: isSelected 
                   ? activity['color'] as Color
-                  : (activity['color'] as Color).withValues(alpha: 0.1),
+                  : (activity['color'] as Color).withOpacity(0.1),
               child: Icon(
                 activity['icon'] as IconData,
                 color: isSelected ? Colors.white : activity['color'] as Color,

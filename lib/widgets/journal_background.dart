@@ -116,7 +116,7 @@ class JournalPaperPainter extends CustomPainter {
 
   void _drawPaperTexture(Canvas canvas, Size size, Paint paint) {
     // Draw subtle paper grain texture
-    paint.color = const Color(0xFFF5F5F5).withValues(alpha: 0.3);
+    paint.color = const Color(0xFFF5F5F5).withOpacity(0.3);
     
     for (int i = 0; i < 200; i++) {
       final x = (i * 17.0) % size.width;
@@ -133,7 +133,7 @@ class JournalPaperPainter extends CustomPainter {
 
   void _drawMarginLines(Canvas canvas, Size size, Paint paint) {
     // Draw subtle margin lines like a notebook
-    paint.color = const Color(0xFFE8E8E8).withValues(alpha: 0.4);
+    paint.color = const Color(0xFFE8E8E8).withOpacity(0.4);
     paint.strokeWidth = 0.5;
     paint.style = PaintingStyle.stroke;
     
@@ -152,7 +152,7 @@ class JournalPaperPainter extends CustomPainter {
     );
     
     // Horizontal lines like notebook paper
-    paint.color = const Color(0xFFF0F0F0).withValues(alpha: 0.6);
+    paint.color = const Color(0xFFF0F0F0).withOpacity(0.6);
     paint.strokeWidth = 0.3;
     
     for (int i = 0; i < (size.height / 30).ceil(); i++) {
@@ -172,7 +172,7 @@ class JournalPaperPainter extends CustomPainter {
     paint.style = PaintingStyle.fill;
     
     // Top shadow
-    paint.color = const Color(0xFF000000).withValues(alpha: 0.02);
+    paint.color = const Color(0xFF000000).withOpacity(0.02);
     canvas.drawRect(
       Rect.fromLTWH(0, 0, size.width, 2),
       paint,
@@ -187,7 +187,7 @@ class JournalPaperPainter extends CustomPainter {
 
   void _drawFloatingElements(Canvas canvas, Size size, Paint paint) {
     // Draw subtle floating elements like paper clips, ink drops, etc.
-    paint.color = const Color(0xFFE0E0E0).withValues(alpha: 0.3);
+    paint.color = const Color(0xFFE0E0E0).withOpacity(0.3);
     
     // Paper clip
     final paperClipX = size.width * 0.05;
@@ -222,7 +222,7 @@ class JournalPaperPainter extends CustomPainter {
   }
 
   void _drawInkDrop(Canvas canvas, Paint paint, Offset position) {
-    paint.color = const Color(0xFFB0B0B0).withValues(alpha: 0.2);
+    paint.color = const Color(0xFFB0B0B0).withOpacity(0.2);
     canvas.drawOval(
       Rect.fromCenter(
         center: position,
@@ -233,7 +233,7 @@ class JournalPaperPainter extends CustomPainter {
     );
     
     // Small splatter
-    paint.color = const Color(0xFFC0C0C0).withValues(alpha: 0.15);
+    paint.color = const Color(0xFFC0C0C0).withOpacity(0.15);
     canvas.drawCircle(
       Offset(position.dx + 3, position.dy + 2),
       1.5,
@@ -243,7 +243,7 @@ class JournalPaperPainter extends CustomPainter {
 
   void _drawCornerDecorations(Canvas canvas, Size size, Paint paint) {
     // Top-left corner decoration
-    paint.color = const Color(0xFFE8E8E8).withValues(alpha: 0.4);
+    paint.color = const Color(0xFFE8E8E8).withOpacity(0.4);
     paint.strokeWidth = 1.0;
     paint.style = PaintingStyle.stroke;
     
@@ -429,7 +429,7 @@ class ScrollAwareJournalPaperPainter extends CustomPainter {
   }
 
   void _drawPaperTextureWithParallax(Canvas canvas, Size size, Paint paint, double parallaxOffset) {
-    paint.color = const Color(0xFFF5F5F5).withValues(alpha: 0.3);
+    paint.color = const Color(0xFFF5F5F5).withOpacity(0.3);
     
     for (int i = 0; i < 150; i++) {
       final x = (i * 17.0) % size.width;
@@ -445,7 +445,7 @@ class ScrollAwareJournalPaperPainter extends CustomPainter {
   }
 
   void _drawMarginLinesWithParallax(Canvas canvas, Size size, Paint paint, double parallaxOffset) {
-    paint.color = const Color(0xFFE8E8E8).withValues(alpha: 0.4);
+    paint.color = const Color(0xFFE8E8E8).withOpacity(0.4);
     paint.strokeWidth = 0.5;
     paint.style = PaintingStyle.stroke;
     
@@ -464,7 +464,7 @@ class ScrollAwareJournalPaperPainter extends CustomPainter {
     );
     
     // Horizontal lines
-    paint.color = const Color(0xFFF0F0F0).withValues(alpha: 0.6);
+    paint.color = const Color(0xFFF0F0F0).withOpacity(0.6);
     paint.strokeWidth = 0.3;
     
     for (int i = 0; i < (size.height / 30).ceil(); i++) {
@@ -480,7 +480,7 @@ class ScrollAwareJournalPaperPainter extends CustomPainter {
   }
 
   void _drawFloatingElementsWithParallax(Canvas canvas, Size size, Paint paint, double parallaxOffset) {
-    paint.color = const Color(0xFFE0E0E0).withValues(alpha: 0.3);
+    paint.color = const Color(0xFFE0E0E0).withOpacity(0.3);
     
     // Paper clip with parallax
     final paperClipX = size.width * 0.05;
@@ -512,7 +512,7 @@ class ScrollAwareJournalPaperPainter extends CustomPainter {
   }
 
   void _drawInkDrop(Canvas canvas, Paint paint, Offset position) {
-    paint.color = const Color(0xFFB0B0B0).withValues(alpha: 0.2);
+    paint.color = const Color(0xFFB0B0B0).withOpacity(0.2);
     canvas.drawOval(
       Rect.fromCenter(
         center: position,
@@ -522,7 +522,7 @@ class ScrollAwareJournalPaperPainter extends CustomPainter {
       paint,
     );
     
-    paint.color = const Color(0xFFC0C0C0).withValues(alpha: 0.15);
+    paint.color = const Color(0xFFC0C0C0).withOpacity(0.15);
     canvas.drawCircle(
       Offset(position.dx + 3, position.dy + 2),
       1.5,

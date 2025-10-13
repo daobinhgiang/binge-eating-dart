@@ -124,7 +124,7 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
 
   Widget _buildEmptyState(BuildContext context) {
     return Center(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -216,23 +216,23 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
                 color: isIdeal ? Colors.green[50] : Colors.teal[50],
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: isIdeal ? Colors.green[300]! : Colors.teal.withValues(alpha: 0.2),
+                  color: isIdeal ? Colors.green[300]! : Colors.teal.withOpacity(0.2),
                   width: isIdeal ? 2 : 1,
                 ),
                 boxShadow: isHovered ? [
                   BoxShadow(
-                    color: (isIdeal ? Colors.green : Colors.teal).withValues(alpha: 0.15),
+                    color: (isIdeal ? Colors.green : Colors.teal).withOpacity(0.15),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
                   BoxShadow(
-                    color: (isIdeal ? Colors.green : Colors.teal).withValues(alpha: 0.08),
+                    color: (isIdeal ? Colors.green : Colors.teal).withOpacity(0.08),
                     blurRadius: 20,
                     offset: const Offset(0, 8),
                   ),
                 ] : [
                   BoxShadow(
-                    color: (isIdeal ? Colors.green : Colors.teal).withValues(alpha: 0.08),
+                    color: (isIdeal ? Colors.green : Colors.teal).withOpacity(0.08),
                     blurRadius: 6,
                     offset: const Offset(0, 2),
                   ),
@@ -301,7 +301,7 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
-                                color: _getCriteriaColor(criteriaCount).withValues(alpha: 0.2),
+                                color: _getCriteriaColor(criteriaCount).withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(

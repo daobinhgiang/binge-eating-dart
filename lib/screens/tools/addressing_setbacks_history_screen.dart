@@ -159,7 +159,7 @@ class _AddressingSetbacksHistoryScreenState extends ConsumerState<AddressingSetb
               Container(
                 width: 1,
                 height: 40,
-                color: Colors.white.withValues(alpha: 0.3),
+                color: Colors.white.withOpacity(0.3),
               ),
               _buildStatItem(
                 context,
@@ -170,7 +170,7 @@ class _AddressingSetbacksHistoryScreenState extends ConsumerState<AddressingSetb
               Container(
                 width: 1,
                 height: 40,
-                color: Colors.white.withValues(alpha: 0.3),
+                color: Colors.white.withOpacity(0.3),
               ),
               _buildStatItem(
                 context,
@@ -200,7 +200,7 @@ class _AddressingSetbacksHistoryScreenState extends ConsumerState<AddressingSetb
         Text(
           label,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Colors.white.withValues(alpha: 0.9),
+            color: Colors.white.withOpacity(0.9),
           ),
           textAlign: TextAlign.center,
         ),

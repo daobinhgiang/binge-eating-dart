@@ -192,320 +192,300 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final progress = (_currentQuestionIndex + 1) / _questions.length;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF2C2C2E),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
-            // Header
-            Padding(
+            // Simple header
+            Container(
               padding: const EdgeInsets.all(16.0),
-              child: Row(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  bottom: BorderSide(
+                    color: Colors.grey[200]!,
+                    width: 1,
+                  ),
+                ),
+              ),
+              child: Column(
                 children: [
-                  IconButton(
-                    onPressed: _currentQuestionIndex > 0 ? _previousQuestion : null,
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  ),
-                  Expanded(
-                    child: Text(
-                      'Step ${_currentQuestionIndex + 1}',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                  Row(
+                    children: [
+                      if (_currentQuestionIndex > 0)
+                        IconButton(
+                          onPressed: _previousQuestion,
+                          icon: const Icon(Icons.arrow_back, size: 24),
+                          color: Colors.grey[700],
+                        )
+                      else
+                        const SizedBox(width: 48),
+                      Expanded(
+                        child: Text(
+                          'Question ${_currentQuestionIndex + 1} of ${_questions.length}',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.grey[800],
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
-                    ),
+                      IconButton(
+                        onPressed: () => _showExitDialog(),
+                        icon: const Icon(Icons.close, size: 24),
+                        color: Colors.grey[700],
+                      ),
+                    ],
                   ),
-                  IconButton(
-                    onPressed: () => _showExitDialog(),
-                    icon: const Icon(Icons.close, color: Colors.white),
+                  const SizedBox(height: 12),
+                  // Simple progress bar
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: LinearProgressIndicator(
+                      value: progress,
+                      minHeight: 6,
+                      backgroundColor: Colors.grey[200],
+                      valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF6366F1)),
+                    ),
                   ),
                 ],
               ),
             ),
             
-            // Progress bar
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
-              ),
-              child: FractionallySizedBox(
-                alignment: Alignment.centerLeft,
-                widthFactor: progress,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF007AFF),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-            ),
-            
-            const SizedBox(height: 24),
-            
             // Question content
             Expanded(
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Question label
-                      Text(
-                        _getQuestionLabel(currentQuestion.number),
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Question text
+                    Text(
+                      currentQuestion.question,
+                      style: TextStyle(
+                        color: Colors.grey[900],
+                        fontSize: 22,
+                        fontWeight: FontWeight.w600,
+                        height: 1.4,
                       ),
+                    ),
+                    
+                    const SizedBox(height: 28),
                       
-                      const SizedBox(height: 8),
-                      
-                      // Question text
-                      Text(
-                        currentQuestion.question,
-                        style: const TextStyle(
-                          color: Color(0xFF1C1C1E),
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          height: 1.3,
-                        ),
-                      ),
-                      
-                      
-                      const SizedBox(height: 32),
-                      
-                      // Options
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: currentQuestion.options.length,
-                          itemBuilder: (context, index) {
-                            final isSelected = _selectedOption == index;
-                            return Container(
-                              margin: const EdgeInsets.only(bottom: 12),
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      _selectedOption = index;
-                                    });
-                                  },
+                    // Options
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: currentQuestion.options.length,
+                        itemBuilder: (context, index) {
+                          final isSelected = _selectedOption == index;
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _selectedOption = index;
+                                });
+                              },
+                              borderRadius: BorderRadius.circular(12),
+                              child: Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: isSelected 
+                                      ? const Color(0xFF6366F1).withOpacity(0.1)
+                                      : Colors.grey[50],
+                                  border: Border.all(
+                                    color: isSelected 
+                                        ? const Color(0xFF6366F1)
+                                        : Colors.grey[300]!,
+                                    width: isSelected ? 2 : 1,
+                                  ),
                                   borderRadius: BorderRadius.circular(12),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
+                                ),
+                                child: Row(
+                                  children: [
+                                    // Radio button
+                                    Container(
+                                      width: 24,
+                                      height: 24,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: isSelected 
+                                              ? const Color(0xFF6366F1)
+                                              : Colors.grey[400]!,
+                                          width: 2,
+                                        ),
                                         color: isSelected 
-                                            ? const Color(0xFF007AFF)
-                                            : Colors.grey[300]!,
-                                        width: isSelected ? 2 : 1,
+                                            ? const Color(0xFF6366F1)
+                                            : Colors.white,
                                       ),
-                                      borderRadius: BorderRadius.circular(12),
-                                      color: isSelected 
-                                          ? const Color(0xFF007AFF).withValues(alpha: 0.1)
-                                          : Colors.white,
+                                      child: isSelected
+                                          ? const Icon(
+                                              Icons.check,
+                                              size: 16,
+                                              color: Colors.white,
+                                            )
+                                          : null,
                                     ),
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          '${index + 1}',
-                                          style: TextStyle(
-                                            color: isSelected 
-                                                ? const Color(0xFF007AFF)
-                                                : Colors.grey[600],
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Expanded(
-                                          child: Text(
-                                            currentQuestion.options[index],
-                                            style: TextStyle(
-                                              color: isSelected 
-                                                  ? const Color(0xFF1C1C1E)
-                                                  : Colors.grey[700],
-                                              fontSize: 16,
-                                              height: 1.4,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      
-                      const SizedBox(height: 24),
-                      
-                      // Navigation buttons
-                      if (_currentQuestionIndex >= 4) ...[
-                        // Two buttons for question 5+ (index 4+)
-                        Column(
-                          children: [
-                            // Encouragement text
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF007AFF).withValues(alpha: 0.05),
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color: const Color(0xFF007AFF).withValues(alpha: 0.2),
-                                  width: 1,
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.star,
-                                    color: const Color(0xFF007AFF),
-                                    size: 18,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      'Complete the full survey to get personalized insights and recommendations!',
-                                      style: TextStyle(
-                                        color: const Color(0xFF007AFF),
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            // Continue Survey button (larger, primary style)
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: _selectedOption != null && !_isLoading
-                                    ? _continueSurvey
-                                    : null,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF007AFF),
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(vertical: 18),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  elevation: 2,
-                                ),
-                                child: _isLoading
-                                    ? const SizedBox(
-                                        height: 20,
-                                        width: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                        ),
-                                      )
-                                    : Text(
-                                        _currentQuestionIndex == _questions.length - 1
-                                            ? 'Complete Survey'
-                                            : 'Continue Survey',
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            // Skip to App button (smaller, secondary style)
-                            SizedBox(
-                              width: double.infinity,
-                              child: OutlinedButton(
-                                onPressed: !_isLoading
-                                    ? _skipToApp
-                                    : null,
-                                style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  side: const BorderSide(color: Color(0xFF007AFF), width: 1.5),
-                                ),
-                                child: _isLoading
-                                    ? const SizedBox(
-                                        height: 20,
-                                        width: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF007AFF)),
-                                        ),
-                                      )
-                                    : const Text(
-                                        'Skip to App',
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Text(
+                                        currentQuestion.options[index],
                                         style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                          color: Color(0xFF007AFF),
+                                          color: Colors.grey[800],
+                                          fontSize: 15,
+                                          fontWeight: isSelected 
+                                              ? FontWeight.w600 
+                                              : FontWeight.w500,
+                                          height: 1.4,
                                         ),
                                       ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                      
+                    const SizedBox(height: 24),
+                    
+                    // Navigation buttons
+                    if (_currentQuestionIndex >= 4) ...[
+                      // Two buttons for question 5+ (index 4+)
+                      Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: Colors.blue[50],
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.blue[200]!,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.lightbulb_outline,
+                              color: Colors.blue[700],
+                              size: 20,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                'Complete all questions for personalized insights',
+                                style: TextStyle(
+                                  color: Colors.blue[900],
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
                           ],
                         ),
-                      ] else ...[
-                        // Single button for first 4 questions
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: _selectedOption != null && !_isLoading
-                                ? _nextQuestion
-                                : null,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF007AFF),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              elevation: 0,
+                      ),
+                      const SizedBox(height: 16),
+                      // Continue button
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _selectedOption != null && !_isLoading
+                              ? _continueSurvey
+                              : null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF6366F1),
+                            foregroundColor: Colors.white,
+                            disabledBackgroundColor: Colors.grey[300],
+                            disabledForegroundColor: Colors.grey[500],
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            child: _isLoading
-                                ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                    ),
-                                  )
-                                : const Text(
-                                    'Next',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                            elevation: 0,
+                          ),
+                          child: _isLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                   ),
+                                )
+                              : Text(
+                                  _currentQuestionIndex == _questions.length - 1
+                                      ? 'Complete Survey'
+                                      : 'Continue',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      // Skip button
+                      SizedBox(
+                        width: double.infinity,
+                        child: TextButton(
+                          onPressed: !_isLoading ? _skipToApp : null,
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                          child: Text(
+                            'Skip to App',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey[600],
+                            ),
                           ),
                         ),
-                      ],
+                      ),
+                    ] else ...[
+                      // Single button for first 4 questions
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _selectedOption != null && !_isLoading
+                              ? _nextQuestion
+                              : null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF6366F1),
+                            foregroundColor: Colors.white,
+                            disabledBackgroundColor: Colors.grey[300],
+                            disabledForegroundColor: Colors.grey[500],
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: _isLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  ),
+                                )
+                              : const Text(
+                                  'Next',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                        ),
+                      ),
                     ],
-                  ),
+                  ],
                 ),
               ),
             ),
-            
-            const SizedBox(height: 16),
           ],
         ),
       ),
@@ -820,22 +800,47 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Exit Onboarding'),
-        content: const Text(
-          'Are you sure you want to exit? Your progress will be saved, but you\'ll need to complete the onboarding to access the app.',
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Exit Survey?',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        content: Text(
+          'Your progress will be saved. You can return anytime to complete the survey.',
+          style: TextStyle(
+            color: Colors.grey[700],
+            fontSize: 15,
+            height: 1.5,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text(
+              'Continue',
+              style: TextStyle(
+                color: const Color(0xFF6366F1),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              // Mark partial completion and navigate
               _completePartialOnboarding();
             },
-            child: const Text('Exit'),
+            child: Text(
+              'Exit',
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),

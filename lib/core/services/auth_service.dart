@@ -447,6 +447,19 @@ class AuthService {
     }
   }
 
+  // Update intro status
+  Future<void> updateIntroStatus({required bool hasSeenIntro}) async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) throw 'No user signed in';
+
+      final userDoc = _firestore.collection('users').doc(user.uid);
+      await userDoc.update({'hasSeenIntro': hasSeenIntro});
+    } catch (e) {
+      throw 'Failed to update intro status. Please try again.';
+    }
+  }
+
   // Delete user account
   Future<void> deleteAccount() async {
     try {

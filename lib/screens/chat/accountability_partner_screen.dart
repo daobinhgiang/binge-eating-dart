@@ -208,9 +208,9 @@ class _AccountabilityPartnerScreenState extends ConsumerState<AccountabilityPart
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                const Color(0xFF4CAF50).withValues(alpha: 0.15),
-                const Color(0xFF66BB6A).withValues(alpha: 0.12),
-                const Color(0xFF388E3C).withValues(alpha: 0.08),
+                const Color(0xFF4CAF50).withOpacity(0.15),
+                const Color(0xFF66BB6A).withOpacity(0.12),
+                const Color(0xFF388E3C).withOpacity(0.08),
               ],
             ),
           ),
@@ -236,7 +236,7 @@ class _AccountabilityPartnerScreenState extends ConsumerState<AccountabilityPart
             if (_isLoadingContext)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
+                color: const Color(0xFF4CAF50).withOpacity(0.1),
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
                   children: [
@@ -269,10 +269,10 @@ class _AccountabilityPartnerScreenState extends ConsumerState<AccountabilityPart
               padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
+                color: const Color(0xFF4CAF50).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
+                  color: const Color(0xFF4CAF50).withOpacity(0.3),
                   width: 1,
                 ),
               ),
@@ -323,7 +323,7 @@ class _AccountabilityPartnerScreenState extends ConsumerState<AccountabilityPart
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          const Color(0xFF4CAF50).withValues(alpha: 0.7),
+                          const Color(0xFF4CAF50).withOpacity(0.7),
                         ),
                       ),
                     ),
@@ -331,7 +331,7 @@ class _AccountabilityPartnerScreenState extends ConsumerState<AccountabilityPart
                     Text(
                       'Your accountability partner is thinking...',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: const Color(0xFF4CAF50).withValues(alpha: 0.7),
+                        color: const Color(0xFF4CAF50).withOpacity(0.7),
                         fontStyle: FontStyle.italic,
                       ),
                     ),
@@ -346,7 +346,7 @@ class _AccountabilityPartnerScreenState extends ConsumerState<AccountabilityPart
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
+                    color: Colors.black.withOpacity(0.05),
                     blurRadius: 8,
                     offset: const Offset(0, -2),
                   ),
@@ -366,14 +366,14 @@ class _AccountabilityPartnerScreenState extends ConsumerState<AccountabilityPart
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(24),
                           borderSide: BorderSide(
-                            color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
+                            color: const Color(0xFF4CAF50).withOpacity(0.3),
                             width: 1,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(24),
                           borderSide: BorderSide(
-                            color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
+                            color: const Color(0xFF4CAF50).withOpacity(0.3),
                             width: 1,
                           ),
                         ),
@@ -434,7 +434,7 @@ class _AccountabilityPartnerScreenState extends ConsumerState<AccountabilityPart
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
+                color: const Color(0xFF4CAF50).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: const Icon(
@@ -473,7 +473,7 @@ class _AccountabilityPartnerScreenState extends ConsumerState<AccountabilityPart
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
+                color: const Color(0xFF4CAF50).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: const Icon(

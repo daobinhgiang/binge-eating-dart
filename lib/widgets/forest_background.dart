@@ -170,7 +170,7 @@ class ForestBackgroundPainter extends CustomPainter {
       double height, double width, Color trunkColor, Color foliageColor) {
     
     // Draw trunk
-    paint.color = trunkColor.withValues(alpha: 0.08);
+    paint.color = trunkColor.withOpacity(0.08);
     final trunkRect = Rect.fromCenter(
       center: Offset(position.dx, position.dy + height * 0.3),
       width: width * 0.3,
@@ -182,7 +182,7 @@ class ForestBackgroundPainter extends CustomPainter {
     final windOffset = math.sin(animationValue + position.dx * 0.01) * 1.5;
     
     // Bottom foliage layer
-    paint.color = foliageColor.withValues(alpha: 0.04);
+    paint.color = foliageColor.withOpacity(0.04);
     canvas.drawOval(
       Rect.fromCenter(
         center: Offset(position.dx + windOffset, position.dy),
@@ -193,7 +193,7 @@ class ForestBackgroundPainter extends CustomPainter {
     );
     
     // Middle foliage layer
-    paint.color = foliageColor.withValues(alpha: 0.03);
+    paint.color = foliageColor.withOpacity(0.03);
     canvas.drawOval(
       Rect.fromCenter(
         center: Offset(position.dx + windOffset * 0.5, position.dy - height * 0.1),
@@ -204,7 +204,7 @@ class ForestBackgroundPainter extends CustomPainter {
     );
     
     // Top foliage layer
-    paint.color = foliageColor.withValues(alpha: 0.02);
+    paint.color = foliageColor.withOpacity(0.02);
     canvas.drawOval(
       Rect.fromCenter(
         center: Offset(position.dx + windOffset * 0.3, position.dy - height * 0.2),
@@ -217,7 +217,7 @@ class ForestBackgroundPainter extends CustomPainter {
 
   void _drawForestFloor(Canvas canvas, Size size, Paint paint) {
     // Draw subtle forest floor elements
-    paint.color = const Color(0xFF388E3C).withValues(alpha: 0.015);
+    paint.color = const Color(0xFF388E3C).withOpacity(0.015);
     
     // Draw gentle curves representing forest floor
     final path = Path();
@@ -250,7 +250,7 @@ class ForestBackgroundPainter extends CustomPainter {
     ];
 
     for (final element in smallElements) {
-      paint.color = const Color(0xFF43A047).withValues(alpha: 0.01);
+      paint.color = const Color(0xFF43A047).withOpacity(0.01);
       canvas.drawCircle(
         Offset(size.width * element['x']!, size.height * element['y']!),
         size.width * element['size']!,
@@ -261,7 +261,7 @@ class ForestBackgroundPainter extends CustomPainter {
 
   void _drawWindEffect(Canvas canvas, Size size, Paint paint) {
     // Draw subtle wind lines between trees
-    paint.color = const Color(0xFF4CAF50).withValues(alpha: 0.01);
+    paint.color = const Color(0xFF4CAF50).withOpacity(0.01);
     paint.strokeWidth = 1;
     
     for (int i = 0; i < 3; i++) {

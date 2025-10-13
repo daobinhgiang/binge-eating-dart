@@ -30,6 +30,7 @@ class UserModel {
   final Map<String, dynamic> preferences;
   final bool onboardingCompleted;
   final bool onboardingPartiallyCompleted;
+  final bool hasSeenIntro;
   final int level;
   final int exp;
 
@@ -47,6 +48,7 @@ class UserModel {
     this.preferences = const {},
     this.onboardingCompleted = false,
     this.onboardingPartiallyCompleted = false,
+    this.hasSeenIntro = false,
     this.level = 1,
     this.exp = 0,
   });
@@ -77,6 +79,7 @@ class UserModel {
       preferences: Map<String, dynamic>.from(data['preferences'] ?? {}),
       onboardingCompleted: data['onboardingCompleted'] ?? false,
       onboardingPartiallyCompleted: data['onboardingPartiallyCompleted'] ?? false,
+      hasSeenIntro: data['hasSeenIntro'] ?? false,
       level: data['level'] ?? 1,
       exp: data['exp'] ?? 0,
     );
@@ -96,6 +99,7 @@ class UserModel {
       'preferences': preferences,
       'onboardingCompleted': onboardingCompleted,
       'onboardingPartiallyCompleted': onboardingPartiallyCompleted,
+      'hasSeenIntro': hasSeenIntro,
       'level': level,
       'exp': exp,
     };
@@ -115,6 +119,7 @@ class UserModel {
     Map<String, dynamic>? preferences,
     bool? onboardingCompleted,
     bool? onboardingPartiallyCompleted,
+    bool? hasSeenIntro,
     int? level,
     int? exp,
   }) {
@@ -132,6 +137,7 @@ class UserModel {
       preferences: preferences ?? this.preferences,
       onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
       onboardingPartiallyCompleted: onboardingPartiallyCompleted ?? this.onboardingPartiallyCompleted,
+      hasSeenIntro: hasSeenIntro ?? this.hasSeenIntro,
       level: level ?? this.level,
       exp: exp ?? this.exp,
     );

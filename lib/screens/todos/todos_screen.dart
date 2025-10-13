@@ -288,7 +288,7 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
+            color: color.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
@@ -350,7 +350,7 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
+            color: color.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
@@ -494,7 +494,7 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -585,7 +585,7 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
     return Card(
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: color.withValues(alpha: 0.1),
+          backgroundColor: color.withOpacity(0.1),
           child: Icon(icon, color: color),
         ),
         title: Text(type),

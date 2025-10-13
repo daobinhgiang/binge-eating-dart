@@ -223,9 +223,9 @@ class _RealtimeJournalingScreenState extends ConsumerState<RealtimeJournalingScr
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                const Color(0xFF9C27B0).withValues(alpha: 0.15),
-                const Color(0xFFBA68C8).withValues(alpha: 0.12),
-                const Color(0xFF8E24AA).withValues(alpha: 0.08),
+                const Color(0xFF9C27B0).withOpacity(0.15),
+                const Color(0xFFBA68C8).withOpacity(0.12),
+                const Color(0xFF8E24AA).withOpacity(0.08),
               ],
             ),
           ),
@@ -251,7 +251,7 @@ class _RealtimeJournalingScreenState extends ConsumerState<RealtimeJournalingScr
             if (_isLoadingContext)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                color: const Color(0xFF9C27B0).withValues(alpha: 0.1),
+                color: const Color(0xFF9C27B0).withOpacity(0.1),
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
                   children: [
@@ -284,10 +284,10 @@ class _RealtimeJournalingScreenState extends ConsumerState<RealtimeJournalingScr
               padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF9C27B0).withValues(alpha: 0.1),
+                color: const Color(0xFF9C27B0).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: const Color(0xFF9C27B0).withValues(alpha: 0.3),
+                  color: const Color(0xFF9C27B0).withOpacity(0.3),
                   width: 1,
                 ),
               ),
@@ -360,7 +360,7 @@ class _RealtimeJournalingScreenState extends ConsumerState<RealtimeJournalingScr
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
+                    color: Colors.black.withOpacity(0.05),
                     blurRadius: 10,
                     offset: const Offset(0, -2),
                   ),
@@ -465,7 +465,7 @@ class _RealtimeJournalingScreenState extends ConsumerState<RealtimeJournalingScr
               _formatTime(message.timestamp),
               style: TextStyle(
                 color: message.isUser 
-                    ? Colors.white.withValues(alpha: 0.7)
+                    ? Colors.white.withOpacity(0.7)
                     : Colors.grey[600],
                 fontSize: 11,
               ),
