@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:binge_eating_recovery/core/services/screen_time_service.dart';
+import 'package:go_router/go_router.dart';
 import 'dart:io';
 
 class AppBlockerScreen extends StatefulWidget {
@@ -31,6 +32,10 @@ class _AppBlockerScreenState extends State<AppBlockerScreen> {
           backgroundColor: Colors.transparent,
           elevation: 0,
           iconTheme: const IconThemeData(color: Color(0xFF4CAF50)),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF4CAF50)),
+            onPressed: () => context.go('/profile'),
+          ),
         ),
         body: Center(
           child: Padding(
@@ -88,6 +93,10 @@ class _AppBlockerScreenState extends State<AppBlockerScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: Color(0xFF4CAF50)),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF4CAF50)),
+          onPressed: () => context.go('/profile'),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
@@ -130,65 +139,18 @@ class _AppBlockerScreenState extends State<AppBlockerScreen> {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
-                              'Block Distracting Apps',
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                letterSpacing: 0.5,
-                              ),
+                        const Expanded(
+                          child: Text(
+                            'Block Distracting Apps',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              letterSpacing: 0.5,
                             ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Stay focused on your recovery',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white,
-                                letterSpacing: 0.2,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
                     ],
-                  ),
-                  const SizedBox(height: 20),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          'How it works:',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                        SizedBox(height: 12),
-                        Text(
-                          '• Select apps you find distracting\n'
-                          '• iOS will limit your access to these apps\n'
-                          '• Helps you stay focused on recovery\n'
-                          '• Works with system Screen Time settings',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
-                            height: 1.6,
-                          ),
-                        ),
-                      ],
-                    ),
                   ),
                 ],
               ),

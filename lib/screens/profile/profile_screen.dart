@@ -428,14 +428,14 @@ class ProfileScreen extends ConsumerWidget {
       _ProfileOption(
         icon: Icons.app_blocking,
         title: 'App Blocker',
-        subtitle: 'Block distracting apps (iOS only)',
+        subtitle: 'Block distracting apps (iOS 16+)',
         color: const Color(0xFFFF5722),
         onTap: () => context.go('/profile/app-blocker'),
       ),
       _ProfileOption(
         icon: Icons.web,
         title: 'Website Blocker',
-        subtitle: 'Block distracting websites (iOS only)',
+        subtitle: 'Block distracting websites (iOS 16+)',
         color: const Color(0xFFFF9800),
         onTap: () => context.go('/profile/web-blocker'),
       ),

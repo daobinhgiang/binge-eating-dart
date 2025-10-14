@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:binge_eating_recovery/core/services/screen_time_service.dart';
 import 'package:binge_eating_recovery/core/services/user_data_service.dart';
+import 'package:go_router/go_router.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -162,6 +163,10 @@ class _WebBlockerScreenState extends State<WebBlockerScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: Color(0xFF4CAF50)),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF4CAF50)),
+          onPressed: () => context.go('/profile'),
+        ),
       ),
       body: _isInitializing
           ? const Center(
@@ -207,29 +212,15 @@ class _WebBlockerScreenState extends State<WebBlockerScreen> {
                           ),
                         ),
                         const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
-                                'Block Websites',
-                                style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                'Keep your focus by blocking distracting sites',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.white,
-                                  letterSpacing: 0.2,
-                                ),
-                              ),
-                            ],
+                        const Expanded(
+                          child: Text(
+                            'Block Websites',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              letterSpacing: 0.5,
+                            ),
                           ),
                         ),
                       ],
@@ -316,7 +307,52 @@ class _WebBlockerScreenState extends State<WebBlockerScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  // Message display (moved before the list)
+                  if (_message.isNotEmpty)
+                    Container(
+                      margin: const EdgeInsets.only(top: 20, bottom: 20),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _message.startsWith('Error') 
+                          ? Colors.red.withValues(alpha: 0.1)
+                          : Colors.green.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: _message.startsWith('Error') 
+                            ? Colors.red.withValues(alpha: 0.3)
+                            : Colors.green.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            _message.startsWith('Error') 
+                              ? Icons.error_outline 
+                              : Icons.check_circle_outline,
+                            color: _message.startsWith('Error') 
+                              ? Colors.red[700]
+                              : Colors.green[700],
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              _message,
+                              style: TextStyle(
+                                color: _message.startsWith('Error') 
+                                  ? Colors.red[700]
+                                  : Colors.green[700],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  
+                  SizedBox(height: _message.isNotEmpty ? 0 : 20),
                   
                   // Websites list header
                   Row(
@@ -448,50 +484,7 @@ class _WebBlockerScreenState extends State<WebBlockerScreen> {
                       ),
                   ),
                   
-                  // Message display
-                  if (_message.isNotEmpty)
-                    Container(
-                      margin: const EdgeInsets.only(top: 8, bottom: 16),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _message.startsWith('Error') 
-                          ? Colors.red.withValues(alpha: 0.1)
-                          : Colors.green.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: _message.startsWith('Error') 
-                            ? Colors.red.withValues(alpha: 0.3)
-                            : Colors.green.withValues(alpha: 0.3),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            _message.startsWith('Error') 
-                              ? Icons.error_outline 
-                              : Icons.check_circle_outline,
-                            color: _message.startsWith('Error') 
-                              ? Colors.red[700]
-                              : Colors.green[700],
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              _message,
-                              style: TextStyle(
-                                color: _message.startsWith('Error') 
-                                  ? Colors.red[700]
-                                  : Colors.green[700],
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  const SizedBox(height: 16),
                   
                   // Block websites button
                   Container(
@@ -554,7 +547,6 @@ class _WebBlockerScreenState extends State<WebBlockerScreen> {
                   
                   // iOS notice
                   Container(
-                    width: double.infinity,
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: Colors.amber.withValues(alpha: 0.1),
@@ -574,7 +566,7 @@ class _WebBlockerScreenState extends State<WebBlockerScreen> {
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            'Website blocking requires Content Restrictions to be enabled in Screen Time settings.',
+                            'Website blocking requires iOS 16+ and Content Restrictions to be enabled in Screen Time settings.',
                             style: TextStyle(
                               color: Colors.amber[800],
                               height: 1.4,

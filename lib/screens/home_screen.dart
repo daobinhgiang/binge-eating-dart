@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -1717,85 +1718,98 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           const SizedBox(height: 24),
           
           // Circular progress indicator
-          SizedBox(
-            width: 320,
-            height: 320,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                // Circular progress rings
-                CustomPaint(
-                  size: const Size(320, 320),
-                  painter: CircularTimerPainter(
-                    days: days,
-                    hours: hours,
-                    minutes: minutes,
-                    seconds: seconds,
-                  ),
-                ),
-                
-                // Center text - display all non-zero time units
-                Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-                  children: timeUnits.asMap().entries.map((entry) {
-                    final unit = entry.value;
-                    final index = entry.key;
-                    final fontSize = unit['size'] as double;
-                    final labelSize = fontSize * 0.35;
+          Platform.isIOS 
+            ? _buildIOSTimerLayout(timeUnits, days, hours, minutes, seconds)
+            : SizedBox(
+                width: 320,
+                height: 320,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Circular progress rings
+                    CustomPaint(
+                      size: const Size(320, 320),
+                      painter: CircularTimerPainter(
+                        days: days,
+                        hours: hours,
+                        minutes: minutes,
+                        seconds: seconds,
+                      ),
+                    ),
                     
-                    return Column(
-        children: [
-                        if (index > 0) const SizedBox(height: 4),
-                        Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                              unit['value'] as String,
-                style: TextStyle(
-                                fontSize: fontSize,
-                  fontWeight: FontWeight.bold,
-                                color: const Color(0xFF5B9FED),
-                                height: 1,
+                    // Center text - display all non-zero time units
+                    Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+                      children: timeUnits.asMap().entries.map((entry) {
+                        final unit = entry.value;
+                        final index = entry.key;
+                        final fontSize = unit['size'] as double;
+                        final labelSize = fontSize * 0.35;
+                        
+                        return Column(
+          children: [
+                          if (index > 0) const SizedBox(height: 4),
+                          Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.baseline,
+                            textBaseline: TextBaseline.alphabetic,
+              children: [
+                Text(
+                                unit['value'] as String,
+                  style: TextStyle(
+                                  fontSize: fontSize,
+                    fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF5B9FED),
+                                  height: 1,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              unit['label'] as String,
-                              style: TextStyle(
-                                fontSize: labelSize,
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w500,
+                              const SizedBox(width: 6),
+                              Text(
+                                unit['label'] as String,
+                                style: TextStyle(
+                                  fontSize: labelSize,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-              ],
-            );
-          }).toList(),
-                ),
-        ],
-      ),
-          ),
+                            ],
+                          ),
+                ],
+              );
+            }).toList(),
+                    ),
+          ],
+        ),
+              ),
 
           const SizedBox(height: 24),
     
           // Legend
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-              _buildLegendItem('Days', const Color(0xFF4CAF50)),
-              const SizedBox(width: 16),
-              _buildLegendItem('Hours', const Color(0xFF9C27B0)),
-              const SizedBox(width: 16),
-              _buildLegendItem('Minutes', const Color(0xFFFF9800)),
-              const SizedBox(width: 16),
-              _buildLegendItem('Seconds', const Color(0xFF2196F3)),
+          Column(
+            children: [
+              // First row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildLegendItem('Days', const Color(0xFF4CAF50)),
+                  const SizedBox(width: 16),
+                  _buildLegendItem('Hours', const Color(0xFF9C27B0)),
+                ],
+              ),
+              const SizedBox(height: 8),
+              // Second row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildLegendItem('Minutes', const Color(0xFFFF9800)),
+                  const SizedBox(width: 16),
+                  _buildLegendItem('Seconds', const Color(0xFF2196F3)),
+                ],
+              ),
             ],
           ),
           
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           
           // Reset Timer button
           ElevatedButton.icon(
@@ -1842,6 +1856,64 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             fontSize: 13,
             fontWeight: FontWeight.w500,
           ),
+        ),
+      ],
+    );
+  }
+  
+  Widget _buildIOSTimerLayout(List<Map<String, dynamic>> timeUnits, int days, int hours, int minutes, int seconds) {
+    return Column(
+      children: [
+        // Circular progress rings
+        SizedBox(
+          width: 280,
+          height: 280,
+          child: CustomPaint(
+            size: const Size(280, 280),
+            painter: CircularTimerPainter(
+              days: days,
+              hours: hours,
+              minutes: minutes,
+              seconds: seconds,
+            ),
+          ),
+        ),
+        
+        const SizedBox(height: 12),
+        
+        // Time units displayed in a row below the circle
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: timeUnits.map((unit) {
+            final fontSize = 24.0;
+            final labelSize = 12.0;
+            
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    unit['value'] as String,
+                    style: TextStyle(
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF5B9FED),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    unit['label'] as String,
+                    style: TextStyle(
+                      fontSize: labelSize,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
         ),
       ],
     );
