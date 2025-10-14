@@ -25,33 +25,36 @@ After completing the Journal Tab tutorial (the final tutorial step), users are p
 1. **Celebration Icon**
    - Large Nurtra green circle (#66BB6A) with celebration emoji icon
    - Glowing shadow effect for spotlight appearance
-   - Size: 140x140px
-   - White celebration icon (70px)
+   - **Responsive size**: 100px (small), 120px (medium), 140px (large)
+   - **Icon size**: 50px (small), 60px (medium), 70px (large)
 
 2. **Main Title**
    - "🎉 Tutorial Complete! 🎉"
-   - Large, bold, white text (32px)
-   - Centered alignment
+   - **Responsive font**: 24px (small), 28px (medium), 32px (large)
+   - Bold, white text, centered alignment
 
 3. **Success Message**
    - "Congratulations!"
-   - Medium weight, white text (24px)
+   - **Responsive font**: 20px (small), 22px (medium), 24px (large)
+   - Medium weight, white text
 
 4. **Informational Text**
    - "You've completed the tutorial and learned about all the key features of Nurtra."
+   - **Responsive font**: 15px (small), 16px (medium), 18px (large)
    - White text with increased line height for readability
 
-5. **Empowering Message Box**
-   - Dark background (black with 70% opacity) matching other tutorial highlights
-   - Subtle white border (20% opacity)
-   - Rounded corners (16px radius)
-   - Contains the key message: "Now you're ready to start using the app and take the first steps on your journey to recover from binge eating. Remember, we're here to support you every step of the way!"
+5. **Simplified Empowering Message**
+   - "Now you're ready to start your recovery journey!"
+   - **Responsive font**: 14px (small), 16px (medium/large)
+   - Simple white text (no box) to prevent overflow on mobile devices
+   - Compact and encouraging message
 
 6. **Call-to-Action Button**
    - "Start Your Journey"
    - Nurtra green button (#66BB6A) with white text
-   - Large, prominent, rounded (30px radius)
-   - Elevated shadow for emphasis
+   - **Responsive padding**: 32x12px (small), 48x16px (medium/large)
+   - **Responsive font**: 16px (small), 18px (medium/large)
+   - Rounded (30px radius), elevated shadow for emphasis
 
 ## Implementation Details
 
@@ -71,8 +74,12 @@ void showCompletionTutorial({
 - Full-screen black overlay (80% opacity) covering entire screen
 - No circular spotlight - complete black coverage
 - Non-dismissible (barrierDismissible: false) to ensure users see the message
-- Responsive layout that works on all screen sizes
+- **Fully responsive layout** with `LayoutBuilder` and `SingleChildScrollView`
+- **Adaptive sizing** based on screen height (small < 600px, medium < 700px, large ≥ 700px)
+- **Dynamic font sizes** that scale with screen size
+- **Responsive spacing** that adjusts for different devices
 - Proper SafeArea handling for notched devices
+- Prevents overflow on all screen sizes
 
 ### File: `lib/screens/main_navigation.dart`
 
@@ -115,6 +122,30 @@ Education Tab → First Lesson → Tools Tab → Journal Tab → 🎉 COMPLETION
 5. User clicks "Start Your Journey" button
 6. Dialog closes and user is navigated to the Home tab
 7. User begins their recovery journey from the home screen
+
+## Responsive Design System
+
+### Screen Size Breakpoints
+- **Small screens**: Height < 600px (e.g., iPhone SE, small Android phones)
+- **Medium screens**: Height < 700px (e.g., iPhone 12/13, standard phones)
+- **Large screens**: Height ≥ 700px (e.g., iPhone Pro Max, tablets)
+
+### Adaptive Scaling
+
+| Element | Small | Medium | Large |
+|---------|-------|--------|-------|
+| Icon size | 100px | 120px | 140px |
+| Icon inner | 50px | 60px | 70px |
+| Title font | 24px | 28px | 32px |
+| Subtitle font | 20px | 22px | 24px |
+| Body font | 15px | 16px | 18px |
+| Small font | 14px | 16px | 16px |
+| Button font | 16px | 18px | 18px |
+| Vertical padding | 16px | 24px | 32px |
+| Main spacing | 20px | 30px | 40px |
+| Section spacing | 12px | 16px | 24px |
+| Small spacing | 8px | 12px | 16px |
+| Button spacing | 20px | 24px | 32px |
 
 ## Technical Details
 
