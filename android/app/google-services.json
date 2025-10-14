@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:169581897180:android:32ec53345bd411f51a9b19",
         "android_client_info": {
-          "package_name": "com.example.bed_app_1"
+          "package_name": "com.bingeeating.app"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "169581897180-49jfk4d86tdmlo9ami1ql7062e5ja0ac.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.bed_app_1",
+            "package_name": "com.bingeeating.app",
             "certificate_hash": "ec9941ee060e5aa3237266e68334d87d53f1d701"
           }
         },

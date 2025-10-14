@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
 import '../providers/exp_provider.dart';
 import '../widgets/level_badge.dart';
-import 'home/continue_learning_section.dart';
 import 'home/resources_section.dart';
 import 'home/todo_section.dart';
 
@@ -114,112 +113,43 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         
         return Container(
           margin: const EdgeInsets.fromLTRB(0, 0, 0, 40),
-          child: Stack(
-            clipBehavior: Clip.none,
+          child: Column(
             children: [
-              if (shouldShowLearningSection)
-                RepaintBoundary(
-                  child: SizedBox(
-                    height: 480,
-                    child: ClipPath(
-                      clipper: CurvedHeaderClipper(depth: 60),
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Color(0xFF4CAF50),
-                              Color(0xFF66BB6A),
-                            ],
-                          ),
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+                  child: Row(
+                    children: [
+                      _buildAppLogo(),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _getTimeBasedGreeting(authState.valueOrNull?.displayName.split(' ').first),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                                fontSize: 24,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              _getCurrentDate(),
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
+                      _buildProfileSection(authState),
+                    ],
                   ),
                 ),
-              
-              if (shouldShowLearningSection)
-                Column(
-                  children: [
-                    SafeArea(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
-                        child: Row(
-                          children: [
-                            _buildAppLogo(),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _getTimeBasedGreeting(authState.valueOrNull?.displayName.split(' ').first),
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                      fontSize: 24,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    _getCurrentDate(),
-                                    style: TextStyle(
-                                      color: Colors.white.withOpacity(0.95),
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            _buildProfileSection(authState),
-                          ],
-                        ),
-                      ),
-                    ),
-                    
-                    const ContinueLearningSection(),
-                  ],
-                )
-              else
-                Column(
-                  children: [
-                    SafeArea(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
-                        child: Row(
-                          children: [
-                            _buildAppLogo(),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _getTimeBasedGreeting(null),
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                      fontSize: 24,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    _getCurrentDate(),
-                                    style: TextStyle(
-                                      color: Colors.grey[600],
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              ),
             ],
           ),
         );

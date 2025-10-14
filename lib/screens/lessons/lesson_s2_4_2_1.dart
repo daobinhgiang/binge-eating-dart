@@ -82,14 +82,16 @@ class _LessonS2421ScreenState extends ConsumerState<LessonS2421Screen> {
     }
   }
 
-  void _navigateToProblemSolving() {
+  Future<void> _navigateToProblemSolving() async {
     // Mark lesson as completed
     if (_lesson != null) {
-      _lessonService.markLessonCompleted(_lesson!.id);
+      await _lessonService.markLessonCompleted(_lesson!.id);
     }
     
     // Navigate to the Problem Solving tool
-    context.go('/tools/problem-solving');
+    if (mounted) {
+      context.go('/tools/problem-solving');
+    }
   }
 
   @override

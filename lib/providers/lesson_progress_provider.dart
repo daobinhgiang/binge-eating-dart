@@ -9,10 +9,16 @@ import '../models/stage.dart';
 // Lesson service provider
 final lessonServiceProvider = Provider<LessonService>((ref) => LessonService());
 
-// Provider for completed lessons
+// Provider for completed lessons (one-time fetch)
 final completedLessonsProvider = FutureProvider.family<Set<String>, String>((ref, userId) async {
   final lessonService = ref.read(lessonServiceProvider);
   return await lessonService.getCompletedLessons();
+});
+
+// Stream provider for completed lessons (real-time updates)
+final completedLessonsStreamProvider = StreamProvider.family<Set<String>, String>((ref, userId) {
+  final lessonService = ref.read(lessonServiceProvider);
+  return lessonService.getCompletedLessonsStream();
 });
 
 // Provider for lesson progress (completed/total)

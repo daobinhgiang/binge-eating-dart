@@ -18,210 +18,248 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final authError = ref.watch(authErrorProvider);
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 80),
-              
-              // Logo
-              Center(
-                child: Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
-                        blurRadius: 15,
-                        spreadRadius: 1,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Image.asset(
-                        'assets/logo.png',
-                        fit: BoxFit.contain,
+              // Top content area with logo and tagline
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                  const SizedBox(height: 40),
+                  
+                  // Login Image
+                  Center(
+                    child: Hero(
+                      tag: 'login_image',
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.6,
+                        height: MediaQuery.of(context).size.width * 0.6,
+                        child: Image.asset(
+                          'assets/login.png',
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
-              
-              const SizedBox(height: 40),
-              
-              // App Name and Tagline
-              Text(
-                'Nurtra',
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Take Control Over Binge Eating',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.grey[600],
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              const SizedBox(height: 48),
-              
-              // Error Message
-              if (authError != null)
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.red[50],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.red[200]!),
+                  
+                  const SizedBox(height: 32),
+                  
+                  // App Logo
+                  Center(
+                    child: Image.asset(
+                      'nurtra.png',
+                      height: 60,
+                      fit: BoxFit.contain,
+                    ),
                   ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.error_outline, color: Colors.red[600], size: 20),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          authError,
+                  
+                  const SizedBox(height: 12),
+                  
+                  // Tagline with better spacing
+                  Text(
+                    'Your journey to mindful eating\nstarts here',
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Colors.grey[600],
+                      fontSize: 16,
+                      height: 1.5,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                    ],
+                  ),
+                ),
+              ),
+              
+              // Bottom buttons area with padding
+              Padding(
+                padding: const EdgeInsets.fromLTRB(32, 0, 32, 40),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Error Message with animation
+                    if (authError != null)
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      margin: const EdgeInsets.only(bottom: 24),
+                      decoration: BoxDecoration(
+                        color: Colors.red[50],
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.red[100]!),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.info_outline, color: Colors.red[600], size: 22),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              authError,
+                              style: TextStyle(
+                                color: Colors.red[700],
+                                fontSize: 14,
+                                height: 1.4,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  
+                  // Google Sign-In Button with elevation
+                  Container(
+                    height: 56,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(28),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.06),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: OutlinedButton.icon(
+                      onPressed: isLoading ? null : _signInWithGoogle,
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        side: BorderSide(color: Colors.grey[200]!),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(28),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                      ),
+                      icon: Container(
+                        width: 22,
+                        height: 22,
+                        child: Image.asset(
+                          'assets/google_icon.png',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                      label: Text(
+                        'Continue with Google',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey[800],
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Apple Sign-In Button with improved design
+                  if (Theme.of(context).platform == TargetPlatform.iOS)
+                    Container(
+                      height: 56,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(28),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.15),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: OutlinedButton.icon(
+                        onPressed: isLoading ? null : _signInWithApple,
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          foregroundColor: Colors.white,
+                          side: const BorderSide(color: Colors.black),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(28),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                        ),
+                        icon: const Icon(
+                          Icons.apple,
+                          size: 24,
+                        ),
+                        label: const Text(
+                          'Continue with Apple',
                           style: TextStyle(
-                            color: Colors.red[700],
-                            fontSize: 14,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.2,
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              
-              // Google Sign-In Button
-              SizedBox(
-                height: 56,
-                child: OutlinedButton.icon(
-                  onPressed: isLoading ? null : _signInWithGoogle,
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: Colors.grey[300]!),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  icon: Container(
-                    width: 20,
-                    height: 20,
+                  
+                  if (Theme.of(context).platform == TargetPlatform.iOS)
+                    const SizedBox(height: 16),
+                  
+                  // Email Sign-In Button with gradient
+                  Container(
+                    height: 56,
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(2),
-                      border: Border.all(color: Colors.grey[300]!),
+                      borderRadius: BorderRadius.circular(28),
+                      gradient: LinearGradient(
+                        colors: [
+                          Theme.of(context).colorScheme.primary,
+                          Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+                        ],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+                          blurRadius: 16,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
                     ),
-                    child: const Center(
-                      child: Text(
-                        'G',
+                    child: ElevatedButton.icon(
+                      onPressed: isLoading ? null : _goToEmailAuth,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        foregroundColor: Colors.white,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(28),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                      ),
+                      icon: const Icon(Icons.email_outlined, size: 22),
+                      label: const Text(
+                        'Continue with Email',
                         style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.2,
                         ),
                       ),
                     ),
                   ),
-                  label: Text(
-                    'Continue with Google',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey[800],
-                    ),
-                  ),
-                ),
-              ),
-              
-              const SizedBox(height: 16),
-              
-              // Apple Sign-In Button
-              if (Theme.of(context).platform == TargetPlatform.iOS)
-                SizedBox(
-                  height: 56,
-                  child: OutlinedButton.icon(
-                    onPressed: isLoading ? null : _signInWithApple,
-                    style: OutlinedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      foregroundColor: Colors.white,
-                      side: const BorderSide(color: Colors.black),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
-                    icon: const Icon(
-                      Icons.apple,
-                      size: 24,
-                    ),
-                    label: const Text(
-                      'Continue with Apple',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                  
+                  // Loading indicator
+                  if (isLoading)
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 24),
+                        child: SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              
-              if (Theme.of(context).platform == TargetPlatform.iOS)
-                const SizedBox(height: 16),
-              
-              // Email Sign-In Button
-              SizedBox(
-                height: 56,
-                child: ElevatedButton.icon(
-                  onPressed: isLoading ? null : _goToEmailAuth,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Colors.white,
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  icon: const Icon(Icons.email_outlined),
-                  label: const Text(
-                    'Continue with Other Email',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-              
-              const SizedBox(height: 32),
-              
-              // Privacy Notice
-              Text(
-                'By continuing, you agree to our Terms of Service and Privacy Policy',
-                style: TextStyle(
-                  color: Colors.grey[500],
-                  fontSize: 12,
-                ),
-                textAlign: TextAlign.center,
               ),
             ],
           ),
         ),
-      ),
     );
   }
 

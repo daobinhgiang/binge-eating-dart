@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../widgets/comforting_background.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MotivationScreen extends ConsumerStatefulWidget {
   const MotivationScreen({super.key});
@@ -24,67 +24,67 @@ class _MotivationScreenState extends ConsumerState<MotivationScreen> {
       'quote': 'Every small step you take towards healing is a victory worth celebrating.',
       'author': 'Recovery Community',
       'category': 'Progress',
-      'color': const Color(0xFF2196F3),
+      'color': const Color(0xFF66BB6A),
     },
     {
       'quote': 'You are not your eating disorder. You are so much more than that.',
       'author': 'Mental Health Advocate',
       'category': 'Identity',
-      'color': const Color(0xFF9C27B0),
+      'color': const Color(0xFF81C784),
     },
     {
       'quote': 'Healing is not linear. It\'s okay to have setbacks. What matters is that you keep trying.',
       'author': 'Therapist',
       'category': 'Healing',
-      'color': const Color(0xFFFF9800),
+      'color': const Color(0xFF43A047),
     },
     {
       'quote': 'Your worth is not determined by your relationship with food.',
       'author': 'Body Positivity Movement',
       'category': 'Self-Worth',
-      'color': const Color(0xFFE91E63),
+      'color': const Color(0xFF4CAF50),
     },
     {
       'quote': 'It\'s okay to ask for help. Seeking support is a sign of strength, not weakness.',
       'author': 'Mental Health Professional',
       'category': 'Support',
-      'color': const Color(0xFF00BCD4),
+      'color': const Color(0xFF66BB6A),
     },
     {
       'quote': 'You have survived 100% of your worst days. You are stronger than you think.',
       'author': 'Recovery Warrior',
       'category': 'Strength',
-      'color': const Color(0xFF4CAF50),
+      'color': const Color(0xFF81C784),
     },
     {
       'quote': 'Progress, not perfection. Every step forward counts.',
       'author': 'Recovery Community',
       'category': 'Progress',
-      'color': const Color(0xFF2196F3),
+      'color': const Color(0xFF43A047),
     },
     {
       'quote': 'Your body is not the enemy. It\'s your home. Treat it with kindness.',
       'author': 'Body Positivity Advocate',
       'category': 'Self-Care',
-      'color': const Color(0xFF9C27B0),
+      'color': const Color(0xFF4CAF50),
     },
     {
       'quote': 'Recovery is possible. You are not alone in this journey.',
       'author': 'Recovery Community',
       'category': 'Hope',
-      'color': const Color(0xFFFF9800),
+      'color': const Color(0xFF66BB6A),
     },
     {
       'quote': 'Every moment of self-compassion is a step towards healing.',
       'author': 'Mindfulness Teacher',
       'category': 'Self-Compassion',
-      'color': const Color(0xFFE91E63),
+      'color': const Color(0xFF81C784),
     },
     {
       'quote': 'You are worthy of love, care, and recovery, regardless of your struggles.',
       'author': 'Mental Health Advocate',
       'category': 'Worthiness',
-      'color': const Color(0xFF00BCD4),
+      'color': const Color(0xFF43A047),
     },
   ];
 
@@ -97,205 +97,295 @@ class _MotivationScreenState extends ConsumerState<MotivationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ComfortingBackground(
-        child: SafeArea(
-            child: Column(
-              children: [
-                // Header
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        icon: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Motivation',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+      backgroundColor: Colors.grey[50],
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () => Navigator.of(context).pop(),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black87,
+          ),
+        ),
+        title: Text(
+          'Motivational Quotes',
+          style: GoogleFonts.fredoka(
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+        centerTitle: true,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Container(
+            color: Colors.grey[200],
+            height: 1,
+          ),
+        ),
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Quote display
+            Expanded(
+              child: PageView.builder(
+                controller: _pageController,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                },
+                itemCount: _motivationalQuotes.length,
+                itemBuilder: (context, index) {
+                  final quote = _motivationalQuotes[index];
+                  return _buildQuoteCard(quote, index);
+                },
+              ),
+            ),
+            
+            // Bottom navigation section
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, -2),
                   ),
-                ),
-                
-                // Quote display
-                Expanded(
-                  child: PageView.builder(
-                    controller: _pageController,
-                    onPageChanged: (index) {
-                      setState(() {
-                        _currentPage = index;
-                      });
-                    },
-                    itemCount: _motivationalQuotes.length,
-                    itemBuilder: (context, index) {
-                      final quote = _motivationalQuotes[index];
-                      return _buildQuoteCard(quote, index);
-                    },
-                  ),
-                ),
-                
-                // Page indicators
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Row(
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Page indicators
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
                       _motivationalQuotes.length,
-                      (index) => Container(
+                      (index) => AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
                         margin: const EdgeInsets.symmetric(horizontal: 4),
-                        width: _currentPage == index ? 24 : 8,
+                        width: _currentPage == index ? 28 : 8,
                         height: 8,
                         decoration: BoxDecoration(
                           color: _currentPage == index 
-                              ? Colors.white 
-                              : Colors.white.withOpacity(0.3),
+                              ? const Color(0xFF4CAF50)
+                              : Colors.grey[300],
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),
                     ),
                   ),
-                ),
-                
-                // Navigation buttons
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                  child: Row(
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Quote counter and navigation
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      ElevatedButton.icon(
-                        onPressed: _currentPage > 0 
-                            ? () => _pageController.previousPage(
-                                  duration: const Duration(milliseconds: 300),
-                                  curve: Curves.easeInOut,
-                                )
-                            : null,
-                        icon: const Icon(Icons.arrow_back_ios),
-                        label: const Text('Previous'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white.withOpacity(0.2),
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
-                          ),
+                      // Previous button
+                      _currentPage > 0
+                          ? TextButton.icon(
+                              onPressed: () => _pageController.previousPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              ),
+                              icon: const Icon(Icons.arrow_back_ios, size: 16),
+                              label: Text(
+                                'Previous',
+                                style: GoogleFonts.nunito(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              style: TextButton.styleFrom(
+                                foregroundColor: const Color(0xFF4CAF50),
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              ),
+                            )
+                          : const SizedBox(width: 90),
+                      
+                      // Counter
+                      Text(
+                        '${_currentPage + 1} of ${_motivationalQuotes.length}',
+                        style: GoogleFonts.nunito(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey[600],
                         ),
                       ),
-                      ElevatedButton.icon(
-                        onPressed: _currentPage < _motivationalQuotes.length - 1
-                            ? () => _pageController.nextPage(
-                                  duration: const Duration(milliseconds: 300),
-                                  curve: Curves.easeInOut,
-                                )
-                            : null,
-                        icon: const Icon(Icons.arrow_forward_ios),
-                        label: const Text('Next'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white.withOpacity(0.2),
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                        ),
-                      ),
+                      
+                      // Next button
+                      _currentPage < _motivationalQuotes.length - 1
+                          ? TextButton.icon(
+                              onPressed: () => _pageController.nextPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              ),
+                              icon: Text(
+                                'Next',
+                                style: GoogleFonts.nunito(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              label: const Icon(Icons.arrow_forward_ios, size: 16),
+                              style: TextButton.styleFrom(
+                                foregroundColor: const Color(0xFF4CAF50),
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              ),
+                            )
+                          : const SizedBox(width: 90),
                     ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+          ],
         ),
+      ),
     );
   }
 
   Widget _buildQuoteCard(Map<String, dynamic> quote, int index) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.15),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: Colors.white.withOpacity(0.3),
-            width: 1.5,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Category badge
+            // Category badge with icon
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               decoration: BoxDecoration(
-                color: quote['color'].withOpacity(0.2),
-                borderRadius: BorderRadius.circular(20),
+                gradient: LinearGradient(
+                  colors: [
+                    quote['color'].withOpacity(0.15),
+                    quote['color'].withOpacity(0.08),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: quote['color'].withOpacity(0.5),
-                  width: 1,
+                  color: quote['color'].withOpacity(0.3),
+                  width: 1.5,
                 ),
               ),
-              child: Text(
-                quote['category'],
-                style: TextStyle(
-                  color: quote['color'],
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.auto_awesome,
+                    color: quote['color'],
+                    size: 16,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    quote['category'],
+                    style: GoogleFonts.fredoka(
+                      color: quote['color'],
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
             ),
             
-            const SizedBox(height: 24),
+            const SizedBox(height: 48),
             
-            // Quote text
-            Text(
-              '"${quote['quote']}"',
-              style: const TextStyle(
+            // Quote icon
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    quote['color'].withOpacity(0.15),
+                    quote['color'].withOpacity(0.05),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.format_quote,
+                color: quote['color'],
+                size: 32,
+              ),
+            ),
+            
+            const SizedBox(height: 32),
+            
+            // Quote text in card
+            Container(
+              padding: const EdgeInsets.all(28),
+              decoration: BoxDecoration(
                 color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                height: 1.5,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: quote['color'].withOpacity(0.08),
+                    blurRadius: 24,
+                    offset: const Offset(0, 8),
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              textAlign: TextAlign.center,
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Author
-            Text(
-              '— ${quote['author']}',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.8),
-                fontSize: 14,
-                fontStyle: FontStyle.italic,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            
-            const SizedBox(height: 16),
-            
-            // Quote number
-            Text(
-              '${index + 1} of ${_motivationalQuotes.length}',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
-                fontSize: 12,
+              child: Column(
+                children: [
+                  Text(
+                    quote['quote'],
+                    style: GoogleFonts.nunito(
+                      color: Colors.black87,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      height: 1.6,
+                      letterSpacing: 0.3,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Divider
+                  Container(
+                    width: 60,
+                    height: 3,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          quote['color'].withOpacity(0.6),
+                          quote['color'].withOpacity(0.2),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 20),
+                  
+                  // Author
+                  Text(
+                    quote['author'],
+                    style: GoogleFonts.nunito(
+                      color: Colors.grey[600],
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      fontStyle: FontStyle.italic,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
             ),
           ],

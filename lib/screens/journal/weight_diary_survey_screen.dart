@@ -178,45 +178,84 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Weight over time',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.orange[50],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                Icons.timeline,
+                size: 18,
+                color: Colors.orange[600],
               ),
             ),
-            Icon(Icons.timeline, size: 18, color: Colors.grey[600]),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Weight over time',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[800],
+                ),
+              ),
+            ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey[200]!),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.08),
-                spreadRadius: 0,
-                blurRadius: 6,
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
             ],
-            border: Border.all(color: Colors.grey[200]!),
           ),
           child: allAsync.when(
             data: (entries) {
               if (entries.isEmpty) {
                 return SizedBox(
-                  height: 180,
+                  height: 200,
                   child: Center(
-                    child: Text(
-                      'No weight entries yet',
-                      style: TextStyle(color: Colors.grey[600]),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.orange[50],
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.monitor_weight_outlined,
+                            size: 40,
+                            color: Colors.orange[400],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No weight entries yet',
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: Colors.grey[800],
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Log your first weight entry below',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 );
@@ -240,40 +279,112 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
-                    height: 180,
+                    height: 200,
                     child: _WeightChart(
                       from: from,
                       to: now,
                       points: normalized,
-                      color: Colors.orange[700]!,
+                      color: Colors.orange[600]!,
                       originalUnit: entries.isNotEmpty ? entries.first.unit : 'kg',
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        _formatTick(from),
-                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[100],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          _formatTick(from),
+                          style: TextStyle(
+                            color: Colors.grey[700], 
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
-                      Text(
-                        _formatTick(now),
-                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[100],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          _formatTick(now),
+                          style: TextStyle(
+                            color: Colors.grey[700], 
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ],
               );
             },
-            loading: () => const SizedBox(
-              height: 180,
-              child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            loading: () => SizedBox(
+              height: 200,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.orange[600]!),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Loading weight data...',
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
             error: (error, _) => SizedBox(
-              height: 180,
+              height: 200,
               child: Center(
-                child: Text('Failed to load graph: $error', style: TextStyle(color: Colors.red[600])),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.red[50],
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.error_outline,
+                        size: 32,
+                        color: Colors.red[400],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Failed to load graph',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: Colors.red[600],
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Please try again',
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -434,25 +545,36 @@ class _WeightChartPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paintAxis = Paint()
-      ..color = const Color(0xFFE0E0E0)
-      ..strokeWidth = 1;
+      ..color = Colors.grey[300]!
+      ..strokeWidth = 1.5;
     final paintLine = Paint()
       ..color = color
-      ..strokeWidth = 2
+      ..strokeWidth = 3
       ..style = PaintingStyle.stroke
-      ..isAntiAlias = true;
+      ..isAntiAlias = true
+      ..strokeCap = StrokeCap.round;
     final paintFill = Paint()
-      ..color = color.withOpacity(0.15)
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          color.withOpacity(0.3),
+          color.withOpacity(0.1),
+        ],
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
       ..style = PaintingStyle.fill;
 
-    final paddingLeft = 45.0; // Increased for Y-axis labels
-    final paddingRight = 8.0;
-    final paddingTop = 8.0;
-    final paddingBottom = 16.0;
+    final paddingLeft = 50.0; // Increased for Y-axis labels
+    final paddingRight = 12.0;
+    final paddingTop = 12.0;
+    final paddingBottom = 20.0;
 
     final chartWidth = size.width - paddingLeft - paddingRight;
     final chartHeight = size.height - paddingTop - paddingBottom;
     final origin = Offset(paddingLeft, paddingTop);
+
+    // Draw background grid
+    _drawGrid(canvas, size, origin, chartWidth, chartHeight);
 
     // Axes
     canvas.drawLine(
@@ -510,7 +632,7 @@ class _WeightChartPainter extends CustomPainter {
       }
     }
 
-    // Fill under line
+    // Fill under line with gradient
     final fillPath = Path.from(path)
       ..lineTo(origin.dx + chartWidth, origin.dy + chartHeight)
       ..lineTo(origin.dx, origin.dy + chartHeight)
@@ -518,13 +640,53 @@ class _WeightChartPainter extends CustomPainter {
     canvas.drawPath(fillPath, paintFill);
     canvas.drawPath(path, paintLine);
 
-    // Points
-    final pointPaint = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill;
+    // Points with gradient effect
     for (final pt in points) {
       final o = mapPoint(pt.time, pt.valueKg);
-      canvas.drawCircle(o, 3, pointPaint);
+      
+      // Outer circle
+      final outerPaint = Paint()
+        ..color = color.withOpacity(0.3)
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(o, 6, outerPaint);
+      
+      // Inner circle
+      final innerPaint = Paint()
+        ..color = color
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(o, 4, innerPaint);
+      
+      // Center dot
+      final centerPaint = Paint()
+        ..color = Colors.white
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(o, 2, centerPaint);
+    }
+  }
+
+  void _drawGrid(Canvas canvas, Size size, Offset origin, double chartWidth, double chartHeight) {
+    final gridPaint = Paint()
+      ..color = Colors.grey[100]!
+      ..strokeWidth = 0.5;
+
+    // Horizontal grid lines
+    for (int i = 1; i < 5; i++) {
+      final y = origin.dy + (i * chartHeight / 5);
+      canvas.drawLine(
+        Offset(origin.dx, y),
+        Offset(origin.dx + chartWidth, y),
+        gridPaint,
+      );
+    }
+
+    // Vertical grid lines
+    for (int i = 1; i < 5; i++) {
+      final x = origin.dx + (i * chartWidth / 5);
+      canvas.drawLine(
+        Offset(x, origin.dy),
+        Offset(x, origin.dy + chartHeight),
+        gridPaint,
+      );
     }
   }
 
@@ -549,27 +711,33 @@ class _WeightChartPainter extends CustomPainter {
           text: labelText,
           style: const TextStyle(
             color: Colors.grey,
-            fontSize: 10,
+            fontSize: 11,
+            fontWeight: FontWeight.w500,
           ),
         )
         ..layout();
 
       final yPos = origin.dy + chartHeight - (i * chartHeight / (numLabels - 1));
+
+      // Draw label with background
+      final labelRect = Rect.fromLTWH(
+        origin.dx - textPainter.width - 8,
+        yPos - textPainter.height / 2 - 2,
+        textPainter.width + 4,
+        textPainter.height + 4,
+      );
       
-      // Draw horizontal grid line
-      final gridPaint = Paint()
-        ..color = const Color(0xFFF0F0F0)
-        ..strokeWidth = 0.5;
-      canvas.drawLine(
-        Offset(origin.dx, yPos),
-        Offset(origin.dx + size.width - 45 - 8, yPos),
-        gridPaint,
+      final labelBgPaint = Paint()
+        ..color = Colors.white
+        ..style = PaintingStyle.fill;
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(labelRect, const Radius.circular(4)),
+        labelBgPaint,
       );
 
-      // Draw label
       textPainter.paint(
         canvas, 
-        Offset(origin.dx - textPainter.width - 5, yPos - textPainter.height / 2)
+        Offset(origin.dx - textPainter.width - 6, yPos - textPainter.height / 2)
       );
     }
   }

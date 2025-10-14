@@ -96,23 +96,29 @@ class ExercisePrepSlideWidget extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
             child: Row(
               children: [
-                // Back button
+                // Minimalistic back button
                 Container(
-                  width: 44,
-                  height: 44,
+                  width: 36,
+                  height: 36,
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(14),
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: color.withOpacity(0.15),
+                      width: 1,
+                    ),
                   ),
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () => Navigator.of(context).pop(),
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(10),
+                      splashColor: color.withOpacity(0.1),
+                      highlightColor: color.withOpacity(0.05),
                       child: Icon(
-                        Icons.arrow_back_ios_new,
-                        color: color,
-                        size: 20,
+                        Icons.arrow_back_ios_new_rounded,
+                        color: color.withOpacity(0.8),
+                        size: 18,
                       ),
                     ),
                   ),

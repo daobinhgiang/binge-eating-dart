@@ -82,14 +82,16 @@ class _LessonS2251ScreenState extends ConsumerState<LessonS2251Screen> {
     }
   }
 
-  void _navigateToMealPlanning() {
+  Future<void> _navigateToMealPlanning() async {
     // Mark lesson as completed
     if (_lesson != null) {
-      _lessonService.markLessonCompleted(_lesson!.id);
+      await _lessonService.markLessonCompleted(_lesson!.id);
     }
     
     // Navigate to the Meal Planning tool
-    context.go('/tools/meal-planning');
+    if (mounted) {
+      context.go('/tools/meal-planning');
+    }
   }
 
   @override

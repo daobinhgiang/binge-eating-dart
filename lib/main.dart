@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 import 'screens/main_navigation.dart';
 import 'screens/education/article_detail_screen.dart';
@@ -23,10 +24,13 @@ import 'screens/tools/addressing_setbacks_screen.dart';
 import 'screens/todos/todos_screen.dart';
 import 'screens/todos/add_todo_screen.dart';
 import 'screens/profile/regular_eating_screen.dart';
+import 'screens/profile/app_blocker_screen.dart';
+import 'screens/profile/web_blocker_screen.dart';
 import 'screens/chat/chat_screen.dart';
 import 'screens/chat/realtime_journaling_screen.dart';
 import 'screens/chat/accountability_partner_screen.dart';
 import 'screens/motivation/motivation_screen.dart';
+import 'screens/insights/insights_screen.dart';
 // Journal imports
 import 'screens/journal/food_diary_survey_screen.dart';
 import 'screens/journal/weight_diary_survey_screen.dart';
@@ -203,9 +207,34 @@ class _BEDAppState extends ConsumerState<BEDApp> {
             brightness: Brightness.light,
           ),
           useMaterial3: true,
-          appBarTheme: const AppBarTheme(
+          // Font configuration
+          textTheme: TextTheme(
+            // Headers and titles use Fredoka
+            displayLarge: GoogleFonts.fredoka(fontSize: 57, fontWeight: FontWeight.w400),
+            displayMedium: GoogleFonts.fredoka(fontSize: 45, fontWeight: FontWeight.w400),
+            displaySmall: GoogleFonts.fredoka(fontSize: 36, fontWeight: FontWeight.w400),
+            headlineLarge: GoogleFonts.fredoka(fontSize: 32, fontWeight: FontWeight.w400),
+            headlineMedium: GoogleFonts.fredoka(fontSize: 28, fontWeight: FontWeight.w400),
+            headlineSmall: GoogleFonts.fredoka(fontSize: 24, fontWeight: FontWeight.w400),
+            titleLarge: GoogleFonts.fredoka(fontSize: 22, fontWeight: FontWeight.w500),
+            titleMedium: GoogleFonts.fredoka(fontSize: 16, fontWeight: FontWeight.w500),
+            titleSmall: GoogleFonts.fredoka(fontSize: 14, fontWeight: FontWeight.w500),
+            // Body content uses Nunito
+            bodyLarge: GoogleFonts.nunito(fontSize: 16, fontWeight: FontWeight.w400),
+            bodyMedium: GoogleFonts.nunito(fontSize: 14, fontWeight: FontWeight.w400),
+            bodySmall: GoogleFonts.nunito(fontSize: 12, fontWeight: FontWeight.w400),
+            labelLarge: GoogleFonts.nunito(fontSize: 14, fontWeight: FontWeight.w500),
+            labelMedium: GoogleFonts.nunito(fontSize: 12, fontWeight: FontWeight.w500),
+            labelSmall: GoogleFonts.nunito(fontSize: 11, fontWeight: FontWeight.w500),
+          ),
+          appBarTheme: AppBarTheme(
             centerTitle: true,
             elevation: 0,
+            titleTextStyle: GoogleFonts.fredoka(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
           ),
           cardTheme: CardThemeData(
             elevation: 2,
@@ -234,6 +263,8 @@ class _BEDAppState extends ConsumerState<BEDApp> {
               horizontal: 16,
               vertical: 16,
             ),
+            labelStyle: GoogleFonts.nunito(),
+            hintStyle: GoogleFonts.nunito(),
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
@@ -246,6 +277,10 @@ class _BEDAppState extends ConsumerState<BEDApp> {
               padding: const EdgeInsets.symmetric(
                 horizontal: 24,
                 vertical: 16,
+              ),
+              textStyle: GoogleFonts.nunito(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -380,6 +415,14 @@ final _router = GoRouter(
       builder: (context, state) => const AuthGuard(child: RegularEatingScreen()),
     ),
     GoRoute(
+      path: '/profile/app-blocker',
+      builder: (context, state) => const AuthGuard(child: AppBlockerScreen()),
+    ),
+    GoRoute(
+      path: '/profile/web-blocker',
+      builder: (context, state) => const AuthGuard(child: WebBlockerScreen()),
+    ),
+    GoRoute(
       path: '/chat',
       builder: (context, state) => const AuthGuard(child: ChatScreen()),
     ),
@@ -394,6 +437,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/motivation',
       builder: (context, state) => const AuthGuard(child: MotivationScreen()),
+    ),
+    GoRoute(
+      path: '/insights',
+      builder: (context, state) => const AuthGuard(child: InsightsScreen()),
     ),
     // Journal survey routes
     GoRoute(

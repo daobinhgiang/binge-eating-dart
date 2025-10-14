@@ -62,13 +62,15 @@ class _LessonS235ScreenState extends ConsumerState<LessonS235Screen> {
     }
   }
 
-  void _finishLesson() {
+  Future<void> _finishLesson() async {
     if (_lesson != null) {
-      _lessonService.markLessonCompleted(_lesson!.id);
+      await _lessonService.markLessonCompleted(_lesson!.id);
     }
     
     // Navigate to Urge Surfing tool instead of going back
-    _navigateToUrgeSurfingTool();
+    if (mounted) {
+      _navigateToUrgeSurfingTool();
+    }
   }
 
   void _navigateToUrgeSurfingTool() {
@@ -79,12 +81,14 @@ class _LessonS235ScreenState extends ConsumerState<LessonS235Screen> {
     );
   }
 
-  void _startUrgeSurfingExercise() {
+  Future<void> _startUrgeSurfingExercise() async {
     // Mark lesson as completed and navigate to urge surfing tool
     if (_lesson != null) {
-      _lessonService.markLessonCompleted(_lesson!.id);
+      await _lessonService.markLessonCompleted(_lesson!.id);
     }
-    _navigateToUrgeSurfingTool();
+    if (mounted) {
+      _navigateToUrgeSurfingTool();
+    }
   }
 
   @override

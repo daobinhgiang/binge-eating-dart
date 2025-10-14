@@ -26,230 +26,216 @@ class AddressingSetbacksScreen extends ConsumerWidget {
     final allExercises = ref.watch(userAddressingSetbacksExercisesProvider(user.id));
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildNavigationBar(context, ref, user.id),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
-                child: allExercises.when(
-                  data: (exercises) {
-                    if (exercises.isEmpty) {
-                      return _buildEmptyState(context);
-                    }
-
-                    final sorted = List<AddressingSetbacks>.from(exercises)
-                      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-                    final latest = sorted.first;
-                    final recent = sorted.take(5).toList();
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildHeaderCard(context),
-
-                        const SizedBox(height: 24),
-
-                        Text(
-                          "Today's Log",
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+      backgroundColor: Colors.grey[50],
+      appBar: AppBar(
+        title: const Text(
+          'Addressing Setbacks',
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.red[600]),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: IconButton(
+              onPressed: () {
+                ref.read(userAddressingSetbacksExercisesProvider(user.id).notifier).refreshExercises();
+              },
+              icon: const Icon(Icons.refresh),
+              style: IconButton.styleFrom(
+                backgroundColor: Colors.red[50],
+                foregroundColor: Colors.red[600],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Header Section
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.red[50]!, Colors.deepOrange[50]!],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.trending_down,
+                    size: 32,
+                    color: Colors.red[600],
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Setback Recovery',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red[800],
                         ),
-                        const SizedBox(height: 16),
-                        _buildLatestWithAdd(context, latest),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Learn from setbacks and plan your response',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.red[700],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
 
-                        const SizedBox(height: 24),
+          // Content
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+              child: allExercises.when(
+                data: (exercises) {
+                  if (exercises.isEmpty) {
+                    return _buildEmptyState(context);
+                  }
 
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Recent Logs',
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                  final sorted = List<AddressingSetbacks>.from(exercises)
+                    ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+                  final latest = sorted.first;
+                  final recent = sorted.take(5).toList();
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 24),
+
+                      Text(
+                        "Today's Log",
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey[800],
                             ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.red.withOpacity(0.08),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildLatestWithAdd(context, latest),
+
+                      const SizedBox(height: 24),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Recent Logs',
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey[800],
+                                ),
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.red[50],
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: Colors.red[200]!,
+                                width: 2,
+                              ),
+                            ),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () => _navigateToAllExercises(context, user.id),
                                 borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                  color: Colors.red.withOpacity(0.3),
-                                  width: 1,
-                                ),
-                              ),
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: () => _navigateToAllExercises(context, user.id),
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: const [
-                                        Text(
-                                          'View All',
-                                          style: TextStyle(
-                                            color: Colors.red,
-                                            fontWeight: FontWeight.w500,
-                                          ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        'View All',
+                                        style: TextStyle(
+                                          color: Colors.red[700],
+                                          fontWeight: FontWeight.w600,
                                         ),
-                                        SizedBox(width: 4),
-                                        Icon(
-                                          Icons.arrow_forward_ios,
-                                          size: 12,
-                                          color: Colors.red,
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Icon(
+                                        Icons.arrow_forward_ios,
+                                        size: 12,
+                                        color: Colors.red[700],
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
+                      ),
 
-                        const SizedBox(height: 16),
+                      const SizedBox(height: 16),
 
-                        Column(
-                          children: recent.map((e) => Container(
-                                margin: const EdgeInsets.only(bottom: 12),
-                                child: _buildRecentSetbackCard(context, e),
-                              )).toList(),
-                        ),
-                      ],
-                    );
-                  },
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (error, _) => Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
-                        const SizedBox(height: 16),
-                        Text('Error loading exercises: $error'),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: () {
-                            ref.read(userAddressingSetbacksExercisesProvider(user.id).notifier).refreshExercises();
-                          },
-                          child: const Text('Retry'),
-                        ),
-                      ],
-                    ),
+                      Column(
+                        children: recent.map((e) => Container(
+                              margin: const EdgeInsets.only(bottom: 12),
+                              child: _buildRecentSetbackCard(context, e),
+                            )).toList(),
+                      ),
+                    ],
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, _) => Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
+                      const SizedBox(height: 16),
+                      Text('Error loading exercises: $error'),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          ref.read(userAddressingSetbacksExercisesProvider(user.id).notifier).refreshExercises();
+                        },
+                        child: const Text('Retry'),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _navigateToSetbacksSurvey(context),
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.red[600],
         foregroundColor: Colors.white,
-        elevation: 8,
-        child: const Icon(
-          Icons.add,
-          size: 28,
-        ),
+        icon: const Icon(Icons.add),
+        label: const Text('Log Setback', style: TextStyle(fontWeight: FontWeight.w600)),
+        elevation: 4,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
-  Widget _buildNavigationBar(BuildContext context, WidgetRef ref, String userId) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.purple[600]!,
-            Colors.purple[500]!,
-          ],
-        ),
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    onPressed: () {
-                      ref.read(userAddressingSetbacksExercisesProvider(userId).notifier).refreshExercises();
-                    },
-                    icon: const Icon(Icons.refresh, color: Colors.white),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Addressing Setbacks',
-                style: GoogleFonts.fredoka(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeaderCard(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.purple[50],
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.purple[100]!,
-          width: 2,
-        ),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.trending_down,
-            color: Colors.purple[600],
-            size: 48,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Learn from setbacks and plan your response',
-            style: GoogleFonts.fredoka(
-              fontSize: 16,
-              color: Colors.purple[700],
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildLatestWithAdd(BuildContext context, AddressingSetbacks latest) {
     return SizedBox(
@@ -275,20 +261,48 @@ class AddressingSetbacksScreen extends ConsumerWidget {
     return Container(
       height: 200,
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[300]!),
+        border: Border.all(color: Colors.grey[200]!),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _navigateToSetbacksSurvey(context),
           borderRadius: BorderRadius.circular(16),
-          child: const Center(
-            child: Icon(
-              Icons.add,
-              size: 32,
-              color: Colors.grey,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.red[50],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.add,
+                    size: 32,
+                    color: Colors.red[600],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Log New\nSetback',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.red[700],
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -306,11 +320,10 @@ class AddressingSetbacksScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[300]!),
+        border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 0,
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -332,44 +345,60 @@ class AddressingSetbacksScreen extends ConsumerWidget {
                       width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(16),
+                        gradient: LinearGradient(
+                          colors: [Colors.red[400]!, Colors.red[600]!],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.red.withOpacity(0.3),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
                       child: const Icon(
                         Icons.trending_down,
-                        color: Colors.red,
+                        color: Colors.white,
                         size: 16,
                       ),
                     ),
                     const Spacer(),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
                         color: exercise.isComplete ? Colors.green[50] : Colors.orange[50],
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: exercise.isComplete ? Colors.green[200]! : Colors.orange[200]!,
+                        ),
                       ),
                       child: Text(
                         exercise.isComplete ? 'Complete' : 'In Progress',
                         style: TextStyle(
                           color: exercise.isComplete ? Colors.green[700] : Colors.orange[700],
-                          fontSize: 10,
-                          fontWeight: FontWeight.w500,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 12),
-                Text(
-                  exercise.problemCause.isEmpty ? 'No cause identified' : exercise.problemCause,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
+                Expanded(
+                  child: Text(
+                    exercise.problemCause.isEmpty ? 'No cause identified' : exercise.problemCause,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[800],
+                        ),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-                const Spacer(),
+                const SizedBox(height: 8),
                 Text(
                   'Setback on ${_formatDate(exercise.setbackDate)} • ${exercise.timeSinceSetback}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -395,12 +424,11 @@ class AddressingSetbacksScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[300]!),
+        border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 0,
-            blurRadius: 4,
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
@@ -421,28 +449,42 @@ class AddressingSetbacksScreen extends ConsumerWidget {
                       width: 24,
                       height: 24,
                       decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
+                        gradient: LinearGradient(
+                          colors: [Colors.red[400]!, Colors.red[600]!],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(6),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.red.withOpacity(0.3),
+                            blurRadius: 2,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
                       ),
                       child: const Icon(
                         Icons.trending_down,
-                        color: Colors.red,
+                        color: Colors.white,
                         size: 12,
                       ),
                     ),
                     const Spacer(),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: exercise.isComplete ? Colors.green[50] : Colors.orange[50],
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: exercise.isComplete ? Colors.green[200]! : Colors.orange[200]!,
+                        ),
                       ),
                       child: Text(
                         exercise.isComplete ? 'Complete' : 'In Progress',
                         style: TextStyle(
                           color: exercise.isComplete ? Colors.green[700] : Colors.orange[700],
-                          fontSize: 9,
-                          fontWeight: FontWeight.w500,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
@@ -452,10 +494,10 @@ class AddressingSetbacksScreen extends ConsumerWidget {
                 Expanded(
                   child: Text(
                     exercise.problemCause.isEmpty ? 'No cause identified' : exercise.problemCause,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                          fontSize: 18,
+                          color: Colors.grey[800],
+                          fontSize: 16,
                         ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -479,34 +521,42 @@ class AddressingSetbacksScreen extends ConsumerWidget {
 
   Widget _buildEmptyState(BuildContext context) {
     return Center(
-        child: Padding(
-        padding: const EdgeInsets.all(32),
+      child: Padding(
+        padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.trending_down,
-              size: 80,
-              color: Colors.grey[400],
+            Container(
+              padding: const EdgeInsets.all(32),
+              decoration: BoxDecoration(
+                color: Colors.red[50],
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.trending_down,
+                size: 64,
+                color: Colors.red[400],
+              ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             Text(
               'No Setback Logs Yet',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: Colors.grey[600],
+                color: Colors.grey[800],
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             Text(
               'Log setbacks to better understand patterns and develop strategies for recovery.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey[500],
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Colors.grey[600],
+                height: 1.5,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 40),
             _buildGuideSection(context),
           ],
         ),
@@ -659,37 +709,56 @@ class AddressingSetbacksScreen extends ConsumerWidget {
   }
 
   Widget _buildGuideSection(BuildContext context) {
-    return Card(
-      color: Colors.red[50],
-      elevation: 2,
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.blue[50]!, Colors.lightBlue[50]!],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.blue[100]!),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(Icons.info, color: Colors.red[700], size: 20),
-                const SizedBox(width: 8),
-                Text(
-                  'Setback Recovery Guide',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red[700],
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.blue[100],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Setback Recovery Guide',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue[800],
+                    ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             Text(
               'Understanding setbacks is key to recovery:',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w600,
+                color: Colors.grey[800],
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             _buildGuideItem(context, 'Identify the root cause', 'What underlying problem led to the return of binge eating?', Icons.search, Colors.red),
+            const SizedBox(height: 8),
             _buildGuideItem(context, 'Understand triggers', 'What specific event or situation triggered the setback?', Icons.warning, Colors.orange),
+            const SizedBox(height: 8),
             _buildGuideItem(context, 'Plan your response', 'How will you address these triggers in the future?', Icons.assignment, Colors.green),
           ],
         ),
@@ -698,27 +767,45 @@ class AddressingSetbacksScreen extends ConsumerWidget {
   }
 
   Widget _buildGuideItem(BuildContext context, String title, String description, IconData icon, MaterialColor color) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: color[600], size: 16),
-          const SizedBox(width: 8),
+          Container(
+            width: 24,
+            height: 24,
+            decoration: BoxDecoration(
+              color: color[600],
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Icon(icon, color: Colors.white, size: 14),
+          ),
+          const SizedBox(width: 12),
           Expanded(
-            child: RichText(
-              text: TextSpan(
-                style: Theme.of(context).textTheme.bodySmall,
-                children: [
-                  TextSpan(
-                    text: '$title: ',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: color[700],
-                    ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: color[700],
                   ),
-                  TextSpan(text: description),
-                ],
-              ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  description,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.grey[700],
+                    height: 1.4,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

@@ -82,14 +82,16 @@ class _Lesson121ScreenState extends ConsumerState<Lesson121Screen> {
     }
   }
 
-  void _navigateToJournal() {
+  Future<void> _navigateToJournal() async {
     // Mark lesson as completed
     if (_lesson != null) {
-      _lessonService.markLessonCompleted(_lesson!.id);
+      await _lessonService.markLessonCompleted(_lesson!.id);
     }
     
     // Navigate to the Journal tab
-    context.go('/journal');
+    if (mounted) {
+      context.go('/journal');
+    }
   }
 
   @override

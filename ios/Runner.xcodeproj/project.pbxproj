@@ -16,6 +16,9 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		9D5889402E9DB12800375FB8 /* FamilyControls.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D58893F2E9DB12800375FB8 /* FamilyControls.framework */; };
+		9D5889422E9DB13100375FB8 /* DeviceActivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5889412E9DB13100375FB8 /* DeviceActivity.framework */; };
+		9D5889442E9DB13700375FB8 /* ManagedSettings.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D5889432E9DB13700375FB8 /* ManagedSettings.framework */; };
 		CA0E77262E9CB1A1008A8B03 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CA0E77252E9CB1A1008A8B03 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
@@ -64,6 +67,9 @@
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9D58893F2E9DB12800375FB8 /* FamilyControls.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FamilyControls.framework; path = System/Library/Frameworks/FamilyControls.framework; sourceTree = SDKROOT; };
+		9D5889412E9DB13100375FB8 /* DeviceActivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DeviceActivity.framework; path = System/Library/Frameworks/DeviceActivity.framework; sourceTree = SDKROOT; };
+		9D5889432E9DB13700375FB8 /* ManagedSettings.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ManagedSettings.framework; path = System/Library/Frameworks/ManagedSettings.framework; sourceTree = SDKROOT; };
 		9DCF45942E9102FA009FA0AB /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		CA0E77252E9CB1A1008A8B03 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CB5051B805EEBFC556E5394A /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -83,6 +89,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D5889442E9DB13700375FB8 /* ManagedSettings.framework in Frameworks */,
+				9D5889422E9DB13100375FB8 /* DeviceActivity.framework in Frameworks */,
+				9D5889402E9DB12800375FB8 /* FamilyControls.framework in Frameworks */,
 				8C4BBA5B05582016FA1A3233 /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -101,6 +110,9 @@
 		59EBEE055A3EC0C88D613774 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9D5889432E9DB13700375FB8 /* ManagedSettings.framework */,
+				9D5889412E9DB13100375FB8 /* DeviceActivity.framework */,
+				9D58893F2E9DB12800375FB8 /* FamilyControls.framework */,
 				CB5051B805EEBFC556E5394A /* Pods_Runner.framework */,
 				7EBA73AD3A9767B775A0D019 /* Pods_RunnerTests.framework */,
 			);

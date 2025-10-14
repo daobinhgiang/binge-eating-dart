@@ -48,16 +48,31 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text('Daily Meal Plan'),
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        title: const Text(
+          'Daily Meal Plan',
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
+        backgroundColor: Colors.white,
         elevation: 0,
+        iconTheme: IconThemeData(color: Colors.green[600]),
       ),
       body: Column(
         children: [
           // Progress indicator
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
             child: Column(
               children: [
                 Row(
@@ -65,24 +80,37 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
                   children: [
                     Text(
                       'Step ${_currentPage + 1} of 8',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[600],
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Colors.grey[800],
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    Text(
-                      '${((_currentPage + 1) / 8 * 100).round()}%',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[600],
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.green[50],
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        '${((_currentPage + 1) / 8 * 100).round()}%',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.green[700],
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
-                LinearProgressIndicator(
-                  value: (_currentPage + 1) / 8,
-                  backgroundColor: Colors.grey[300],
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    Colors.green[600]!,
+                const SizedBox(height: 12),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: LinearProgressIndicator(
+                    value: (_currentPage + 1) / 8,
+                    backgroundColor: Colors.grey[200],
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Colors.green[600]!,
+                    ),
+                    minHeight: 8,
                   ),
                 ),
               ],
@@ -93,6 +121,7 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
           Expanded(
             child: PageView(
               controller: _pageController,
+              physics: const NeverScrollableScrollPhysics(),
               onPageChanged: (index) {
                 setState(() {
                   _currentPage = index;
@@ -113,31 +142,63 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
           
           // Navigation buttons
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+            ),
             child: Row(
               children: [
                 if (_currentPage > 0)
                   Expanded(
                     child: OutlinedButton(
                       onPressed: _previousPage,
-                      child: const Text('Previous'),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        side: BorderSide(color: Colors.green[600]!),
+                        foregroundColor: Colors.green[600],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Previous',
+                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                      ),
                     ),
                   ),
-                if (_currentPage > 0) const SizedBox(width: 16),
+                if (_currentPage > 0) const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _isSubmitting ? null : (_currentPage < 7 ? _nextPage : _submitPlan),
                     style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                       backgroundColor: Colors.green[600],
                       foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     child: _isSubmitting
                         ? const SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
                           )
-                        : Text(_currentPage < 7 ? 'Next' : 'Save Meal Plan'),
+                        : Text(
+                            _currentPage < 7 ? 'Next' : 'Save Meal Plan',
+                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                          ),
                   ),
                 ),
               ],
@@ -149,36 +210,137 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
   }
 
   Widget _buildPlanDateQuestion() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'What date is this meal plan for?',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.green[600],
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.green[50]!, Colors.lightGreen[50]!],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.calendar_today,
+                    size: 28,
+                    color: Colors.green[600],
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Plan Date',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green[800],
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Step 1 of 8',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.green[700],
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
+          Text(
+            'When are you planning?',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[800],
+            ),
+          ),
+          const SizedBox(height: 8),
           Text(
             'Select the date you want to plan your meals for.',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Colors.grey[600],
+              height: 1.5,
             ),
           ),
-          const SizedBox(height: 32),
-          Card(
-            child: ListTile(
-              leading: Icon(Icons.calendar_today, color: Colors.green[600]),
-              title: Text(
-                _formatSelectedDate(),
-                style: Theme.of(context).textTheme.titleMedium,
+          const SizedBox(height: 24),
+          GestureDetector(
+            onTap: _selectDate,
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.green[300]!),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              subtitle: Text(_getDateDescription()),
-              trailing: const Icon(Icons.arrow_forward_ios),
-              onTap: _selectDate,
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.green[50],
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      Icons.calendar_month,
+                      color: Colors.green[600],
+                      size: 28,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _formatSelectedDate(),
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          _getDateDescription(),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.green[600],
+                    size: 16,
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -187,61 +349,116 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
   }
 
   Widget _buildMealsQuestion() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Plan your meals for the day',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.green[600],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.green[50]!, Colors.lightGreen[50]!],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
           ),
-          const SizedBox(height: 16),
-          Text(
-            'What would you like to eat for each meal? Be as specific or general as you prefer.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.restaurant_menu,
+                  size: 28,
+                  color: Colors.green[600],
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Plan Your Meals',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green[800],
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Step 2 of 8',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.green[700],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 24),
-          Expanded(
-            child: ListView(
-              children: [
-                _buildMealField(
-                  controller: _breakfastController,
-                  label: 'Breakfast',
-                  icon: Icons.wb_sunny,
-                  hint: 'e.g., Oatmeal with berries and nuts',
+        ),
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'What will you eat?',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[800],
                 ),
-                const SizedBox(height: 16),
-                _buildMealField(
-                  controller: _lunchController,
-                  label: 'Lunch',
-                  icon: Icons.lunch_dining,
-                  hint: 'e.g., Quinoa salad with vegetables',
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'What would you like to eat for each meal? Be as specific or general as you prefer.',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.grey[600],
+                  height: 1.5,
                 ),
-                const SizedBox(height: 16),
-                _buildMealField(
-                  controller: _dinnerController,
-                  label: 'Dinner',
-                  icon: Icons.dinner_dining,
-                  hint: 'e.g., Grilled chicken with rice and vegetables',
-                ),
-                const SizedBox(height: 16),
-                _buildMealField(
-                  controller: _snacksController,
-                  label: 'Snacks (Optional)',
-                  icon: Icons.local_cafe,
-                  hint: 'e.g., Apple with peanut butter, nuts',
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            children: [
+              _buildMealField(
+                controller: _breakfastController,
+                label: 'Breakfast',
+                icon: Icons.wb_sunny,
+                hint: 'e.g., Oatmeal with berries and nuts',
+              ),
+              const SizedBox(height: 16),
+              _buildMealField(
+                controller: _lunchController,
+                label: 'Lunch',
+                icon: Icons.lunch_dining,
+                hint: 'e.g., Quinoa salad with vegetables',
+              ),
+              const SizedBox(height: 16),
+              _buildMealField(
+                controller: _dinnerController,
+                label: 'Dinner',
+                icon: Icons.dinner_dining,
+                hint: 'e.g., Grilled chicken with rice and vegetables',
+              ),
+              const SizedBox(height: 16),
+              _buildMealField(
+                controller: _snacksController,
+                label: 'Snacks (Optional)',
+                icon: Icons.local_cafe,
+                hint: 'e.g., Apple with peanut butter, nuts',
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -251,63 +468,120 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
     required IconData icon,
     required String hint,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(icon, color: Colors.green[600], size: 20),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 5,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.green[50],
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Icon(icon, color: Colors.green[600], size: 16),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  label,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[800],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: TextField(
+              controller: controller,
+              maxLines: 2,
+              style: const TextStyle(fontSize: 15, height: 1.4),
+              decoration: InputDecoration(
+                hintText: hint,
+                hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
               ),
             ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: controller,
-          maxLines: 2,
-          decoration: InputDecoration(
-            hintText: hint,
-            border: const OutlineInputBorder(),
-            filled: true,
-            fillColor: Colors.grey[50],
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget _buildLocationQuestion() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Where will you prepare/get your meals?',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.green[600],
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildStepHeader(
+          'Meal Location',
+          Icons.location_on,
+          'Step 3 of 8',
+        ),
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Where will you prepare?',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[800],
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Select the primary location for meal preparation.',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.grey[600],
+                  height: 1.5,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-          Text(
-            'Select the primary location for meal preparation.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
-          ),
-          const SizedBox(height: 24),
-          Expanded(
-            child: ListView(
-              children: [
-                ...MealPlan.locationOptions.map((location) {
-                  return RadioListTile<String>(
-                    title: Text(location),
+        ),
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            children: [
+              ...MealPlan.locationOptions.map((location) {
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  decoration: BoxDecoration(
+                    color: _selectedLocation == location ? Colors.green[50] : Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: _selectedLocation == location ? Colors.green[300]! : Colors.grey[200]!,
+                      width: _selectedLocation == location ? 2 : 1,
+                    ),
+                  ),
+                  child: RadioListTile<String>(
+                    title: Text(
+                      location,
+                      style: TextStyle(
+                        fontWeight: _selectedLocation == location ? FontWeight.w600 : FontWeight.normal,
+                        color: _selectedLocation == location ? Colors.green[800] : Colors.grey[800],
+                      ),
+                    ),
                     value: location,
                     groupValue: _selectedLocation,
                     onChanged: (value) {
@@ -316,53 +590,91 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
                       });
                     },
                     activeColor: Colors.green[600],
-                  );
-                }),
-                if (_selectedLocation == 'Other') ...[
-                  const SizedBox(height: 16),
-                  TextField(
+                  ),
+                );
+              }),
+              if (_selectedLocation == 'Other') ...[
+                const SizedBox(height: 12),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey[300]!),
+                  ),
+                  child: TextField(
                     controller: _customLocationController,
-                    decoration: const InputDecoration(
+                    style: const TextStyle(fontSize: 15, height: 1.4),
+                    decoration: InputDecoration(
                       labelText: 'Please specify',
-                      border: OutlineInputBorder(),
+                      labelStyle: TextStyle(color: Colors.green[600]),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.all(16),
                     ),
                   ),
-                ],
+                ),
               ],
-            ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildPreparationMethodsQuestion() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'How will you prepare your meals?',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.green[600],
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildStepHeader(
+          'Preparation Methods',
+          Icons.kitchen,
+          'Step 4 of 8',
+        ),
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'How will you prepare?',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[800],
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Select all preparation methods you plan to use (you can choose multiple).',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.grey[600],
+                  height: 1.5,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-          Text(
-            'Select all preparation methods you plan to use (you can choose multiple).',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
-          ),
-          const SizedBox(height: 24),
-          Expanded(
-            child: ListView(
-              children: MealPlan.preparationMethodOptions.map((method) {
-                final isSelected = _selectedMethods.contains(method);
-                return CheckboxListTile(
-                  title: Text(method),
+        ),
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            children: MealPlan.preparationMethodOptions.map((method) {
+              final isSelected = _selectedMethods.contains(method);
+              return Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                decoration: BoxDecoration(
+                  color: isSelected ? Colors.green[50] : Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isSelected ? Colors.green[300]! : Colors.grey[200]!,
+                    width: isSelected ? 2 : 1,
+                  ),
+                ),
+                child: CheckboxListTile(
+                  title: Text(
+                    method,
+                    style: TextStyle(
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                      color: isSelected ? Colors.green[800] : Colors.grey[800],
+                    ),
+                  ),
                   value: isSelected,
                   onChanged: (value) {
                     setState(() {
@@ -374,125 +686,109 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
                     });
                   },
                   activeColor: Colors.green[600],
-                );
-              }).toList(),
-            ),
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
+              );
+            }).toList(),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildPortionGoalsQuestion() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'What are your portion goals?',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.green[600],
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Describe your goals for portion sizes and eating patterns.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
-          ),
-          const SizedBox(height: 24),
-          Expanded(
-            child: TextField(
-              controller: _portionGoalsController,
-              maxLines: null,
-              expands: true,
-              textAlignVertical: TextAlignVertical.top,
-              decoration: const InputDecoration(
-                hintText: 'e.g., Eat moderate portions, listen to hunger cues, include protein at each meal...',
-                border: OutlineInputBorder(),
-                alignLabelWithHint: true,
-              ),
-            ),
-          ),
-        ],
-      ),
+    return _buildTextFieldStep(
+      title: 'Portion Goals',
+      icon: Icons.straighten,
+      step: 'Step 5 of 8',
+      subtitle: 'Set your portion goals',
+      description: 'Describe your goals for portion sizes and eating patterns.',
+      controller: _portionGoalsController,
+      hint: 'e.g., Eat moderate portions, listen to hunger cues, include protein at each meal...',
     );
   }
 
   Widget _buildNutritionGoalsQuestion() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'What are your nutrition goals?',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.green[600],
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Describe what you want to focus on nutritionally for this meal plan.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
-          ),
-          const SizedBox(height: 24),
-          Expanded(
-            child: TextField(
-              controller: _nutritionGoalsController,
-              maxLines: null,
-              expands: true,
-              textAlignVertical: TextAlignVertical.top,
-              decoration: const InputDecoration(
-                hintText: 'e.g., Include more vegetables, get enough protein, stay hydrated, eat balanced meals...',
-                border: OutlineInputBorder(),
-                alignLabelWithHint: true,
-              ),
-            ),
-          ),
-        ],
-      ),
+    return _buildTextFieldStep(
+      title: 'Nutrition Goals',
+      icon: Icons.health_and_safety,
+      step: 'Step 6 of 8',
+      subtitle: 'Focus on nutrition',
+      description: 'Describe what you want to focus on nutritionally for this meal plan.',
+      controller: _nutritionGoalsController,
+      hint: 'e.g., Include more vegetables, get enough protein, stay hydrated, eat balanced meals...',
     );
   }
 
   Widget _buildChallengesQuestion() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return _buildTextFieldStep(
+      title: 'Anticipated Challenges',
+      icon: Icons.warning_amber,
+      step: 'Step 7 of 8',
+      subtitle: 'Identify challenges',
+      description: 'Think about potential obstacles or difficulties you might face with this meal plan.',
+      controller: _challengesController,
+      hint: 'e.g., Busy schedule, limited time for prep, cravings for unhealthy foods, eating out...',
+    );
+  }
+
+  Widget _buildStrategiesQuestion() {
+    return _buildTextFieldStep(
+      title: 'Success Strategies',
+      icon: Icons.psychology,
+      step: 'Step 8 of 8',
+      subtitle: 'Plan for success',
+      description: 'Describe specific strategies and coping skills to help you stick to your meal plan.',
+      controller: _strategiesController,
+      hint: 'e.g., Meal prep on Sunday, pack healthy snacks, set reminders to eat, practice mindful eating...',
+    );
+  }
+
+  Widget _buildStepHeader(String title, IconData icon, String step) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.green[50]!, Colors.lightGreen[50]!],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Row(
         children: [
-          Text(
-            'What challenges do you anticipate?',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              icon,
+              size: 28,
               color: Colors.green[600],
             ),
           ),
-          const SizedBox(height: 16),
-          Text(
-            'Think about potential obstacles or difficulties you might face with this meal plan.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
-          ),
-          const SizedBox(height: 24),
+          const SizedBox(width: 16),
           Expanded(
-            child: TextField(
-              controller: _challengesController,
-              maxLines: null,
-              expands: true,
-              textAlignVertical: TextAlignVertical.top,
-              decoration: const InputDecoration(
-                hintText: 'e.g., Busy schedule, limited time for prep, cravings for unhealthy foods, eating out...',
-                border: OutlineInputBorder(),
-                alignLabelWithHint: true,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green[800],
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  step,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.green[700],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -500,37 +796,63 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
     );
   }
 
-  Widget _buildStrategiesQuestion() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
+  Widget _buildTextFieldStep({
+    required String title,
+    required IconData icon,
+    required String step,
+    required String subtitle,
+    required String description,
+    required TextEditingController controller,
+    required String hint,
+  }) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          _buildStepHeader(title, icon, step),
+          const SizedBox(height: 24),
           Text(
-            'What strategies will help you succeed?',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.green[600],
+            subtitle,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[800],
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
           Text(
-            'Describe specific strategies and coping skills to help you stick to your meal plan.',
+            description,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Colors.grey[600],
+              height: 1.5,
             ),
           ),
-          const SizedBox(height: 24),
-          Expanded(
+          const SizedBox(height: 20),
+          Container(
+            height: 250,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.grey[300]!),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
             child: TextField(
-              controller: _strategiesController,
+              controller: controller,
               maxLines: null,
               expands: true,
               textAlignVertical: TextAlignVertical.top,
-              decoration: const InputDecoration(
-                hintText: 'e.g., Meal prep on Sunday, pack healthy snacks, set reminders to eat, practice mindful eating...',
-                border: OutlineInputBorder(),
-                alignLabelWithHint: true,
+              style: const TextStyle(fontSize: 16, height: 1.5),
+              decoration: InputDecoration(
+                hintText: hint,
+                hintStyle: TextStyle(color: Colors.grey[400], fontSize: 15),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.all(20),
               ),
             ),
           ),
@@ -668,8 +990,17 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
   void _showValidationError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
+        content: Row(
+          children: [
+            Icon(Icons.error_outline, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: Colors.red[400],
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(16),
       ),
     );
   }
@@ -704,9 +1035,18 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
 
       if (plan != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Meal plan saved successfully!'),
-            backgroundColor: Colors.green,
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.check_circle_outline, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(child: Text('Meal plan saved successfully!')),
+              ],
+            ),
+            backgroundColor: Colors.green[600],
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            margin: const EdgeInsets.all(16),
           ),
         );
         Navigator.of(context).pop();
@@ -715,8 +1055,17 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error saving meal plan: $e'),
-            backgroundColor: Colors.red,
+            content: Row(
+              children: [
+                Icon(Icons.error_outline, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(child: Text('Error saving meal plan: $e')),
+              ],
+            ),
+            backgroundColor: Colors.red[400],
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            margin: const EdgeInsets.all(16),
           ),
         );
       }
@@ -729,3 +1078,4 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
     }
   }
 }
+

@@ -88,12 +88,14 @@ class _LessonS243ScreenState extends ConsumerState<LessonS243Screen> {
     );
   }
 
-  void _startProblemSolvingExercise() {
+  Future<void> _startProblemSolvingExercise() async {
     // Mark lesson as completed and navigate to problem solving tool
     if (_lesson != null) {
-      _lessonService.markLessonCompleted(_lesson!.id);
+      await _lessonService.markLessonCompleted(_lesson!.id);
     }
-    _navigateToProblemSolvingTool();
+    if (mounted) {
+      _navigateToProblemSolvingTool();
+    }
   }
 
   @override
