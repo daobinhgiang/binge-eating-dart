@@ -276,47 +276,13 @@ class _MotivationScreenState extends ConsumerState<MotivationScreen> {
                   width: 1.5,
                 ),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.auto_awesome,
-                    color: quote['color'],
-                    size: 16,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    quote['category'],
-                    style: GoogleFonts.fredoka(
-                      color: quote['color'],
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-            const SizedBox(height: 48),
-            
-            // Quote icon
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    quote['color'].withOpacity(0.15),
-                    quote['color'].withOpacity(0.05),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+              child: Text(
+                quote['category'],
+                style: GoogleFonts.fredoka(
+                  color: quote['color'],
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
                 ),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.format_quote,
-                color: quote['color'],
-                size: 32,
               ),
             ),
             

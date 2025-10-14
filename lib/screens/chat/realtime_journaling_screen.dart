@@ -208,271 +208,341 @@ class _RealtimeJournalingScreenState extends ConsumerState<RealtimeJournalingScr
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: const Text('Realtime Journaling'),
+        title: const Text(
+          'Journaling Partner',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+          ),
+        ),
         centerTitle: true,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back_ios, size: 20),
           onPressed: () => context.go('/'),
         ),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                const Color(0xFF9C27B0).withOpacity(0.15),
-                const Color(0xFFBA68C8).withOpacity(0.12),
-                const Color(0xFF8E24AA).withOpacity(0.08),
+      ),
+      body: Column(
+        children: [
+          // Subtle loading indicator
+          if (_isLoadingContext)
+            Container(
+              height: 3,
+              child: const LinearProgressIndicator(
+                backgroundColor: Colors.transparent,
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF9C27B0)),
+              ),
+            ),
+          
+          // Messages list
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollController,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              itemCount: _messages.length + (_isLoading ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index == _messages.length && _isLoading) {
+                  return _buildTypingIndicator();
+                }
+                final message = _messages[index];
+                return _buildMessageBubble(message);
+              },
+            ),
+          ),
+          
+          // Message input
+          Container(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, -2),
+                ),
               ],
             ),
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              setState(() {
-                _messages.clear();
-              });
-              _loadUserContext();
-              _addWelcomeMessage();
-            },
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Start new journal entry',
-          ),
-        ],
-      ),
-      body: ComfortingBackground(
-        child: Column(
-          children: [
-            // Loading context indicator
-            if (_isLoadingContext)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                color: const Color(0xFF9C27B0).withOpacity(0.1),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          const Color(0xFF9C27B0),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Text(
-                        'Loading your journaling context...',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Color(0xFF9C27B0),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            // Info banner
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              margin: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFF9C27B0).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: const Color(0xFF9C27B0).withOpacity(0.3),
-                  width: 1,
-                ),
-              ),
+            child: SafeArea(
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Icon(
-                    Icons.auto_stories,
-                    color: const Color(0xFF9C27B0),
-                    size: 20,
-                  ),
-                  const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
-                      'This is your safe space to reflect and express yourself',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: const Color(0xFF9C27B0),
-                        fontWeight: FontWeight.w500,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF5F5F5),
+                        borderRadius: BorderRadius.circular(24),
                       ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-            // Messages list
-            Expanded(
-              child: ListView.builder(
-                controller: _scrollController,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                itemCount: _messages.length,
-                itemBuilder: (context, index) {
-                  final message = _messages[index];
-                  return _buildMessageBubble(message);
-                },
-              ),
-            ),
-            
-            // Loading indicator
-            if (_isLoading)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          const Color(0xFF9C27B0),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'Reflecting...',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            
-            // Message input
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, -2),
-                  ),
-                ],
-              ),
-              child: SafeArea(
-                child: Row(
-                  children: [
-                    Expanded(
                       child: TextField(
                         controller: _messageController,
                         decoration: InputDecoration(
                           hintText: 'Share your thoughts...',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide(
-                              color: Colors.grey[300]!,
-                            ),
+                          hintStyle: TextStyle(
+                            color: Colors.grey[500],
+                            fontSize: 15,
                           ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide(
-                              color: Colors.grey[300]!,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24),
-                            borderSide: const BorderSide(
-                              color: Color(0xFF9C27B0),
-                              width: 2,
-                            ),
-                          ),
+                          border: InputBorder.none,
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 20,
                             vertical: 12,
                           ),
                         ),
                         maxLines: null,
+                        maxLength: 1000,
+                        buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
                         textCapitalization: TextCapitalization.sentences,
                         onSubmitted: (_) => _sendMessage(),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [
-                            Color(0xFF9C27B0),
-                            Color(0xFFBA68C8),
-                          ],
-                        ),
-                        shape: BoxShape.circle,
+                  ),
+                  const SizedBox(width: 10),
+                  Container(
+                    height: 46,
+                    width: 46,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF9C27B0), Color(0xFFBA68C8)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                      child: IconButton(
-                        icon: const Icon(Icons.send, color: Colors.white),
-                        onPressed: _isLoading ? null : _sendMessage,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF9C27B0).withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: _isLoading ? null : _sendMessage,
+                        borderRadius: BorderRadius.circular(23),
+                        child: Center(
+                          child: _isLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  ),
+                                )
+                              : const Icon(
+                                  Icons.arrow_upward_rounded,
+                                  color: Colors.white,
+                                  size: 22,
+                                ),
+                        ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildMessageBubble(ChatMessage message) {
-    return Align(
-      alignment: message.isUser ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.75,
-        ),
-        decoration: BoxDecoration(
-          gradient: message.isUser
-              ? const LinearGradient(
-                  colors: [
-                    Color(0xFF9C27B0),
-                    Color(0xFFBA68C8),
-                  ],
-                )
-              : null,
-          color: message.isUser ? null : Colors.grey[100],
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              message.content,
-              style: TextStyle(
-                color: message.isUser ? Colors.white : Colors.black87,
-                fontSize: 15,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        mainAxisAlignment: message.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          if (!message.isUser) ...[
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF9C27B0), Color(0xFFBA68C8)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF9C27B0).withOpacity(0.2),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.auto_stories_rounded,
+                color: Colors.white,
+                size: 20,
               ),
             ),
-            const SizedBox(height: 4),
-            Text(
-              _formatTime(message.timestamp),
-              style: TextStyle(
-                color: message.isUser 
-                    ? Colors.white.withOpacity(0.7)
-                    : Colors.grey[600],
-                fontSize: 11,
+            const SizedBox(width: 10),
+          ],
+          Flexible(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                gradient: message.isUser
+                    ? const LinearGradient(
+                        colors: [Color(0xFF9C27B0), Color(0xFFBA68C8)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      )
+                    : null,
+                color: message.isUser ? null : Colors.white,
+                borderRadius: BorderRadius.circular(20).copyWith(
+                  bottomLeft: message.isUser ? const Radius.circular(20) : const Radius.circular(4),
+                  bottomRight: message.isUser ? const Radius.circular(4) : const Radius.circular(20),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: message.isUser 
+                        ? const Color(0xFF9C27B0).withOpacity(0.2)
+                        : Colors.black.withOpacity(0.05),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    message.content,
+                    style: TextStyle(
+                      color: message.isUser ? Colors.white : const Color(0xFF2C2C2C),
+                      fontSize: 15,
+                      height: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    _formatTime(message.timestamp),
+                    style: TextStyle(
+                      color: message.isUser 
+                          ? Colors.white.withOpacity(0.8)
+                          : Colors.grey[500],
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (message.isUser) ...[
+            const SizedBox(width: 10),
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.grey[300]!, Colors.grey[400]!],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.person_rounded,
+                color: Colors.white,
+                size: 20,
               ),
             ),
           ],
-        ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildTypingIndicator() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF9C27B0), Color(0xFFBA68C8)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF9C27B0).withOpacity(0.2),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.auto_stories_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20).copyWith(
+                bottomLeft: const Radius.circular(4),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildTypingDot(0),
+                const SizedBox(width: 5),
+                _buildTypingDot(1),
+                const SizedBox(width: 5),
+                _buildTypingDot(2),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTypingDot(int index) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: Duration(milliseconds: 600 + (index * 100)),
+      builder: (context, value, child) {
+        final animatedValue = (value * 2).clamp(0.0, 1.0);
+        return Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            color: const Color(0xFF9C27B0).withOpacity(0.3 + (0.5 * animatedValue)),
+            shape: BoxShape.circle,
+          ),
+        );
+      },
+      onEnd: () {
+        // Restart animation
+        if (mounted) {
+          setState(() {});
+        }
+      },
     );
   }
 

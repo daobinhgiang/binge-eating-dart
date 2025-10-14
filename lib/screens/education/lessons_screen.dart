@@ -452,7 +452,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
             slivers: [
               SliverAppBar(
                 pinned: true,
-                backgroundColor: const Color(0xFFF5F5F5),
+                backgroundColor: Colors.white,
                 elevation: 2,
                 automaticallyImplyLeading: false,
                 title: const Text(

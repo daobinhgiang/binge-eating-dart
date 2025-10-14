@@ -412,17 +412,6 @@ class ProfileScreen extends ConsumerWidget {
   Widget _buildProfileOptions(BuildContext context) {
     final options = [
       _ProfileOption(
-        icon: Icons.person_outline,
-        title: 'Edit Profile',
-        subtitle: 'Update your personal information',
-        color: const Color(0xFF4CAF50),
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Edit profile coming soon!')),
-          );
-        },
-      ),
-      _ProfileOption(
         icon: Icons.schedule,
         title: 'Regular Eating',
         subtitle: 'Set meal times and intervals',
@@ -449,35 +438,6 @@ class ProfileScreen extends ConsumerWidget {
         subtitle: 'Update your onboarding responses',
         color: const Color(0xFF9C27B0),
         onTap: () => context.go('/onboarding/review'),
-      ),
-      _ProfileOption(
-        icon: Icons.settings_outlined,
-        title: 'Settings',
-        subtitle: 'App preferences and configuration',
-        color: const Color(0xFF607D8B),
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Settings coming soon!')),
-          );
-        },
-      ),
-      _ProfileOption(
-        icon: Icons.help_outline,
-        title: 'Help & Support',
-        subtitle: 'Get help and contact support',
-        color: const Color(0xFF795548),
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Help & support coming soon!')),
-          );
-        },
-      ),
-      _ProfileOption(
-        icon: Icons.info_outline,
-        title: 'About',
-        subtitle: 'App information and version',
-        color: const Color(0xFF3F51B5),
-        onTap: () => _showAboutDialog(context),
       ),
     ];
 
@@ -745,32 +705,6 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  void _showAboutDialog(BuildContext context) {
-    showAboutDialog(
-      context: context,
-      applicationName: 'BED Support App',
-      applicationVersion: '1.0.0',
-      applicationIcon: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
-          ),
-          shape: BoxShape.circle,
-        ),
-        child: const Icon(
-          Icons.favorite,
-          size: 32,
-          color: Colors.white,
-        ),
-      ),
-      children: [
-        const Text(
-          'A supportive app designed to help individuals with Binge Eating Disorder through education, resources, and tools for recovery.',
-        ),
-      ],
-    );
-  }
 
   Widget _buildDeleteAccountSection(BuildContext context, WidgetRef ref) {
     return Container(

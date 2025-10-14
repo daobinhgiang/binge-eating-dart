@@ -238,163 +238,142 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: const Text('Recovery Guide'),
+        title: const Text(
+          'Recovery Guide',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+          ),
+        ),
         centerTitle: true,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back_ios, size: 20),
           onPressed: () => context.go('/'),
         ),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                const Color(0xFF4CAF50).withOpacity(0.15),
-                const Color(0xFF66BB6A).withOpacity(0.12),
-                const Color(0xFF43A047).withOpacity(0.08),
+      ),
+      body: Column(
+        children: [
+          // Subtle loading indicator
+          if (_isLoadingContext)
+            Container(
+              height: 3,
+              child: const LinearProgressIndicator(
+                backgroundColor: Colors.transparent,
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF4CAF50)),
+              ),
+            ),
+          // Messages
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollController,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              itemCount: _messages.length + (_isLoading ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index == _messages.length && _isLoading) {
+                  return _buildTypingIndicator();
+                }
+                return _buildMessageBubble(_messages[index]);
+              },
+            ),
+          ),
+          
+          // Input area
+          Container(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, -2),
+                ),
               ],
             ),
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              setState(() {
-                _messages.clear();
-              });
-              _loadUserContext();
-              _addWelcomeMessage();
-            },
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Start new conversation',
-          ),
-        ],
-      ),
-      body: ComfortingBackground(
-        child: Column(
-          children: [
-            // Loading context indicator
-            if (_isLoadingContext)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                color: const Color(0xFF4CAF50).withOpacity(0.1),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          const Color(0xFF4CAF50),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Text(
-                        'Loading your recovery context...',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Color(0xFF4CAF50),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            // Messages
-            Expanded(
-              child: ListView.builder(
-                controller: _scrollController,
-                padding: const EdgeInsets.all(16),
-                itemCount: _messages.length + (_isLoading ? 1 : 0),
-                itemBuilder: (context, index) {
-                  if (index == _messages.length && _isLoading) {
-                    return _buildTypingIndicator();
-                  }
-                  return _buildMessageBubble(_messages[index]);
-                },
-              ),
-            ),
-            
-            // Input area
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(
-                  top: BorderSide(
-                    color: Colors.grey[300]!,
-                    width: 1,
-                  ),
-                ),
-              ),
+            child: SafeArea(
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Expanded(
-                    child: TextField(
-                      controller: _messageController,
-                      decoration: InputDecoration(
-                        hintText: 'Type your message...',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(24),
-                          borderSide: BorderSide(color: Colors.grey[300]!),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(24),
-                          borderSide: BorderSide(color: Colors.grey[300]!),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(24),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF4CAF50),
-                            width: 2,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF5F5F5),
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: TextField(
+                        controller: _messageController,
+                        decoration: InputDecoration(
+                          hintText: 'Message...',
+                          hintStyle: TextStyle(
+                            color: Colors.grey[500],
+                            fontSize: 15,
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
                           ),
                         ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
+                        maxLines: null,
+                        maxLength: 1000,
+                        buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
+                        textInputAction: TextInputAction.send,
+                        onSubmitted: (_) => _sendMessage(),
                       ),
-                      maxLines: null,
-                      textInputAction: TextInputAction.send,
-                      onSubmitted: (_) => _sendMessage(),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 10),
                   Container(
+                    height: 46,
+                    width: 46,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF4CAF50),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
                       shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF4CAF50).withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                    child: IconButton(
-                      onPressed: _isLoading ? null : _sendMessage,
-                      icon: _isLoading
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
-                            )
-                          : const Icon(
-                              Icons.send,
-                              color: Colors.white,
-                            ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: _isLoading ? null : _sendMessage,
+                        borderRadius: BorderRadius.circular(23),
+                        child: Center(
+                          child: _isLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  ),
+                                )
+                              : const Icon(
+                                  Icons.arrow_upward_rounded,
+                                  color: Colors.white,
+                                  size: 22,
+                                ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -404,38 +383,63 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final hasRecommendations = !message.isUser && message.recommendations != null;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Row(
         mainAxisAlignment: message.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!message.isUser) ...[
             Container(
-              width: 32,
-              height: 32,
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
-                color: const Color(0xFF4CAF50),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF4CAF50).withOpacity(0.2),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: const Icon(
-                Icons.psychology,
+                Icons.psychology_rounded,
                 color: Colors.white,
-                size: 18,
+                size: 20,
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 10),
           ],
           Flexible(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: message.isUser
-                    ? const Color(0xFF4CAF50)
-                    : Colors.grey[100],
-                borderRadius: BorderRadius.circular(18).copyWith(
-                  bottomLeft: message.isUser ? const Radius.circular(18) : const Radius.circular(4),
-                  bottomRight: message.isUser ? const Radius.circular(4) : const Radius.circular(18),
+                gradient: message.isUser
+                    ? const LinearGradient(
+                        colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      )
+                    : null,
+                color: message.isUser ? null : Colors.white,
+                borderRadius: BorderRadius.circular(20).copyWith(
+                  bottomLeft: message.isUser ? const Radius.circular(20) : const Radius.circular(4),
+                  bottomRight: message.isUser ? const Radius.circular(4) : const Radius.circular(20),
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: message.isUser 
+                        ? const Color(0xFF4CAF50).withOpacity(0.2)
+                        : Colors.black.withOpacity(0.05),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -443,22 +447,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   Text(
                     message.content,
                     style: TextStyle(
-                      color: message.isUser ? Colors.white : Colors.black87,
-                      fontSize: 16,
+                      color: message.isUser ? Colors.white : const Color(0xFF2C2C2C),
+                      fontSize: 15,
+                      height: 1.5,
                     ),
                   ),
                   if (hasRecommendations) ...[
                     const SizedBox(height: 12),
                     _buildInlineRecommendations(message.recommendations!),
                   ],
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
                   Text(
                     _formatTime(message.timestamp),
                     style: TextStyle(
                       color: message.isUser 
-                          ? Colors.white.withOpacity(0.7)
-                          : Colors.grey[600],
-                      fontSize: 12,
+                          ? Colors.white.withOpacity(0.8)
+                          : Colors.grey[500],
+                      fontSize: 11,
                     ),
                   ),
                 ],
@@ -466,18 +471,22 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ),
           ),
           if (message.isUser) ...[
-            const SizedBox(width: 8),
+            const SizedBox(width: 10),
             Container(
-              width: 32,
-              height: 32,
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                gradient: LinearGradient(
+                  colors: [Colors.grey[300]!, Colors.grey[400]!],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
-                Icons.person,
+                Icons.person_rounded,
                 color: Colors.white,
-                size: 18,
+                size: 20,
               ),
             ),
           ],
@@ -488,38 +497,57 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   Widget _buildTypingIndicator() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Container(
-            width: 32,
-            height: 32,
+            width: 36,
+            height: 36,
             decoration: BoxDecoration(
-              color: const Color(0xFF4CAF50),
+              gradient: const LinearGradient(
+                colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF4CAF50).withOpacity(0.2),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: const Icon(
-              Icons.psychology,
+              Icons.psychology_rounded,
               color: Colors.white,
-              size: 18,
+              size: 20,
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 10),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(18).copyWith(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20).copyWith(
                 bottomLeft: const Radius.circular(4),
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 _buildTypingDot(0),
-                const SizedBox(width: 4),
+                const SizedBox(width: 5),
                 _buildTypingDot(1),
-                const SizedBox(width: 4),
+                const SizedBox(width: 5),
                 _buildTypingDot(2),
               ],
             ),
@@ -532,16 +560,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Widget _buildTypingDot(int index) {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
-      duration: const Duration(milliseconds: 600),
+      duration: Duration(milliseconds: 600 + (index * 100)),
       builder: (context, value, child) {
+        final animatedValue = (value * 2).clamp(0.0, 1.0);
         return Container(
           width: 8,
           height: 8,
           decoration: BoxDecoration(
-            color: Colors.grey[400]?.withValues(alpha: 0.3 + (0.7 * value)),
+            color: const Color(0xFF4CAF50).withOpacity(0.3 + (0.5 * animatedValue)),
             shape: BoxShape.circle,
           ),
         );
+      },
+      onEnd: () {
+        // Restart animation
+        if (mounted) {
+          setState(() {});
+        }
       },
     );
   }
@@ -566,13 +601,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final nextSteps = recommendationsData['nextSteps'] as String? ?? '';
 
     return Container(
-      margin: const EdgeInsets.only(top: 8),
-      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(12),
+        color: const Color(0xFFF8F9FA),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFF4CAF50).withOpacity(0.3),
+          color: const Color(0xFF4CAF50).withOpacity(0.2),
           width: 1,
         ),
       ),
@@ -581,49 +616,70 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         children: [
           Row(
             children: [
-              Icon(
-                Icons.lightbulb_outline,
-                color: const Color(0xFF4CAF50),
-                size: 16,
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF4CAF50).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.lightbulb_outline_rounded,
+                  color: Color(0xFF4CAF50),
+                  size: 16,
+                ),
               ),
-              const SizedBox(width: 6),
+              const SizedBox(width: 8),
               Text(
                 'Recommendations',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF4CAF50),
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF2C2C2C),
+                  fontSize: 14,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           
           // Recommendations
           ...recommendations.map((rec) => _buildInlineRecommendationItem(rec)),
           
           if (nextSteps.isNotEmpty) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFF4CAF50).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+                color: const Color(0xFF4CAF50).withOpacity(0.08),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Next Steps',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF4CAF50),
-                    ),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.flag_rounded,
+                        size: 14,
+                        color: Color(0xFF4CAF50),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Next Steps',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF4CAF50),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 6),
                   Text(
                     nextSteps,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[700],
+                      color: const Color(0xFF2C2C2C),
+                      fontSize: 13,
+                      height: 1.4,
                     ),
                   ),
                 ],
@@ -646,20 +702,20 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     
     switch (priority) {
       case 'high':
-        priorityColor = Colors.red;
-        priorityIcon = Icons.priority_high;
+        priorityColor = const Color(0xFFE53935);
+        priorityIcon = Icons.priority_high_rounded;
         break;
       case 'medium':
-        priorityColor = Colors.orange;
-        priorityIcon = Icons.remove;
+        priorityColor = const Color(0xFFFB8C00);
+        priorityIcon = Icons.remove_rounded;
         break;
       case 'low':
-        priorityColor = Colors.green;
-        priorityIcon = Icons.keyboard_arrow_down;
+        priorityColor = const Color(0xFF43A047);
+        priorityIcon = Icons.keyboard_arrow_down_rounded;
         break;
       default:
         priorityColor = Colors.grey;
-        priorityIcon = Icons.remove;
+        priorityIcon = Icons.remove_rounded;
     }
 
     IconData typeIcon;
@@ -667,77 +723,92 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     
     switch (type) {
       case 'lesson':
-        typeIcon = Icons.school;
-        typeColor = Colors.blue;
+        typeIcon = Icons.school_rounded;
+        typeColor = const Color(0xFF2196F3);
         break;
       case 'tool':
-        typeIcon = Icons.build;
-        typeColor = Colors.green;
+        typeIcon = Icons.build_rounded;
+        typeColor = const Color(0xFF4CAF50);
         break;
       case 'journal':
-        typeIcon = Icons.edit_note;
-        typeColor = Colors.purple;
+        typeIcon = Icons.edit_note_rounded;
+        typeColor = const Color(0xFF9C27B0);
         break;
       case 'assessment':
-        typeIcon = Icons.quiz;
-        typeColor = Colors.orange;
+        typeIcon = Icons.quiz_rounded;
+        typeColor = const Color(0xFFFF9800);
         break;
       default:
-        typeIcon = Icons.help;
+        typeIcon = Icons.help_outline_rounded;
         typeColor = Colors.grey;
     }
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 6),
+      margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: typeColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: typeColor.withOpacity(0.3),
+          color: typeColor.withOpacity(0.2),
           width: 1,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: typeColor.withOpacity(0.08),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _navigateToFeature(type, recommendation['id'] as String? ?? ''),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
           child: Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(12),
             child: Row(
               children: [
-                Icon(typeIcon, color: typeColor, size: 16),
-                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: typeColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(typeIcon, color: typeColor, size: 18),
+                ),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         title,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: typeColor,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF2C2C2C),
+                          fontSize: 13,
                         ),
                       ),
                       if (description.isNotEmpty) ...[
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 3),
                         Text(
                           description,
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Colors.grey[600],
-                            fontSize: 11,
+                            fontSize: 12,
+                            height: 1.3,
                           ),
                         ),
                       ],
                     ],
                   ),
                 ),
-                Icon(priorityIcon, color: priorityColor, size: 12),
-                const SizedBox(width: 4),
+                const SizedBox(width: 8),
                 Icon(
-                  Icons.arrow_forward_ios,
-                  color: typeColor,
-                  size: 12,
+                  Icons.arrow_forward_ios_rounded,
+                  color: typeColor.withOpacity(0.6),
+                  size: 14,
                 ),
               ],
             ),

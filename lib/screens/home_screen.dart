@@ -1532,19 +1532,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Future<void> _handleResetButton() async {
     try {
+      final isFirstTime = _lastResetTime == null;
+      
       // Show confirmation dialog
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Row(
+          title: Row(
             children: [
-              Icon(Icons.refresh, color: Colors.orange),
-              SizedBox(width: 8),
-              Text('Reset Timer'),
+              Icon(
+                isFirstTime ? Icons.play_arrow : Icons.refresh, 
+                color: isFirstTime ? const Color(0xFF4CAF50) : Colors.orange,
+              ),
+              const SizedBox(width: 8),
+              Text(isFirstTime ? 'Start Timer' : 'Reset Timer'),
             ],
           ),
-          content: const Text(
-            'Are you sure you want to reset your timer? This will log a new reset time.',
+          content: Text(
+            isFirstTime 
+              ? 'Ready to start tracking your binge-free progress?'
+              : 'Are you sure you want to reset your timer? This will log a new reset time.',
           ),
           actions: [
             TextButton(
@@ -1554,10 +1561,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ElevatedButton(
               onPressed: () => Navigator.of(context).pop(true),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
+                backgroundColor: isFirstTime ? const Color(0xFF4CAF50) : Colors.orange,
                 foregroundColor: Colors.white,
               ),
-              child: const Text('Reset'),
+              child: Text(isFirstTime ? 'Start' : 'Reset'),
             ),
           ],
         ),
@@ -1587,8 +1594,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         // Show success message
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Reset time logged successfully!'),
+            SnackBar(
+              content: Text(isFirstTime ? 'Timer started! Good luck on your journey!' : 'Reset time logged successfully!'),
               backgroundColor: Colors.green,
             ),
           );
@@ -1616,7 +1623,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (_lastResetTime == null) {
       return Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: Colors.grey[100],
           borderRadius: BorderRadius.circular(12),
@@ -1625,16 +1632,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             width: 1,
           ),
         ),
-        child: const Center(
-          child: Text(
-            'Hit "Reset" to start tracking your progress',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
+        child: Column(
+          children: [
+            const Text(
+              'Start tracking your binge-free progress',
+              style: TextStyle(
+                color: Colors.black87,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
-          ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: _handleResetButton,
+              icon: const Icon(Icons.play_arrow, size: 24),
+              label: const Text(
+                'Start Timer',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF4CAF50),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 2,
+              ),
+            ),
+          ],
         ),
       );
     }

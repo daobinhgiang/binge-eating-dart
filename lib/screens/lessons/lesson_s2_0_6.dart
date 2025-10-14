@@ -27,7 +27,10 @@ class _LessonS206ScreenState extends State<LessonS206Screen> {
   Future<void> _loadLesson() async {
     try {
       final stage2 = Stage2Data.getStage2();
-      final lesson = stage2.chapters[0].lessons[5];
+      final lesson = stage2.chapters
+          .firstWhere((chapter) => chapter.chapterNumber == 0)
+          .lessons
+          .firstWhere((lesson) => lesson.id == 'lesson_s2_0_6');
       
       setState(() {
         _lesson = lesson;
@@ -73,9 +76,9 @@ class _LessonS206ScreenState extends State<LessonS206Screen> {
     }
   }
 
-  void _finishLesson() {
+  void _finishLesson() async {
     if (_lesson != null) {
-      _lessonService.markLessonCompleted(_lesson!.id);
+      await _lessonService.markLessonCompleted(_lesson!.id);
     }
     Navigator.of(context).pop();
   }

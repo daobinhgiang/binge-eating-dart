@@ -29,6 +29,7 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
   final GlobalKey _educationTabKey = GlobalKey();
   final GlobalKey _toolsTabKey = GlobalKey();
   final GlobalKey _journalTabKey = GlobalKey();
+  final GlobalKey _completionKey = GlobalKey();
 
   final List<NavigationItem> _navigationItems = [
     NavigationItem(
@@ -157,10 +158,18 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
       context: context,
       journalTabKey: _journalTabKey,
       onFinish: () async {
-        // Mark that user has seen the journal tutorial - completing the full tutorial flow
+        // Mark that user has seen the journal tutorial
         await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
           hasSeenJournalTutorial: true,
         );
+        
+        // Show completion tutorial after a short delay
+        if (mounted) {
+          await Future.delayed(const Duration(milliseconds: 1500));
+          if (mounted) {
+            _showCompletionTutorial();
+          }
+        }
       },
       onTabClick: () async {
         // Update the status BEFORE navigating to prevent tutorial from showing again
@@ -172,6 +181,28 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
         // Navigate to journal tab when user clicks the highlighted tab
         if (mounted) {
           context.go('/journal');
+        }
+        
+        // Show completion tutorial after navigation
+        await Future.delayed(const Duration(milliseconds: 1500));
+        if (mounted) {
+          _showCompletionTutorial();
+        }
+      },
+    );
+  }
+
+  void _showCompletionTutorial() {
+    if (!mounted) return;
+    
+    AppTutorialService().showCompletionTutorial(
+      context: context,
+      completionKey: _completionKey, // Still pass the key but it won't be used for spotlight
+      onFinish: () {
+        print('🎉 Tutorial flow complete! User is ready to start their journey.');
+        // Navigate back to home tab
+        if (mounted) {
+          context.go('/');
         }
       },
     );
@@ -238,6 +269,7 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
     _updateCurrentIndex(location);
     
     return Scaffold(
+      key: _completionKey,
       body: _currentIndex == 2 
           ? ForestBackground(
               child: IndexedStack(

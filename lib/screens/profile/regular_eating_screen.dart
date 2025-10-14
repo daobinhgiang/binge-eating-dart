@@ -221,135 +221,250 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authNotifierProvider);
+    final colorScheme = Theme.of(context).colorScheme;
     
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text('Regular Eating'),
         centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/profile'),
         ),
-        actions: [
-          if (_hasChanges)
-            IconButton(
+      ),
+      floatingActionButton: _hasChanges
+          ? FloatingActionButton.extended(
               onPressed: _isLoading ? null : _saveSettings,
               icon: _isLoading 
                 ? const SizedBox(
                     width: 20,
                     height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
                   )
-                : const Icon(Icons.save),
-              tooltip: 'Save settings',
-            ),
-        ],
-      ),
+                : const Icon(Icons.check),
+              label: Text(_isLoading ? 'Saving...' : 'Save Changes'),
+              elevation: 4,
+            )
+          : null,
       body: authState.when(
         data: (user) {
           if (user == null) {
-            return const Center(
-              child: Text('Please log in to access regular eating settings'),
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.login, size: 64, color: Colors.grey[400]),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Please log in to access regular eating settings',
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                ],
+              ),
             );
           }
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Introduction card
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.schedule,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Regular Eating Schedule',
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                // Hero Section
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        colorScheme.primary.withOpacity(0.1),
+                        colorScheme.secondary.withOpacity(0.05),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: colorScheme.primary.withOpacity(0.1),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Set up your preferred meal timing to help establish a regular eating pattern. This can support your recovery by creating structure around meals.',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey[600],
-                          ),
+                        child: Icon(
+                          Icons.restaurant_menu,
+                          color: colorScheme.primary,
+                          size: 32,
                         ),
-                      ],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Regular Eating Schedule',
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Build healthy eating patterns with structured meal times',
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: Colors.grey[700],
+                          height: 1.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 32),
+
+                // First Meal Time Section
+                _buildSettingSection(
+                  context: context,
+                  colorScheme: colorScheme,
+                  icon: Icons.wb_sunny_outlined,
+                  title: 'First Meal',
+                  subtitle: 'When do you start your day?',
+                  child: InkWell(
+                    onTap: _selectFirstMealTime,
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: colorScheme.primary.withOpacity(0.2),
+                          width: 2,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.03),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: colorScheme.primary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              Icons.access_time_rounded,
+                              color: colorScheme.primary,
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _formatFirstMealTime(),
+                                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: colorScheme.onSurface,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Tap to change',
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Icon(
+                            Icons.edit_outlined,
+                            color: colorScheme.primary,
+                            size: 20,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
 
                 const SizedBox(height: 24),
 
-                // Meal interval settings
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Time Between Meals',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Choose how many hours you want between each meal (2-6 hours recommended)',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        
-                        // Current value display
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primaryContainer,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.timer,
-                                color: Theme.of(context).colorScheme.onPrimaryContainer,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Current: ${_formatMealInterval()}',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  color: Theme.of(context).colorScheme.onPrimaryContainer,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                // Meal Interval Section
+                _buildSettingSection(
+                  context: context,
+                  colorScheme: colorScheme,
+                  icon: Icons.schedule_outlined,
+                  title: 'Time Between Meals',
+                  subtitle: 'Space your meals evenly',
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              colorScheme.primaryContainer,
+                              colorScheme.primaryContainer.withOpacity(0.5),
                             ],
                           ),
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        
-                        const SizedBox(height: 16),
-                        
-                        // Slider
-                        Slider(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.timer_outlined,
+                              color: colorScheme.onPrimaryContainer,
+                              size: 28,
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              _formatMealInterval(),
+                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: colorScheme.onPrimaryContainer,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      SliderTheme(
+                        data: SliderThemeData(
+                          trackHeight: 6,
+                          activeTrackColor: colorScheme.primary,
+                          inactiveTrackColor: colorScheme.primary.withOpacity(0.2),
+                          thumbColor: colorScheme.primary,
+                          overlayColor: colorScheme.primary.withOpacity(0.2),
+                          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
+                          overlayShape: const RoundSliderOverlayShape(overlayRadius: 24),
+                        ),
+                        child: Slider(
                           value: _mealIntervalHours,
                           min: RegularEating.minMealIntervalHours,
                           max: RegularEating.maxMealIntervalHours,
-                          divisions: 4, // 1 hour increments (2, 3, 4, 5, 6)
-                          label: _formatMealInterval(),
+                          divisions: 4,
                           onChanged: (value) {
                             setState(() {
                               _mealIntervalHours = value.round().toDouble();
@@ -357,280 +472,190 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
                             });
                           },
                         ),
-                        
-                        // Hour markers
-                        Row(
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              '2 hours',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                            Text(
-                              '6 hours',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Colors.grey[600],
-                              ),
-                            ),
+                            _buildSliderLabel(context, '2h', 'Frequent'),
+                            _buildSliderLabel(context, '6h', 'Spaced'),
                           ],
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                // First meal time settings
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'First Meal Time',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'What time would you like to have your first meal of the day?',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        
-                        // Time display and picker
-                        InkWell(
-                          onTap: _selectFirstMealTime,
-                          borderRadius: BorderRadius.circular(8),
-                          child: Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Theme.of(context).colorScheme.outline,
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.access_time,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    'First meal at: ${_formatFirstMealTime()}',
-                                    style: Theme.of(context).textTheme.titleMedium,
-                                  ),
-                                ),
-                                Icon(
-                                  Icons.arrow_forward_ios,
-                                  size: 16,
-                                  color: Colors.grey[600],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                // Meal count settings
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Number of Meals',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'How many meals would you like to have per day?',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        
-                        // Current value display
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primaryContainer,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.restaurant,
-                                color: Theme.of(context).colorScheme.onPrimaryContainer,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Current: $_mealCount meal${_mealCount == 1 ? '' : 's'} per day',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  color: Theme.of(context).colorScheme.onPrimaryContainer,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        
-                        const SizedBox(height: 16),
-                        
-                        // Meal count selector
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                'Meals per day:',
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                IconButton(
-                                  onPressed: _mealCount > RegularEating.minMealCount
-                                      ? () {
-                                          setState(() {
-                                            _mealCount--;
-                                            _markAsChanged();
-                                          });
-                                        }
-                                      : null,
-                                  icon: const Icon(Icons.remove),
-                                  style: IconButton.styleFrom(
-                                    backgroundColor: _mealCount > RegularEating.minMealCount
-                                        ? Theme.of(context).colorScheme.primaryContainer
-                                        : Colors.grey[300],
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Text(
-                                  '$_mealCount',
-                                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                IconButton(
-                                  onPressed: _mealCount < RegularEating.maxMealCount
-                                      ? () {
-                                          setState(() {
-                                            _mealCount++;
-                                            _markAsChanged();
-                                          });
-                                        }
-                                      : null,
-                                  icon: const Icon(Icons.add),
-                                  style: IconButton.styleFrom(
-                                    backgroundColor: _mealCount < RegularEating.maxMealCount
-                                        ? Theme.of(context).colorScheme.primaryContainer
-                                        : Colors.grey[300],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        
-                        const SizedBox(height: 8),
-                        
-                        // Range indicator
-                        Text(
-                          'Range: ${RegularEating.minMealCount}-${RegularEating.maxMealCount} meals',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
 
                 const SizedBox(height: 24),
 
-                // Save button
-                if (_hasChanges)
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: _isLoading ? null : _saveSettings,
-                      icon: _isLoading 
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
-                          )
-                        : const Icon(Icons.save),
-                      label: Text(_isLoading ? 'Saving...' : 'Save Settings'),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.all(16),
-                      ),
-                    ),
-                  ),
-
-                const SizedBox(height: 16),
-
-                // Info card
-                Card(
-                  color: Colors.blue[50],
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.info_outline,
-                              color: Colors.blue[700],
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'About Regular Eating',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blue[700],
-                              ),
-                            ),
-                          ],
+                // Meal Count Section
+                _buildSettingSection(
+                  context: context,
+                  colorScheme: colorScheme,
+                  icon: Icons.restaurant_outlined,
+                  title: 'Daily Meals',
+                  subtitle: 'How many meals per day?',
+                  child: Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.03),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Regular eating involves having structured meal times throughout the day. This can help:\n'
-                          '• Reduce urges to binge\n'
-                          '• Stabilize blood sugar levels\n'
-                          '• Create healthy eating patterns\n'
-                          '• Improve overall relationship with food',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.blue[700],
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildCircularButton(
+                          context: context,
+                          colorScheme: colorScheme,
+                          icon: Icons.remove,
+                          enabled: _mealCount > RegularEating.minMealCount,
+                          onPressed: () {
+                            setState(() {
+                              _mealCount--;
+                              _markAsChanged();
+                            });
+                          },
+                        ),
+                        const SizedBox(width: 32),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                colorScheme.primary.withOpacity(0.1),
+                                colorScheme.primary.withOpacity(0.05),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(20),
                           ),
+                          child: Column(
+                            children: [
+                              Text(
+                                '$_mealCount',
+                                style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.primary,
+                                ),
+                              ),
+                              Text(
+                                'meal${_mealCount == 1 ? '' : 's'}',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 32),
+                        _buildCircularButton(
+                          context: context,
+                          colorScheme: colorScheme,
+                          icon: Icons.add,
+                          enabled: _mealCount < RegularEating.maxMealCount,
+                          onPressed: () {
+                            setState(() {
+                              _mealCount++;
+                              _markAsChanged();
+                            });
+                          },
                         ),
                       ],
                     ),
                   ),
                 ),
+
+                const SizedBox(height: 32),
+
+                // Benefits Section
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.blue[50]!,
+                        Colors.blue[50]!.withOpacity(0.3),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.blue[100],
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Icon(
+                              Icons.lightbulb_outline,
+                              color: Colors.blue[700],
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            'Benefits',
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue[900],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      ...[
+                        ('Reduces urges to binge', Icons.block),
+                        ('Stabilizes blood sugar', Icons.show_chart),
+                        ('Creates healthy patterns', Icons.repeat),
+                        ('Improves food relationship', Icons.favorite_outline),
+                      ].map((item) => Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(
+                                item.$2,
+                                color: Colors.blue[700],
+                                size: 18,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                item.$1,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Colors.blue[900],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )),
+                    ],
+                  ),
+                ),
+
+                // Bottom padding for FAB
+                if (_hasChanges) const SizedBox(height: 80),
               ],
             ),
           );
@@ -647,20 +672,122 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Error loading regular eating settings',
+                'Error loading settings',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color: Colors.red[600],
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
-                error.toString(),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.red[500],
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Text(
+                  error.toString(),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.red[500],
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSettingSection({
+    required BuildContext context,
+    required ColorScheme colorScheme,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Widget child,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: colorScheme.primary, size: 24),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        child,
+      ],
+    );
+  }
+
+  Widget _buildSliderLabel(BuildContext context, String value, String label) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Colors.grey[700],
+          ),
+        ),
+        Text(
+          label,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Colors.grey[600],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCircularButton({
+    required BuildContext context,
+    required ColorScheme colorScheme,
+    required IconData icon,
+    required bool enabled,
+    required VoidCallback onPressed,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        boxShadow: enabled
+            ? [
+                BoxShadow(
+                  color: colorScheme.primary.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ]
+            : null,
+      ),
+      child: Material(
+        color: enabled ? colorScheme.primary : Colors.grey[300],
+        shape: const CircleBorder(),
+        child: InkWell(
+          onTap: enabled ? onPressed : null,
+          customBorder: const CircleBorder(),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Icon(
+              icon,
+              color: enabled ? Colors.white : Colors.grey[500],
+              size: 28,
+            ),
           ),
         ),
       ),

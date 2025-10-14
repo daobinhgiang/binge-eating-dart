@@ -6,6 +6,7 @@ enum TutorialStep {
   firstLesson,
   toolsTab,
   journalTab,
+  completion,
 }
 
 class AppTutorialService {
@@ -383,6 +384,147 @@ class AppTutorialService {
     Future.delayed(const Duration(milliseconds: 500), () {
       _tutorialCoachMark?.show(context: context);
     });
+  }
+
+  // Show completion tutorial (full screen celebration)
+  void showCompletionTutorial({
+    required BuildContext context,
+    required GlobalKey completionKey,
+    required VoidCallback onFinish,
+  }) {
+    _currentStep = TutorialStep.completion;
+    
+    // Show a full-screen overlay with completion message
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: EdgeInsets.zero,
+          child: Container(
+            width: double.infinity,
+            height: double.infinity,
+            color: Colors.black.withOpacity(0.8), // Full-screen black overlay
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(32.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Celebration icon
+                    Container(
+                      width: 140,
+                      height: 140,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF66BB6A),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF66BB6A).withOpacity(0.5),
+                            blurRadius: 30,
+                            spreadRadius: 10,
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.celebration,
+                        size: 70,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    
+                    // Main title
+                    const Text(
+                      "🎉 Tutorial Complete! 🎉",
+                      style: TextStyle(
+                        fontSize: 32.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    
+                    // Success message
+                    const Text(
+                      "Congratulations!",
+                      style: TextStyle(
+                        fontSize: 24.0,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    // Encouraging message
+                    const Text(
+                      "You've completed the tutorial and learned about all the key features of Nurtra.",
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        color: Colors.white,
+                        height: 1.5,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    
+                    // Empowering message box
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.7),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.2),
+                          width: 1,
+                        ),
+                      ),
+                      child: const Text(
+                        "Now you're ready to start using the app and take the first steps on your journey to recover from binge eating. Remember, we're here to support you every step of the way!",
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.white,
+                          height: 1.6,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    
+                    // Call to action button
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        onFinish();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF66BB6A),
+                        padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        elevation: 8,
+                      ),
+                      child: const Text(
+                        "Start Your Journey",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   // Dispose tutorial

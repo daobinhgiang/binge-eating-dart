@@ -74,10 +74,10 @@ class _Lesson33ScreenState extends State<Lesson33Screen> {
     }
   }
 
-  void _finishLesson() {
+  void _finishLesson() async {
     // Mark lesson as completed
     if (_lesson != null) {
-      _lessonService.markLessonCompleted(_lesson!.id);
+      await _lessonService.markLessonCompleted(_lesson!.id);
     }
     
     // Navigate back to education screen

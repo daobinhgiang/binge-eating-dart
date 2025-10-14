@@ -16,7 +16,10 @@ class _AssessmentS303ScreenState extends State<AssessmentS303Screen> {
   @override
   void initState() {
     super.initState();
-    _assessment = AssessmentData.getEDEQAssessment();
+    // Get EDE-Q assessment and override lessonId for Stage 3
+    _assessment = AssessmentData.getEDEQAssessment().copyWith(
+      lessonId: 'lesson_s3_0_3',
+    );
   }
 
   @override

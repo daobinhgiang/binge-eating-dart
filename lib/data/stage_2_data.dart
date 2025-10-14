@@ -2019,6 +2019,67 @@ class Stage2Data {
               updatedAt: now,
             ),
             
+            // Lesson 7.2.1: Addressing Overconcern Exercise
+            Lesson(
+              id: 'lesson_s2_7_2_1',
+              title: '7.2.1: Addressing Overconcern Exercise',
+              description: 'Practice your skills for addressing overconcern about shape and weight with structured exercises',
+              chapterNumber: 7,
+              lessonNumber: 21, // Using 21 to represent 2.1
+              slides: [
+                LessonSlide(
+                  id: 'slide_s2_7_2_1_1',
+                  title: 'Ready to Practice Addressing Overconcern?',
+                  content: 'This lesson will take you directly to the Addressing Overconcern Exercise in the Tools section. Here you can practice your skills for addressing overconcern about shape and weight with structured exercises.',
+                  slideNumber: 1,
+                  bulletPoints: [
+                    'The Addressing Overconcern Exercise provides hands-on practice with real scenarios',
+                    'You can work through overconcern challenges step-by-step using the structured approach',
+                    'Practice makes the addressing overconcern process more natural and automatic',
+                    'You can return to this exercise anytime to continue building your skills'
+                  ],
+                ),
+                LessonSlide(
+                  id: 'slide_s2_7_2_1_2',
+                  title: 'What You\'ll Practice',
+                  content: 'In the Addressing Overconcern Exercise, you\'ll work through various scenarios that commonly trigger overconcern about shape and weight, learning to apply your new skills in real situations.',
+                  slideNumber: 2,
+                  bulletPoints: [
+                    'Learn to recognize when overconcern is taking over your self-worth',
+                    'Practice rebalancing your pie chart of self-worth',
+                    'Develop strategies for reducing body checking and avoidance behaviors',
+                    'Build confidence in your ability to address overconcern constructively'
+                  ],
+                ),
+                LessonSlide(
+                  id: 'slide_s2_7_2_1_3',
+                  title: 'Getting Started',
+                  content: 'When you\'re ready, tap "Start Exercise" to go directly to the Addressing Overconcern tool. You can work through as many scenarios as you like and return anytime.',
+                  slideNumber: 3,
+                  bulletPoints: [
+                    'The exercise will guide you through each step of the addressing overconcern process',
+                    'Take your time with each scenario - there\'s no rush',
+                    'The more you practice, the more natural this approach will become',
+                    'Remember: a balanced sense of self-worth comes from many areas of life'
+                  ],
+                ),
+                LessonSlide(
+                  id: 'slide_s2_7_2_1_4',
+                  title: 'Ready to Begin?',
+                  content: 'You\'re about to access the Addressing Overconcern Exercise. This hands-on practice will help you master the skills for addressing overconcern about shape and weight.',
+                  slideNumber: 4,
+                  bulletPoints: [
+                    'Tap "Start Exercise" to go to the Addressing Overconcern tool',
+                    'Work through the scenarios at your own pace',
+                    'Return to this lesson anytime to access the exercise again',
+                    'Remember: practice makes perfect!'
+                  ],
+                ),
+              ],
+              createdAt: now,
+              updatedAt: now,
+            ),
+            
             // Lesson 7.3: A New Way of Seeing Yourself
             Lesson(
               id: 'lesson_s2_7_3',

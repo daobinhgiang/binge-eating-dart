@@ -16,7 +16,10 @@ class _AssessmentS304ScreenState extends State<AssessmentS304Screen> {
   @override
   void initState() {
     super.initState();
-    _assessment = AssessmentData.getCIAAssessment();
+    // Get CIA assessment and override lessonId for Stage 3
+    _assessment = AssessmentData.getCIAAssessment().copyWith(
+      lessonId: 'lesson_s3_0_4',
+    );
   }
 
   @override

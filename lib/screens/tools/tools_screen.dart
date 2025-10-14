@@ -96,54 +96,37 @@ class ToolsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(context),
-            const SizedBox(height: 24),
-            Expanded(
-              child: ListView(
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              pinned: true,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              surfaceTintColor: Colors.transparent,
+              elevation: 2,
+              automaticallyImplyLeading: false,
+              title: Text(
+                'Exercises',
+                style: GoogleFonts.fredoka(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                ),
+              ),
+              centerTitle: true,
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.only(top: 24),
+              sliver: SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                children: [
-                  ...exercises.map((exercise) => _buildExerciseCard(context, exercise)),
-                  const SizedBox(height: 24),
-                ],
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    ...exercises.map((exercise) => _buildExerciseCard(context, exercise)),
+                    const SizedBox(height: 24),
+                  ]),
+                ),
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context) {
-    return _buildHeaderContent(context);
-  }
-
-  Widget _buildHeaderContent(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        border: Border(
-          bottom: BorderSide(
-            color: Colors.grey[300]!,
-            width: 1.0,
-          ),
-        ),
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
-          child: Text(
-            'Exercises',
-            style: GoogleFonts.fredoka(
-              fontSize: 36,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
-            ),
-            textAlign: TextAlign.center,
-          ),
         ),
       ),
     );

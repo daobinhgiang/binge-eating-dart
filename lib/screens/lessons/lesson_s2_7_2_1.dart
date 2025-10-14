@@ -28,10 +28,13 @@ class _LessonS2721ScreenState extends ConsumerState<LessonS2721Screen> {
     try {
       // Load from the Stage 2 data structure
       final stage2 = Stage2Data.getStage2();
-      final lesson721 = stage2.chapters[6].lessons[2]; // Chapter 7 (index 6), Lesson 3 (index 2, which is 7.2.1)
+      final lesson = stage2.chapters
+          .firstWhere((chapter) => chapter.chapterNumber == 7)
+          .lessons
+          .firstWhere((lesson) => lesson.id == 'lesson_s2_7_2_1');
       
       setState(() {
-        _lesson = lesson721;
+        _lesson = lesson;
         _isLoading = false;
       });
     } catch (e) {

@@ -33,16 +33,30 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(context),
-            const SizedBox(height: 24),
-            Expanded(
-              child: SingleChildScrollView(
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              pinned: true,
+              backgroundColor: Colors.white,
+              surfaceTintColor: Colors.transparent,
+              elevation: 2,
+              automaticallyImplyLeading: false,
+              title: Text(
+                'Journal',
+                style: GoogleFonts.fredoka(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                ),
+              ),
+              centerTitle: true,
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.only(top: 24),
+              sliver: SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
                     // Weight Progress Graph
                     WeightGraphWidget(
                       userId: user.id,
@@ -57,7 +71,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                     _buildDiaryAccessCards(context),
                     
                     const SizedBox(height: 100), // Extra space for floating action button
-                  ],
+                  ]),
                 ),
               ),
             ),
@@ -76,40 +90,6 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-    );
-  }
-
-  Widget _buildHeader(BuildContext context) {
-    return _buildHeaderContent(context);
-  }
-
-  Widget _buildHeaderContent(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          bottom: BorderSide(
-            color: Colors.grey[300]!,
-            width: 1.0,
-          ),
-        ),
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
-          child: Text(
-            'Journal',
-            style: GoogleFonts.fredoka(
-              fontSize: 36,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
     );
   }
 

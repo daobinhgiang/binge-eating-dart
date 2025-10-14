@@ -5,6 +5,7 @@ import '../models/assessment_question.dart';
 import '../models/assessment_response.dart';
 import '../core/services/assessment_service.dart';
 import '../core/services/exp_service.dart';
+import '../core/services/lesson_service.dart';
 import '../providers/exp_provider.dart';
 import '../models/quiz_submission.dart';
 import './level_up_dialog.dart';
@@ -26,6 +27,7 @@ class AssessmentWidget extends ConsumerStatefulWidget {
 class _AssessmentWidgetState extends ConsumerState<AssessmentWidget> {
   final AssessmentService _assessmentService = AssessmentService();
   final ExpService _expService = ExpService();
+  final LessonService _lessonService = LessonService();
   final Map<String, String> _responses = {};
   int _currentQuestionIndex = 0;
   bool _isSubmitting = false;
@@ -524,7 +526,9 @@ class _AssessmentWidgetState extends ConsumerState<AssessmentWidget> {
       if (_isQuiz) {
         await _submitQuizForExp();
       } else {
-        // For non-quiz assessments, just show success
+        // For non-quiz assessments, mark lesson as completed and show success
+        await _lessonService.markLessonCompleted(widget.assessment.lessonId);
+        
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(

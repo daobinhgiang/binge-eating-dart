@@ -28,7 +28,10 @@ class _Lesson13ScreenState extends State<Lesson13Screen> {
     try {
       // Load from the new Stage 1 data structure
       final stage1 = Stage1Data.getStage1();
-      final lesson13 = stage1.chapters.first.lessons[2]; // Third lesson (index 2)
+      final lesson13 = stage1.chapters
+          .firstWhere((chapter) => chapter.chapterNumber == 1)
+          .lessons
+          .firstWhere((lesson) => lesson.id == 'lesson_1_3');
       
       setState(() {
         _lesson = lesson13;
@@ -74,10 +77,10 @@ class _Lesson13ScreenState extends State<Lesson13Screen> {
     }
   }
 
-  void _finishLesson() {
+  void _finishLesson() async {
     // Mark lesson as completed
     if (_lesson != null) {
-      _lessonService.markLessonCompleted(_lesson!.id);
+      await _lessonService.markLessonCompleted(_lesson!.id);
     }
     
     // Navigate back to education screen
