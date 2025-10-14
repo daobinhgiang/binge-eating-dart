@@ -1,9 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:binge_eating_recovery/core/services/screen_time_service.dart';
 import 'package:binge_eating_recovery/core/services/user_data_service.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:async';
-import 'dart:io';
 
 class WebBlockerScreen extends StatefulWidget {
   const WebBlockerScreen({super.key});
@@ -67,7 +67,7 @@ class _WebBlockerScreenState extends State<WebBlockerScreen> {
   }
 
   Future<void> _blockWebsites() async {
-    if (!Platform.isIOS) {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) {
       setState(() {
         _message = 'Error: Website blocking is only available on iOS';
       });

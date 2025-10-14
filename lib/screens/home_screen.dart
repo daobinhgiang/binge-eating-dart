@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -1718,7 +1718,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           const SizedBox(height: 24),
           
           // Circular progress indicator
-          Platform.isIOS 
+          (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS)
             ? _buildIOSTimerLayout(timeUnits, days, hours, minutes, seconds)
             : SizedBox(
                 width: 320,

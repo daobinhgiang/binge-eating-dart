@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 class ScreenTimeService {
@@ -9,7 +9,7 @@ class ScreenTimeService {
   /// Returns true if the picker was shown successfully,
   /// throws PlatformException if there was an error
   Future<bool> showFamilyActivityPicker() async {
-    if (!Platform.isIOS) {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) {
       throw PlatformException(
         code: 'UNSUPPORTED_PLATFORM',
         message: 'Screen Time API is only available on iOS',
@@ -31,7 +31,7 @@ class ScreenTimeService {
   /// Returns true if websites were blocked successfully,
   /// throws PlatformException if there was an error
   Future<bool> blockWebsites(List<String> websites) async {
-    if (!Platform.isIOS) {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) {
       throw PlatformException(
         code: 'UNSUPPORTED_PLATFORM',
         message: 'Screen Time API is only available on iOS',

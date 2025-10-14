@@ -1,7 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:binge_eating_recovery/core/services/screen_time_service.dart';
 import 'package:go_router/go_router.dart';
-import 'dart:io';
 
 class AppBlockerScreen extends StatefulWidget {
   const AppBlockerScreen({super.key});
@@ -17,7 +17,7 @@ class _AppBlockerScreenState extends State<AppBlockerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (!Platform.isIOS) {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) {
       return Scaffold(
         backgroundColor: const Color(0xFFF5F5DC),
         appBar: AppBar(
