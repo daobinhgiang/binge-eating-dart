@@ -148,7 +148,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
 
-  Widget _buildProfileSection(AsyncValue authState, {bool onGreenBackground = false}) {
+  Widget _buildProfileSection(AsyncValue authState) {
     // Show level badge for logged in users
     return authState.when(
       data: (user) {
@@ -485,7 +485,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -503,10 +503,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF4CAF50).withValues(alpha: 0.08),
+                    color: const Color(0xFF4CAF50).withOpacity(0.08),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: const Color(0xFF4CAF50).withValues(alpha: 0.2),
+                      color: const Color(0xFF4CAF50).withOpacity(0.2),
                       width: 1,
                     ),
                   ),

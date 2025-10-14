@@ -302,8 +302,8 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                 contentPadding: const EdgeInsets.all(20),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -410,6 +410,28 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Specific Problems (${_specificProblems.length})',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: _addSpecificProblem,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add Problem'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepOrange[600],
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -564,6 +586,28 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                   ),
                 ),
               ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Potential Solutions (${_potentialSolutions.length})',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: _addPotentialSolution,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add Solution'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepOrange[600],
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -660,8 +704,17 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                         color: Colors.deepOrange[700],
                         fontWeight: FontWeight.w500,
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 4),
+                      Text(
+                        'Go back to Step 3 to add solutions first',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.grey[500],
+                          fontSize: 12,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -785,8 +838,17 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                         color: Colors.deepOrange[700],
                         fontWeight: FontWeight.w500,
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 4),
+                      Text(
+                        'Go back to Step 3 to add solutions first',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.grey[500],
+                          fontSize: 12,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -848,8 +910,8 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                       color: Colors.grey[500],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           )
         else

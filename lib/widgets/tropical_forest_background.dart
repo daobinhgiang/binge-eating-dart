@@ -175,7 +175,7 @@ class TropicalForestPainter extends CustomPainter {
       double height, double width, double windOffset) {
     
     // Palm trunk - thin and tall
-    paint.color = const Color(0xFF8B4513).withValues(alpha: 0.08);
+    paint.color = const Color(0xFF8B4513).withOpacity(0.08);
     final trunkRect = Rect.fromCenter(
       center: Offset(position.dx, position.dy + height * 0.2),
       width: width * 0.2,
@@ -184,7 +184,7 @@ class TropicalForestPainter extends CustomPainter {
     canvas.drawRect(trunkRect, paint);
     
     // Palm fronds - multiple layers
-    paint.color = const Color(0xFF2D5016).withValues(alpha: 0.06);
+    paint.color = const Color(0xFF2D5016).withOpacity(0.06);
     
     // Main frond
     final frondPath = Path();
@@ -225,7 +225,7 @@ class TropicalForestPainter extends CustomPainter {
       double height, double width, double windOffset) {
     
     // Spruce trunk
-    paint.color = const Color(0xFF8B4513).withValues(alpha: 0.08);
+    paint.color = const Color(0xFF8B4513).withOpacity(0.08);
     final trunkRect = Rect.fromCenter(
       center: Offset(position.dx, position.dy + height * 0.3),
       width: width * 0.3,
@@ -234,7 +234,7 @@ class TropicalForestPainter extends CustomPainter {
     canvas.drawRect(trunkRect, paint);
     
     // Spruce foliage layers
-    paint.color = const Color(0xFF2D5016).withValues(alpha: 0.05);
+    paint.color = const Color(0xFF2D5016).withOpacity(0.05);
     
     // Bottom layer
     canvas.drawOval(
@@ -247,7 +247,7 @@ class TropicalForestPainter extends CustomPainter {
     );
     
     // Middle layer
-    paint.color = const Color(0xFF4A6741).withValues(alpha: 0.04);
+    paint.color = const Color(0xFF4A6741).withOpacity(0.04);
     canvas.drawOval(
       Rect.fromCenter(
         center: Offset(position.dx + windOffset * 0.5, position.dy - height * 0.1),
@@ -258,7 +258,7 @@ class TropicalForestPainter extends CustomPainter {
     );
     
     // Top layer
-    paint.color = const Color(0xFF6B8E23).withValues(alpha: 0.03);
+    paint.color = const Color(0xFF6B8E23).withOpacity(0.03);
     canvas.drawOval(
       Rect.fromCenter(
         center: Offset(position.dx + windOffset * 0.3, position.dy - height * 0.2),
@@ -271,7 +271,7 @@ class TropicalForestPainter extends CustomPainter {
 
   void _drawForestFloor(Canvas canvas, Size size, Paint paint) {
     // Draw tropical forest floor with organic curves
-    paint.color = const Color(0xFF388E3C).withValues(alpha: 0.02);
+    paint.color = const Color(0xFF388E3C).withOpacity(0.02);
     
     final path = Path();
     path.moveTo(0, size.height);
@@ -307,12 +307,12 @@ class TropicalForestPainter extends CustomPainter {
     for (final element in groundElements) {
       final elementType = element['type'] as String;
       if (elementType == 'fern') {
-        paint.color = const Color(0xFF43A047).withValues(alpha: 0.015);
+        paint.color = const Color(0xFF43A047).withOpacity(0.015);
         _drawFern(canvas, size, paint, 
           Offset(size.width * (element['x'] as double), size.height * (element['y'] as double)),
           size.width * (element['size'] as double));
       } else {
-        paint.color = const Color(0xFF43A047).withValues(alpha: 0.01);
+        paint.color = const Color(0xFF43A047).withOpacity(0.01);
         canvas.drawCircle(
           Offset(size.width * (element['x'] as double), size.height * (element['y'] as double)),
           size.width * (element['size'] as double),
@@ -348,7 +348,7 @@ class TropicalForestPainter extends CustomPainter {
 
   void _drawFogEffect(Canvas canvas, Size size, Paint paint) {
     // Draw subtle fog effect inspired by the SVG
-    paint.color = const Color(0xFFB0C4DE).withValues(alpha: 0.03);
+    paint.color = const Color(0xFFB0C4DE).withOpacity(0.03);
     
     for (int i = 0; i < 3; i++) {
       final fogY = size.height * (0.2 + i * 0.3);
@@ -612,7 +612,7 @@ class ScrollAwareTropicalForestPainter extends CustomPainter {
       double height, double width, double windOffset) {
     
     // Palm trunk
-    paint.color = const Color(0xFF8B4513).withValues(alpha: 0.08);
+    paint.color = const Color(0xFF8B4513).withOpacity(0.08);
     final trunkRect = Rect.fromCenter(
       center: Offset(position.dx, position.dy + height * 0.2),
       width: width * 0.2,
@@ -621,7 +621,7 @@ class ScrollAwareTropicalForestPainter extends CustomPainter {
     canvas.drawRect(trunkRect, paint);
     
     // Palm fronds with wind effect
-    paint.color = const Color(0xFF2D5016).withValues(alpha: 0.06);
+    paint.color = const Color(0xFF2D5016).withOpacity(0.06);
     
     final frondPath = Path();
     frondPath.moveTo(position.dx, position.dy - height * 0.1);
@@ -641,7 +641,7 @@ class ScrollAwareTropicalForestPainter extends CustomPainter {
       double height, double width, double windOffset) {
     
     // Spruce trunk
-    paint.color = const Color(0xFF8B4513).withValues(alpha: 0.08);
+    paint.color = const Color(0xFF8B4513).withOpacity(0.08);
     final trunkRect = Rect.fromCenter(
       center: Offset(position.dx, position.dy + height * 0.3),
       width: width * 0.3,
@@ -650,7 +650,7 @@ class ScrollAwareTropicalForestPainter extends CustomPainter {
     canvas.drawRect(trunkRect, paint);
     
     // Spruce foliage layers
-    paint.color = const Color(0xFF2D5016).withValues(alpha: 0.05);
+    paint.color = const Color(0xFF2D5016).withOpacity(0.05);
     canvas.drawOval(
       Rect.fromCenter(
         center: Offset(position.dx + windOffset, position.dy),
@@ -662,7 +662,7 @@ class ScrollAwareTropicalForestPainter extends CustomPainter {
   }
 
   void _drawForestFloorWithParallax(Canvas canvas, Size size, Paint paint, double parallaxOffset) {
-    paint.color = const Color(0xFF388E3C).withValues(alpha: 0.02);
+    paint.color = const Color(0xFF388E3C).withOpacity(0.02);
     
     final path = Path();
     path.moveTo(0, size.height);
@@ -682,7 +682,7 @@ class ScrollAwareTropicalForestPainter extends CustomPainter {
   }
 
   void _drawFogEffectWithParallax(Canvas canvas, Size size, Paint paint, double parallaxOffset) {
-    paint.color = const Color(0xFFB0C4DE).withValues(alpha: 0.03);
+    paint.color = const Color(0xFFB0C4DE).withOpacity(0.03);
     
     for (int i = 0; i < 3; i++) {
       final fogY = size.height * (0.2 + i * 0.3) - parallaxOffset * 0.3;

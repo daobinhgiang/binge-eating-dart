@@ -212,7 +212,7 @@ class UrgeSurfingDetailScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: _getCriteriaColor(criteriaCount).withValues(alpha: 0.2),
+                  color: _getCriteriaColor(criteriaCount).withOpacity(0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(

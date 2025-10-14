@@ -8,6 +8,9 @@ import 'journal/journal_screen.dart';
 import 'profile/profile_screen.dart';
 import '../widgets/comforting_background.dart';
 import '../widgets/forest_background.dart';
+import '../core/services/app_tutorial_service.dart';
+import '../providers/auth_provider.dart';
+import '../models/user_model.dart';
 
 class MainNavigation extends ConsumerStatefulWidget {
   const MainNavigation({super.key});
@@ -18,6 +21,14 @@ class MainNavigation extends ConsumerStatefulWidget {
 
 class _MainNavigationState extends ConsumerState<MainNavigation> {
   int _currentIndex = 0;
+  bool _hasShownEducationTutorial = false;
+  bool _hasShownToolsTutorial = false;
+  bool _hasShownJournalTutorial = false;
+
+  // Global keys for tutorial targets
+  final GlobalKey _educationTabKey = GlobalKey();
+  final GlobalKey _toolsTabKey = GlobalKey();
+  final GlobalKey _journalTabKey = GlobalKey();
 
   final List<NavigationItem> _navigationItems = [
     NavigationItem(
@@ -55,6 +66,91 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
   @override
   void initState() {
     super.initState();
+    // Show tutorial after first frame is rendered
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAndShowTutorial();
+    });
+  }
+
+
+  void _checkAndShowTutorial() async {
+    final user = ref.read(authNotifierProvider).value;
+    if (user == null || !mounted) return;
+
+    // Show education tutorial if user hasn't seen app tutorial
+    if (!user.hasSeenAppTutorial && !_hasShownEducationTutorial) {
+      _hasShownEducationTutorial = true;
+      AppTutorialService().showEducationTabTutorial(
+        context: context,
+        educationTabKey: _educationTabKey,
+        onFinish: () async {
+          // Mark that user has seen the education tutorial
+          // This allows the first lesson tutorial to show when they navigate to lessons
+          await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
+            hasSeenAppTutorial: true,
+          );
+        },
+        onTabClick: () {
+          // Navigate to education tab when user clicks the highlighted tab
+          context.go('/education');
+        },
+      );
+    }
+    // Show tools tutorial if user has completed first lesson
+    else if (user.hasCompletedFirstLesson && 
+             user.hasSeenAppTutorial && 
+             !user.hasSeenToolsTutorial &&
+             !_hasShownToolsTutorial) {
+      _showToolsTutorial();
+    }
+    // Show journal tutorial if user has completed tools tutorial
+    else if (user.hasSeenToolsTutorial && 
+             !user.hasSeenJournalTutorial &&
+             !_hasShownJournalTutorial) {
+      _showJournalTutorial();
+    }
+  }
+
+  void _showToolsTutorial() {
+    if (_hasShownToolsTutorial || !mounted) return;
+    
+    _hasShownToolsTutorial = true;
+    
+    AppTutorialService().showToolsTabTutorial(
+      context: context,
+      toolsTabKey: _toolsTabKey,
+      onFinish: () async {
+        // Mark that user has seen the tools tutorial
+        await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
+          hasSeenToolsTutorial: true,
+        );
+      },
+      onTabClick: () {
+        // Navigate to tools tab when user clicks the highlighted tab
+        context.go('/tools');
+      },
+    );
+  }
+
+  void _showJournalTutorial() {
+    if (_hasShownJournalTutorial || !mounted) return;
+    
+    _hasShownJournalTutorial = true;
+    
+    AppTutorialService().showJournalTabTutorial(
+      context: context,
+      journalTabKey: _journalTabKey,
+      onFinish: () async {
+        // Mark that user has seen the journal tutorial - completing the full tutorial flow
+        await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
+          hasSeenJournalTutorial: true,
+        );
+      },
+      onTabClick: () {
+        // Navigate to journal tab when user clicks the highlighted tab
+        context.go('/journal');
+      },
+    );
   }
 
   void _updateCurrentIndex(String location) {
@@ -81,6 +177,38 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
 
   @override
   Widget build(BuildContext context) {
+    // Listen to auth state changes and check for tutorial
+    // This ensures the tools tutorial shows immediately after completing the first lesson
+    ref.listen<AsyncValue<UserModel?>>(authNotifierProvider, (previous, next) {
+      next.whenData((user) {
+        if (user != null && mounted) {
+          // Check if we should show tools tutorial
+          if (user.hasCompletedFirstLesson && 
+              user.hasSeenAppTutorial && 
+              !user.hasSeenToolsTutorial &&
+              !_hasShownToolsTutorial) {
+            // Small delay to ensure the navigation animation completes
+            Future.delayed(const Duration(milliseconds: 500), () {
+              if (mounted) {
+                _showToolsTutorial();
+              }
+            });
+          }
+          // Check if we should show journal tutorial
+          else if (user.hasSeenToolsTutorial && 
+                   !user.hasSeenJournalTutorial &&
+                   !_hasShownJournalTutorial) {
+            // Small delay to ensure the navigation animation completes
+            Future.delayed(const Duration(milliseconds: 500), () {
+              if (mounted) {
+                _showJournalTutorial();
+              }
+            });
+          }
+        }
+      });
+    });
+    
     // Get current location and update index
     final location = GoRouterState.of(context).uri.path;
     _updateCurrentIndex(location);
@@ -131,8 +259,19 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
                 final item = entry.value;
                 final isSelected = _currentIndex == index;
                 
+                // Add keys to education, tools, and journal tabs for tutorial
+                GlobalKey? tabKey;
+                if (index == 1) { // Education tab
+                  tabKey = _educationTabKey;
+                } else if (index == 2) { // Tools tab
+                  tabKey = _toolsTabKey;
+                } else if (index == 3) { // Journal tab
+                  tabKey = _journalTabKey;
+                }
+                
                 return Expanded(
                   child: GestureDetector(
+                    key: tabKey,
                     onTap: () {
                       context.go(item.route);
                     },

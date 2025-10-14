@@ -8,6 +8,8 @@ import '../../models/stage.dart';
 import '../../models/chapter.dart';
 import '../../models/lesson.dart';
 import '../../providers/lesson_progress_provider.dart';
+import '../../providers/auth_provider.dart';
+import '../../core/services/app_tutorial_service.dart';
 import '../lessons/lesson_1_1.dart';
 import '../lessons/lesson_1_2.dart';
 import '../lessons/lesson_1_2_1.dart';
@@ -97,12 +99,56 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
   Stage? _currentStage;
   Chapter? _currentChapter;
   final Map<String, GlobalKey> _sectionKeys = {};
+  final GlobalKey _firstLessonKey = GlobalKey();
+  bool _hasShownTutorial = false;
 
   @override
   void initState() {
     super.initState();
     _loadStages();
     _scrollController.addListener(_onScroll);
+    
+    // Show tutorial after first frame is rendered
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAndShowTutorial();
+    });
+  }
+
+  void _checkAndShowTutorial() async {
+    final user = ref.read(authNotifierProvider).value;
+    if (user == null || !mounted || _hasShownTutorial) return;
+
+    // Show first lesson tutorial ONLY if:
+    // 1. User HAS seen the app tutorial (meaning they clicked on the education tab)
+    // 2. User has NOT completed the first lesson yet
+    if (user.hasSeenAppTutorial && !user.hasCompletedFirstLesson) {
+      _hasShownTutorial = true;
+      
+      // Wait a bit for the layout to settle
+      await Future.delayed(const Duration(milliseconds: 800));
+      
+      if (!mounted) return;
+      
+      AppTutorialService().showFirstLessonTutorial(
+        context: context,
+        firstLessonKey: _firstLessonKey,
+        onFinish: () {
+          // Tutorial completed - no need to update status here
+          // The hasSeenAppTutorial is already true from the education tab tutorial
+        },
+        onLessonClick: () {
+          // Navigate to the first lesson when user clicks the highlighted lesson card
+          final firstLesson = _stages.isNotEmpty && 
+                             _stages.first.chapters.isNotEmpty && 
+                             _stages.first.chapters.first.lessons.isNotEmpty
+              ? _stages.first.chapters.first.lessons.first
+              : null;
+          if (firstLesson != null) {
+            _navigateToLesson(firstLesson);
+          }
+        },
+      );
+    }
   }
 
   @override
@@ -608,6 +654,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
     required bool isLocked,
     required int position,
     required Color stageColor,
+    GlobalKey? lessonKey,
   }) {
     Color buttonColor = isCompleted 
         ? stageColor
@@ -633,6 +680,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
           right: position == 1 ? 40 : position == 0 ? 0 : 0,
         ),
         child: GestureDetector(
+          key: lessonKey,
           onTap: isLocked ? null : () => _navigateToLesson(lesson),
           child: Container(
             width: 70,

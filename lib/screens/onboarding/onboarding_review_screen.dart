@@ -341,7 +341,7 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
                                       ),
                                       borderRadius: BorderRadius.circular(12),
                                       color: isSelected 
-                                          ? const Color(0xFF007AFF).withValues(alpha: 0.1)
+                                          ? const Color(0xFF007AFF).withOpacity(0.1)
                                           : Colors.white,
                                     ),
                                     child: Row(

@@ -227,7 +227,7 @@ class _LessonS235ScreenState extends ConsumerState<LessonS235Screen> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withValues(alpha: 0.3),
+              color: Colors.grey.withOpacity(0.3),
               blurRadius: 4,
               offset: const Offset(0, -2),
             ),

@@ -6,6 +6,7 @@ import '../../models/lesson.dart';
 import '../../models/todo_item.dart';
 import '../../widgets/lesson_slide_widget.dart';
 import '../../data/stage_1_data.dart';
+import '../../providers/auth_provider.dart';
 
 class Lesson11Screen extends ConsumerStatefulWidget {
   const Lesson11Screen({super.key});
@@ -86,14 +87,26 @@ class _Lesson11ScreenState extends ConsumerState<Lesson11Screen> {
     }
   }
 
-  void _finishLesson() {
+  void _finishLesson() async {
     // Mark lesson as completed
     if (_lesson != null) {
       _lessonService.markLessonCompleted(_lesson!.id);
     }
     
+    // Mark user as having completed first lesson for tutorial tracking
+    try {
+      await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
+        hasCompletedFirstLesson: true,
+      );
+    } catch (e) {
+      // Silently fail - this is not critical to lesson completion
+      debugPrint('Error updating tutorial status: $e');
+    }
+    
     // Navigate back to education screen
-    Navigator.of(context).pop();
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   @override

@@ -253,9 +253,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                const Color(0xFF4CAF50).withValues(alpha: 0.15),
-                const Color(0xFF66BB6A).withValues(alpha: 0.12),
-                const Color(0xFF43A047).withValues(alpha: 0.08),
+                const Color(0xFF4CAF50).withOpacity(0.15),
+                const Color(0xFF66BB6A).withOpacity(0.12),
+                const Color(0xFF43A047).withOpacity(0.08),
               ],
             ),
           ),
@@ -281,7 +281,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             if (_isLoadingContext)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
+                color: const Color(0xFF4CAF50).withOpacity(0.1),
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
                   children: [
@@ -456,7 +456,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     _formatTime(message.timestamp),
                     style: TextStyle(
                       color: message.isUser 
-                          ? Colors.white.withValues(alpha: 0.7)
+                          ? Colors.white.withOpacity(0.7)
                           : Colors.grey[600],
                       fontSize: 12,
                     ),
@@ -569,10 +569,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.8),
+        color: Colors.white.withOpacity(0.8),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
+          color: const Color(0xFF4CAF50).withOpacity(0.3),
           width: 1,
         ),
       ),
@@ -606,7 +606,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
+                color: const Color(0xFF4CAF50).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
@@ -690,10 +690,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
       decoration: BoxDecoration(
-        color: typeColor.withValues(alpha: 0.1),
+        color: typeColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: typeColor.withValues(alpha: 0.3),
+          color: typeColor.withOpacity(0.3),
           width: 1,
         ),
       ),

@@ -52,6 +52,7 @@ dependencies:
   go_router: ^14.6.1
   flutter_riverpod: ^2.6.1
   fl_chart: ^0.68.0
+  introduction_screen: ^4.0.0
   flutter_web_plugins:
     sdk: flutter
   
@@ -62,6 +63,7 @@ dependencies:
   flutter_dotenv: ^6.0.0
   image_picker: ^1.1.2
   google_fonts: ^6.2.1
+  tutorial_coach_mark: ^1.2.11
   
 
 dev_dependencies:

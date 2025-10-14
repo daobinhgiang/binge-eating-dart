@@ -128,6 +128,9 @@ class AuthService {
   }
 
   // Sign in with Google
+  // Platform-specific behavior:
+  // - Web: Closing the popup throws "popup_closed" exception
+  // - Mobile (iOS/Android): Canceling returns null
   Future<UserModel?> signInWithGoogle() async {
     try {
       print('Starting Google Sign-in...');
@@ -138,12 +141,34 @@ class AuthService {
       // If silent sign-in fails, try interactive sign-in
       if (googleUser == null) {
         print('Silent sign-in failed, trying interactive sign-in...');
-        googleUser = await _googleSignIn.signIn();
+        try {
+          googleUser = await _googleSignIn.signIn();
+        } catch (signInError) {
+          // On web, closing the popup throws an error with "popup_closed" message
+          // On mobile, canceling returns null instead of throwing
+          // Treat popup_closed as a cancellation, not an error
+          if (signInError.toString().contains('popup_closed')) {
+            print('User closed the sign-in popup');
+            try {
+              await _googleSignIn.disconnect();
+            } catch (disconnectError) {
+              print('Error disconnecting after popup closed: $disconnectError');
+            }
+            return null;
+          }
+          // If it's a different error, rethrow it
+          rethrow;
+        }
       }
       
       if (googleUser == null) {
         print('User cancelled Google Sign-in');
-        // User cancelled the sign-in
+        // User cancelled the sign-in - disconnect to reset state
+        try {
+          await _googleSignIn.disconnect();
+        } catch (disconnectError) {
+          print('Error disconnecting after cancellation: $disconnectError');
+        }
         return null;
       }
 
@@ -225,6 +250,12 @@ class AuthService {
       return null;
     } on FirebaseAuthException catch (e) {
       print('Firebase Auth Exception: ${e.code} - ${e.message}');
+      // Disconnect to reset state on error
+      try {
+        await _googleSignIn.disconnect();
+      } catch (disconnectError) {
+        print('Error disconnecting after Firebase auth error: $disconnectError');
+      }
       throw _handleAuthException(e);
     } catch (e, stackTrace) {
       print('Google Sign-in Error: $e');
@@ -405,6 +436,46 @@ class AuthService {
       }
     } catch (e) {
       throw 'Failed to update onboarding status. Please try again.';
+    }
+  }
+
+  // Update intro status
+  Future<void> updateIntroStatus({required bool hasSeenIntro}) async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) throw 'No user signed in';
+
+      final userDoc = _firestore.collection('users').doc(user.uid);
+      await userDoc.update({'hasSeenIntro': hasSeenIntro});
+    } catch (e) {
+      throw 'Failed to update intro status. Please try again.';
+    }
+  }
+
+  // Update tutorial status
+  Future<void> updateTutorialStatus({
+    bool? hasSeenAppTutorial,
+    bool? hasCompletedFirstLesson,
+    bool? hasSeenToolsTutorial,
+    bool? hasSeenJournalTutorial,
+  }) async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) throw 'No user signed in';
+
+      final userDoc = _firestore.collection('users').doc(user.uid);
+      final updateData = <String, dynamic>{};
+
+      if (hasSeenAppTutorial != null) updateData['hasSeenAppTutorial'] = hasSeenAppTutorial;
+      if (hasCompletedFirstLesson != null) updateData['hasCompletedFirstLesson'] = hasCompletedFirstLesson;
+      if (hasSeenToolsTutorial != null) updateData['hasSeenToolsTutorial'] = hasSeenToolsTutorial;
+      if (hasSeenJournalTutorial != null) updateData['hasSeenJournalTutorial'] = hasSeenJournalTutorial;
+
+      if (updateData.isNotEmpty) {
+        await userDoc.update(updateData);
+      }
+    } catch (e) {
+      throw 'Failed to update tutorial status. Please try again.';
     }
   }
 

@@ -400,7 +400,7 @@ class _AddressingSetbacksSurveyScreenState extends ConsumerState<AddressingSetba
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
@@ -425,7 +425,7 @@ class _AddressingSetbacksSurveyScreenState extends ConsumerState<AddressingSetba
           Text(
             description,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.white.withValues(alpha: 0.9),
+              color: Colors.white.withOpacity(0.9),
             ),
           ),
         ],

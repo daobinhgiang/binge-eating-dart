@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,6 +13,7 @@ import 'screens/auth/login_screen.dart';
 import 'screens/auth/register_screen.dart';
 import 'screens/auth/email_auth_screen.dart';
 import 'screens/admin/admin_screen.dart';
+import 'screens/onboarding/intro_screen.dart';
 import 'screens/onboarding/onboarding_screen.dart';
 import 'screens/onboarding/onboarding_review_screen.dart';
 import 'screens/tools/problem_solving_main_screen.dart';
@@ -108,6 +110,27 @@ import 'core/services/app_initialization_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
+  // Suppress noisy Flutter web errors in development
+  if (kIsWeb && kDebugMode) {
+    // Suppress image loading errors (like 429 rate limiting)
+    FlutterError.onError = (FlutterErrorDetails details) {
+      final exception = details.exception.toString();
+      
+      // Suppress specific noisy errors
+      if (exception.contains('NetworkImageLoadException') ||
+          exception.contains('HTTP request failed, statusCode: 429') ||
+          exception.contains('failed-service-worker-registration') ||
+          exception.contains('Assertion failed') ||
+          exception.contains('window.dart')) {
+        // Silently ignore these development errors
+        return;
+      }
+      
+      // Log other errors normally
+      FlutterError.presentError(details);
+    };
+  }
+  
   // Load environment variables from .env file
   await dotenv.load(fileName: '.env');
   
@@ -132,8 +155,20 @@ void main() async {
   final localNotificationsService = LocalNotificationsService.instance();
   await localNotificationsService.init();
   
-  final firebaseMessagingService = FirebaseMessagingService.instance();
-  await firebaseMessagingService.init(localNotificationsService: localNotificationsService);
+  // Initialize Firebase Messaging (suppress errors on web in development)
+  if (kIsWeb && kDebugMode) {
+    try {
+      final firebaseMessagingService = FirebaseMessagingService.instance();
+      await firebaseMessagingService.init(localNotificationsService: localNotificationsService);
+    } catch (e) {
+      // Silently suppress Firebase Messaging errors on web (service worker issues)
+      print('⚠️ Firebase Messaging disabled on web (development mode)');
+    }
+  } else {
+    final firebaseMessagingService = FirebaseMessagingService.instance();
+    await firebaseMessagingService.init(localNotificationsService: localNotificationsService);
+  }
+  
   runApp(const ProviderScope(child: BEDApp()));
 }
 
@@ -319,6 +354,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/email-auth',
       builder: (context, state) => const EmailAuthScreen(),
+    ),
+    GoRoute(
+      path: '/intro',
+      builder: (context, state) => const IntroScreen(),
     ),
     GoRoute(
       path: '/onboarding',
@@ -691,6 +730,18 @@ class AuthGuard extends ConsumerWidget {
           // User not authenticated, redirect to login
           WidgetsBinding.instance.addPostFrameCallback((_) {
             context.go('/login');
+          });
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        // Check if user has seen intro
+        if (!user.hasSeenIntro) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context.go('/intro');
           });
           return const Scaffold(
             body: Center(

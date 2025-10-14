@@ -57,7 +57,7 @@ class ExpLedger {
 
   @override
   String toString() {
-    return 'ExpLedger(id: $id, quizId: $quizId, score: $score/$totalQuestions, expAwarded: $expAwarded, ${oldLevel}→${newLevel})';
+    return 'ExpLedger(id: $id, quizId: $quizId, score: $score/$totalQuestions, expAwarded: $expAwarded, $oldLevel→$newLevel)';
   }
 }
 

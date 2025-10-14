@@ -5,7 +5,6 @@ import '../../providers/auth_provider.dart';
 import '../../providers/exp_provider.dart';
 import '../../widgets/profile_background.dart';
 import '../../widgets/level_badge.dart';
-import '../../widgets/exp_progress_bar.dart';
 import '../../core/services/exp_service.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -81,7 +80,7 @@ class ProfileScreen extends ConsumerWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
+                    color: const Color(0xFF4CAF50).withOpacity(0.3),
                     blurRadius: 20,
                     offset: const Offset(0, 8),
                   ),
@@ -120,7 +119,7 @@ class ProfileScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
+                    color: const Color(0xFF4CAF50).withOpacity(0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -173,7 +172,7 @@ class ProfileScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
+            color: const Color(0xFF4CAF50).withOpacity(0.3),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -196,7 +195,7 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
+                        color: Colors.black.withOpacity(0.1),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
@@ -204,9 +203,14 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                   child: CircleAvatar(
                     radius: 50,
-                    backgroundColor: Colors.white.withValues(alpha: 0.2),
+                    backgroundColor: Colors.white.withOpacity(0.2),
                     backgroundImage: user.photoUrl != null
                         ? NetworkImage(user.photoUrl!)
+                        : null,
+                    onBackgroundImageError: user.photoUrl != null
+                        ? (exception, stackTrace) {
+                            // Silently handle image loading errors (like 429 rate limiting)
+                          }
                         : null,
                     child: user.photoUrl == null
                         ? Text(
@@ -241,7 +245,7 @@ class ProfileScreen extends ConsumerWidget {
             Text(
               user.email,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.white.withValues(alpha: 0.8),
+                color: Colors.white.withOpacity(0.8),
               ),
               textAlign: TextAlign.center,
             ),
@@ -262,7 +266,7 @@ class ProfileScreen extends ConsumerWidget {
                   data: (quizCount) => Container(
                     padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: Colors.white.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Row(
@@ -280,7 +284,7 @@ class ProfileScreen extends ConsumerWidget {
                         Container(
                           width: 1,
                           height: 40,
-                          color: Colors.white.withValues(alpha: 0.3),
+                          color: Colors.white.withOpacity(0.3),
                         ),
                         _buildCompactStatItem(
                           context,
@@ -294,7 +298,7 @@ class ProfileScreen extends ConsumerWidget {
                         Container(
                           width: 1,
                           height: 40,
-                          color: Colors.white.withValues(alpha: 0.3),
+                          color: Colors.white.withOpacity(0.3),
                         ),
                         _buildCompactStatItem(
                           context,
@@ -334,7 +338,7 @@ class ProfileScreen extends ConsumerWidget {
                   return Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: Colors.white.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -365,7 +369,7 @@ class ProfileScreen extends ConsumerWidget {
                       child: LinearProgressIndicator(
                         value: progress,
                         minHeight: 8,
-                        backgroundColor: Colors.white.withValues(alpha: 0.3),
+                        backgroundColor: Colors.white.withOpacity(0.3),
                         valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
                     ),
@@ -373,7 +377,7 @@ class ProfileScreen extends ConsumerWidget {
                     Text(
                       '$expRemaining EXP to Level ${userExp.level + 1}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.white.withValues(alpha: 0.9),
+                        color: Colors.white.withOpacity(0.9),
                       ),
                     ),
                   ],
@@ -490,7 +494,7 @@ class ProfileScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -510,13 +514,13 @@ class ProfileScreen extends ConsumerWidget {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        option.color.withValues(alpha: 0.1),
-                        option.color.withValues(alpha: 0.05),
+                        option.color.withOpacity(0.1),
+                        option.color.withOpacity(0.05),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: option.color.withValues(alpha: 0.2),
+                      color: option.color.withOpacity(0.2),
                       width: 1,
                     ),
                   ),
@@ -554,7 +558,7 @@ class ProfileScreen extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: option.color.withValues(alpha: 0.1),
+                    color: option.color.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -578,7 +582,7 @@ class ProfileScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -596,10 +600,10 @@ class ProfileScreen extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.red.withValues(alpha: 0.1),
+                    color: Colors.red.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: Colors.red.withValues(alpha: 0.2),
+                      color: Colors.red.withOpacity(0.2),
                       width: 1,
                     ),
                   ),
@@ -627,7 +631,7 @@ class ProfileScreen extends ConsumerWidget {
                       Text(
                         'Sign out of your account',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.red.withValues(alpha: 0.7),
+                          color: Colors.red.withOpacity(0.7),
                         ),
                       ),
                     ],
@@ -637,7 +641,7 @@ class ProfileScreen extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.red.withValues(alpha: 0.1),
+                    color: Colors.red.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -695,7 +699,7 @@ class ProfileScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha: 0.1),
+                color: Colors.red.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -775,7 +779,7 @@ class ProfileScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -793,10 +797,10 @@ class ProfileScreen extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.red.withValues(alpha: 0.1),
+                    color: Colors.red.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: Colors.red.withValues(alpha: 0.2),
+                      color: Colors.red.withOpacity(0.2),
                       width: 1,
                     ),
                   ),
@@ -824,7 +828,7 @@ class ProfileScreen extends ConsumerWidget {
                       Text(
                         'Permanently delete your account and all data',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.red.withValues(alpha: 0.7),
+                          color: Colors.red.withOpacity(0.7),
                         ),
                       ),
                     ],
@@ -834,7 +838,7 @@ class ProfileScreen extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.red.withValues(alpha: 0.1),
+                    color: Colors.red.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -863,7 +867,7 @@ class ProfileScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha: 0.1),
+                color: Colors.red.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.logout, color: Colors.red, size: 20),
@@ -906,7 +910,7 @@ class ProfileScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha: 0.1),
+                color: Colors.red.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.delete_forever, color: Colors.red, size: 20),
@@ -937,10 +941,10 @@ class ProfileScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha: 0.1),
+                color: Colors.red.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: Colors.red.withValues(alpha: 0.3),
+                  color: Colors.red.withOpacity(0.3),
                   width: 1,
                 ),
               ),
