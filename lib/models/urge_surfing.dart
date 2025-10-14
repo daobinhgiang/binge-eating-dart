@@ -12,9 +12,9 @@ class AlternativeActivity {
     required this.id,
     required this.name,
     required this.description,
-    required this.isActive,
-    required this.isEnjoyable,
-    required this.isRealistic,
+    this.isActive = true,
+    this.isEnjoyable = true,
+    this.isRealistic = true,
   });
 
   factory AlternativeActivity.fromMap(Map<String, dynamic> map) {

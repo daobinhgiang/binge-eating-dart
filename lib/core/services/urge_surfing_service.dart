@@ -241,9 +241,9 @@ class UrgeSurfingService {
     required String userId,
     required String name,
     required String description,
-    required bool isActive,
-    required bool isEnjoyable,
-    required bool isRealistic,
+    bool isActive = true,
+    bool isEnjoyable = true,
+    bool isRealistic = true,
   }) async {
     try {
       final activity = AlternativeActivity(
@@ -271,9 +271,9 @@ class UrgeSurfingService {
     required String activityId,
     required String name,
     required String description,
-    required bool isActive,
-    required bool isEnjoyable,
-    required bool isRealistic,
+    bool isActive = true,
+    bool isEnjoyable = true,
+    bool isRealistic = true,
   }) async {
     try {
       final currentActivities = await getAllUserActivities(userId);

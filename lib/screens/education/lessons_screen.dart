@@ -115,8 +115,20 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
   }
 
   void _checkAndShowTutorial() async {
+    if (!mounted || _hasShownTutorial) return;
+    
+    // Wait a bit longer to ensure state has propagated from main_navigation
+    await Future.delayed(const Duration(milliseconds: 100));
+    
+    if (!mounted) return;
+    
     final user = ref.read(authNotifierProvider).value;
-    if (user == null || !mounted || _hasShownTutorial) return;
+    if (user == null) {
+      print('❌ Tutorial check: User is null');
+      return;
+    }
+
+    print('✅ Tutorial check: hasSeenAppTutorial=${user.hasSeenAppTutorial}, hasCompletedFirstLesson=${user.hasCompletedFirstLesson}');
 
     // Show first lesson tutorial ONLY if:
     // 1. User HAS seen the app tutorial (meaning they clicked on the education tab)
@@ -124,19 +136,25 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
     if (user.hasSeenAppTutorial && !user.hasCompletedFirstLesson) {
       _hasShownTutorial = true;
       
-      // Wait a bit for the layout to settle
-      await Future.delayed(const Duration(milliseconds: 800));
+      print('🎯 Showing first lesson tutorial...');
+      
+      // Wait a bit more for the layout to settle and stages to load
+      await Future.delayed(const Duration(milliseconds: 100));
       
       if (!mounted) return;
+      
+      print('🎓 Calling AppTutorialService.showFirstLessonTutorial()');
       
       AppTutorialService().showFirstLessonTutorial(
         context: context,
         firstLessonKey: _firstLessonKey,
         onFinish: () {
+          print('✅ First lesson tutorial finished');
           // Tutorial completed - no need to update status here
           // The hasSeenAppTutorial is already true from the education tab tutorial
         },
         onLessonClick: () {
+          print('👆 First lesson clicked from tutorial');
           // Navigate to the first lesson when user clicks the highlighted lesson card
           final firstLesson = _stages.isNotEmpty && 
                              _stages.first.chapters.isNotEmpty && 
@@ -148,6 +166,8 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
           }
         },
       );
+    } else {
+      print('⏭️  Skipping tutorial: hasSeenAppTutorial=${user.hasSeenAppTutorial}, hasCompletedFirstLesson=${user.hasCompletedFirstLesson}');
     }
   }
 
@@ -624,6 +644,8 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
                       isLocked: isLocked,
                       position: position,
                       stageColor: _getStageColor(stage.stageNumber),
+                      // Attach the first lesson key for tutorial highlighting
+                      lessonKey: lesson.id == 'lesson_1_1' ? _firstLessonKey : null,
                     ),
                     if (index < chapter.lessons.length - 1)
                       _buildConnectingPath(position, _getLessonPosition(index + 1)),

@@ -124,9 +124,9 @@ class ToolsScreen extends ConsumerWidget {
       width: double.infinity,
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        border: const Border(
+        border: Border(
           bottom: BorderSide(
-            color: Colors.grey,
+            color: Colors.grey[300]!,
             width: 1.0,
           ),
         ),

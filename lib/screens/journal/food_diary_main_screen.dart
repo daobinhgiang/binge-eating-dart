@@ -172,15 +172,21 @@ class FoodDiaryMainScreen extends ConsumerWidget {
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
               ),
-              const SizedBox(width: 16),
-              Text(
-                'Food Diary',
-                style: GoogleFonts.fredoka(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    'Food Diary',
+                    style: GoogleFonts.fredoka(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
+              const SizedBox(width: 48), // Balance the back button width
             ],
           ),
         ),

@@ -50,29 +50,75 @@ class _AddressingSetbacksSurveyScreenState extends ConsumerState<AddressingSetba
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.existingExercise != null ? 'Edit Setback Log' : 'New Setback Log'),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        elevation: 0,
-        actions: [
-          if (_currentPage == _totalPages - 1)
-            TextButton(
-              onPressed: _isSubmitting ? null : _submitSurvey,
-              child: _isSubmitting
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Save'),
-            ),
-        ],
-      ),
-      body: Form(
+    return GestureDetector(
+      onTap: () {
+        // Dismiss keyboard when tapping outside
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        backgroundColor: Colors.grey[50],
+        body: SafeArea(
+        child: Form(
         key: _formKey,
         child: Column(
           children: [
+            // Header
+            Container(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 0,
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4),
+                    child: IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.arrow_back, color: Colors.black87),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ),
+                  Expanded(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.center,
+                      child: Text(
+                        widget.existingExercise != null ? 'Edit Setback Log' : 'New Setback Log',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                  if (_currentPage == _totalPages - 1)
+                    TextButton(
+                      onPressed: _isSubmitting ? null : _submitSurvey,
+                      child: _isSubmitting
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Text('Save'),
+                    )
+                  else
+                    const SizedBox(width: 48),
+                ],
+              ),
+            ),
+            
             // Progress indicator
             Container(
               padding: const EdgeInsets.all(16),
@@ -161,6 +207,8 @@ class _AddressingSetbacksSurveyScreenState extends ConsumerState<AddressingSetba
             ),
           ],
         ),
+        ),
+      ),
       ),
     );
   }
@@ -265,6 +313,10 @@ class _AddressingSetbacksSurveyScreenState extends ConsumerState<AddressingSetba
                   TextFormField(
                     controller: _problemCauseController,
                     maxLines: 6,
+                    textInputAction: TextInputAction.done,
+                    onFieldSubmitted: (_) {
+                      FocusScope.of(context).unfocus();
+                    },
                     decoration: const InputDecoration(
                       hintText: 'Think about what might have changed in your life, mindset, or circumstances that could have contributed to this setback...',
                       border: OutlineInputBorder(),
@@ -320,6 +372,10 @@ class _AddressingSetbacksSurveyScreenState extends ConsumerState<AddressingSetba
                   TextFormField(
                     controller: _triggerController,
                     maxLines: 4,
+                    textInputAction: TextInputAction.done,
+                    onFieldSubmitted: (_) {
+                      FocusScope.of(context).unfocus();
+                    },
                     decoration: const InputDecoration(
                       hintText: 'What specific event, feeling, or situation triggered the setback?',
                       border: OutlineInputBorder(),
@@ -354,6 +410,10 @@ class _AddressingSetbacksSurveyScreenState extends ConsumerState<AddressingSetba
                   TextFormField(
                     controller: _addressPlanController,
                     maxLines: 4,
+                    textInputAction: TextInputAction.done,
+                    onFieldSubmitted: (_) {
+                      FocusScope.of(context).unfocus();
+                    },
                     decoration: const InputDecoration(
                       hintText: 'How will you address this trigger in the future? What strategies will you use?',
                       border: OutlineInputBorder(),

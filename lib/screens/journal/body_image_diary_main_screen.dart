@@ -174,14 +174,22 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
                 constraints: const BoxConstraints(),
               ),
               const SizedBox(width: 16),
-              Text(
-                'Body Image Diary',
-                style: GoogleFonts.fredoka(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Body Image Diary',
+                    style: GoogleFonts.fredoka(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
+              const SizedBox(width: 48), // Balance the back button width
             ],
           ),
         ),

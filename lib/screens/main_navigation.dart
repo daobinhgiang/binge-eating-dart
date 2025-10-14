@@ -90,9 +90,17 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
             hasSeenAppTutorial: true,
           );
         },
-        onTabClick: () {
+        onTabClick: () async {
+          // Update the status BEFORE navigating to prevent tutorial from showing again
+          await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
+            hasSeenAppTutorial: true,
+          );
+          // Longer delay to ensure state update fully propagates to all listeners
+          await Future.delayed(const Duration(milliseconds: 100));
           // Navigate to education tab when user clicks the highlighted tab
-          context.go('/education');
+          if (mounted) {
+            context.go('/education');
+          }
         },
       );
     }
@@ -125,9 +133,17 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
           hasSeenToolsTutorial: true,
         );
       },
-      onTabClick: () {
+      onTabClick: () async {
+        // Update the status BEFORE navigating to prevent tutorial from showing again
+        await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
+          hasSeenToolsTutorial: true,
+        );
+        // Small delay to ensure state update propagates
+        await Future.delayed(const Duration(milliseconds: 100));
         // Navigate to tools tab when user clicks the highlighted tab
-        context.go('/tools');
+        if (mounted) {
+          context.go('/tools');
+        }
       },
     );
   }
@@ -146,9 +162,17 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
           hasSeenJournalTutorial: true,
         );
       },
-      onTabClick: () {
+      onTabClick: () async {
+        // Update the status BEFORE navigating to prevent tutorial from showing again
+        await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
+          hasSeenJournalTutorial: true,
+        );
+        // Small delay to ensure state update propagates
+        await Future.delayed(const Duration(milliseconds: 100));
         // Navigate to journal tab when user clicks the highlighted tab
-        context.go('/journal');
+        if (mounted) {
+          context.go('/journal');
+        }
       },
     );
   }

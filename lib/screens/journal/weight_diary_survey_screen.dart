@@ -24,15 +24,21 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(context),
-            Expanded(child: _buildContent(context)),
-            _buildFooter(context),
-          ],
+    return GestureDetector(
+      onTap: () {
+        // Dismiss keyboard when tapping outside
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        backgroundColor: Colors.grey[50],
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildHeader(context),
+              Expanded(child: _buildContent(context)),
+              _buildFooter(context),
+            ],
+          ),
         ),
       ),
     );
@@ -66,12 +72,17 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
           ),
           const SizedBox(width: 16),
           Expanded(
-            child: Text(
-              'Weight Diary',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.center,
+              child: Text(
+                'Weight Diary',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+                textAlign: TextAlign.center,
               ),
             ),
           ),
@@ -126,6 +137,8 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
                   child: TextField(
                     controller: _weightController,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    textInputAction: TextInputAction.done,
+                    onSubmitted: (_) => _submit(),
                     decoration: InputDecoration(
                       labelText: 'Weight',
                       hintText: 'e.g., 68.5',

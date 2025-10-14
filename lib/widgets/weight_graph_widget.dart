@@ -93,31 +93,32 @@ class WeightGraphWidget extends ConsumerWidget {
                         return Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               Container(
-                                padding: const EdgeInsets.all(20),
+                                padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
                                   color: Colors.orange[50],
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
                                   Icons.monitor_weight_outlined,
-                                  size: 40,
+                                  size: 32,
                                   color: Colors.orange[400],
                                 ),
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 12),
                               Text(
                                 'No weight entries yet',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                   color: Colors.grey[800],
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: 4),
                               Text(
                                 'Tap to add your first entry',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                   color: Colors.grey[600],
                                 ),
                               ),
@@ -193,17 +194,18 @@ class WeightGraphWidget extends ConsumerWidget {
                     loading: () => Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(Colors.orange[600]!),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 8),
                           Text(
                             'Loading weight data...',
                             style: TextStyle(
                               color: Colors.grey[600],
-                              fontSize: 12,
+                              fontSize: 11,
                             ),
                           ),
                         ],
@@ -212,20 +214,21 @@ class WeightGraphWidget extends ConsumerWidget {
                     error: (error, _) => Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               color: Colors.red[50],
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
                               Icons.error_outline,
-                              size: 32,
+                              size: 28,
                               color: Colors.red[400],
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 8),
                           Text(
                             'Failed to load graph',
                             style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -233,12 +236,12 @@ class WeightGraphWidget extends ConsumerWidget {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 2),
                           Text(
                             'Please try again',
                             style: TextStyle(
                               color: Colors.grey[600],
-                              fontSize: 12,
+                              fontSize: 11,
                             ),
                           ),
                         ],

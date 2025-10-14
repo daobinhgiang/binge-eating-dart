@@ -49,17 +49,54 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: const Text(
-          'Daily Meal Plan',
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: IconThemeData(color: Colors.green[600]),
-      ),
-      body: Column(
+      body: SafeArea(
+      child: Column(
         children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.fromLTRB(16, 12, 8, 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  spreadRadius: 0,
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 4),
+                  child: IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.arrow_back, color: Colors.black87),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ),
+                Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Daily Meal Plan',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 48), // Balance the back button width
+              ],
+            ),
+          ),
+          
           // Progress indicator
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -205,6 +242,7 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
             ),
           ),
         ],
+      ),
       ),
     );
   }

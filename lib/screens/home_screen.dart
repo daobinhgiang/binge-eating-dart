@@ -192,8 +192,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         final expRemaining = service.getExpRemainingForNextLevel(userExp.exp, userExp.level);
         final isMaxLevel = userExp.level >= 5;
         
-        final textColor = onGreenBackground ? Colors.white : Colors.black87;
-        final subtextColor = onGreenBackground ? Colors.white.withOpacity(0.9) : Colors.grey[600]!;
+        final textColor = Colors.black87;  // Always use dark text for better visibility
+        final subtextColor = Colors.grey[700]!;  // Slightly darker grey for better contrast
         
         return Row(
           children: [
@@ -233,11 +233,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       child: LinearProgressIndicator(
                         value: progress,
                         minHeight: 6,
-                        backgroundColor: onGreenBackground 
-                            ? Colors.white.withOpacity(0.3)
-                            : Colors.grey[300],
+                        backgroundColor: Colors.grey[200],  // Light grey background
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          onGreenBackground ? Colors.white : const Color(0xFF4CAF50),
+                          const Color(0xFF4CAF50),  // Always use green for progress
                         ),
                       ),
                     ),
@@ -1715,7 +1713,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               letterSpacing: 0.5,
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
           
           // Circular progress indicator
           (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS)
@@ -1782,7 +1780,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
               ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
     
           // Legend
           Column(
@@ -1809,7 +1807,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ],
           ),
           
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           
           // Reset Timer button
           ElevatedButton.icon(

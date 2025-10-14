@@ -12,19 +12,60 @@ class ProblemSolvingDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Exercise Details'),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        elevation: 0,
-        actions: [
-          IconButton(
-            onPressed: () => _deleteExercise(context, ref),
-            icon: const Icon(Icons.delete_outline),
-            color: Colors.red[600],
+      backgroundColor: Colors.grey[50],
+      body: SafeArea(
+      child: Column(
+        children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.fromLTRB(16, 12, 8, 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  spreadRadius: 0,
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 4),
+                  child: IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.arrow_back, color: Colors.black87),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ),
+                Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Exercise Details',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  onPressed: () => _deleteExercise(context, ref),
+                  icon: const Icon(Icons.delete_outline),
+                  color: Colors.red[600],
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
+          Expanded(
+            child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -344,6 +385,10 @@ class ProblemSolvingDetailScreen extends ConsumerWidget {
             const SizedBox(height: 32),
           ],
         ),
+      ),
+          ),
+        ],
+      ),
       ),
     );
   }

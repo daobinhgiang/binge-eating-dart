@@ -163,9 +163,9 @@ class UserActivitiesNotifier extends StateNotifier<AsyncValue<List<AlternativeAc
   Future<AlternativeActivity?> addActivity({
     required String name,
     required String description,
-    required bool isActive,
-    required bool isEnjoyable,
-    required bool isRealistic,
+    bool isActive = true,
+    bool isEnjoyable = true,
+    bool isRealistic = true,
   }) async {
     try {
       final activity = await _urgeSurfingService.addUserActivity(
@@ -191,9 +191,9 @@ class UserActivitiesNotifier extends StateNotifier<AsyncValue<List<AlternativeAc
     required String activityId,
     required String name,
     required String description,
-    required bool isActive,
-    required bool isEnjoyable,
-    required bool isRealistic,
+    bool isActive = true,
+    bool isEnjoyable = true,
+    bool isRealistic = true,
   }) async {
     try {
       await _urgeSurfingService.updateUserActivity(

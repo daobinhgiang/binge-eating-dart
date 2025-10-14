@@ -21,24 +21,35 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
   DateTime _spentAt = DateTime.now();
   bool _isSubmitting = false;
 
+  final FocusNode _amountFocusNode = FocusNode();
+  final FocusNode _notesFocusNode = FocusNode();
+
   @override
   void dispose() {
     _amountController.dispose();
     _notesController.dispose();
+    _amountFocusNode.dispose();
+    _notesFocusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(context),
-            Expanded(child: _buildContent(context)),
-            _buildFooter(context),
-          ],
+    return GestureDetector(
+      onTap: () {
+        // Dismiss keyboard when tapping outside of input fields
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        backgroundColor: Colors.grey[50],
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildHeader(context),
+              Expanded(child: _buildContent(context)),
+              _buildFooter(context),
+            ],
+          ),
         ),
       ),
     );
@@ -72,12 +83,17 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
           ),
           const SizedBox(width: 16),
           Expanded(
-            child: Text(
-              'Add Spending Entry',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.center,
+              child: Text(
+                'Add Spending Entry',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+                textAlign: TextAlign.center,
               ),
             ),
           ),
@@ -149,7 +165,17 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
                 Expanded(
                   child: TextFormField(
                     controller: _amountController,
+                    focusNode: _amountFocusNode,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    textInputAction: TextInputAction.done,
+                    onEditingComplete: () {
+                      // Move focus to notes or dismiss keyboard if amount is valid
+                      if (_canSubmit()) {
+                        FocusScope.of(context).requestFocus(_notesFocusNode);
+                      } else {
+                        FocusScope.of(context).unfocus();
+                      }
+                    },
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
                     ],
@@ -250,7 +276,17 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
             const SizedBox(height: 12),
             TextFormField(
               controller: _notesController,
+              focusNode: _notesFocusNode,
               maxLines: 3,
+              textInputAction: TextInputAction.done,
+              onEditingComplete: () {
+                // Dismiss keyboard when done with notes
+                FocusScope.of(context).unfocus();
+                // If amount is valid, try to submit
+                if (_canSubmit()) {
+                  _submitEntry();
+                }
+              },
               decoration: InputDecoration(
                 hintText: 'How were you feeling? What triggered this spending?',
                 border: OutlineInputBorder(

@@ -44,44 +44,77 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: Text(
-          widget.existingExercise != null ? 'Edit Activity List' : 'New Activity List',
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: IconThemeData(color: Colors.teal[600]),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ElevatedButton.icon(
-              onPressed: _isSubmitting ? null : _saveExercise,
-              icon: _isSubmitting
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
-                    )
-                  : const Icon(Icons.check, size: 18),
-              label: const Text('Save'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal[600],
-                foregroundColor: Colors.white,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+      body: SafeArea(
+      child: Column(
+        children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.fromLTRB(16, 12, 8, 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  spreadRadius: 0,
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
                 ),
-              ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 4),
+                  child: IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.arrow_back, color: Colors.black87),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ),
+                Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.center,
+                    child: Text(
+                      widget.existingExercise != null ? 'Edit Activity List' : 'New Activity List',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                ElevatedButton.icon(
+                  onPressed: _isSubmitting ? null : _saveExercise,
+                  icon: _isSubmitting
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : const Icon(Icons.check, size: 18),
+                  label: const Text('Save'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal[600],
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
-      body: Form(
+          Expanded(
+            child: Form(
         key: _formKey,
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -629,49 +662,11 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
               ),
             ),
           ],
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              _buildCriteriaChip('Active', activity.isActive),
-              const SizedBox(width: 8),
-              _buildCriteriaChip('Enjoyable', activity.isEnjoyable),
-              const SizedBox(width: 8),
-              _buildCriteriaChip('Realistic', activity.isRealistic),
-            ],
-          ),
         ],
       ),
     );
   }
 
-  Widget _buildCriteriaChip(String label, bool isMet) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: isMet ? Colors.green[100] : Colors.grey[200],
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            isMet ? Icons.check : Icons.close,
-            size: 12,
-            color: isMet ? Colors.green[700] : Colors.grey[600],
-          ),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: isMet ? Colors.green[700] : Colors.grey[600],
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Color _getCriteriaColor(int count) {
     switch (count) {
@@ -703,9 +698,6 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
   void _showActivityDialog({AlternativeActivity? existingActivity, int? index}) {
     final nameController = TextEditingController(text: existingActivity?.name ?? '');
     final descriptionController = TextEditingController(text: existingActivity?.description ?? '');
-    bool isActive = existingActivity?.isActive ?? false;
-    bool isEnjoyable = existingActivity?.isEnjoyable ?? false;
-    bool isRealistic = existingActivity?.isRealistic ?? false;
 
     showDialog(
       context: context,
@@ -790,44 +782,6 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.teal[50],
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'Properties',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.teal[800],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildCheckboxItem(
-                      'Active',
-                      'Involves doing something rather than being passive',
-                      isActive,
-                      (value) => setDialogState(() => isActive = value ?? false),
-                      context,
-                    ),
-                    const SizedBox(height: 8),
-                    _buildCheckboxItem(
-                      'Enjoyable',
-                      'Something you enjoy, not a chore',
-                      isEnjoyable,
-                      (value) => setDialogState(() => isEnjoyable = value ?? false),
-                      context,
-                    ),
-                    const SizedBox(height: 8),
-                    _buildCheckboxItem(
-                      'Realistic',
-                      'Something you can actually do when urges strike',
-                      isRealistic,
-                      (value) => setDialogState(() => isRealistic = value ?? false),
-                      context,
-                    ),
                     const SizedBox(height: 24),
                     Row(
                       children: [
@@ -872,9 +826,6 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
                                 id: existingActivity?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
                                 name: nameController.text.trim(),
                                 description: descriptionController.text.trim(),
-                                isActive: isActive,
-                                isEnjoyable: isEnjoyable,
-                                isRealistic: isRealistic,
                               );
 
                               setState(() {
@@ -911,41 +862,13 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
           ),
         ),
       ),
+          ),
+        ],
+      ),
+      ),
     );
   }
 
-  Widget _buildCheckboxItem(String title, String subtitle, bool value, Function(bool?) onChanged, BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: value ? Colors.teal[50] : Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: value ? Colors.teal[200]! : Colors.grey[200]!,
-        ),
-      ),
-      child: CheckboxListTile(
-        title: Text(
-          title,
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: value ? Colors.teal[800] : Colors.grey[800],
-          ),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: TextStyle(
-            fontSize: 12,
-            color: value ? Colors.teal[700] : Colors.grey[600],
-          ),
-        ),
-        value: value,
-        onChanged: onChanged,
-        activeColor: Colors.teal[600],
-        dense: true,
-        controlAffinity: ListTileControlAffinity.leading,
-      ),
-    );
-  }
 
   Future<void> _saveExercise() async {
     if (!_formKey.currentState!.validate()) return;

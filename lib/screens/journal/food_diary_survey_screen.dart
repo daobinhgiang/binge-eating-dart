@@ -52,7 +52,12 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return GestureDetector(
+      onTap: () {
+        // Dismiss keyboard when tapping outside
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
       backgroundColor: Colors.grey[50],
       body: SafeArea(
         child: Column(
@@ -69,6 +74,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
             _buildFooter(context),
           ],
         ),
+      ),
       ),
     );
   }
@@ -107,12 +113,17 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
               
               // Title
               Expanded(
-                child: Text(
-                  'Food Diary',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Food Diary',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ),
@@ -289,35 +300,6 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.grey[50],
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.grey[200]!,
-                width: 1,
-              ),
-            ),
-            child: TextField(
-              controller: _foodController,
-              maxLines: 6,
-              decoration: InputDecoration(
-                hintText: 'e.g., Chicken salad with lettuce, tomatoes, and ranch dressing. Glass of water.',
-                hintStyle: TextStyle(
-                  color: Colors.grey[500],
-                  fontFamily: 'SF Pro Text',
-                ),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.all(16),
-              ),
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.black87,
-                fontFamily: 'SF Pro Text',
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
           // Action buttons row
           Row(
             children: [
@@ -380,6 +362,39 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
               ),
             ],
           ),
+          const SizedBox(height: 16),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.grey[50],
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.grey[200]!,
+                width: 1,
+              ),
+            ),
+            child: TextField(
+              controller: _foodController,
+              maxLines: 6,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) {
+                FocusScope.of(context).unfocus();
+              },
+              decoration: InputDecoration(
+                hintText: 'e.g., Chicken salad with lettuce, tomatoes, and ranch dressing. Glass of water.',
+                hintStyle: TextStyle(
+                  color: Colors.grey[500],
+                  fontFamily: 'SF Pro Text',
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.all(16),
+              ),
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black87,
+                fontFamily: 'SF Pro Text',
+              ),
+            ),
+          ),
           if (_isAnalyzingImage)
             Padding(
               padding: const EdgeInsets.only(top: 12),
@@ -436,6 +451,10 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
                   TextField(
                     controller: _foodSearchController,
                     onChanged: _onFoodSearchChanged,
+                    textInputAction: TextInputAction.done,
+                    onSubmitted: (_) {
+                      FocusScope.of(context).unfocus();
+                    },
                     decoration: InputDecoration(
                       hintText: 'Search for foods (e.g., "chicken", "apple")',
                       hintStyle: TextStyle(
@@ -677,6 +696,10 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
                 ),
                 child: TextField(
                   controller: _customLocationController,
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) {
+                    FocusScope.of(context).unfocus();
+                  },
                   decoration: InputDecoration(
                     labelText: 'Please specify location',
                     labelStyle: TextStyle(
@@ -959,6 +982,10 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
             child: TextField(
               controller: _contextController,
               maxLines: 6,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) {
+                FocusScope.of(context).unfocus();
+              },
               decoration: InputDecoration(
                 hintText: 'e.g., I was feeling stressed after work. Ate quickly while watching TV. Felt guilty afterwards.',
                 hintStyle: TextStyle(

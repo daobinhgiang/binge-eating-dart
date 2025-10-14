@@ -27,83 +27,51 @@ class AddressingSetbacksScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: const Text(
-          'Addressing Setbacks',
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: IconThemeData(color: Colors.red[600]),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: IconButton(
-              onPressed: () {
-                ref.read(userAddressingSetbacksExercisesProvider(user.id).notifier).refreshExercises();
-              },
-              icon: const Icon(Icons.refresh),
-              style: IconButton.styleFrom(
-                backgroundColor: Colors.red[50],
-                foregroundColor: Colors.red[600],
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
       body: Column(
         children: [
           // Header Section
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.red[50]!, Colors.deepOrange[50]!],
+                colors: [Colors.red[600]!, Colors.deepOrange[500]!],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
             ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    Icons.trending_down,
-                    size: 32,
-                    color: Colors.red[600],
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Setback Recovery',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red[800],
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 8, 20),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4),
+                      child: IconButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ),
+                    Expanded(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          'Addressing Setbacks',
+                          style: GoogleFonts.fredoka(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Learn from setbacks and plan your response',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.red[700],
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 48), // Balance the back button width
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
 
