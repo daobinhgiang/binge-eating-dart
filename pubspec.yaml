@@ -65,6 +65,9 @@ dependencies:
   google_fonts: ^6.2.1
   tutorial_coach_mark: ^1.2.11
   
+  # Audio playback
+  audioplayers: ^6.0.0
+  
 
 dev_dependencies:
   flutter_test:
@@ -98,6 +101,7 @@ flutter:
     - assets/lessons/stages/
     - assets/exercises/
     - assets/journal/
+    - assets/audio_lessons/
     - assets/lessons/stages/stage_1.png
     - assets/lessons/stages/stage_2.png
     - assets/lessons/stages/stage_3.png

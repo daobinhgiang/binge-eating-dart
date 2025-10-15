@@ -1,5 +1,18 @@
 import 'package:flutter/material.dart';
 import '../models/lesson_slide.dart';
+import 'audio_button_widget.dart';
+
+String? _getAudioPathForSlide(String slideId) {
+  // Map slide IDs to their corresponding audio files
+  final audioMap = {
+    'slide_1_1_1': 'audio_lessons/lesson_1_1__slide_1_1_1.wav',
+    'slide_1_1_2': 'audio_lessons/lesson_1_1__slide_1_1_2.wav',
+    'slide_1_1_3': 'audio_lessons/lesson_1_1__slide_1_1_3.wav',
+    'slide_1_1_4': 'audio_lessons/lesson_1_1__slide_1_1_4.wav',
+  };
+  
+  return audioMap[slideId];
+}
 
 class LessonSlideWidget extends StatelessWidget {
   final LessonSlide slide;
@@ -76,7 +89,7 @@ class LessonSlideWidget extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Top row with back button and lesson title
+          // Top row with back button, lesson title, and audio button
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
             child: Row(
@@ -123,6 +136,15 @@ class LessonSlideWidget extends StatelessWidget {
                     ),
                   ),
                 ),
+                
+                // Audio button
+                if (_getAudioPathForSlide(slide.id) != null) ...[
+                  const SizedBox(width: 16),
+                  AudioButtonWidget(
+                    audioPath: _getAudioPathForSlide(slide.id)!,
+                    slideId: slide.id,
+                  ),
+                ],
               ],
             ),
           ),
@@ -544,4 +566,5 @@ class _BulletPoint extends StatelessWidget {
       ),
     );
   }
+
 }
