@@ -27,47 +27,45 @@ class MoneyDiaryMainScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Navigation Bar
-            _buildNavigationBar(context),
+      body: Column(
+        children: [
+          // Navigation Bar
+          _buildNavigationBar(context),
+          
+          // Main Content
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Total Money Spent Header
+                  _buildTotalSpentHeader(context, totalSpent),
             
-            // Main Content
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Total Money Spent Header
-                    _buildTotalSpentHeader(context, totalSpent),
-              
-                    const SizedBox(height: 24),
-                    
-                    // Recent Spending Section
-                    Text(
-                      'Recent Spending',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  const SizedBox(height: 24),
+                  
+                  // Recent Spending Section
+                  Text(
+                    'Recent Spending',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
-                    
-                    const SizedBox(height: 16),
-                    
-                    // Add Entry Button
-                    _buildAddEntryButton(context),
-                    
-                    const SizedBox(height: 24),
-                    
-                    // Recent Entries (Organized by Date)
-                    _buildRecentEntries(context, allMoneyDiaries),
-                  ],
-                ),
+                  ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Add Entry Button
+                  _buildAddEntryButton(context),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Recent Entries (Organized by Date)
+                  _buildRecentEntries(context, allMoneyDiaries),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

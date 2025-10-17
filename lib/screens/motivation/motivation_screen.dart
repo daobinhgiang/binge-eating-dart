@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 
 class MotivationScreen extends ConsumerStatefulWidget {
   const MotivationScreen({super.key});
@@ -15,75 +16,99 @@ class _MotivationScreenState extends ConsumerState<MotivationScreen> {
 
   final List<Map<String, dynamic>> _motivationalQuotes = [
     {
-      'quote': 'Recovery is not a race. You don\'t have to feel guilty if it takes you longer than you thought it would.',
-      'author': 'Unknown',
-      'category': 'Recovery',
+      'quote': 'Binge eating is not a character flaw—it\'s a coping mechanism. You can learn healthier ways to cope.',
+      'author': 'Dr. Susan Albers',
+      'category': 'Understanding',
       'color': const Color(0xFF4CAF50),
     },
     {
-      'quote': 'Every small step you take towards healing is a victory worth celebrating.',
-      'author': 'Recovery Community',
-      'category': 'Progress',
+      'quote': 'Every meal is a new opportunity to nourish your body with kindness and respect.',
+      'author': 'Intuitive Eating Movement',
+      'category': 'Nourishment',
       'color': const Color(0xFF66BB6A),
     },
     {
-      'quote': 'You are not your eating disorder. You are so much more than that.',
-      'author': 'Mental Health Advocate',
-      'category': 'Identity',
-      'color': const Color(0xFF81C784),
-    },
-    {
-      'quote': 'Healing is not linear. It\'s okay to have setbacks. What matters is that you keep trying.',
-      'author': 'Therapist',
+      'quote': 'You are not broken. You are healing. Every day you choose recovery, you choose yourself.',
+      'author': 'Recovery Advocate',
       'category': 'Healing',
+      'color': const Color(0xFF81C784),
+    },
+    {
+      'quote': 'Food is not the enemy. Your relationship with food can be rebuilt with patience and self-compassion.',
+      'author': 'Eating Disorder Specialist',
+      'category': 'Relationship',
       'color': const Color(0xFF43A047),
     },
     {
-      'quote': 'Your worth is not determined by your relationship with food.',
-      'author': 'Body Positivity Movement',
-      'category': 'Self-Worth',
+      'quote': 'Your body deserves love, not punishment. Every body is worthy of care and respect.',
+      'author': 'Body Liberation Movement',
+      'category': 'Self-Love',
       'color': const Color(0xFF4CAF50),
     },
     {
-      'quote': 'It\'s okay to ask for help. Seeking support is a sign of strength, not weakness.',
-      'author': 'Mental Health Professional',
-      'category': 'Support',
+      'quote': 'Recovery from binge eating is not about perfect eating—it\'s about finding peace with food.',
+      'author': 'Dr. Jennie Thomas',
+      'category': 'Peace',
       'color': const Color(0xFF66BB6A),
     },
     {
-      'quote': 'You have survived 100% of your worst days. You are stronger than you think.',
+      'quote': 'You have the power to break free from the binge-restrict cycle. Your freedom starts with one choice.',
       'author': 'Recovery Warrior',
-      'category': 'Strength',
+      'category': 'Freedom',
       'color': const Color(0xFF81C784),
     },
     {
-      'quote': 'Progress, not perfection. Every step forward counts.',
-      'author': 'Recovery Community',
-      'category': 'Progress',
+      'quote': 'Healing your relationship with food is an act of self-love and self-respect.',
+      'author': 'Mindful Eating Coach',
+      'category': 'Self-Respect',
       'color': const Color(0xFF43A047),
     },
     {
-      'quote': 'Your body is not the enemy. It\'s your home. Treat it with kindness.',
+      'quote': 'Your worth is not measured by what you eat or how much you weigh. You are inherently valuable.',
       'author': 'Body Positivity Advocate',
-      'category': 'Self-Care',
+      'category': 'Worth',
       'color': const Color(0xFF4CAF50),
     },
     {
-      'quote': 'Recovery is possible. You are not alone in this journey.',
-      'author': 'Recovery Community',
-      'category': 'Hope',
+      'quote': 'Every moment of mindfulness around food is a step toward healing your relationship with eating.',
+      'author': 'Mindfulness Teacher',
+      'category': 'Mindfulness',
       'color': const Color(0xFF66BB6A),
     },
     {
-      'quote': 'Every moment of self-compassion is a step towards healing.',
-      'author': 'Mindfulness Teacher',
-      'category': 'Self-Compassion',
+      'quote': 'You are not alone in this struggle. Millions of people are healing their relationship with food.',
+      'author': 'Recovery Community',
+      'category': 'Community',
       'color': const Color(0xFF81C784),
     },
     {
-      'quote': 'You are worthy of love, care, and recovery, regardless of your struggles.',
-      'author': 'Mental Health Advocate',
-      'category': 'Worthiness',
+      'quote': 'Recovery is not about being perfect—it\'s about being kinder to yourself than you\'ve ever been.',
+      'author': 'Dr. Brené Brown',
+      'category': 'Self-Compassion',
+      'color': const Color(0xFF43A047),
+    },
+    {
+      'quote': 'Your body is your home. Treat it with the same love and care you would give to someone you cherish.',
+      'author': 'Body Image Advocate',
+      'category': 'Home',
+      'color': const Color(0xFF4CAF50),
+    },
+    {
+      'quote': 'Binge eating doesn\'t define you. Your courage, resilience, and capacity for growth define you.',
+      'author': 'Recovery Mentor',
+      'category': 'Identity',
+      'color': const Color(0xFF66BB6A),
+    },
+    {
+      'quote': 'Healing happens in the space between where you are and where you want to be. Be patient with the process.',
+      'author': 'Therapist',
+      'category': 'Patience',
+      'color': const Color(0xFF81C784),
+    },
+    {
+      'quote': 'You deserve to eat without guilt, shame, or judgment. You deserve to nourish yourself with joy.',
+      'author': 'Intuitive Eating Counselor',
+      'category': 'Joy',
       'color': const Color(0xFF43A047),
     },
   ];
@@ -102,7 +127,7 @@ class _MotivationScreenState extends ConsumerState<MotivationScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.go('/home'),
           icon: const Icon(
             Icons.arrow_back,
             color: Colors.black87,

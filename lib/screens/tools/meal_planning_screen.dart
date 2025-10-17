@@ -27,12 +27,13 @@ class MealPlanningScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
+      body: Column(
           children: [
             _buildNavigationBar(context),
             Expanded(
-              child: SingleChildScrollView(
+              child: SafeArea(
+                top: false,
+                child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
                 child: allPlans.when(
                   data: (plans) {
@@ -147,8 +148,8 @@ class MealPlanningScreen extends ConsumerWidget {
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _navigateToMealPlanSurvey(context),
@@ -180,17 +181,14 @@ class MealPlanningScreen extends ConsumerWidget {
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 8, 20),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
           child: Row(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 4),
-                child: IconButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                ),
+              IconButton(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
               ),
               Expanded(
                 child: FittedBox(

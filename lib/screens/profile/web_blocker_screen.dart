@@ -544,39 +544,6 @@ class _WebBlockerScreenState extends State<WebBlockerScreen> {
                       ),
                     ),
                   ),
-                  
-                  // iOS notice
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.amber.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: Colors.amber.withValues(alpha: 0.3),
-                      ),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.info_outline,
-                          color: Colors.amber[700],
-                          size: 20,
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            'Website blocking requires iOS 16+ and Content Restrictions to be enabled in Screen Time settings.',
-                            style: TextStyle(
-                              color: Colors.amber[800],
-                              height: 1.4,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),

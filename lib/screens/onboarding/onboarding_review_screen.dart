@@ -241,7 +241,10 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
       appBar: AppBar(
         backgroundColor: const Color(0xFF2C2C2E),
         foregroundColor: Colors.white,
-        title: const Text('Review Assessment'),
+        title: const Text(
+          'Review Assessment',
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
         actions: [
           IconButton(

@@ -808,8 +808,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildDailyTasksWidget(BuildContext context, List<TodoItem> todos, WidgetRef ref) {
-    // Get all today's todos (both completed and incomplete)
-    final todayTodos = todos.where((todo) => todo.isDueToday).toList();
+    // Get today's todos - include both completed and incomplete
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    
+    final todayTodos = todos.where((todo) {
+      final due = DateTime(todo.dueDate.year, todo.dueDate.month, todo.dueDate.day);
+      return today.isAtSameMomentAs(due);
+    }).toList();
     
     if (todayTodos.isEmpty) {
       return const SizedBox.shrink();
@@ -935,7 +941,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     await todoNotifier.toggleCompletion(todo.id);
   }
 
-  void _navigateToTodoItem(TodoItem todo) {
+  Future<void> _navigateToTodoItem(TodoItem todo) async {
+    // Mark the todo as completed in the background
+    final authState = ref.read(authNotifierProvider);
+    final user = authState.valueOrNull;
+    if (user != null) {
+      final todoNotifier = ref.read(userTodosProvider(user.id).notifier);
+      // Mark as completed asynchronously without waiting
+      todoNotifier.markCompleted(todo.id);
+    }
+    
     // Navigate based on the todo type and activity ID
     switch (todo.type) {
       case TodoType.lesson:

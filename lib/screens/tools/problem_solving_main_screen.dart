@@ -34,14 +34,13 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildNavigationBar(context),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
-                child: allExercises.when(
+      body: Column(
+        children: [
+          _buildNavigationBar(context),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+              child: allExercises.when(
                   data: (exercises) {
                     if (exercises.isEmpty) {
                       return _buildEmptyState(context);
@@ -150,12 +149,11 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
-                  ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _navigateToProblemSolvingSurvey(context),

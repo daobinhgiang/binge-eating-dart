@@ -511,61 +511,58 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        _buildCircularButton(
-                          context: context,
-                          colorScheme: colorScheme,
-                          icon: Icons.remove,
-                          enabled: _mealCount > RegularEating.minMealCount,
-                          onPressed: () {
-                            setState(() {
-                              _mealCount--;
-                              _markAsChanged();
-                            });
-                          },
+                        Flexible(
+                          child: _buildCircularButton(
+                            context: context,
+                            colorScheme: colorScheme,
+                            icon: Icons.remove,
+                            enabled: _mealCount > RegularEating.minMealCount,
+                            onPressed: () {
+                              setState(() {
+                                _mealCount--;
+                                _markAsChanged();
+                              });
+                            },
+                          ),
                         ),
-                        const SizedBox(width: 32),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                colorScheme.primary.withOpacity(0.1),
-                                colorScheme.primary.withOpacity(0.05),
-                              ],
+                        const SizedBox(width: 16),
+                        Flexible(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  colorScheme.primary.withOpacity(0.1),
+                                  colorScheme.primary.withOpacity(0.05),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(20),
                             ),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Column(
-                            children: [
-                              Text(
-                                '$_mealCount',
-                                style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: colorScheme.primary,
-                                ),
+                            child: Text(
+                              '$_mealCount',
+                              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: colorScheme.primary,
                               ),
-                              Text(
-                                'meal${_mealCount == 1 ? '' : 's'}',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
-                        const SizedBox(width: 32),
-                        _buildCircularButton(
-                          context: context,
-                          colorScheme: colorScheme,
-                          icon: Icons.add,
-                          enabled: _mealCount < RegularEating.maxMealCount,
-                          onPressed: () {
-                            setState(() {
-                              _mealCount++;
-                              _markAsChanged();
-                            });
-                          },
+                        const SizedBox(width: 16),
+                        Flexible(
+                          child: _buildCircularButton(
+                            context: context,
+                            colorScheme: colorScheme,
+                            icon: Icons.add,
+                            enabled: _mealCount < RegularEating.maxMealCount,
+                            onPressed: () {
+                              setState(() {
+                                _mealCount++;
+                                _markAsChanged();
+                              });
+                            },
+                          ),
                         ),
                       ],
                     ),

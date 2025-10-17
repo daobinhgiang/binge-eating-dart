@@ -30,7 +30,7 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        backgroundColor: Colors.grey[50],
+        backgroundColor: Colors.white,
         body: SafeArea(
           child: Column(
             children: [
@@ -85,6 +85,12 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
                 textAlign: TextAlign.center,
               ),
             ),
+          ),
+          const SizedBox(width: 16),
+          // Invisible spacer to balance the back button on the left
+          SizedBox(
+            width: 20, // Match the icon size
+            height: 20,
           ),
         ],
       ),
