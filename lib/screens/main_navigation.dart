@@ -311,40 +311,89 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
                 }
                 
                 return Expanded(
-                  child: GestureDetector(
+                  child: _NavigationButton(
                     key: tabKey,
+                    item: item,
+                    isSelected: isSelected,
                     onTap: () {
                       context.go(item.route);
                     },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            isSelected ? item.activeIcon : item.icon,
-                            color: isSelected 
-                                ? Theme.of(context).colorScheme.primary
-                                : Colors.grey[600],
-                            size: 24,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            item.label,
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: isSelected 
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Colors.grey[600],
-                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   ),
                 );
               }).toList(),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NavigationButton extends StatefulWidget {
+  final NavigationItem item;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _NavigationButton({
+    super.key,
+    required this.item,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  State<_NavigationButton> createState() => _NavigationButtonState();
+}
+
+class _NavigationButtonState extends State<_NavigationButton> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) {
+        setState(() {
+          _isPressed = true;
+        });
+      },
+      onTapUp: (_) {
+        setState(() {
+          _isPressed = false;
+        });
+        widget.onTap();
+      },
+      onTapCancel: () {
+        setState(() {
+          _isPressed = false;
+        });
+      },
+      child: AnimatedScale(
+        scale: _isPressed ? 0.92 : 1.0,
+        duration: const Duration(milliseconds: 100),
+        curve: Curves.easeInOut,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                widget.isSelected ? widget.item.activeIcon : widget.item.icon,
+                color: widget.isSelected 
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.grey[600],
+                size: 24,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                widget.item.label,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: widget.isSelected 
+                      ? Theme.of(context).colorScheme.primary
+                      : Colors.grey[600],
+                  fontWeight: widget.isSelected ? FontWeight.w600 : FontWeight.normal,
+                ),
+              ),
+            ],
           ),
         ),
       ),

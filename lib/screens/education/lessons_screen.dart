@@ -185,7 +185,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
 
   void _updateCurrentSection() {
     // Calculate the threshold position (Sticky header)
-    const double headerHeight = 86.0; // Sticky header height (updated for larger content, divider removed)
+    const double headerHeight = 129.0; // Sticky header height (enlarged by 1.5x)
     
     for (var stage in _stages) {
       for (var chapter in stage.chapters) {
@@ -481,12 +481,12 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
             child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
             decoration: BoxDecoration(
               color: _getStageColor(stage.stageNumber),
-              borderRadius: BorderRadius.circular(12.0),
+              borderRadius: BorderRadius.circular(18.0),
               boxShadow: [
                 BoxShadow(
                   color: _getStageColor(stage.stageNumber).withOpacity(0.3),
@@ -506,17 +506,17 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
                         'STAGE ${stage.stageNumber}, CHAPTER ${chapter.chapterNumber}',
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 10,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          letterSpacing: 0.8,
+                          letterSpacing: 1.2,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 6),
                       Text(
                         chapter.title,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 14,
+                          fontSize: 21,
                           fontWeight: FontWeight.bold,
                         ),
                         maxLines: 1,
@@ -528,7 +528,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
                 Icon(
                   Icons.menu_book,
                   color: Colors.white.withOpacity(0.8),
-                  size: 20,
+                  size: 30,
                 ),
               ],
             ),
@@ -771,10 +771,10 @@ class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
   _StickyHeaderDelegate({required this.child});
 
   @override
-  double get minExtent => 86.0; // Increased height for larger padding and font sizes (divider removed)
+  double get minExtent => 129.0; // Enlarged by 1.5x for larger padding and font sizes
 
   @override
-  double get maxExtent => 86.0; // Increased height for larger padding and font sizes (divider removed)
+  double get maxExtent => 129.0; // Enlarged by 1.5x for larger padding and font sizes
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {

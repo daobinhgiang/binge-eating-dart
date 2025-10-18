@@ -1833,6 +1833,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         final fontSize = unit['size'] as double;
                         final labelSize = fontSize * 0.35;
                         
+                        // Determine color based on the time unit type
+                        Color unitColor;
+                        final label = unit['label'] as String;
+                        if (label.contains('day')) {
+                          unitColor = const Color(0xFF4CAF50); // Green for days
+                        } else if (label.contains('hrs')) {
+                          unitColor = const Color(0xFF9C27B0); // Purple for hours
+                        } else if (label.contains('min')) {
+                          unitColor = const Color(0xFFFF9800); // Orange for minutes
+                        } else {
+                          unitColor = const Color(0xFF2196F3); // Blue for seconds
+                        }
+                        
                         return Column(
           children: [
                           if (index > 0) const SizedBox(height: 4),
@@ -1846,7 +1859,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   style: GoogleFonts.fredoka(
                                   fontSize: fontSize,
                     fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF5B9FED),
+                                  color: unitColor,
                                   height: 1,
                                 ),
                               ),
@@ -1855,7 +1868,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 unit['label'] as String,
                                 style: GoogleFonts.fredoka(
                                   fontSize: labelSize,
-                                  color: Colors.grey,
+                                  color: unitColor,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -1870,33 +1883,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
 
           const SizedBox(height: 16),
-    
-          // Legend
-          Column(
-            children: [
-              // First row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildLegendItem('Days', const Color(0xFF4CAF50)),
-                  const SizedBox(width: 16),
-                  _buildLegendItem('Hours', const Color(0xFF9C27B0)),
-                ],
-              ),
-              const SizedBox(height: 8),
-              // Second row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildLegendItem('Minutes', const Color(0xFFFF9800)),
-                  const SizedBox(width: 16),
-                  _buildLegendItem('Seconds', const Color(0xFF2196F3)),
-                ],
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: 8),
           
           // Reset Timer button
           ElevatedButton.icon(
@@ -1924,29 +1910,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
   
-  Widget _buildLegendItem(String label, Color color) {
-    return Row(
-      children: [
-        Container(
-          width: 12,
-          height: 12,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
-        ),
-        const SizedBox(width: 6),
-        Text(
-          label,
-          style: GoogleFonts.fredoka(
-            color: Colors.grey,
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-    );
-  }
   
   Widget _buildIOSTimerLayout(List<Map<String, dynamic>> timeUnits, int days, int hours, int minutes, int seconds) {
     return Column(
@@ -1972,11 +1935,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: timeUnits.map((unit) {
-            final fontSize = 24.0;
-            final labelSize = 40.0;
+            final fontSize = 20.0;
+            final labelSize = 12.0;
+            
+            // Determine color based on the time unit type
+            Color unitColor;
+            final label = unit['label'] as String;
+            if (label.contains('day')) {
+              unitColor = const Color(0xFF4CAF50); // Green for days
+            } else if (label.contains('hrs')) {
+              unitColor = const Color(0xFF9C27B0); // Purple for hours
+            } else if (label.contains('min')) {
+              unitColor = const Color(0xFFFF9800); // Orange for minutes
+            } else {
+              unitColor = const Color(0xFF2196F3); // Blue for seconds
+            }
             
             return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 8),
+              margin: const EdgeInsets.symmetric(horizontal: 6),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -1985,15 +1961,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     style: GoogleFonts.fredoka(
                       fontSize: fontSize,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF5B9FED),
+                      color: unitColor,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Text(
                     unit['label'] as String,
                     style: GoogleFonts.fredoka(
                       fontSize: labelSize,
-                      color: Colors.grey,
+                      color: unitColor,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
