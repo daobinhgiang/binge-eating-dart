@@ -634,10 +634,10 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
     );
   }
 
-  // Get lesson position in the path (-1 = left, 0 = center, 1 = right)
+  // Get lesson position in the path (-2 = most left, -1 = more left, 0 = center, 1 = more right, 2 = most right)
   int _getLessonPosition(int index) {
-    // Create a winding path like Duolingo
-    final pattern = [0, -1, 0, 1, 0, -1, 1, 0, -1, 0, 1, 0];
+    // Create a winding path with gradual transitions: center -> more left -> most left -> more left -> center -> more right -> most right -> more right -> center
+    final pattern = [0, -1, -2, -1, 0, 1, 2, 1];
     return pattern[index % pattern.length];
   }
 
@@ -657,22 +657,57 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
             ? Colors.grey.shade400
             : Colors.grey.shade500; // Grey for uncompleted lessons
 
-    // Calculate alignment based on position
-    Alignment alignment;
-    if (position < 0) {
-      alignment = Alignment.centerLeft;
-    } else if (position > 0) {
-      alignment = Alignment.centerRight;
-    } else {
-      alignment = Alignment.center;
-    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenWidth = constraints.maxWidth;
+        final buttonRadius = 35.0; // Half of button width (70/2)
+        
+        // Calculate positions
+        // Position -2 (most left): 20 + 35 = 55 from left
+        // Position -1 (more left): halfway between center and most left
+        // Position 0 (center): width/2
+        // Position 1 (more right): halfway between center and most right
+        // Position 2 (most right): width - 55 from left
+        
+        final mostLeftPos = 55.0;
+        final mostRightPos = screenWidth - 55.0;
+        final centerPos = screenWidth / 2;
+        final moreLeftPos = (centerPos + mostLeftPos) / 2;
+        final moreRightPos = (centerPos + mostRightPos) / 2;
+        
+        // Calculate padding based on position
+        double leftPadding = 0;
+        double rightPadding = 0;
+        Alignment alignment;
+        
+        if (position == -2) {
+          leftPadding = 20;
+          rightPadding = 0;
+          alignment = Alignment.centerLeft;
+        } else if (position == -1) {
+          leftPadding = moreLeftPos - buttonRadius;
+          rightPadding = 0;
+          alignment = Alignment.centerLeft;
+        } else if (position == 0) {
+          leftPadding = 0;
+          rightPadding = 0;
+          alignment = Alignment.center;
+        } else if (position == 1) {
+          leftPadding = 0;
+          rightPadding = screenWidth - moreRightPos - buttonRadius;
+          alignment = Alignment.centerRight;
+        } else { // position == 2
+          leftPadding = 0;
+          rightPadding = 20;
+          alignment = Alignment.centerRight;
+        }
 
     return Align(
       alignment: alignment,
       child: Padding(
         padding: EdgeInsets.only(
-          left: position == -1 ? 40 : position == 0 ? 0 : 0,
-          right: position == 1 ? 40 : position == 0 ? 0 : 0,
+          left: leftPadding,
+          right: rightPadding,
         ),
         child: GestureDetector(
           key: lessonKey,
@@ -721,6 +756,8 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
         ),
       ),
     );
+      },
+    );
   }
 
   // Build connecting path between lessons
@@ -730,7 +767,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
       painter: PathPainter(
         fromPosition: fromPosition,
         toPosition: toPosition,
-        color: const Color(0xFF66BB6A).withOpacity(0.3),
+        color: Colors.transparent, // Make lines invisible
       ),
     );
   }
@@ -809,24 +846,39 @@ class PathPainter extends CustomPainter {
 
     final path = Path();
 
+    // Calculate positions using same logic as button positioning
+    final mostLeftPos = 55.0;
+    final mostRightPos = size.width - 55.0;
+    final centerPos = size.width / 2;
+    final moreLeftPos = (centerPos + mostLeftPos) / 2;
+    final moreRightPos = (centerPos + mostRightPos) / 2;
+
     // Calculate start and end positions
     double startX;
     double endX;
 
-    if (fromPosition == -1) {
-      startX = 75; // Left position (40 padding + 35 half of button)
+    if (fromPosition == -2) {
+      startX = mostLeftPos;
+    } else if (fromPosition == -1) {
+      startX = moreLeftPos;
     } else if (fromPosition == 0) {
-      startX = size.width / 2;
+      startX = centerPos;
+    } else if (fromPosition == 1) {
+      startX = moreRightPos;
     } else {
-      startX = size.width - 75; // Right position
+      startX = mostRightPos;
     }
 
-    if (toPosition == -1) {
-      endX = 75;
+    if (toPosition == -2) {
+      endX = mostLeftPos;
+    } else if (toPosition == -1) {
+      endX = moreLeftPos;
     } else if (toPosition == 0) {
-      endX = size.width / 2;
+      endX = centerPos;
+    } else if (toPosition == 1) {
+      endX = moreRightPos;
     } else {
-      endX = size.width - 75;
+      endX = mostRightPos;
     }
 
     // Draw curved path

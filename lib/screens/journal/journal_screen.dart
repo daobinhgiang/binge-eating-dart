@@ -65,23 +65,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
                     // Weight Progress Graph and Spending Diary Row
-                    Row(
-                      children: [
-                        Expanded(
-                          child: WeightGraphWidget(
-                            userId: user.id,
-                            onTap: () => _navigateToWeightDiarySurvey(context),
-                            height: 200,
-                            showTitle: true,
-                            showAxisLabels: false,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _buildSpendingDiaryCard(context, user.id, height: 200),
-                        ),
-                      ],
-                    ),
+                    _buildTopRowCards(context, user.id),
                     
                     const SizedBox(height: 24),
                     
@@ -137,11 +121,56 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
     );
   }
 
-  Widget _buildDiaryAccessCards(BuildContext context) {
+  Widget _buildTopRowCards(BuildContext context, String userId) {
+    // Calculate the available width and create square buttons
+    final screenWidth = MediaQuery.of(context).size.width;
+    final padding = 40.0; // 20px padding on each side
+    final spacing = 16.0; // Space between buttons
+    final availableWidth = screenWidth - padding;
+    final buttonWidth = (availableWidth - spacing) / 2;
+    final buttonSize = buttonWidth; // Make it square
+    
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        // Weight Graph Widget
+        SizedBox(
+          width: buttonSize,
+          height: buttonSize,
+          child: WeightGraphWidget(
+            userId: userId,
+            onTap: () => _navigateToWeightDiarySurvey(context),
+            height: buttonSize,
+            showTitle: true,
+            showAxisLabels: false,
+          ),
+        ),
+        // Spending Diary Card
+        SizedBox(
+          width: buttonSize,
+          height: buttonSize,
+          child: _buildSpendingDiaryCard(context, userId, height: buttonSize),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDiaryAccessCards(BuildContext context) {
+    // Calculate the available width and create square buttons
+    final screenWidth = MediaQuery.of(context).size.width;
+    final padding = 40.0; // 20px padding on each side
+    final spacing = 16.0; // Space between buttons
+    final availableWidth = screenWidth - padding;
+    final buttonWidth = (availableWidth - spacing) / 2;
+    final buttonSize = buttonWidth; // Make it square
+    
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         // Food Diary Card
-        Expanded(
+        SizedBox(
+          width: buttonSize,
+          height: buttonSize,
           child: _buildDiaryCard(
             context,
             title: 'Food Diary',
@@ -151,9 +180,10 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
             onTap: () => _navigateToFoodDiarySurvey(context),
           ),
         ),
-        const SizedBox(width: 16),
         // Body Image Diary Card
-        Expanded(
+        SizedBox(
+          width: buttonSize,
+          height: buttonSize,
           child: _buildDiaryCard(
             context,
             title: 'Body Image',
@@ -175,77 +205,90 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
     required Color color,
     required VoidCallback onTap,
   }) {
-    return Container(
-      height: 280, // Increased height for better image display
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(40.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 0,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(40.0),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Calculate responsive sizes based on button size
+        final buttonHeight = constraints.maxHeight;
+        final textContainerHeight = buttonHeight / 4;
+        final fontSize = textContainerHeight * 0.35; // Scale font to ~35% of container height
+        
+        return Container(
+          // Remove fixed height to make it responsive to parent container
+          decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(40.0),
-            child: Column(
-              children: [
-                // Top image section - takes up more space
-                Expanded(
-                  flex: 4, // Increased from 3 to 4 for more image space
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(_getJournalImage(title)),
-                        fit: BoxFit.cover,
-                        alignment: Alignment.center, // Center the image
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                spreadRadius: 0,
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(40.0),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: onTap,
+                borderRadius: BorderRadius.circular(40.0),
+                child: Column(
+                  children: [
+                    // Top image section - takes up remaining space
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage(_getJournalImage(title)),
+                            fit: BoxFit.cover,
+                            alignment: Alignment.center,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                // Bottom white overlay section - sized to content
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.06),
-                        blurRadius: 10,
-                        offset: const Offset(0, -2),
+                    // Bottom white overlay section - exactly 1/4 of button height
+                    Container(
+                      width: double.infinity,
+                      height: textContainerHeight,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.06),
+                            blurRadius: 10,
+                            offset: const Offset(0, -2),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        title,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: Theme.of(context).colorScheme.onSurface,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: textContainerHeight * 0.15,
+                        vertical: textContainerHeight * 0.12,
+                      ),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            title,
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontSize: fontSize,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey[800],
                             ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -263,135 +306,134 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
   Widget _buildSpendingDiaryCard(BuildContext context, String userId, {double height = 280}) {
     final totalSpent = ref.watch(totalSpentProvider(userId));
 
-    return Container(
-      height: height,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(40.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 0,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(40.0),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: () => _navigateToMoneyDiary(context),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Calculate responsive sizes based on button size
+        final buttonHeight = constraints.maxHeight;
+        final textContainerHeight = buttonHeight / 4;
+        final fontSize = textContainerHeight * 0.35; // Scale font to ~35% of container height
+        final amountFontSize = buttonHeight * 0.15; // Amount is ~15% of button height
+        
+        return Container(
+          // Remove fixed height to make it responsive to parent container
+          decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(40.0),
-            child: Column(
-              children: [
-                // Top section - shows total spent amount
-                Expanded(
-                  flex: 4,
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Colors.amber[100]!,
-                          Colors.amber[50]!,
-                        ],
-                      ),
-                    ),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.account_balance_wallet,
-                            color: Colors.amber[700],
-                            size: height > 220 ? 48 : 32,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                spreadRadius: 0,
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(40.0),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => _navigateToMoneyDiary(context),
+                borderRadius: BorderRadius.circular(40.0),
+                child: Column(
+                  children: [
+                    // Top section - shows only dollar amount
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Colors.amber[100]!,
+                              Colors.amber[50]!,
+                            ],
                           ),
-                          SizedBox(height: height > 220 ? 12 : 8),
-                          Text(
-                            'Total Spent',
-                            style: GoogleFonts.fredoka(
-                              fontSize: height > 220 ? 14 : 11,
-                              color: Colors.amber[700],
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          SizedBox(height: height > 220 ? 8 : 4),
-                          totalSpent.when(
-                            data: (total) => Text(
-                              '\$${total.toStringAsFixed(2)}',
-                              style: GoogleFonts.fredoka(
-                                fontSize: height > 220 ? 36 : 28,
-                                color: Colors.amber[800],
-                                fontWeight: FontWeight.w700,
+                        ),
+                        child: Center(
+                          child: totalSpent.when(
+                            data: (total) => FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: buttonHeight * 0.08),
+                                child: Text(
+                                  '\$${total.toStringAsFixed(2)}',
+                                  style: GoogleFonts.fredoka(
+                                    fontSize: amountFontSize,
+                                    color: Colors.amber[800],
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
                               ),
                             ),
                             loading: () => SizedBox(
-                              height: height > 220 ? 36 : 28,
-                              width: height > 220 ? 36 : 28,
+                              height: amountFontSize * 0.8,
+                              width: amountFontSize * 0.8,
                               child: const CircularProgressIndicator(
                                 strokeWidth: 2,
                                 valueColor: AlwaysStoppedAnimation<Color>(Colors.amber),
                               ),
                             ),
-                            error: (error, _) => Text(
-                              '\$0.00',
-                              style: GoogleFonts.fredoka(
-                                fontSize: height > 220 ? 36 : 28,
-                                color: Colors.amber[800],
-                                fontWeight: FontWeight.w700,
+                            error: (error, _) => FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: buttonHeight * 0.08),
+                                child: Text(
+                                  '\$0.00',
+                                  style: GoogleFonts.fredoka(
+                                    fontSize: amountFontSize,
+                                    color: Colors.amber[800],
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                // Bottom white overlay section
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.06),
-                        blurRadius: 10,
-                        offset: const Offset(0, -2),
+                    // Bottom white overlay section - exactly 1/4 of button height
+                    Container(
+                      width: double.infinity,
+                      height: textContainerHeight,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.06),
+                            blurRadius: 10,
+                            offset: const Offset(0, -2),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  padding: EdgeInsets.fromLTRB(
-                    height > 220 ? 16 : 12,
-                    height > 220 ? 14 : 10,
-                    height > 220 ? 16 : 12,
-                    height > 220 ? 16 : 12,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Spending Diary',
-                        style: (height > 220 
-                          ? Theme.of(context).textTheme.titleMedium 
-                          : Theme.of(context).textTheme.titleSmall)?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: Theme.of(context).colorScheme.onSurface,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: textContainerHeight * 0.15,
+                        vertical: textContainerHeight * 0.12,
+                      ),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            'Spending Diary',
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontSize: fontSize,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey[800],
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 

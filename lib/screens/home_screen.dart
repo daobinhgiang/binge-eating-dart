@@ -1935,8 +1935,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: timeUnits.map((unit) {
-            final fontSize = 20.0;
-            final labelSize = 12.0;
+            final fontSize = 28.0;
+            final labelSize = 14.0;
             
             // Determine color based on the time unit type
             Color unitColor;
@@ -1952,7 +1952,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             }
             
             return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 6),
+              margin: const EdgeInsets.symmetric(horizontal: 4),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
