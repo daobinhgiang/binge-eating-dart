@@ -64,7 +64,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   height: 80,
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(40),
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
                   child: Icon(
                     Icons.favorite_outline,
@@ -142,14 +142,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                       borderSide: BorderSide(color: Colors.grey[300]!),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                       borderSide: BorderSide(
                         color: Theme.of(context).colorScheme.primary,
                         width: 2,
@@ -180,14 +180,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                       borderSide: BorderSide(color: Colors.grey[300]!),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                       borderSide: BorderSide(
                         color: Theme.of(context).colorScheme.primary,
                         width: 2,
@@ -218,14 +218,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                       borderSide: BorderSide(color: Colors.grey[300]!),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                       borderSide: BorderSide(
                         color: Theme.of(context).colorScheme.primary,
                         width: 2,
@@ -267,14 +267,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       ),
                     ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                       borderSide: BorderSide(color: Colors.grey[300]!),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                       borderSide: BorderSide(
                         color: Theme.of(context).colorScheme.primary,
                         width: 2,
@@ -317,14 +317,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       ),
                     ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                       borderSide: BorderSide(color: Colors.grey[300]!),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                       borderSide: BorderSide(
                         color: Theme.of(context).colorScheme.primary,
                         width: 2,
@@ -384,7 +384,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     margin: const EdgeInsets.only(bottom: 16),
                     decoration: BoxDecoration(
                       color: Colors.red[50],
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12.0),
                       border: Border.all(color: Colors.red[200]!),
                     ),
                     child: Row(
@@ -414,7 +414,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       foregroundColor: Colors.white,
                       elevation: 2,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12.0),
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
@@ -467,7 +467,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: Colors.grey[300]!),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12.0),
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
@@ -568,7 +568,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           color: isSelected 
               ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
               : Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.0),
           border: Border.all(
             color: isSelected 
                 ? Theme.of(context).colorScheme.primary

@@ -89,7 +89,7 @@ class _IntroScreenState extends ConsumerState<IntroScreen> {
               activeSize: const Size(22.0, 10.0),
               activeColor: const Color(0xFF4CAF50),
               activeShape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(25.0),
+                borderRadius: BorderRadius.circular(12.0),
               ),
             ),
             
@@ -298,7 +298,7 @@ class _IntroScreenState extends ConsumerState<IntroScreen> {
           title: const Text('Sign Out'),
           content: const Text('Are you sure you want to sign out?'),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12.0),
           ),
           actions: [
             TextButton(

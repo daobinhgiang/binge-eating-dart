@@ -122,7 +122,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: Colors.deepOrange[50],
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       child: Text(
                         '${((_currentPage + 1) / 5 * 100).round()}%',
@@ -136,7 +136,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                 ),
                 const SizedBox(height: 12),
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(40.0),
                   child: LinearProgressIndicator(
                     value: (_currentPage + 1) / 5,
                     backgroundColor: Colors.grey[200],
@@ -194,7 +194,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                         side: BorderSide(color: Colors.deepOrange[600]!),
                         foregroundColor: Colors.deepOrange[600],
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(40.0),
                         ),
                       ),
                       child: const Text(
@@ -213,7 +213,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                     ),
                     child: _isSubmitting
@@ -271,7 +271,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
             height: 300,
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(40.0),
               border: Border.all(color: Colors.grey[300]!),
               boxShadow: [
                 BoxShadow(
@@ -361,7 +361,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                 ),
               ),
@@ -471,7 +471,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                 ),
               ),
@@ -688,7 +688,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: Colors.deepOrange[50],
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(40.0),
                       border: Border.all(color: Colors.deepOrange[200]!),
                     ),
                     child: Row(
@@ -733,7 +733,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
           BoxShadow(
@@ -752,7 +752,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: Colors.deepOrange[50],
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(40.0),
               ),
               child: Icon(
                 Icons.adjust,
@@ -773,7 +773,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
             const SizedBox(width: 8),
             InkWell(
               onTap: () => _removeSpecificProblem(index),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(40.0),
               child: Container(
                 padding: const EdgeInsets.all(8),
                 child: Icon(
@@ -796,7 +796,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
           BoxShadow(
@@ -818,7 +818,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: Colors.orange[50],
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                   child: Icon(
                     Icons.lightbulb,
@@ -841,7 +841,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                   const SizedBox(width: 8),
                   InkWell(
                     onTap: () => _removePotentialSolution(index),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(40.0),
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       child: Icon(
@@ -860,7 +860,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   color: Colors.grey[50],
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(40.0),
                 ),
                 child: Row(
                   children: [
@@ -884,7 +884,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
               Container(
                 decoration: BoxDecoration(
                   color: Colors.grey[50],
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(40.0),
                   border: Border.all(color: Colors.grey[300]!),
                 ),
                 child: TextField(
@@ -933,7 +933,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
           color: isSelected ? Colors.deepOrange[50] : Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(40.0),
           border: Border.all(
             color: isSelected ? Colors.deepOrange[300]! : Colors.grey[200]!,
             width: isSelected ? 2 : 1,
@@ -992,7 +992,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: isSelected ? Colors.white : Colors.grey[50],
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(40.0),
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1034,7 +1034,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
         final controller = TextEditingController();
         return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(40.0),
           ),
           child: GestureDetector(
             onTap: () {
@@ -1053,7 +1053,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: Colors.deepOrange[50],
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       child: Icon(
                         Icons.add_circle_outline,
@@ -1077,7 +1077,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.grey[50],
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(40.0),
                     border: Border.all(color: Colors.grey[300]!),
                   ),
                   child: TextField(
@@ -1109,7 +1109,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                           side: BorderSide(color: Colors.grey[300]!),
                           foregroundColor: Colors.grey[700],
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(40.0),
                           ),
                         ),
                         child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
@@ -1132,7 +1132,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                           foregroundColor: Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(40.0),
                           ),
                         ),
                         child: const Text('Add', style: TextStyle(fontWeight: FontWeight.w600)),
@@ -1162,7 +1162,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
         final controller = TextEditingController();
         return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(40.0),
           ),
           child: GestureDetector(
             onTap: () {
@@ -1181,7 +1181,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: Colors.orange[50],
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       child: Icon(
                         Icons.lightbulb_outline,
@@ -1205,7 +1205,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.grey[50],
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(40.0),
                     border: Border.all(color: Colors.grey[300]!),
                   ),
                   child: TextField(
@@ -1237,7 +1237,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                           side: BorderSide(color: Colors.grey[300]!),
                           foregroundColor: Colors.grey[700],
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(40.0),
                           ),
                         ),
                         child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
@@ -1266,7 +1266,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                           foregroundColor: Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(40.0),
                           ),
                         ),
                         child: const Text('Add', style: TextStyle(fontWeight: FontWeight.w600)),
@@ -1376,7 +1376,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
         ),
         backgroundColor: Colors.red[400],
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
         margin: const EdgeInsets.all(16),
       ),
     );
@@ -1414,7 +1414,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
             ),
             backgroundColor: Colors.green[600],
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
             margin: const EdgeInsets.all(16),
           ),
         );
@@ -1433,7 +1433,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
             ),
             backgroundColor: Colors.red[400],
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
             margin: const EdgeInsets.all(16),
           ),
         );

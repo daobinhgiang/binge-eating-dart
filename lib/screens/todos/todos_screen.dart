@@ -289,7 +289,7 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
             color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12.0),
           ),
           child: Text(
             count.toString(),
@@ -351,7 +351,7 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
             color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12.0),
           ),
           child: Text(
             count.toString(),
@@ -495,7 +495,7 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.0),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

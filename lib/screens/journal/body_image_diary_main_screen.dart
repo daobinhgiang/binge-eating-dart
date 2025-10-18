@@ -71,7 +71,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
                         Container(
                           decoration: BoxDecoration(
                             color: Colors.teal[50],
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(40.0),
                             border: Border.all(
                               color: Colors.teal[200]!,
                               width: 1,
@@ -81,7 +81,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
                             color: Colors.transparent,
                             child: InkWell(
                               onTap: () => _showAllEntries(context, user.id),
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(40.0),
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                 child: Row(
@@ -183,7 +183,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.cyan[50],
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: Colors.cyan[100]!,
           width: 2,
@@ -227,7 +227,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
       height: 56,
       decoration: BoxDecoration(
         color: Colors.teal[600],
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         boxShadow: [
           BoxShadow(
             color: Colors.teal[600]!.withOpacity(0.3),
@@ -241,7 +241,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _navigateToSurvey(context),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(40.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -403,7 +403,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
       height: 120,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: Colors.grey[300]!,
           width: 1,
@@ -421,7 +421,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _showEntryDetails(context, entry),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(40.0),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -434,7 +434,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
                       height: 24,
                       decoration: BoxDecoration(
                         color: Colors.teal[600]!.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       child: const Icon(
                         Icons.visibility,
@@ -447,7 +447,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                       decoration: BoxDecoration(
                         color: Colors.teal[50],
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       child: Text(
                         'Body Check',

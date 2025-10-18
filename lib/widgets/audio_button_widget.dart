@@ -81,7 +81,7 @@ class _AudioButtonWidgetState extends State<AudioButtonWidget>
                         Colors.white.withOpacity(0.9),
                       ],
               ),
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(12.0),
               boxShadow: [
                 BoxShadow(
                   color: _isCurrentAudioPlaying
@@ -107,7 +107,7 @@ class _AudioButtonWidgetState extends State<AudioButtonWidget>
                   });
                   _handleAudioToggle();
                 },
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(12.0),
                 splashColor: const Color(0xFF66BB6A).withOpacity(0.1),
                 highlightColor: const Color(0xFF66BB6A).withOpacity(0.05),
                 child: Center(

@@ -181,7 +181,7 @@ class _AddressingSetbacksSurveyScreenState extends ConsumerState<AddressingSetba
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(40.0),
                           ),
                         ),
                         child: const Text('Previous'),
@@ -196,7 +196,7 @@ class _AddressingSetbacksSurveyScreenState extends ConsumerState<AddressingSetba
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(40.0),
                         ),
                       ),
                       child: Text(_currentPage == _totalPages - 1 ? 'Save Log' : 'Next'),
@@ -245,7 +245,7 @@ class _AddressingSetbacksSurveyScreenState extends ConsumerState<AddressingSetba
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey[300]!),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       child: Row(
                         children: [
@@ -449,7 +449,7 @@ class _AddressingSetbacksSurveyScreenState extends ConsumerState<AddressingSetba
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -461,7 +461,7 @@ class _AddressingSetbacksSurveyScreenState extends ConsumerState<AddressingSetba
                 height: 40,
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(40.0),
                 ),
                 child: Icon(
                   icon,
@@ -498,7 +498,7 @@ class _AddressingSetbacksSurveyScreenState extends ConsumerState<AddressingSetba
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: color[50],
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: color[200]!),
       ),
       child: Row(

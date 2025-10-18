@@ -154,7 +154,7 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(40.0),
                 ),
               ),
             ),
@@ -207,7 +207,7 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
               duration: const Duration(milliseconds: 200),
               decoration: BoxDecoration(
                 color: isIdeal ? Colors.green[50] : Colors.teal[50],
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(40.0),
                 border: Border.all(
                   color: isIdeal ? Colors.green[300]! : Colors.teal.withOpacity(0.2),
                   width: isIdeal ? 2 : 1,
@@ -234,7 +234,7 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(40.0),
                   onTap: () => _editActivity(context, activity, index),
                   child: Container(
                     padding: const EdgeInsets.all(16),
@@ -248,7 +248,7 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
                               height: 32,
                               decoration: BoxDecoration(
                                 color: isIdeal ? Colors.green[600] : Colors.teal[600],
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: BorderRadius.circular(40.0),
                               ),
                               child: Center(
                                 child: isIdeal
@@ -295,7 +295,7 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
                                 color: _getCriteriaColor(criteriaCount).withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(40.0),
                               ),
                               child: Text(
                                 '$criteriaCount/3',

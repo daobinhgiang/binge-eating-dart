@@ -85,7 +85,7 @@ class ProblemSolvingDetailScreen extends ConsumerWidget {
                           height: 56,
                           decoration: BoxDecoration(
                             color: Colors.deepOrange[600],
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(40.0),
                           ),
                           child: const Icon(
                             Icons.psychology,
@@ -118,7 +118,7 @@ class ProblemSolvingDetailScreen extends ConsumerWidget {
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
                               color: Colors.green[50],
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(40.0),
                               border: Border.all(color: Colors.green[200]!),
                             ),
                             child: Text(
@@ -184,7 +184,7 @@ class ProblemSolvingDetailScreen extends ConsumerWidget {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: Colors.orange[50],
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(40.0),
                       border: Border.all(color: Colors.orange[200]!),
                     ),
                     child: Row(
@@ -195,7 +195,7 @@ class ProblemSolvingDetailScreen extends ConsumerWidget {
                           height: 24,
                           decoration: BoxDecoration(
                             color: Colors.orange[600],
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(40.0),
                           ),
                           child: Center(
                             child: Text(
@@ -242,7 +242,7 @@ class ProblemSolvingDetailScreen extends ConsumerWidget {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: isChosen ? Colors.green[50] : Colors.blue[50],
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(40.0),
                       border: Border.all(
                         color: isChosen ? Colors.green[300]! : Colors.blue[200]!,
                         width: isChosen ? 2 : 1,
@@ -287,7 +287,7 @@ class ProblemSolvingDetailScreen extends ConsumerWidget {
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
                                   color: Colors.green[100],
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(40.0),
                                 ),
                                 child: Text(
                                   'Chosen',
@@ -306,7 +306,7 @@ class ProblemSolvingDetailScreen extends ConsumerWidget {
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(40.0),
                               border: Border.all(color: Colors.grey[300]!),
                             ),
                             child: Column(
@@ -360,7 +360,7 @@ class ProblemSolvingDetailScreen extends ConsumerWidget {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: Colors.green[50],
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(40.0),
                         border: Border.all(color: Colors.green[200]!),
                       ),
                       child: Row(
@@ -408,7 +408,7 @@ class ProblemSolvingDetailScreen extends ConsumerWidget {
                   height: 40,
                   decoration: BoxDecoration(
                     color: color[600],
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                   child: Icon(
                     icon,
@@ -441,7 +441,7 @@ class ProblemSolvingDetailScreen extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(40.0),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

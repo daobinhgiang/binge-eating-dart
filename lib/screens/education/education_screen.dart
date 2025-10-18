@@ -113,7 +113,7 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
                   duration: const Duration(milliseconds: 200),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.95),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(12.0),
                     border: Border.all(
                       color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
                       width: 1,
@@ -140,7 +140,7 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(12.0),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -151,7 +151,7 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
                       },
                       child: (stage.stageNumber >= 1 && stage.stageNumber <= 3)
                           ? ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(12.0),
                               child: Column(
                                 children: [
                                   // Top photo section
@@ -229,7 +229,7 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
                                     padding: const EdgeInsets.all(14),
                                     decoration: BoxDecoration(
                                       color: const Color(0xFF4CAF50).withOpacity(0.08),
-                                      borderRadius: BorderRadius.circular(16),
+                                      borderRadius: BorderRadius.circular(12.0),
                                       border: Border.all(
                                         color: const Color(0xFF4CAF50).withOpacity(0.2),
                                         width: 1,

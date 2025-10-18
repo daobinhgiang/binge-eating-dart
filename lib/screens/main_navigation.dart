@@ -6,8 +6,6 @@ import 'education/lessons_screen.dart';
 import 'tools/tools_screen.dart';
 import 'journal/journal_screen.dart';
 import 'profile/profile_screen.dart';
-import '../widgets/comforting_background.dart';
-import '../widgets/forest_background.dart';
 import '../core/services/app_tutorial_service.dart';
 import '../providers/auth_provider.dart';
 import '../models/user_model.dart';
@@ -270,31 +268,17 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
     
     return Scaffold(
       key: _completionKey,
-      body: _currentIndex == 2 
-          ? ForestBackground(
-              child: IndexedStack(
-                index: _currentIndex,
-                children: const [
-                  HomeScreen(),
-                  LessonsScreen(),
-                  ToolsScreen(),
-                  JournalScreen(),
-                  ProfileScreen(),
-                ],
-              ),
-            )
-          : ComfortingBackground(
-              child: IndexedStack(
-                index: _currentIndex,
-                children: const [
-                  HomeScreen(),
-                  LessonsScreen(),
-                  ToolsScreen(),
-                  JournalScreen(),
-                  ProfileScreen(),
-                ],
-              ),
-            ),
+      backgroundColor: Colors.white,
+      body: IndexedStack(
+        index: _currentIndex,
+        children: const [
+          HomeScreen(),
+          LessonsScreen(),
+          ToolsScreen(),
+          JournalScreen(),
+          ProfileScreen(),
+        ],
+      ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -306,8 +290,9 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
           ),
         ),
         child: SafeArea(
+          bottom: true,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: _navigationItems.asMap().entries.map((entry) {
@@ -332,7 +317,7 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
                       context.go(item.route);
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.symmetric(vertical: 4),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -380,3 +365,5 @@ class NavigationItem {
     required this.route,
   });
 }
+
+

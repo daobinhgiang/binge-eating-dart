@@ -123,7 +123,7 @@ class MoneyDiaryMainScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.amber[50],
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: Colors.amber[100]!,
           width: 2,
@@ -196,7 +196,7 @@ class MoneyDiaryMainScreen extends ConsumerWidget {
       height: 56,
       decoration: BoxDecoration(
         color: Colors.amber[600],
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         boxShadow: [
           BoxShadow(
             color: Colors.amber[600]!.withOpacity(0.3),
@@ -210,7 +210,7 @@ class MoneyDiaryMainScreen extends ConsumerWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _navigateToSurvey(context),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(40.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -364,7 +364,7 @@ class MoneyDiaryMainScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
           BoxShadow(

@@ -59,7 +59,7 @@ class _ProblemSolvingHistoryScreenState extends ConsumerState<ProblemSolvingHist
                 hintText: 'Search exercises...',
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(40.0),
                 ),
                 filled: true,
                 fillColor: Colors.grey[50],
@@ -138,7 +138,7 @@ class _ProblemSolvingHistoryScreenState extends ConsumerState<ProblemSolvingHist
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
       ),
       child: Column(
         children: [
@@ -250,7 +250,7 @@ class _ProblemSolvingHistoryScreenState extends ConsumerState<ProblemSolvingHist
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(40.0),
                 ),
               ),
             ),
@@ -310,11 +310,11 @@ class _ProblemSolvingHistoryScreenState extends ConsumerState<ProblemSolvingHist
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 2,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
       ),
       child: InkWell(
         onTap: () => _navigateToExerciseDetail(context, exercise),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -327,7 +327,7 @@ class _ProblemSolvingHistoryScreenState extends ConsumerState<ProblemSolvingHist
                     height: 48,
                     decoration: BoxDecoration(
                       color: exercise.isComplete ? Colors.green[100] : Colors.deepOrange[100],
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(40.0),
                     ),
                     child: Icon(
                       exercise.isComplete ? Icons.check_circle : Icons.psychology,
@@ -381,7 +381,7 @@ class _ProblemSolvingHistoryScreenState extends ConsumerState<ProblemSolvingHist
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.green[50],
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(40.0),
                     border: Border.all(color: Colors.green[200]!),
                   ),
                   child: Row(
@@ -413,7 +413,7 @@ class _ProblemSolvingHistoryScreenState extends ConsumerState<ProblemSolvingHist
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(40.0),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

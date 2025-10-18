@@ -268,7 +268,7 @@ class _BodyImageDiarySurveyScreenState extends ConsumerState<BodyImageDiarySurve
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.teal[200]!),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(40.0),
                   color: Colors.teal[50],
                 ),
                 child: Column(

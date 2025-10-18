@@ -286,7 +286,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                   _selectedOption = index;
                                 });
                               },
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(12.0),
                               child: Container(
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
@@ -299,7 +299,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                         : Colors.grey[300]!,
                                     width: isSelected ? 2 : 1,
                                   ),
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(12.0),
                                 ),
                                 child: Row(
                                   children: [
@@ -359,7 +359,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
                           color: Colors.blue[50],
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.0),
                           border: Border.all(
                             color: Colors.blue[200]!,
                           ),
@@ -400,7 +400,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             disabledForegroundColor: Colors.grey[500],
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(12.0),
                             ),
                             elevation: 0,
                           ),
@@ -458,7 +458,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             disabledForegroundColor: Colors.grey[500],
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(12.0),
                             ),
                             elevation: 0,
                           ),
@@ -800,7 +800,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12.0),
         ),
         title: const Text(
           'Exit Survey?',

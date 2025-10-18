@@ -102,7 +102,7 @@ class ExercisePrepSlideWidget extends StatelessWidget {
                   height: 36,
                   decoration: BoxDecoration(
                     color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(12.0),
                     border: Border.all(
                       color: color.withOpacity(0.15),
                       width: 1,
@@ -112,7 +112,7 @@ class ExercisePrepSlideWidget extends StatelessWidget {
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () => Navigator.of(context).pop(),
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(12.0),
                       splashColor: color.withOpacity(0.1),
                       highlightColor: color.withOpacity(0.05),
                       child: Icon(
@@ -156,7 +156,7 @@ class ExercisePrepSlideWidget extends StatelessWidget {
                   height: 8,
                   decoration: BoxDecoration(
                     color: color.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
                 ),
                 FractionallySizedBox(
@@ -171,7 +171,7 @@ class ExercisePrepSlideWidget extends StatelessWidget {
                           color,
                         ],
                       ),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(12.0),
                       boxShadow: [
                         BoxShadow(
                           color: color.withOpacity(0.4),
@@ -205,7 +205,7 @@ class ExercisePrepSlideWidget extends StatelessWidget {
               padding: const EdgeInsets.all(32),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(28),
+                borderRadius: BorderRadius.circular(12.0),
                 boxShadow: [
                   BoxShadow(
                     color: color.withOpacity(0.1),
@@ -274,7 +274,7 @@ class ExercisePrepSlideWidget extends StatelessWidget {
             color.withOpacity(0.08),
           ],
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(12.0),
         border: Border.all(
           color: color.withOpacity(0.15),
           width: 1.5,
@@ -296,7 +296,7 @@ class ExercisePrepSlideWidget extends StatelessWidget {
                   color.withOpacity(0.8),
                 ],
               ),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(12.0),
               boxShadow: [
                 BoxShadow(
                   color: color.withOpacity(0.3),
@@ -348,7 +348,7 @@ class ExercisePrepSlideWidget extends StatelessWidget {
             color.withOpacity(0.08),
           ],
         ),
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(12.0),
         border: Border.all(
           color: color.withOpacity(0.3),
           width: 2,
@@ -432,7 +432,7 @@ class ExercisePrepSlideWidget extends StatelessWidget {
                   color.withOpacity(0.85),
                 ],
               ),
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(12.0),
               boxShadow: [
                 BoxShadow(
                   color: color.withOpacity(0.5),
@@ -445,7 +445,7 @@ class ExercisePrepSlideWidget extends StatelessWidget {
               color: Colors.transparent,
               child: InkWell(
                 onTap: onStartExercise,
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(12.0),
                 child: Center(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -506,13 +506,13 @@ class ExercisePrepSlideWidget extends StatelessWidget {
                   height: 56,
                   decoration: BoxDecoration(
                     color: color.withOpacity(0.08),
-                    borderRadius: BorderRadius.circular(18),
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: onPrevious,
-                      borderRadius: BorderRadius.circular(18),
+                      borderRadius: BorderRadius.circular(12.0),
                       child: Center(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -555,7 +555,7 @@ class ExercisePrepSlideWidget extends StatelessWidget {
                       color.withOpacity(0.8),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(12.0),
                   boxShadow: [
                     BoxShadow(
                       color: color.withOpacity(0.4),
@@ -568,7 +568,7 @@ class ExercisePrepSlideWidget extends StatelessWidget {
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: onNext,
-                    borderRadius: BorderRadius.circular(18),
+                    borderRadius: BorderRadius.circular(12.0),
                     child: Center(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,

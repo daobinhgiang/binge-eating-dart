@@ -118,7 +118,7 @@ class _AssessmentWidgetState extends ConsumerState<AssessmentWidget> {
           
           // Progress bar (rounded, no numbers)
           ClipRRect(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(12.0),
             child: LinearProgressIndicator(
               value: (_currentQuestionIndex + 1) / widget.assessment.questions.length,
               backgroundColor: Colors.white.withOpacity(0.25),
@@ -137,7 +137,7 @@ class _AssessmentWidgetState extends ConsumerState<AssessmentWidget> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12.0),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
@@ -201,7 +201,7 @@ class _AssessmentWidgetState extends ConsumerState<AssessmentWidget> {
                     width: 1.5,
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
                 ),
                 child: Text(
@@ -226,7 +226,7 @@ class _AssessmentWidgetState extends ConsumerState<AssessmentWidget> {
                 backgroundColor: Theme.of(context).primaryColor,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.0),
                 ),
                 elevation: 0,
               ),
@@ -281,7 +281,7 @@ class _AssessmentWidgetState extends ConsumerState<AssessmentWidget> {
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: Colors.grey[50],
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12.0),
             border: Border.all(
               color: Colors.grey[200]!,
               width: 1,
@@ -334,7 +334,7 @@ class _AssessmentWidgetState extends ConsumerState<AssessmentWidget> {
           margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
             color: isSelected ? Theme.of(context).primaryColor.withOpacity(0.1) : Colors.grey[50],
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12.0),
             border: Border.all(
               color: isSelected ? Theme.of(context).primaryColor : Colors.grey[200]!,
               width: isSelected ? 2 : 1,
@@ -391,7 +391,7 @@ class _AssessmentWidgetState extends ConsumerState<AssessmentWidget> {
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
         decoration: BoxDecoration(
           color: isSelected ? Theme.of(context).primaryColor.withOpacity(0.1) : Colors.grey[50],
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.0),
           border: Border.all(
             color: isSelected ? Theme.of(context).primaryColor : Colors.grey[200]!,
             width: isSelected ? 2 : 1,
@@ -425,7 +425,7 @@ class _AssessmentWidgetState extends ConsumerState<AssessmentWidget> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.0),
         border: Border.all(
           color: Colors.grey[200]!,
           width: 1,

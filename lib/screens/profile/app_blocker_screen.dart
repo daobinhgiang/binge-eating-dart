@@ -50,7 +50,7 @@ class _AppBlockerScreenState extends State<AppBlockerScreen> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(12.0),
                 boxShadow: [
                   BoxShadow(
                     color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
@@ -68,7 +68,7 @@ class _AppBlockerScreenState extends State<AppBlockerScreen> {
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.0),
                         ),
                         child: const Icon(
                           Icons.app_blocking,
@@ -105,7 +105,7 @@ class _AppBlockerScreenState extends State<AppBlockerScreen> {
                   color: _message.startsWith('Error') 
                     ? Colors.red.withValues(alpha: 0.1)
                     : Colors.green.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.0),
                   border: Border.all(
                     color: _message.startsWith('Error') 
                       ? Colors.red.withValues(alpha: 0.3)
@@ -141,7 +141,7 @@ class _AppBlockerScreenState extends State<AppBlockerScreen> {
               width: double.infinity,
               height: 56,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(12.0),
                 gradient: const LinearGradient(
                   colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
                   begin: Alignment.topLeft,
@@ -158,7 +158,7 @@ class _AppBlockerScreenState extends State<AppBlockerScreen> {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(12.0),
                   onTap: _isLoading ? null : _showAppRestrictions,
                   child: Center(
                     child: _isLoading

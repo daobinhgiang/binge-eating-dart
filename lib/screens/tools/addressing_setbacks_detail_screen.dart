@@ -49,7 +49,7 @@ class AddressingSetbacksDetailScreen extends ConsumerWidget {
                           height: 56,
                           decoration: BoxDecoration(
                             color: Colors.red[600],
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(40.0),
                           ),
                           child: const Icon(
                             Icons.trending_down,
@@ -82,7 +82,7 @@ class AddressingSetbacksDetailScreen extends ConsumerWidget {
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
                               color: Colors.green[50],
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(40.0),
                               border: Border.all(color: Colors.green[200]!),
                             ),
                             child: Text(
@@ -176,7 +176,7 @@ class AddressingSetbacksDetailScreen extends ConsumerWidget {
                   height: 40,
                   decoration: BoxDecoration(
                     color: color[600],
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                   child: Icon(
                     icon,
@@ -210,7 +210,7 @@ class AddressingSetbacksDetailScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.grey[300]!),
       ),
       child: Text(

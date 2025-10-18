@@ -59,7 +59,7 @@ class _MealPlanHistoryScreenState extends ConsumerState<MealPlanHistoryScreen> {
                 hintText: 'Search meal plans...',
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(40.0),
                 ),
                 filled: true,
                 fillColor: Colors.grey[50],
@@ -138,7 +138,7 @@ class _MealPlanHistoryScreenState extends ConsumerState<MealPlanHistoryScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
       ),
       child: Column(
         children: [
@@ -250,7 +250,7 @@ class _MealPlanHistoryScreenState extends ConsumerState<MealPlanHistoryScreen> {
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(40.0),
                 ),
               ),
             ),
@@ -310,11 +310,11 @@ class _MealPlanHistoryScreenState extends ConsumerState<MealPlanHistoryScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 2,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
       ),
       child: InkWell(
         onTap: () => _navigateToPlanDetail(context, plan),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -327,7 +327,7 @@ class _MealPlanHistoryScreenState extends ConsumerState<MealPlanHistoryScreen> {
                     height: 48,
                     decoration: BoxDecoration(
                       color: plan.isComplete ? Colors.green[100] : Colors.orange[100],
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(40.0),
                     ),
                     child: Icon(
                       plan.isComplete ? Icons.check_circle : Icons.restaurant_menu,
@@ -379,7 +379,7 @@ class _MealPlanHistoryScreenState extends ConsumerState<MealPlanHistoryScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.green[50],
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(40.0),
                     border: Border.all(color: Colors.green[200]!),
                   ),
                   child: Row(
@@ -411,7 +411,7 @@ class _MealPlanHistoryScreenState extends ConsumerState<MealPlanHistoryScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(40.0),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

@@ -120,7 +120,7 @@ class AddressingSetbacksScreen extends ConsumerWidget {
                           Container(
                             decoration: BoxDecoration(
                               color: Colors.red[50],
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(40.0),
                               border: Border.all(
                                 color: Colors.red[200]!,
                                 width: 2,
@@ -130,7 +130,7 @@ class AddressingSetbacksScreen extends ConsumerWidget {
                               color: Colors.transparent,
                               child: InkWell(
                                 onTap: () => _navigateToAllExercises(context, user.id),
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius: BorderRadius.circular(40.0),
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                   child: Row(
@@ -230,7 +230,7 @@ class AddressingSetbacksScreen extends ConsumerWidget {
       height: 200,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
           BoxShadow(
@@ -244,7 +244,7 @@ class AddressingSetbacksScreen extends ConsumerWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _navigateToSetbacksSurvey(context),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(40.0),
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -253,7 +253,7 @@ class AddressingSetbacksScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Colors.red[50],
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                   child: Icon(
                     Icons.add,
@@ -287,7 +287,7 @@ class AddressingSetbacksScreen extends ConsumerWidget {
       height: 200,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
           BoxShadow(
@@ -301,7 +301,7 @@ class AddressingSetbacksScreen extends ConsumerWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _navigateToExerciseDetail(context, exercise),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(40.0),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -318,7 +318,7 @@ class AddressingSetbacksScreen extends ConsumerWidget {
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(40.0),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.red.withOpacity(0.3),
@@ -338,7 +338,7 @@ class AddressingSetbacksScreen extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
                         color: exercise.isComplete ? Colors.green[50] : Colors.orange[50],
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(40.0),
                         border: Border.all(
                           color: exercise.isComplete ? Colors.green[200]! : Colors.orange[200]!,
                         ),
@@ -391,7 +391,7 @@ class AddressingSetbacksScreen extends ConsumerWidget {
       height: 120,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
           BoxShadow(
@@ -405,7 +405,7 @@ class AddressingSetbacksScreen extends ConsumerWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _navigateToExerciseDetail(context, exercise),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(40.0),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -442,7 +442,7 @@ class AddressingSetbacksScreen extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: exercise.isComplete ? Colors.green[50] : Colors.orange[50],
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40.0),
                         border: Border.all(
                           color: exercise.isComplete ? Colors.green[200]! : Colors.orange[200]!,
                         ),
@@ -553,7 +553,7 @@ class AddressingSetbacksScreen extends ConsumerWidget {
                         height: 56,
                         decoration: BoxDecoration(
                           color: Colors.red[600],
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(40.0),
                         ),
                         child: const Icon(
                           Icons.trending_down,
@@ -586,7 +586,7 @@ class AddressingSetbacksScreen extends ConsumerWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
                             color: Colors.green[50],
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(40.0),
                             border: Border.all(color: Colors.green[200]!),
                           ),
                           child: Text(
@@ -684,7 +684,7 @@ class AddressingSetbacksScreen extends ConsumerWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.blue[100]!),
       ),
       child: Padding(
@@ -698,7 +698,7 @@ class AddressingSetbacksScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: Colors.blue[100],
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                   child: Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
                 ),
@@ -739,7 +739,7 @@ class AddressingSetbacksScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(40.0),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -796,7 +796,7 @@ class AddressingSetbacksScreen extends ConsumerWidget {
                   height: 40,
                   decoration: BoxDecoration(
                     color: color[600],
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                   child: Icon(
                     icon,

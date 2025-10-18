@@ -55,7 +55,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                       Color(0xFFF1F8E9), // Very light green
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(12.0),
                   border: Border.all(
                     color: const Color(0xFF4CAF50).withOpacity(0.2),
                     width: 1,
@@ -138,7 +138,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12.0),
                           ),
                           elevation: 2,
                         ),
@@ -303,7 +303,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.0),
         border: Border.all(
           color: Colors.grey[200]!,
           width: 1,
@@ -320,7 +320,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _navigateToInsightRecommendation(recommendation),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.0),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
@@ -329,7 +329,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: typeColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
                   child: Icon(
                     typeIcon, 

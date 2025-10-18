@@ -66,7 +66,7 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
             timePickerTheme: TimePickerThemeData(
               backgroundColor: Colors.white,
               hourMinuteShape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12.0),
                 side: BorderSide(color: Theme.of(context).colorScheme.outline),
               ),
               dayPeriodBorderSide: BorderSide(color: Theme.of(context).colorScheme.outline),
@@ -288,7 +288,7 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -297,7 +297,7 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.0),
                           boxShadow: [
                             BoxShadow(
                               color: colorScheme.primary.withOpacity(0.1),
@@ -343,12 +343,12 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
                   subtitle: 'When do you start your day?',
                   child: InkWell(
                     onTap: _selectFirstMealTime,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(12.0),
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(12.0),
                         border: Border.all(
                           color: colorScheme.primary.withOpacity(0.2),
                           width: 2,
@@ -367,7 +367,7 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               color: colorScheme.primary.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(12.0),
                             ),
                             child: Icon(
                               Icons.access_time_rounded,
@@ -428,7 +428,7 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
                               colorScheme.primaryContainer.withOpacity(0.5),
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(12.0),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -500,7 +500,7 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(12.0),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.03),
@@ -538,7 +538,7 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
                                   colorScheme.primary.withOpacity(0.05),
                                 ],
                               ),
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(12.0),
                             ),
                             child: Text(
                               '$_mealCount',
@@ -583,7 +583,7 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -594,7 +594,7 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               color: Colors.blue[100],
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(12.0),
                             ),
                             child: Icon(
                               Icons.lightbulb_outline,
@@ -626,7 +626,7 @@ class _RegularEatingScreenState extends ConsumerState<RegularEatingScreen> {
                               padding: const EdgeInsets.all(6),
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(12.0),
                               ),
                               child: Icon(
                                 item.$2,

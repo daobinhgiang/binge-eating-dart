@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../providers/auth_provider.dart';
 import '../providers/todo_provider.dart';
 import '../providers/education_provider.dart';
@@ -106,7 +107,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       width: 56,
       height: 56,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity( 0.2),
@@ -116,7 +117,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         child: Image.asset(
           'assets/logo.png',
           fit: BoxFit.cover,
@@ -133,7 +134,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     Color(0xFFFFB74D), // Light orange
                   ],
                 ),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(40.0),
               ),
               child: const Icon(
                 Icons.psychology,
@@ -262,8 +263,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final authState = ref.watch(authNotifierProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: CustomScrollView(
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/background.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: CustomScrollView(
           controller: _scrollController,
           physics: const ClampingScrollPhysics(),
           clipBehavior: Clip.none,
@@ -282,12 +289,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         // Recovery Tools section with header inside container
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.grey[50],
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: Colors.grey[200]!,
-                              width: 1,
-                            ),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(40.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.1),
+                                spreadRadius: 0,
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -365,7 +376,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ],
         ),
-      );
+      ),
+    );
   }
 
 
@@ -476,7 +488,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: Colors.grey[200]!,
           width: 1,
@@ -493,7 +505,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _navigateToLesson(lesson),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(40.0),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
@@ -502,7 +514,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: const Color(0xFF4CAF50).withOpacity(0.08),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(40.0),
                     border: Border.all(
                       color: const Color(0xFF4CAF50).withOpacity(0.2),
                       width: 1,
@@ -600,7 +612,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 Color(0xFFE0F2E0), // Slightly more green
               ],
             ),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(40.0),
             boxShadow: [
               BoxShadow(
                 color: const Color(0xFF4CAF50).withOpacity(0.05),
@@ -613,7 +625,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             color: Colors.transparent,
             child: InkWell(
               onTap: () => context.go('/education'),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(40.0),
               child: Padding(
                 padding: const EdgeInsets.all(20),
                 child: Row(
@@ -694,7 +706,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 Color(0xFFE5F0E5), // Slightly more green
               ],
             ),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(40.0),
             boxShadow: [
               BoxShadow(
                 color: const Color(0xFF4CAF50).withOpacity(0.05),
@@ -707,7 +719,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             color: Colors.transparent,
             child: InkWell(
               onTap: () => context.go('/education'),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(40.0),
               child: Padding(
                 padding: const EdgeInsets.all(20),
                 child: Row(
@@ -823,12 +835,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.grey[200]!,
-          width: 1,
-        ),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(40.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -883,7 +899,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       padding: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: () => _navigateToTodoItem(todo),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(40.0),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 4),
           child: Row(
@@ -892,21 +908,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               GestureDetector(
                 onTap: () => _toggleTodoCompletion(todo, ref),
                 child: Container(
-                  width: 32,
-                  height: 32,
-      decoration: BoxDecoration(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
                     color: todo.isCompleted ? const Color(0xFF4CAF50) : Colors.white,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
                       color: todo.isCompleted ? const Color(0xFF4CAF50) : Colors.grey[300]!,
-                      width: 2,
+                      width: 1.5,
                     ),
                   ),
                   child: todo.isCompleted
                       ? const Icon(
                           Icons.check,
                     color: Colors.white,
-                          size: 20,
+                          size: 16,
                         )
                       : null,
                 ),
@@ -1077,7 +1093,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       context: context,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(32),
         ),
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -1085,7 +1101,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           constraints: const BoxConstraints(maxWidth: 400),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(32),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.1),
@@ -1110,8 +1126,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(24),
-                    topRight: Radius.circular(24),
+                    topLeft: Radius.circular(32),
+                    topRight: Radius.circular(32),
                   ),
                 ),
                 child: Row(
@@ -1203,7 +1219,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       elevation: 0,
                     ),
@@ -1228,7 +1244,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: color.withOpacity(0.3),
           width: 1.5,
@@ -1248,7 +1264,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             Navigator.of(context).pop(); // Close dialog first
             onTap();
           },
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(40.0),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Row(
@@ -1264,7 +1280,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                   child: Icon(
                     icon,
@@ -1336,7 +1352,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         color: Colors.transparent,
         child: InkWell(
         onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(40.0),
           child: Padding(
           padding: const EdgeInsets.all(16),
             child: Row(
@@ -1406,18 +1422,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.grey[300]!,
-          width: 1.5,
-        ),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(40.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: _handleResetButton,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(40.0),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
             child: Row(
@@ -1452,12 +1472,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: const Color(0xFFE57373).withOpacity(0.4),
           width: 1.5,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Material(
         color: Colors.transparent,
@@ -1468,7 +1496,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             trackUrgeButton();
             _showUrgeHelpDialog();
           },
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(40.0),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
             child: Row(
@@ -1503,18 +1531,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: const Color(0xFF9C27B0).withOpacity(0.4),
           width: 1.5,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: () => context.go('/motivation'),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(40.0),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
             child: Row(
@@ -1640,18 +1676,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         width: double.infinity,
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: Colors.grey[100],
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: Colors.grey[300]!,
-            width: 1,
-          ),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(40.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 0,
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Column(
           children: [
-            const Text(
+            Text(
               'Start tracking your binge-free progress',
-              style: TextStyle(
+              style: GoogleFonts.fredoka(
                 color: Colors.black87,
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
@@ -1662,9 +1702,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ElevatedButton.icon(
               onPressed: _handleResetButton,
               icon: const Icon(Icons.play_arrow, size: 24),
-              label: const Text(
+              label: Text(
                 'Start Timer',
-                style: TextStyle(
+                style: GoogleFonts.fredoka(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -1674,7 +1714,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(40.0),
                 ),
                 elevation: 2,
               ),
@@ -1739,20 +1779,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.grey[300]!,
-          width: 1.5,
-        ),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(40.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         children: [
           // Title
-          const Text(
+          Text(
             'Binge-Free For',
-            style: TextStyle(
-              color: Colors.grey,
+            style: GoogleFonts.fredoka(
+              color: Colors.black,
               fontSize: 18,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.5,
@@ -1799,7 +1843,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               children: [
                 Text(
                                 unit['value'] as String,
-                  style: TextStyle(
+                  style: GoogleFonts.fredoka(
                                   fontSize: fontSize,
                     fontWeight: FontWeight.bold,
                                   color: const Color(0xFF5B9FED),
@@ -1809,7 +1853,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               const SizedBox(width: 6),
                               Text(
                                 unit['label'] as String,
-                                style: TextStyle(
+                                style: GoogleFonts.fredoka(
                                   fontSize: labelSize,
                                   color: Colors.grey,
                                   fontWeight: FontWeight.w500,
@@ -1858,9 +1902,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ElevatedButton.icon(
             onPressed: _handleResetButton,
             icon: const Icon(Icons.refresh, size: 20),
-            label: const Text(
+            label: Text(
               'Reset Timer',
-              style: TextStyle(
+              style: GoogleFonts.fredoka(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
@@ -1870,7 +1914,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(40.0),
               ),
               elevation: 2,
             ),
@@ -1894,7 +1938,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         const SizedBox(width: 6),
         Text(
           label,
-          style: const TextStyle(
+          style: GoogleFonts.fredoka(
             color: Colors.grey,
             fontSize: 13,
             fontWeight: FontWeight.w500,
@@ -1929,7 +1973,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: timeUnits.map((unit) {
             final fontSize = 24.0;
-            final labelSize = 12.0;
+            final labelSize = 40.0;
             
             return Container(
               margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -1938,7 +1982,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 children: [
                   Text(
                     unit['value'] as String,
-                    style: TextStyle(
+                    style: GoogleFonts.fredoka(
                       fontSize: fontSize,
                       fontWeight: FontWeight.bold,
                       color: const Color(0xFF5B9FED),
@@ -1947,7 +1991,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   const SizedBox(height: 4),
                   Text(
                     unit['label'] as String,
-                    style: TextStyle(
+                    style: GoogleFonts.fredoka(
                       fontSize: labelSize,
                       color: Colors.grey,
                       fontWeight: FontWeight.w500,
@@ -2088,155 +2132,3 @@ class CircularTimerPainter extends CustomPainter {
   }
 }
 
-// Custom painter for dashed lines
-class DashedLinePainter extends CustomPainter {
-  final Color color;
-  final double strokeWidth;
-  final double dashWidth;
-  final double dashSpace;
-
-  DashedLinePainter({
-    required this.color,
-    required this.strokeWidth,
-    required this.dashWidth,
-    required this.dashSpace,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = strokeWidth
-      ..style = PaintingStyle.stroke;
-
-    double startX = 0;
-    while (startX < size.width) {
-      canvas.drawLine(
-        Offset(startX, size.height / 2),
-        Offset(startX + dashWidth, size.height / 2),
-        paint,
-      );
-      startX += dashWidth + dashSpace;
-    }
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
-}
-
-// Custom clipper for curved header with inward curve
-class CurvedHeaderClipper extends CustomClipper<Path> {
-  final double depth;
-  
-  CurvedHeaderClipper({this.depth = 80});
-  
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    
-    // Start from top-left corner
-    path.moveTo(0, 0);
-    
-    // Go to top-right corner
-    path.lineTo(size.width, 0);
-    
-    // Go down the right side
-    path.lineTo(size.width, size.height - depth);
-    
-    // Create a smooth inward curve (concave) at the bottom
-    // Using quadraticBezierTo for a cleaner arch shape
-    path.quadraticBezierTo(
-      size.width / 2,              // Control point X (center)
-      size.height - depth * 2,      // Control point Y (pulls curve upward for inward effect)
-      0,                           // End point X (left side)
-      size.height - depth,          // End point Y (same height as right side)
-    );
-    
-    // Go up the left side
-    path.lineTo(0, 0);
-    
-    // Close the path
-    path.close();
-    
-    return path;
-  }
-  
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
-}
-
-// Custom painter for comforting background with subtle nature elements
-class ComfortingBackgroundPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint();
-    
-    // Draw subtle circles for a calming effect
-    paint.color = const Color(0xFF4CAF50).withOpacity(0.03);
-    canvas.drawCircle(
-      Offset(size.width * 0.1, size.height * 0.2),
-      size.width * 0.15,
-      paint,
-    );
-    
-    paint.color = const Color(0xFF66BB6A).withOpacity(0.02);
-    canvas.drawCircle(
-      Offset(size.width * 0.8, size.height * 0.3),
-      size.width * 0.2,
-      paint,
-    );
-    
-    paint.color = const Color(0xFF43A047).withOpacity(0.025);
-    canvas.drawCircle(
-      Offset(size.width * 0.9, size.height * 0.7),
-      size.width * 0.12,
-      paint,
-    );
-    
-    paint.color = const Color(0xFF388E3C).withOpacity(0.02);
-    canvas.drawCircle(
-      Offset(size.width * 0.15, size.height * 0.8),
-      size.width * 0.18,
-      paint,
-    );
-    
-    // Draw subtle organic shapes for a nature-inspired feel
-    paint.color = const Color(0xFF4CAF50).withOpacity(0.015);
-    final path = Path();
-    path.moveTo(size.width * 0.3, size.height * 0.1);
-    path.quadraticBezierTo(
-      size.width * 0.5, size.height * 0.05,
-      size.width * 0.7, size.height * 0.1,
-    );
-    path.quadraticBezierTo(
-      size.width * 0.8, size.height * 0.15,
-      size.width * 0.6, size.height * 0.2,
-    );
-    path.quadraticBezierTo(
-      size.width * 0.4, size.height * 0.18,
-      size.width * 0.3, size.height * 0.1,
-    );
-    canvas.drawPath(path, paint);
-    
-    // Draw gentle hills at the bottom
-    paint.color = const Color(0xFF66BB6A).withOpacity(0.02);
-    final hillsPath = Path();
-    hillsPath.moveTo(0, size.height);
-    hillsPath.quadraticBezierTo(
-      size.width * 0.2, size.height * 0.95,
-      size.width * 0.4, size.height,
-    );
-    hillsPath.quadraticBezierTo(
-      size.width * 0.6, size.height * 0.98,
-      size.width * 0.8, size.height,
-    );
-    hillsPath.quadraticBezierTo(
-      size.width * 0.9, size.height * 0.97,
-      size.width, size.height,
-    );
-    canvas.drawPath(hillsPath, paint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
-}

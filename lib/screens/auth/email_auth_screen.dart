@@ -117,14 +117,14 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
                               color: Theme.of(context).colorScheme.primary,
                             ),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(12.0),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(12.0),
                               borderSide: BorderSide(color: Colors.grey[300]!),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(12.0),
                               borderSide: BorderSide(
                                 color: Theme.of(context).colorScheme.primary,
                                 width: 2,
@@ -154,14 +154,14 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
                             labelText: 'Last Name',
                             hintText: 'Enter your last name',
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(12.0),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(12.0),
                               borderSide: BorderSide(color: Colors.grey[300]!),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(12.0),
                               borderSide: BorderSide(
                                 color: Theme.of(context).colorScheme.primary,
                                 width: 2,
@@ -200,14 +200,14 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                       borderSide: BorderSide(color: Colors.grey[300]!),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                       borderSide: BorderSide(
                         color: Theme.of(context).colorScheme.primary,
                         width: 2,
@@ -250,14 +250,14 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
                       ),
                     ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                       borderSide: BorderSide(color: Colors.grey[300]!),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.0),
                       borderSide: BorderSide(
                         color: Theme.of(context).colorScheme.primary,
                         width: 2,
@@ -300,14 +300,14 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
                         ),
                       ),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12.0),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12.0),
                         borderSide: BorderSide(color: Colors.grey[300]!),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12.0),
                         borderSide: BorderSide(
                           color: Theme.of(context).colorScheme.primary,
                           width: 2,
@@ -361,7 +361,7 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
                     margin: const EdgeInsets.only(bottom: 16),
                     decoration: BoxDecoration(
                       color: Colors.red[50],
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12.0),
                       border: Border.all(color: Colors.red[200]!),
                     ),
                     child: Row(
@@ -391,7 +391,7 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
                       foregroundColor: Colors.white,
                       elevation: 2,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12.0),
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),

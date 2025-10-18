@@ -295,7 +295,7 @@ class _MotivationScreenState extends ConsumerState<MotivationScreen> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(12.0),
                 border: Border.all(
                   color: quote['color'].withOpacity(0.3),
                   width: 1.5,
@@ -318,7 +318,7 @@ class _MotivationScreenState extends ConsumerState<MotivationScreen> {
               padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(12.0),
                 boxShadow: [
                   BoxShadow(
                     color: quote['color'].withOpacity(0.08),

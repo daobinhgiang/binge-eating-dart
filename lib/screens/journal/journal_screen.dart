@@ -31,26 +31,32 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
 
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              pinned: true,
-              backgroundColor: Colors.white,
-              surfaceTintColor: Colors.transparent,
-              elevation: 2,
-              automaticallyImplyLeading: false,
-              title: Text(
-                'Journal',
-                style: GoogleFonts.fredoka(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/background.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: SafeArea(
+          child: CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                pinned: false,
+                backgroundColor: Colors.transparent,
+                surfaceTintColor: Colors.transparent,
+                elevation: 0,
+                automaticallyImplyLeading: false,
+                title: Text(
+                  'Journal',
+                  style: GoogleFonts.fredoka(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
                 ),
+                centerTitle: false,
               ),
-              centerTitle: true,
-            ),
             SliverPadding(
               padding: const EdgeInsets.only(top: 24),
               sliver: SliverPadding(
@@ -63,6 +69,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                       onTap: () => _navigateToWeightDiarySurvey(context),
                       height: 200,
                       showTitle: true,
+                      showAxisLabels: false,
                     ),
                     
                     const SizedBox(height: 24),
@@ -76,6 +83,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
               ),
             ),
           ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -84,6 +92,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
         foregroundColor: Colors.white,
         elevation: 8,
         mini: false,
+        shape: const CircleBorder(),
         child: const Icon(
           Icons.add,
           size: 32,
@@ -164,7 +173,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
     return Container(
       height: 280, // Increased height for better image display
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
@@ -175,12 +184,12 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
         child: Material(
           color: Colors.transparent,
           child: InkWell(
             onTap: onTap,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(40.0),
             child: Column(
               children: [
                 // Top image section - takes up more space
@@ -220,16 +229,6 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w700,
                               color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        subtitle,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.grey[700],
-                              height: 1.3,
                             ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -350,12 +349,12 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
           Navigator.of(context).pop();
           onTap();
         },
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey[200]!),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(40.0),
           ),
           child: Row(
             children: [
@@ -364,7 +363,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                 height: 64,
                 decoration: BoxDecoration(
                   color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(40.0),
                 ),
                 child: Icon(
                   icon,

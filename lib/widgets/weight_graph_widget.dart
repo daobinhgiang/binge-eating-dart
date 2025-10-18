@@ -7,6 +7,7 @@ class WeightGraphWidget extends ConsumerWidget {
   final VoidCallback? onTap;
   final double height;
   final bool showTitle;
+  final bool showAxisLabels;
 
   const WeightGraphWidget({
     super.key,
@@ -14,6 +15,7 @@ class WeightGraphWidget extends ConsumerWidget {
     this.onTap,
     this.height = 200,
     this.showTitle = true,
+    this.showAxisLabels = true,
   });
 
   @override
@@ -23,7 +25,7 @@ class WeightGraphWidget extends ConsumerWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
           BoxShadow(
@@ -37,7 +39,7 @@ class WeightGraphWidget extends ConsumerWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(40.0),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -50,7 +52,7 @@ class WeightGraphWidget extends ConsumerWidget {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: Colors.orange[50],
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(40.0),
                         ),
                         child: Icon(
                           Icons.trending_up,
@@ -150,44 +152,47 @@ class WeightGraphWidget extends ConsumerWidget {
                               points: normalized,
                               color: Colors.orange[600]!,
                               originalUnit: entries.isNotEmpty ? entries.first.unit : 'kg',
+                              showAxisLabels: showAxisLabels,
                             ),
                           ),
-                          const SizedBox(height: 12),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[100],
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  _formatTick(from),
-                                  style: TextStyle(
-                                    color: Colors.grey[700], 
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w500,
+                          if (showAxisLabels) ...[
+                            const SizedBox(height: 12),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[100],
+                                    borderRadius: BorderRadius.circular(40.0),
+                                  ),
+                                  child: Text(
+                                    _formatTick(from),
+                                    style: TextStyle(
+                                      color: Colors.grey[700], 
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[100],
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  _formatTick(now),
-                                  style: TextStyle(
-                                    color: Colors.grey[700], 
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w500,
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[100],
+                                    borderRadius: BorderRadius.circular(40.0),
+                                  ),
+                                  child: Text(
+                                    _formatTick(now),
+                                    style: TextStyle(
+                                      color: Colors.grey[700], 
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            ),
+                          ],
                         ],
                       );
                     },
@@ -272,6 +277,7 @@ class _WeightChart extends StatelessWidget {
   final List<({DateTime time, double valueKg, double originalWeight, String originalUnit})> points;
   final Color color;
   final String originalUnit;
+  final bool showAxisLabels;
 
   const _WeightChart({
     required this.from,
@@ -279,6 +285,7 @@ class _WeightChart extends StatelessWidget {
     required this.points,
     required this.color,
     required this.originalUnit,
+    required this.showAxisLabels,
   });
 
   @override
@@ -290,6 +297,7 @@ class _WeightChart extends StatelessWidget {
         points: points,
         color: color,
         originalUnit: originalUnit,
+        showAxisLabels: showAxisLabels,
       ),
       child: Container(),
     );
@@ -302,6 +310,7 @@ class _WeightChartPainter extends CustomPainter {
   final List<({DateTime time, double valueKg, double originalWeight, String originalUnit})> points;
   final Color color;
   final String originalUnit;
+  final bool showAxisLabels;
 
   _WeightChartPainter({
     required this.from,
@@ -309,6 +318,7 @@ class _WeightChartPainter extends CustomPainter {
     required this.points,
     required this.color,
     required this.originalUnit,
+    required this.showAxisLabels,
   });
 
   @override
@@ -333,9 +343,10 @@ class _WeightChartPainter extends CustomPainter {
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
       ..style = PaintingStyle.fill;
 
-    final paddingLeft = 50.0; // Increased for Y-axis labels
-    final paddingRight = 12.0;
-    final paddingTop = 12.0;
+    // Adjust padding based on whether axis labels are shown
+    final paddingLeft = showAxisLabels ? 50.0 : 40.0;
+    final paddingRight = 40.0;
+    final paddingTop = 40.0;
     final paddingBottom = 20.0;
 
     final chartWidth = size.width - paddingLeft - paddingRight;
@@ -379,8 +390,10 @@ class _WeightChartPainter extends CustomPainter {
       maxY = 5.0;
     }
 
-    // Draw Y-axis labels
-    _drawYAxisLabels(canvas, size, minY, maxY, origin, chartHeight);
+    // Draw Y-axis labels only if enabled
+    if (showAxisLabels) {
+      _drawYAxisLabels(canvas, size, minY, maxY, origin, chartHeight);
+    }
 
     final totalMs = to.millisecondsSinceEpoch - from.millisecondsSinceEpoch;
     Offset mapPoint(DateTime t, double v) {
@@ -517,6 +530,7 @@ class _WeightChartPainter extends CustomPainter {
            oldDelegate.color != color || 
            oldDelegate.from != from || 
            oldDelegate.to != to ||
-           oldDelegate.originalUnit != originalUnit;
+           oldDelegate.originalUnit != originalUnit ||
+           oldDelegate.showAxisLabels != showAxisLabels;
   }
 }

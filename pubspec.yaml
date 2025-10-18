@@ -96,8 +96,9 @@ flutter:
   assets:
     - .env
     - assets/logo.png
-    - assets/login.png
+    - assets/login_background.png
     - assets/google_icon.png
+    - assets/background.png
     - assets/lessons/stages/
     - assets/exercises/
     - assets/journal/

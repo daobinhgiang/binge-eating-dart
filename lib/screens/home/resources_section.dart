@@ -83,7 +83,7 @@ class _ResourcesSectionState extends ConsumerState<ResourcesSection> {
       height: 80,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: const Color(0xFFE57373).withOpacity(0.3),
           width: 2,
@@ -104,7 +104,7 @@ class _ResourcesSectionState extends ConsumerState<ResourcesSection> {
             trackUrgeButton();
             _showUrgeHelpDialog();
           },
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(40.0),
           child: const Padding(
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
             child: Center(
@@ -132,7 +132,7 @@ class _ResourcesSectionState extends ConsumerState<ResourcesSection> {
       height: 80,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: const Color(0xFF64B5F6).withOpacity(0.3),
           width: 2,
@@ -149,7 +149,7 @@ class _ResourcesSectionState extends ConsumerState<ResourcesSection> {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => context.go('/chat'),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(40.0),
           child: const Padding(
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
             child: Center(
@@ -176,7 +176,7 @@ class _ResourcesSectionState extends ConsumerState<ResourcesSection> {
       height: 177,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: const Color(0xFF4CAF50).withOpacity(0.3),
           width: 2,
@@ -193,7 +193,7 @@ class _ResourcesSectionState extends ConsumerState<ResourcesSection> {
         color: Colors.transparent,
         child: InkWell(
           onTap: _isGeneratingInsights ? null : _generateInsights,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(40.0),
           child: Padding(
             padding: const EdgeInsets.all(10),
             child: Column(
@@ -255,7 +255,7 @@ class _ResourcesSectionState extends ConsumerState<ResourcesSection> {
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       elevation: 0,
                       shadowColor: Colors.transparent,
@@ -316,7 +316,7 @@ class _ResourcesSectionState extends ConsumerState<ResourcesSection> {
       ),
       decoration: BoxDecoration(
         color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: Colors.grey[100]!,
           width: 1,
@@ -382,7 +382,7 @@ class _ResourcesSectionState extends ConsumerState<ResourcesSection> {
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: Colors.grey[200]!,
           width: 1,
@@ -402,7 +402,7 @@ class _ResourcesSectionState extends ConsumerState<ResourcesSection> {
             // Navigation will be handled by parent
             // This is a simplified version - full navigation logic from home_screen
           },
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(40.0),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Row(
@@ -624,7 +624,7 @@ class _ResourcesSectionState extends ConsumerState<ResourcesSection> {
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       elevation: 0,
                     ),
@@ -649,7 +649,7 @@ class _ResourcesSectionState extends ConsumerState<ResourcesSection> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: color.withOpacity(0.3),
           width: 1.5,
@@ -666,7 +666,7 @@ class _ResourcesSectionState extends ConsumerState<ResourcesSection> {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(40.0),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Row(

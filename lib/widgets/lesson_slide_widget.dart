@@ -428,7 +428,7 @@ class LessonSlideWidget extends StatelessWidget {
                   height: 36,
                   decoration: BoxDecoration(
                     color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(12.0),
                     border: Border.all(
                       color: const Color(0xFF66BB6A).withOpacity(0.15),
                       width: 1,
@@ -438,7 +438,7 @@ class LessonSlideWidget extends StatelessWidget {
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () => Navigator.of(context).pop(),
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(12.0),
                       splashColor: const Color(0xFF66BB6A).withOpacity(0.1),
                       highlightColor: const Color(0xFF66BB6A).withOpacity(0.05),
                       child: Icon(
@@ -487,7 +487,7 @@ class LessonSlideWidget extends StatelessWidget {
                   height: 8,
                   decoration: BoxDecoration(
                     color: const Color(0xFF66BB6A).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
                 ),
                 // Progress fill with shimmer effect
@@ -503,7 +503,7 @@ class LessonSlideWidget extends StatelessWidget {
                           const Color(0xFF66BB6A),
                         ],
                       ),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(12.0),
                       boxShadow: [
                         BoxShadow(
                           color: const Color(0xFF66BB6A).withOpacity(0.4),
@@ -533,7 +533,7 @@ class LessonSlideWidget extends StatelessWidget {
           padding: const EdgeInsets.all(32),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(12.0),
             boxShadow: [
               BoxShadow(
                 color: const Color(0xFF66BB6A).withOpacity(0.06),
@@ -586,7 +586,7 @@ class LessonSlideWidget extends StatelessWidget {
                         const Color(0xFFFFECB3).withOpacity(0.5),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(12.0),
                     border: Border.all(
                       color: const Color(0xFFFFD54F).withOpacity(0.4),
                       width: 2,
@@ -660,7 +660,7 @@ class LessonSlideWidget extends StatelessWidget {
                 Container(
                   margin: const EdgeInsets.only(top: 8),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(12.0),
                     boxShadow: [
                       BoxShadow(
                         color: const Color(0xFF66BB6A).withOpacity(0.15),
@@ -670,7 +670,7 @@ class LessonSlideWidget extends StatelessWidget {
                     ],
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(12.0),
                     child: Image.network(
                       slide.imageUrl!,
                       width: double.infinity,
@@ -713,13 +713,13 @@ class LessonSlideWidget extends StatelessWidget {
                   height: 56,
                   decoration: BoxDecoration(
                     color: const Color(0xFF66BB6A).withOpacity(0.08),
-                    borderRadius: BorderRadius.circular(18),
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: onPrevious,
-                      borderRadius: BorderRadius.circular(18),
+                      borderRadius: BorderRadius.circular(12.0),
                       child: Center(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -762,7 +762,7 @@ class LessonSlideWidget extends StatelessWidget {
                       const Color(0xFF66BB6A).withOpacity(0.8),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(12.0),
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0xFF66BB6A).withOpacity(0.4),
@@ -775,7 +775,7 @@ class LessonSlideWidget extends StatelessWidget {
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: isLastSlide ? onFinish : onNext,
-                    borderRadius: BorderRadius.circular(18),
+                    borderRadius: BorderRadius.circular(12.0),
                     child: Center(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -837,7 +837,7 @@ class _BulletPoint extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12.0),
         border: Border.all(
           color: bulletColor.withOpacity(0.15),
           width: 1.5,

@@ -140,7 +140,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.blue[100]!),
       ),
       child: Padding(
@@ -154,7 +154,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: Colors.blue[100],
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                   child: Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
                 ),
@@ -187,7 +187,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(40.0),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -273,7 +273,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(40.0),
                 ),
               ),
             ),
@@ -311,7 +311,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
                   color: _isBalanced() ? Colors.green[50] : Colors.orange[50],
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(40.0),
                   border: Border.all(
                     color: _isBalanced() ? Colors.green[200]! : Colors.orange[200]!,
                     width: 2,
@@ -347,7 +347,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(40.0),
                 border: Border.all(color: Colors.grey[200]!),
                 boxShadow: [
                   BoxShadow(
@@ -417,7 +417,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
           BoxShadow(
@@ -443,7 +443,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(40.0),
                 boxShadow: [
                   BoxShadow(
                     color: _getItemColor(index).withOpacity(0.3),
@@ -478,7 +478,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: Colors.orange[50],
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(40.0),
                 border: Border.all(color: Colors.orange[200]!),
               ),
               child: Text(
@@ -493,7 +493,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
             const SizedBox(width: 8),
             InkWell(
               onTap: () => _editImportanceItem(index),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(40.0),
               child: Container(
                 padding: const EdgeInsets.all(8),
                 child: Icon(Icons.edit, size: 18, color: Colors.grey[600]),
@@ -501,7 +501,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
             ),
             InkWell(
               onTap: () => _removeImportanceItem(index),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(40.0),
               child: Container(
                 padding: const EdgeInsets.all(8),
                 child: Icon(Icons.delete_outline, size: 18, color: Colors.red[400]),
@@ -545,7 +545,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: Colors.grey[50],
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(40.0),
           border: Border.all(color: Colors.grey[200]!),
         ),
         child: Row(
@@ -637,7 +637,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
     showDialog(
       context: context,
       builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
         child: GestureDetector(
           onTap: () {
             // Dismiss keyboard when tapping anywhere on the dialog
@@ -668,7 +668,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: Colors.orange[100],
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(40.0),
                         ),
                         child: Icon(
                           existingItem != null ? Icons.edit : Icons.add_circle_outline,
@@ -706,7 +706,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.grey[50],
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40.0),
                         border: Border.all(color: Colors.grey[300]!),
                       ),
                       child: TextField(
@@ -736,7 +736,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.grey[50],
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40.0),
                         border: Border.all(color: Colors.grey[300]!),
                       ),
                       child: TextField(
@@ -760,7 +760,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: Colors.blue[50],
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(40.0),
                         border: Border.all(color: Colors.blue[100]!),
                       ),
                       child: Row(
@@ -795,7 +795,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                         side: BorderSide(color: Colors.grey[300]!),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(40.0),
                         ),
                       ),
                       child: const Text('Cancel'),
@@ -839,7 +839,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(40.0),
                         ),
                       ),
                       child: Text(existingItem != null ? 'Update' : 'Add'),
@@ -867,7 +867,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
         ),
         backgroundColor: Colors.red[600],
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
         margin: const EdgeInsets.all(16),
       ),
     );
@@ -924,7 +924,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
             ),
             backgroundColor: Colors.green[600],
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
             margin: const EdgeInsets.all(16),
             duration: const Duration(seconds: 2),
           ),
@@ -943,7 +943,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
             ),
             backgroundColor: Colors.red[600],
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
             margin: const EdgeInsets.all(16),
             duration: const Duration(seconds: 3),
           ),

@@ -91,7 +91,7 @@ class UrgeSurfingDetailScreen extends ConsumerWidget {
                           height: 56,
                           decoration: BoxDecoration(
                             color: Colors.teal[600],
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(40.0),
                           ),
                           child: const Icon(
                             Icons.waves,
@@ -124,7 +124,7 @@ class UrgeSurfingDetailScreen extends ConsumerWidget {
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
                               color: Colors.green[50],
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(40.0),
                               border: Border.all(color: Colors.green[200]!),
                             ),
                             child: Text(
@@ -214,7 +214,7 @@ class UrgeSurfingDetailScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isIdeal ? Colors.green[50] : Colors.teal[50],
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: isIdeal ? Colors.green[300]! : Colors.teal[200]!,
           width: isIdeal ? 2 : 1,
@@ -258,7 +258,7 @@ class UrgeSurfingDetailScreen extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: _getCriteriaColor(criteriaCount).withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(40.0),
                 ),
                 child: Text(
                   '$criteriaCount/3',
@@ -315,7 +315,7 @@ class UrgeSurfingDetailScreen extends ConsumerWidget {
                   height: 40,
                   decoration: BoxDecoration(
                     color: Colors.blue[600],
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                   child: const Icon(
                     Icons.info,
@@ -381,7 +381,7 @@ class UrgeSurfingDetailScreen extends ConsumerWidget {
           height: 32,
           decoration: BoxDecoration(
             color: color[100],
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(40.0),
           ),
           child: Icon(
             icon,
@@ -428,7 +428,7 @@ class UrgeSurfingDetailScreen extends ConsumerWidget {
                   height: 40,
                   decoration: BoxDecoration(
                     color: color[600],
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                   child: Icon(
                     icon,
@@ -461,7 +461,7 @@ class UrgeSurfingDetailScreen extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(40.0),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

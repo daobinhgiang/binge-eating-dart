@@ -184,8 +184,8 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
   }
 
   void _updateCurrentSection() {
-    // Calculate the threshold position (Learning Path header + Sticky header)
-    const double headerHeight = 56.0 + 88.0; // AppBar + Sticky header height (updated for larger content)
+    // Calculate the threshold position (Sticky header)
+    const double headerHeight = 86.0; // Sticky header height (updated for larger content, divider removed)
     
     for (var stage in _stages) {
       for (var chapter in stage.chapters) {
@@ -435,36 +435,16 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              const Color(0xFF66BB6A).withOpacity(0.1),
-              Colors.white,
-              Colors.white,
-            ],
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/background.png'),
+            fit: BoxFit.cover,
           ),
         ),
         child: SafeArea(
           child: CustomScrollView(
             controller: _scrollController,
             slivers: [
-              SliverAppBar(
-                pinned: true,
-                backgroundColor: Colors.white,
-                elevation: 2,
-                automaticallyImplyLeading: false,
-                title: const Text(
-                  'Learning Path',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                    color: Colors.black87,
-                  ),
-                ),
-                centerTitle: true,
-              ),
               // Sticky header showing current stage and chapter
               if (_currentStage != null && _currentChapter != null)
                 SliverPersistentHeader(
@@ -482,7 +462,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
                 ),
               ),
               // Add some bottom padding
-              const SliverToBoxAdapter(
+              const               SliverToBoxAdapter(
                 child: SizedBox(height: 50),
               ),
             ],
@@ -496,70 +476,67 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
   // Build sticky header for current section with chapter tile only
   Widget _buildStickyHeader(Stage stage, Chapter chapter) {
     return Container(
-      color: const Color(0xFFF5F5F5),
+      color: Colors.transparent,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: _getStageColor(stage.stageNumber),
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: _getStageColor(stage.stageNumber).withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'STAGE ${stage.stageNumber}, CHAPTER ${chapter.chapterNumber}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.8,
-                          ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: _getStageColor(stage.stageNumber),
+              borderRadius: BorderRadius.circular(12.0),
+              boxShadow: [
+                BoxShadow(
+                  color: _getStageColor(stage.stageNumber).withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'STAGE ${stage.stageNumber}, CHAPTER ${chapter.chapterNumber}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.8,
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          chapter.title,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        chapter.title,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
-                    ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
-                  Icon(
-                    Icons.menu_book,
-                    color: Colors.white.withOpacity(0.8),
-                    size: 20,
-                  ),
-                ],
-              ),
+                ),
+                Icon(
+                  Icons.menu_book,
+                  color: Colors.white.withOpacity(0.8),
+                  size: 20,
+                ),
+              ],
             ),
           ),
-          // Divider line below sticky header
-          Container(
-            height: 2,
-            color: Colors.grey.shade300,
-          ),
-        ],
+        ),
+        // Divider line below sticky header (hidden)
+        const SizedBox(height: 0),
+      ],
       ),
     );
   }
@@ -589,11 +566,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
               // Add spacing before divider (except for first chapter)
               if (i > 0 || stage.stageNumber > 1)
                 const SizedBox(height: 100),
-              // Section divider line to mark the start of each section
-              Container(
-                height: 2,
-                color: Colors.grey.shade300,
-              ),
+              // Section divider line to mark the start of each section (hidden)
               const SizedBox(height: 100),
               // Add lessons in the chapter with Duolingo-style layout
               _buildChapterLessons(chapter, stage, lessonIndex),
@@ -798,10 +771,10 @@ class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
   _StickyHeaderDelegate({required this.child});
 
   @override
-  double get minExtent => 88.0; // Increased height for larger padding and font sizes + divider
+  double get minExtent => 86.0; // Increased height for larger padding and font sizes (divider removed)
 
   @override
-  double get maxExtent => 88.0; // Increased height for larger padding and font sizes + divider
+  double get maxExtent => 86.0; // Increased height for larger padding and font sizes (divider removed)
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {

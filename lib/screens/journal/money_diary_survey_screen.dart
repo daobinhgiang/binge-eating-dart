@@ -109,7 +109,7 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(40.0),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.1),
@@ -132,7 +132,7 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey[300]!),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
@@ -182,15 +182,15 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
                     decoration: InputDecoration(
                       hintText: '0.00',
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(40.0),
                         borderSide: BorderSide(color: Colors.grey[300]!),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(40.0),
                         borderSide: BorderSide(color: Colors.grey[300]!),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(40.0),
                         borderSide: BorderSide(color: Colors.amber[600]!, width: 2),
                       ),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -214,7 +214,7 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey[300]!),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(40.0),
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
@@ -290,15 +290,15 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
               decoration: InputDecoration(
                 hintText: 'How were you feeling? What triggered this spending?',
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(40.0),
                   borderSide: BorderSide(color: Colors.grey[300]!),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(40.0),
                   borderSide: BorderSide(color: Colors.grey[300]!),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(40.0),
                   borderSide: BorderSide(color: Colors.amber[600]!, width: 2),
                 ),
                 contentPadding: const EdgeInsets.all(16),
@@ -313,7 +313,7 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.amber[50],
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(40.0),
                 border: Border.all(color: Colors.amber[200]!),
               ),
               child: Column(
@@ -378,12 +378,12 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
   ) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(40.0),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.grey[300]!),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(40.0),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -439,7 +439,7 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(40.0),
             ),
             elevation: 0,
           ),
@@ -505,7 +505,7 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
             backgroundColor: Colors.green,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(40.0),
             ),
           ),
         );
@@ -518,7 +518,7 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(40.0),
             ),
           ),
         );

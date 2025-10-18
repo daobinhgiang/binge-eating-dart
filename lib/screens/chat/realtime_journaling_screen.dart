@@ -280,7 +280,7 @@ class _RealtimeJournalingScreenState extends ConsumerState<RealtimeJournalingScr
                     child: Container(
                       decoration: BoxDecoration(
                         color: const Color(0xFFF5F5F5),
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(12.0),
                       ),
                       child: TextField(
                         controller: _messageController,
@@ -327,7 +327,7 @@ class _RealtimeJournalingScreenState extends ConsumerState<RealtimeJournalingScr
                       color: Colors.transparent,
                       child: InkWell(
                         onTap: _isLoading ? null : _sendMessage,
-                        borderRadius: BorderRadius.circular(23),
+                        borderRadius: BorderRadius.circular(12.0),
                         child: Center(
                           child: _isLoading
                               ? const SizedBox(
@@ -403,7 +403,7 @@ class _RealtimeJournalingScreenState extends ConsumerState<RealtimeJournalingScr
                       )
                     : null,
                 color: message.isUser ? null : Colors.white,
-                borderRadius: BorderRadius.circular(20).copyWith(
+                borderRadius: BorderRadius.circular(12.0).copyWith(
                   bottomLeft: message.isUser ? const Radius.circular(20) : const Radius.circular(4),
                   bottomRight: message.isUser ? const Radius.circular(4) : const Radius.circular(20),
                 ),
@@ -502,7 +502,7 @@ class _RealtimeJournalingScreenState extends ConsumerState<RealtimeJournalingScr
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(20).copyWith(
+              borderRadius: BorderRadius.circular(12.0).copyWith(
                 bottomLeft: const Radius.circular(4),
               ),
               boxShadow: [

@@ -308,7 +308,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: const Color(0xFFF5F5F5),
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(12.0),
                       ),
                       child: TextField(
                         controller: _messageController,
@@ -355,7 +355,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       color: Colors.transparent,
                       child: InkWell(
                         onTap: _isLoading ? null : _sendMessage,
-                        borderRadius: BorderRadius.circular(23),
+                        borderRadius: BorderRadius.circular(12.0),
                         child: Center(
                           child: _isLoading
                               ? const SizedBox(
@@ -434,7 +434,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       )
                     : null,
                 color: message.isUser ? null : Colors.white,
-                borderRadius: BorderRadius.circular(20).copyWith(
+                borderRadius: BorderRadius.circular(12.0).copyWith(
                   bottomLeft: message.isUser ? const Radius.circular(20) : const Radius.circular(4),
                   bottomRight: message.isUser ? const Radius.circular(4) : const Radius.circular(20),
                 ),
@@ -537,7 +537,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(20).copyWith(
+              borderRadius: BorderRadius.circular(12.0).copyWith(
                 bottomLeft: const Radius.circular(4),
               ),
               boxShadow: [
@@ -612,7 +612,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: const Color(0xFFF8F9FA),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12.0),
         border: Border.all(
           color: const Color(0xFF4CAF50).withOpacity(0.2),
           width: 1,
@@ -627,7 +627,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   color: const Color(0xFF4CAF50).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12.0),
                 ),
                 child: const Icon(
                   Icons.lightbulb_outline_rounded,
@@ -657,7 +657,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: const Color(0xFF4CAF50).withOpacity(0.08),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(12.0),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -754,7 +754,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.0),
         border: Border.all(
           color: typeColor.withOpacity(0.2),
           width: 1,
@@ -771,7 +771,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _navigateToFeature(type, recommendation['id'] as String? ?? ''),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.0),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Row(
@@ -780,7 +780,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: typeColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
                   child: Icon(typeIcon, color: typeColor, size: 18),
                 ),

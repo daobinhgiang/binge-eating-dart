@@ -106,7 +106,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(40.0),
                     ),
                   ),
                 ),
@@ -130,7 +130,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(40.0),
                 ),
                 child: Row(
                   children: [
@@ -138,7 +138,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       child: Icon(
                         Icons.waves,
@@ -178,7 +178,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(40.0),
                   border: Border.all(color: Colors.grey[200]!),
                   boxShadow: [
                     BoxShadow(
@@ -216,15 +216,15 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
                           filled: true,
                           fillColor: Colors.grey[50],
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(40.0),
                             borderSide: BorderSide(color: Colors.grey[300]!),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(40.0),
                             borderSide: BorderSide(color: Colors.grey[300]!),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(40.0),
                             borderSide: BorderSide(color: Colors.teal[400]!, width: 2),
                           ),
                           contentPadding: const EdgeInsets.all(16),
@@ -252,7 +252,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(40.0),
                   border: Border.all(color: Colors.grey[200]!),
                   boxShadow: [
                     BoxShadow(
@@ -294,7 +294,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
                               elevation: 0,
                               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(40.0),
                               ),
                             ),
                           ),
@@ -307,7 +307,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
                           padding: const EdgeInsets.all(40),
                           decoration: BoxDecoration(
                             color: Colors.teal[50],
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(40.0),
                             border: Border.all(color: Colors.teal[100]!),
                           ),
                           child: Column(
@@ -361,7 +361,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(40.0),
                   border: Border.all(color: Colors.grey[200]!),
                   boxShadow: [
                     BoxShadow(
@@ -400,15 +400,15 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
                           filled: true,
                           fillColor: Colors.grey[50],
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(40.0),
                             borderSide: BorderSide(color: Colors.grey[300]!),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(40.0),
                             borderSide: BorderSide(color: Colors.grey[300]!),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(40.0),
                             borderSide: BorderSide(color: Colors.teal[400]!, width: 2),
                           ),
                           contentPadding: const EdgeInsets.all(16),
@@ -435,7 +435,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.blue[100]!),
       ),
       child: Padding(
@@ -449,7 +449,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: Colors.blue[100],
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                   child: Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
                 ),
@@ -470,7 +470,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(40.0),
               ),
               child: Text(
                 'For each activity, consider these three key properties:',
@@ -497,7 +497,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(40.0),
       ),
       child: Row(
         children: [
@@ -542,7 +542,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isIdeal ? Colors.green[50] : Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: isIdeal ? Colors.green[300]! : Colors.teal[200]!,
           width: isIdeal ? 2 : 1,
@@ -571,7 +571,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(40.0),
                   boxShadow: [
                     BoxShadow(
                       color: (isIdeal ? Colors.green : Colors.teal).withOpacity(0.3),
@@ -607,7 +607,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
                   color: _getCriteriaColor(criteriaCount).withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(40.0),
                   border: Border.all(
                     color: _getCriteriaColor(criteriaCount).withValues(alpha: 0.3),
                   ),
@@ -627,7 +627,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
                 children: [
                   InkWell(
                     onTap: () => _editActivity(index),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(40.0),
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       child: Icon(Icons.edit, size: 18, color: Colors.grey[600]),
@@ -635,7 +635,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
                   ),
                   InkWell(
                     onTap: () => _removeActivity(index),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(40.0),
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       child: Icon(Icons.delete_outline, size: 18, color: Colors.red[400]),
@@ -651,7 +651,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.grey[50],
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(40.0),
               ),
               child: Text(
                 activity.description,
@@ -703,7 +703,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
           child: Container(
             constraints: const BoxConstraints(maxWidth: 500),
             child: SingleChildScrollView(
@@ -719,7 +719,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color: Colors.teal[50],
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(40.0),
                           ),
                           child: Icon(
                             existingActivity != null ? Icons.edit : Icons.add_circle_outline,
@@ -743,7 +743,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.grey[50],
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40.0),
                         border: Border.all(color: Colors.grey[300]!),
                       ),
                       child: TextField(
@@ -764,7 +764,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.grey[50],
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40.0),
                         border: Border.all(color: Colors.grey[300]!),
                       ),
                       child: TextField(
@@ -793,7 +793,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
                               side: BorderSide(color: Colors.grey[300]!),
                               foregroundColor: Colors.grey[700],
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(40.0),
                               ),
                             ),
                             child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
@@ -815,7 +815,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
                                     ),
                                     backgroundColor: Colors.red[400],
                                     behavior: SnackBarBehavior.floating,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
                                     margin: const EdgeInsets.all(16),
                                   ),
                                 );
@@ -844,7 +844,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
                               foregroundColor: Colors.white,
                               elevation: 0,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(40.0),
                               ),
                             ),
                             child: Text(
@@ -885,7 +885,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
           ),
           backgroundColor: Colors.orange[600],
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
           margin: const EdgeInsets.all(16),
         ),
       );
@@ -931,7 +931,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
             ),
             backgroundColor: Colors.teal[600],
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
             margin: const EdgeInsets.all(16),
           ),
         );
@@ -950,7 +950,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
             ),
             backgroundColor: Colors.red[400],
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
             margin: const EdgeInsets.all(16),
           ),
         );

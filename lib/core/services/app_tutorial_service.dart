@@ -525,7 +525,7 @@ class AppTutorialService {
                                 vertical: isSmallScreen ? 12 : 16,
                               ),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
+                                borderRadius: BorderRadius.circular(12.0),
                               ),
                               elevation: 8,
                             ),

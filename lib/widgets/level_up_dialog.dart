@@ -101,7 +101,7 @@ class _LevelUpDialogState extends State<LevelUpDialog>
                     padding: const EdgeInsets.all(32),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: BorderRadius.circular(12.0),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.2),
@@ -172,7 +172,7 @@ class _LevelUpDialogState extends State<LevelUpDialog>
                             ),
                             decoration: BoxDecoration(
                               color: const Color(0xFF4CAF50).withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(12.0),
                             ),
                             child: Text(
                               '+${widget.expEarned} EXP Earned',
