@@ -41,7 +41,7 @@ class WeightGraphWidget extends ConsumerWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(40.0),
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -49,7 +49,7 @@ class WeightGraphWidget extends ConsumerWidget {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
                           color: Colors.orange[50],
                           borderRadius: BorderRadius.circular(40.0),
@@ -57,14 +57,14 @@ class WeightGraphWidget extends ConsumerWidget {
                         child: Icon(
                           Icons.trending_up,
                           color: Colors.orange[600],
-                          size: 20,
+                          size: 16,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'Weight Progress',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: Colors.grey[800],
                           ),
@@ -72,23 +72,23 @@ class WeightGraphWidget extends ConsumerWidget {
                       ),
                       if (onTap != null)
                         Container(
-                          padding: const EdgeInsets.all(6),
+                          padding: const EdgeInsets.all(4),
                           decoration: BoxDecoration(
                             color: Colors.grey[100],
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Icon(
                             Icons.arrow_forward_ios,
-                            size: 12,
+                            size: 10,
                             color: Colors.grey[600],
                           ),
                         ),
                     ],
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
                 ],
                 SizedBox(
-                  height: height - (showTitle ? 80 : 40),
+                  height: height - (showTitle ? 60 : 24),
                   child: weightDiaries.when(
                     data: (entries) {
                       if (entries.isEmpty) {
@@ -344,10 +344,10 @@ class _WeightChartPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     // Adjust padding based on whether axis labels are shown
-    final paddingLeft = showAxisLabels ? 50.0 : 40.0;
-    final paddingRight = 40.0;
-    final paddingTop = 40.0;
-    final paddingBottom = 20.0;
+    final paddingLeft = showAxisLabels ? 50.0 : 8.0;
+    final paddingRight = 8.0;
+    final paddingTop = 8.0;
+    final paddingBottom = 8.0;
 
     final chartWidth = size.width - paddingLeft - paddingRight;
     final chartHeight = size.height - paddingTop - paddingBottom;

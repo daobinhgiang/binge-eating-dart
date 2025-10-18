@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/money_diary_provider.dart';
 import '../../widgets/weight_graph_widget.dart';
 import 'food_diary_main_screen.dart';
 import 'body_image_diary_main_screen.dart';
@@ -63,13 +64,23 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
-                    // Weight Progress Graph
-                    WeightGraphWidget(
-                      userId: user.id,
-                      onTap: () => _navigateToWeightDiarySurvey(context),
-                      height: 200,
-                      showTitle: true,
-                      showAxisLabels: false,
+                    // Weight Progress Graph and Spending Diary Row
+                    Row(
+                      children: [
+                        Expanded(
+                          child: WeightGraphWidget(
+                            userId: user.id,
+                            onTap: () => _navigateToWeightDiarySurvey(context),
+                            height: 200,
+                            showTitle: true,
+                            showAxisLabels: false,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildSpendingDiaryCard(context, user.id, height: 200),
+                        ),
+                      ],
                     ),
                     
                     const SizedBox(height: 24),
@@ -127,36 +138,30 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
   }
 
   Widget _buildDiaryAccessCards(BuildContext context) {
-    return Column(
+    return Row(
       children: [
         // Food Diary Card
-        _buildDiaryCard(
-          context,
-          title: 'Food Diary',
-          subtitle: 'Track your meals',
-          icon: Icons.restaurant,
-          color: const Color(0xFF4CAF50),
-          onTap: () => _navigateToFoodDiarySurvey(context),
+        Expanded(
+          child: _buildDiaryCard(
+            context,
+            title: 'Food Diary',
+            subtitle: 'Track your meals',
+            icon: Icons.restaurant,
+            color: const Color(0xFF4CAF50),
+            onTap: () => _navigateToFoodDiarySurvey(context),
+          ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(width: 16),
         // Body Image Diary Card
-        _buildDiaryCard(
-          context,
-          title: 'Body Image',
-          subtitle: 'Track body checking',
-          icon: Icons.visibility,
-          color: Colors.teal[600]!,
-          onTap: () => _navigateToBodyImageDiarySurvey(context),
-        ),
-        const SizedBox(height: 16),
-        // Spending Diary Card
-        _buildDiaryCard(
-          context,
-          title: 'Spending Diary',
-          subtitle: 'Track spending on binging',
-          icon: Icons.account_balance_wallet,
-          color: Colors.amber[600]!,
-          onTap: () => _navigateToMoneyDiary(context),
+        Expanded(
+          child: _buildDiaryCard(
+            context,
+            title: 'Body Image',
+            subtitle: 'Track body checking',
+            icon: Icons.visibility,
+            color: Colors.teal[600]!,
+            onTap: () => _navigateToBodyImageDiarySurvey(context),
+          ),
         ),
       ],
     );
@@ -255,6 +260,140 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
     return 'assets/journal/food_diary.png'; // Default fallback
   }
 
+  Widget _buildSpendingDiaryCard(BuildContext context, String userId, {double height = 280}) {
+    final totalSpent = ref.watch(totalSpentProvider(userId));
+
+    return Container(
+      height: height,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(40.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(40.0),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => _navigateToMoneyDiary(context),
+            borderRadius: BorderRadius.circular(40.0),
+            child: Column(
+              children: [
+                // Top section - shows total spent amount
+                Expanded(
+                  flex: 4,
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.amber[100]!,
+                          Colors.amber[50]!,
+                        ],
+                      ),
+                    ),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.account_balance_wallet,
+                            color: Colors.amber[700],
+                            size: height > 220 ? 48 : 32,
+                          ),
+                          SizedBox(height: height > 220 ? 12 : 8),
+                          Text(
+                            'Total Spent',
+                            style: GoogleFonts.fredoka(
+                              fontSize: height > 220 ? 14 : 11,
+                              color: Colors.amber[700],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          SizedBox(height: height > 220 ? 8 : 4),
+                          totalSpent.when(
+                            data: (total) => Text(
+                              '\$${total.toStringAsFixed(2)}',
+                              style: GoogleFonts.fredoka(
+                                fontSize: height > 220 ? 36 : 28,
+                                color: Colors.amber[800],
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            loading: () => SizedBox(
+                              height: height > 220 ? 36 : 28,
+                              width: height > 220 ? 36 : 28,
+                              child: const CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.amber),
+                              ),
+                            ),
+                            error: (error, _) => Text(
+                              '\$0.00',
+                              style: GoogleFonts.fredoka(
+                                fontSize: height > 220 ? 36 : 28,
+                                color: Colors.amber[800],
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                // Bottom white overlay section
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.06),
+                        blurRadius: 10,
+                        offset: const Offset(0, -2),
+                      ),
+                    ],
+                  ),
+                  padding: EdgeInsets.fromLTRB(
+                    height > 220 ? 16 : 12,
+                    height > 220 ? 14 : 10,
+                    height > 220 ? 16 : 12,
+                    height > 220 ? 16 : 12,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Spending Diary',
+                        style: (height > 220 
+                          ? Theme.of(context).textTheme.titleMedium 
+                          : Theme.of(context).textTheme.titleSmall)?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   void _showAddJournalOptions(BuildContext context) {
     showModalBottomSheet(
