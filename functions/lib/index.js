@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendDailyAccountabilityReminder = exports.sendDailyEducationProgress = exports.sendDailyProgressReview = exports.sendDailyMotivationalNotification = exports.sendDailyNotification = exports.awardJournalEntryExp = exports.validateQuiz = void 0;
+exports.sendDailyAccountabilityReminder = exports.sendDailyEducationProgress = exports.sendDailyProgressReview = exports.sendDailyMotivationalNotification = exports.sendDailyNotification = exports.awardMealPlanUpdateExp = exports.awardExerciseExp = exports.awardJournalEntryExp = exports.validateQuiz = void 0;
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const openai_1 = require("openai");
@@ -22,6 +22,10 @@ Object.defineProperty(exports, "validateQuiz", { enumerable: true, get: function
 // Import and export journal entry EXP function
 var awardJournalEntryExp_1 = require("./awardJournalEntryExp");
 Object.defineProperty(exports, "awardJournalEntryExp", { enumerable: true, get: function () { return awardJournalEntryExp_1.awardJournalEntryExp; } });
+// Import and export exercise EXP functions
+var awardExerciseExp_1 = require("./awardExerciseExp");
+Object.defineProperty(exports, "awardExerciseExp", { enumerable: true, get: function () { return awardExerciseExp_1.awardExerciseExp; } });
+Object.defineProperty(exports, "awardMealPlanUpdateExp", { enumerable: true, get: function () { return awardExerciseExp_1.awardMealPlanUpdateExp; } });
 // Helper function to format time as HH:mm in Central Time
 function formatTime(date) {
     // Convert to Central Time (handles both CST and CDT automatically)

@@ -38,7 +38,7 @@ exports.awardJournalEntryExp = functions.firestore
             return;
         }
         console.log(`✅ Diary type is valid, proceeding...`);
-        const JOURNAL_ENTRY_EXP = 5;
+        const JOURNAL_ENTRY_EXP = 10;
         const diaryTypeMap = {
             'foodDiaries': 'food_diary',
             'weightDiaries': 'weight_diary',
