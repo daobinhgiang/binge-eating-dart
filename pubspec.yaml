@@ -96,6 +96,7 @@ flutter:
   assets:
     - .env
     - assets/logo.png
+    - assets/nurtra.png
     - assets/login_background.png
     - assets/google_icon.png
     - assets/background.png
