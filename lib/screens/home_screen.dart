@@ -293,10 +293,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             borderRadius: BorderRadius.circular(40.0),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.grey.withOpacity(0.1),
-                                spreadRadius: 0,
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
+                                color: Colors.grey.withOpacity(0.2),
+                                spreadRadius: 1,
+                                blurRadius: 16,
+                                offset: const Offset(0, 4),
                               ),
                             ],
                           ),
@@ -615,9 +615,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             borderRadius: BorderRadius.circular(40.0),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF4CAF50).withOpacity(0.05),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
+                color: const Color(0xFF4CAF50).withOpacity(0.15),
+                spreadRadius: 1,
+                blurRadius: 16,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
@@ -709,9 +710,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             borderRadius: BorderRadius.circular(40.0),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF4CAF50).withOpacity(0.05),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
+                color: const Color(0xFF4CAF50).withOpacity(0.15),
+                spreadRadius: 1,
+                blurRadius: 16,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
@@ -839,10 +841,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         borderRadius: BorderRadius.circular(40.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 0,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 1,
+            blurRadius: 16,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -1480,10 +1482,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 0,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 1,
+            blurRadius: 16,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -1539,10 +1541,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 0,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 1,
+            blurRadius: 16,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -1680,10 +1682,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           borderRadius: BorderRadius.circular(40.0),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              spreadRadius: 0,
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+              color: Colors.grey.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 16,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -1783,104 +1785,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         borderRadius: BorderRadius.circular(40.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 0,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 1,
+            blurRadius: 16,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         children: [
-          // Title
-          Text(
-            'Binge-Free For',
-            style: GoogleFonts.fredoka(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.5,
-            ),
-          ),
-          const SizedBox(height: 16),
           
           // Circular progress indicator
-          (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS)
-            ? _buildIOSTimerLayout(timeUnits, days, hours, minutes, seconds)
-            : SizedBox(
-                width: 320,
-                height: 320,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    // Circular progress rings
-                    CustomPaint(
-                      size: const Size(320, 320),
-                      painter: CircularTimerPainter(
-                        days: days,
-                        hours: hours,
-                        minutes: minutes,
-                        seconds: seconds,
-                      ),
-                    ),
-                    
-                    // Center text - display all non-zero time units
-                    Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-                      children: timeUnits.asMap().entries.map((entry) {
-                        final unit = entry.value;
-                        final index = entry.key;
-                        final fontSize = unit['size'] as double;
-                        final labelSize = fontSize * 0.35;
-                        
-                        // Determine color based on the time unit type
-                        Color unitColor;
-                        final label = unit['label'] as String;
-                        if (label.contains('day')) {
-                          unitColor = const Color(0xFF4CAF50); // Green for days
-                        } else if (label.contains('hrs')) {
-                          unitColor = const Color(0xFF9C27B0); // Purple for hours
-                        } else if (label.contains('min')) {
-                          unitColor = const Color(0xFFFF9800); // Orange for minutes
-                        } else {
-                          unitColor = const Color(0xFF2196F3); // Blue for seconds
-                        }
-                        
-                        return Column(
-          children: [
-                          if (index > 0) const SizedBox(height: 4),
-                          Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.baseline,
-                            textBaseline: TextBaseline.alphabetic,
-              children: [
-                Text(
-                                unit['value'] as String,
-                  style: GoogleFonts.fredoka(
-                                  fontSize: fontSize,
-                    fontWeight: FontWeight.bold,
-                                  color: unitColor,
-                                  height: 1,
-                                ),
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                unit['label'] as String,
-                                style: GoogleFonts.fredoka(
-                                  fontSize: labelSize,
-                                  color: unitColor,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                ],
-              );
-            }).toList(),
-                    ),
-          ],
-        ),
-              ),
+          _buildIOSTimerLayout(timeUnits, days, hours, minutes, seconds),
 
           const SizedBox(height: 16),
           
@@ -1927,6 +1843,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               seconds: seconds,
             ),
           ),
+        ),
+        
+        const SizedBox(height: 12),
+        
+        // Text above the time units
+        Text(
+          "You've been binge-free for:",
+          style: GoogleFonts.fredoka(
+            color: Colors.black87,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+          textAlign: TextAlign.center,
         ),
         
         const SizedBox(height: 12),

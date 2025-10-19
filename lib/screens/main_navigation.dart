@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'home_screen.dart';
@@ -352,6 +353,8 @@ class _NavigationButtonState extends State<_NavigationButton> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapDown: (_) {
+        // Trigger medium strength haptic feedback on iOS
+        HapticFeedback.mediumImpact();
         setState(() {
           _isPressed = true;
         });
@@ -368,7 +371,7 @@ class _NavigationButtonState extends State<_NavigationButton> {
         });
       },
       child: AnimatedScale(
-        scale: _isPressed ? 0.92 : 1.0,
+        scale: _isPressed ? 0.70 : 1.0,
         duration: const Duration(milliseconds: 100),
         curve: Curves.easeInOut,
         child: Container(

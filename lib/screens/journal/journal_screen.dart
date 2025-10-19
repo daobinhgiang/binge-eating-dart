@@ -218,10 +218,10 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
             borderRadius: BorderRadius.circular(40.0),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
-                spreadRadius: 0,
-                blurRadius: 8,
-                offset: const Offset(0, 2),
+                color: Colors.grey.withOpacity(0.2),
+                spreadRadius: 1,
+                blurRadius: 16,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
@@ -320,10 +320,10 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
             borderRadius: BorderRadius.circular(40.0),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
-                spreadRadius: 0,
-                blurRadius: 8,
-                offset: const Offset(0, 2),
+                color: Colors.grey.withOpacity(0.2),
+                spreadRadius: 1,
+                blurRadius: 16,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
