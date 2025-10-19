@@ -46,49 +46,19 @@ class WeightGraphWidget extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (showTitle) ...[
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Colors.orange[50],
-                          borderRadius: BorderRadius.circular(40.0),
-                        ),
-                        child: Icon(
-                          Icons.trending_up,
-                          color: Colors.orange[600],
-                          size: 16,
-                        ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4),
+                    child: Text(
+                      'Weight',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[800],
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Weight Progress',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey[800],
-                          ),
-                        ),
-                      ),
-                      if (onTap != null)
-                        Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Icon(
-                            Icons.arrow_forward_ios,
-                            size: 10,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                    ],
+                    ),
                   ),
                   const SizedBox(height: 12),
                 ],
-                SizedBox(
-                  height: height - (showTitle ? 60 : 24),
+                Expanded(
                   child: weightDiaries.when(
                     data: (entries) {
                       if (entries.isEmpty) {

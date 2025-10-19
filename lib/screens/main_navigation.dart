@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'home_screen.dart';
@@ -32,31 +33,31 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
   final List<NavigationItem> _navigationItems = [
     NavigationItem(
       icon: Icons.home_outlined,
-      activeIcon: Icons.home,
+      activeIcon: Icons.home_rounded,
       label: 'Home',
       route: '/home',
     ),
     NavigationItem(
-      icon: Icons.school_outlined,
-      activeIcon: Icons.school,
+      icon: Icons.menu_book_outlined,
+      activeIcon: Icons.menu_book_rounded,
       label: 'Lessons',
       route: '/education',
     ),
     NavigationItem(
-      icon: Icons.build_outlined,
-      activeIcon: Icons.build,
+      icon: Icons.psychology_outlined,
+      activeIcon: Icons.psychology_rounded,
       label: 'Tools',
       route: '/tools',
     ),
     NavigationItem(
-      icon: Icons.edit_note_outlined,
-      activeIcon: Icons.edit_note,
+      icon: Icons.auto_stories_outlined,
+      activeIcon: Icons.auto_stories_rounded,
       label: 'Journal',
       route: '/journal',
     ),
     NavigationItem(
-      icon: Icons.person_outline,
-      activeIcon: Icons.person,
+      icon: Icons.account_circle_outlined,
+      activeIcon: Icons.account_circle_rounded,
       label: 'You',
       route: '/profile',
     ),
@@ -352,6 +353,8 @@ class _NavigationButtonState extends State<_NavigationButton> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapDown: (_) {
+        // Trigger medium strength haptic feedback on iOS
+        HapticFeedback.mediumImpact();
         setState(() {
           _isPressed = true;
         });
@@ -368,7 +371,7 @@ class _NavigationButtonState extends State<_NavigationButton> {
         });
       },
       child: AnimatedScale(
-        scale: _isPressed ? 0.92 : 1.0,
+        scale: _isPressed ? 0.70 : 1.0,
         duration: const Duration(milliseconds: 100),
         curve: Curves.easeInOut,
         child: Container(
@@ -379,7 +382,7 @@ class _NavigationButtonState extends State<_NavigationButton> {
               Icon(
                 widget.isSelected ? widget.item.activeIcon : widget.item.icon,
                 color: widget.isSelected 
-                    ? Theme.of(context).colorScheme.primary
+                    ? const Color(0xFF4CAF50)
                     : Colors.grey[600],
                 size: 24,
               ),
@@ -388,7 +391,7 @@ class _NavigationButtonState extends State<_NavigationButton> {
                 widget.item.label,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: widget.isSelected 
-                      ? Theme.of(context).colorScheme.primary
+                      ? const Color(0xFF4CAF50)
                       : Colors.grey[600],
                   fontWeight: widget.isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),

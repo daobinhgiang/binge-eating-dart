@@ -634,10 +634,12 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
     );
   }
 
-  // Get lesson position in the path (-1 = left, 0 = center, 1 = right)
-  int _getLessonPosition(int index) {
-    // Create a winding path like Duolingo
-    final pattern = [0, -1, 0, 1, 0, -1, 1, 0, -1, 0, 1, 0];
+  // Get lesson position in the path (uses fractional values for ultra-smooth S-curve)
+  // Returns position as fraction: -1.0 = most left, 0 = center, 1.0 = most right
+  double _getLessonPosition(int index) {
+    // Create an ultra-smooth S-curve pattern with gradual transitions
+    // This creates a flowing wave that moves smoothly through multiple positions
+    final pattern = [0.0, -0.66, -1.0, -0.66, 0.0, 0.66, 1.0, 0.66];
     return pattern[index % pattern.length];
   }
 
@@ -647,7 +649,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
     required int lessonNumber,
     required bool isCompleted,
     required bool isLocked,
-    required int position,
+    required double position,
     required Color stageColor,
     GlobalKey? lessonKey,
   }) {
@@ -657,22 +659,58 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
             ? Colors.grey.shade400
             : Colors.grey.shade500; // Grey for uncompleted lessons
 
-    // Calculate alignment based on position
-    Alignment alignment;
-    if (position < 0) {
-      alignment = Alignment.centerLeft;
-    } else if (position > 0) {
-      alignment = Alignment.centerRight;
-    } else {
-      alignment = Alignment.center;
-    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenWidth = constraints.maxWidth;
+        final buttonRadius = 35.0; // Half of button width (70/2)
+        
+        // Calculate positions based on fractional position value
+        // position = -1.0 (most left): 55 from left edge
+        // position = 0.0 (center): width/2
+        // position = 1.0 (most right): width - 55 from left edge
+        
+        final mostLeftPos = 55.0;
+        final mostRightPos = screenWidth - 55.0;
+        final centerPos = screenWidth / 2;
+        
+        // Calculate the actual X position by interpolating based on the position value
+        double targetXPos;
+        if (position < 0) {
+          // Interpolate between most left and center
+          targetXPos = centerPos + (position * (centerPos - mostLeftPos));
+        } else {
+          // Interpolate between center and most right
+          targetXPos = centerPos + (position * (mostRightPos - centerPos));
+        }
+        
+        // Calculate padding based on position
+        double leftPadding = 0;
+        double rightPadding = 0;
+        Alignment alignment;
+        
+        if (position < -0.01) {
+          // Left side
+          leftPadding = targetXPos - buttonRadius;
+          rightPadding = 0;
+          alignment = Alignment.centerLeft;
+        } else if (position > 0.01) {
+          // Right side
+          leftPadding = 0;
+          rightPadding = screenWidth - targetXPos - buttonRadius;
+          alignment = Alignment.centerRight;
+        } else {
+          // Center
+          leftPadding = 0;
+          rightPadding = 0;
+          alignment = Alignment.center;
+        }
 
     return Align(
       alignment: alignment,
       child: Padding(
         padding: EdgeInsets.only(
-          left: position == -1 ? 40 : position == 0 ? 0 : 0,
-          right: position == 1 ? 40 : position == 0 ? 0 : 0,
+          left: leftPadding,
+          right: rightPadding,
         ),
         child: GestureDetector(
           key: lessonKey,
@@ -721,16 +759,18 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
         ),
       ),
     );
+      },
+    );
   }
 
   // Build connecting path between lessons
-  Widget _buildConnectingPath(int fromPosition, int toPosition) {
+  Widget _buildConnectingPath(double fromPosition, double toPosition) {
     return CustomPaint(
-      size: const Size(double.infinity, 40),
+      size: const Size(double.infinity, 50),
       painter: PathPainter(
         fromPosition: fromPosition,
         toPosition: toPosition,
-        color: const Color(0xFF66BB6A).withOpacity(0.3),
+        color: Colors.transparent, // Make lines invisible
       ),
     );
   }
@@ -789,8 +829,8 @@ class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
 
 // Custom painter for drawing paths between lesson buttons
 class PathPainter extends CustomPainter {
-  final int fromPosition;
-  final int toPosition;
+  final double fromPosition;
+  final double toPosition;
   final Color color;
 
   PathPainter({
@@ -803,42 +843,50 @@ class PathPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = color
-      ..strokeWidth = 4
+      ..strokeWidth = 5
       ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
 
     final path = Path();
 
-    // Calculate start and end positions
+    // Calculate positions using same interpolation logic as button positioning
+    final mostLeftPos = 55.0;
+    final mostRightPos = size.width - 55.0;
+    final centerPos = size.width / 2;
+
+    // Calculate start X position by interpolating based on fromPosition value
     double startX;
+    if (fromPosition < 0) {
+      // Interpolate between most left and center
+      startX = centerPos + (fromPosition * (centerPos - mostLeftPos));
+    } else {
+      // Interpolate between center and most right
+      startX = centerPos + (fromPosition * (mostRightPos - centerPos));
+    }
+
+    // Calculate end X position by interpolating based on toPosition value
     double endX;
-
-    if (fromPosition == -1) {
-      startX = 75; // Left position (40 padding + 35 half of button)
-    } else if (fromPosition == 0) {
-      startX = size.width / 2;
+    if (toPosition < 0) {
+      // Interpolate between most left and center
+      endX = centerPos + (toPosition * (centerPos - mostLeftPos));
     } else {
-      startX = size.width - 75; // Right position
+      // Interpolate between center and most right
+      endX = centerPos + (toPosition * (mostRightPos - centerPos));
     }
 
-    if (toPosition == -1) {
-      endX = 75;
-    } else if (toPosition == 0) {
-      endX = size.width / 2;
-    } else {
-      endX = size.width - 75;
-    }
-
-    // Draw curved path
+    // Draw smooth S-curve path like Duolingo
     path.moveTo(startX, 0);
     
-    // Add curve for smoother transition
-    final controlPoint1Y = size.height * 0.33;
-    final controlPoint2Y = size.height * 0.67;
+    // Create smooth bezier curve that flows naturally
+    // Use dynamic control points based on the distance between start and end
+    final midX = (startX + endX) / 2;
+    final controlPoint1X = startX + (midX - startX) * 0.5;
+    final controlPoint2X = endX - (endX - midX) * 0.5;
     
     path.cubicTo(
-      startX, controlPoint1Y,
-      endX, controlPoint2Y,
+      controlPoint1X, size.height * 0.25,
+      controlPoint2X, size.height * 0.75,
       endX, size.height,
     );
 

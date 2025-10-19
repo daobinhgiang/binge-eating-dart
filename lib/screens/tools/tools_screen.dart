@@ -161,20 +161,23 @@ class ToolsScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(40.0),
                     boxShadow: isHovered ? [
                       BoxShadow(
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.25),
+                        spreadRadius: 2,
+                        blurRadius: 20,
+                        offset: const Offset(0, 6),
                       ),
                       BoxShadow(
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
-                        blurRadius: 20,
-                        offset: const Offset(0, 8),
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
+                        spreadRadius: 1,
+                        blurRadius: 28,
+                        offset: const Offset(0, 10),
                       ),
                     ] : [
                       BoxShadow(
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                        spreadRadius: 1,
+                        blurRadius: 16,
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
