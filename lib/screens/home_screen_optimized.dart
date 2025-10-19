@@ -163,7 +163,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         width: 56,
         height: 56,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(40.0),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.2),
@@ -173,7 +173,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(40.0),
           child: Image.asset(
             'assets/logo.png',
             fit: BoxFit.cover,
@@ -191,7 +191,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       Color(0xFFFFB74D),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(40.0),
                 ),
                 child: const Icon(
                   Icons.psychology,

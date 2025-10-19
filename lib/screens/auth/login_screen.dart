@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -18,59 +19,48 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final authError = ref.watch(authErrorProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/login_background.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: SafeArea(
           child: Column(
             children: [
               // Top content area with logo and tagline
               Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                  const SizedBox(height: 40),
-                  
-                  // Login Image
-                  Center(
-                    child: Hero(
-                      tag: 'login_image',
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.6,
-                        height: MediaQuery.of(context).size.width * 0.6,
-                        child: Image.asset(
-                          'assets/login.png',
+                child: Center(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // App Logo
+                        Image.asset(
+                          'nurtra.png',
+                          height: 65,
                           fit: BoxFit.contain,
                         ),
-                      ),
+                        
+                        const SizedBox(height: 24),
+                        
+                        // Tagline with better spacing
+                        Text(
+                          'Take Control Over\nBinge Eating',
+                          style: GoogleFonts.fredoka(
+                            color: Colors.grey[700],
+                            fontSize: 32,
+                            fontWeight: FontWeight.w600,
+                            height: 1.3,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     ),
-                  ),
-                  
-                  const SizedBox(height: 32),
-                  
-                  // App Logo
-                  Center(
-                    child: Image.asset(
-                      'nurtra.png',
-                      height: 60,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 12),
-                  
-                  // Tagline with better spacing
-                  Text(
-                    'Your journey to mindful eating\nstarts here',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.grey[600],
-                      fontSize: 16,
-                      height: 1.5,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                    ],
                   ),
                 ),
               ),
@@ -88,7 +78,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       margin: const EdgeInsets.only(bottom: 24),
                       decoration: BoxDecoration(
                         color: Colors.red[50],
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(40.0),
                         border: Border.all(color: Colors.red[100]!),
                       ),
                       child: Row(
@@ -113,7 +103,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   Container(
                     height: 56,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(28),
+                      borderRadius: BorderRadius.circular(40.0),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.06),
@@ -128,7 +118,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         backgroundColor: Colors.white,
                         side: BorderSide(color: Colors.grey[200]!),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(28),
+                          borderRadius: BorderRadius.circular(40.0),
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                       ),
@@ -159,7 +149,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     Container(
                       height: 56,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(28),
+                        borderRadius: BorderRadius.circular(40.0),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.15),
@@ -175,7 +165,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           foregroundColor: Colors.white,
                           side: const BorderSide(color: Colors.black),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(28),
+                            borderRadius: BorderRadius.circular(40.0),
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                         ),
@@ -201,7 +191,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   Container(
                     height: 56,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(28),
+                      borderRadius: BorderRadius.circular(40.0),
                       gradient: LinearGradient(
                         colors: [
                           Theme.of(context).colorScheme.primary,
@@ -223,7 +213,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         foregroundColor: Colors.white,
                         shadowColor: Colors.transparent,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(28),
+                          borderRadius: BorderRadius.circular(40.0),
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                       ),
@@ -260,6 +250,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ],
           ),
         ),
+      ),
     );
   }
 

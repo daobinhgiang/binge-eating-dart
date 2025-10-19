@@ -49,7 +49,7 @@ class ExpProgressBar extends ConsumerWidget {
           ),
         if (showLabel) const SizedBox(height: 4),
         ClipRRect(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12.0),
           child: LinearProgressIndicator(
             value: progress,
             minHeight: 6,
@@ -94,7 +94,7 @@ class ExpProgressBar extends ConsumerWidget {
               height: 12,
               decoration: BoxDecoration(
                 color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12.0),
               ),
             ),
             FractionallySizedBox(
@@ -108,7 +108,7 @@ class ExpProgressBar extends ConsumerWidget {
                       _getLevelColor(level).withOpacity(0.7),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12.0),
                   boxShadow: [
                     BoxShadow(
                       color: _getLevelColor(level).withOpacity(0.3),

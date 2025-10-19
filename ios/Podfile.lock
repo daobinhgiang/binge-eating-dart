@@ -1198,6 +1198,9 @@ PODS:
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/UserDefaults (~> 8.0)
     - PromisesObjC (~> 2.4)
+  - audioplayers_darwin (0.0.1):
+    - Flutter
+    - FlutterMacOS
   - BoringSSL-GRPC (0.0.37):
     - BoringSSL-GRPC/Implementation (= 0.0.37)
     - BoringSSL-GRPC/Interface (= 0.0.37)
@@ -1326,6 +1329,8 @@ PODS:
     - GoogleUtilities/Environment (~> 8.1)
     - GTMSessionFetcher/Core (< 5.0, >= 3.4)
   - Flutter (1.0.0)
+  - flutter_keyboard_visibility_temp_fork (0.0.1):
+    - Flutter
   - flutter_local_notifications (0.0.1):
     - Flutter
   - google_sign_in_ios (0.0.1):
@@ -1514,6 +1519,7 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
+  - audioplayers_darwin (from `.symlinks/plugins/audioplayers_darwin/darwin`)
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
@@ -1521,6 +1527,7 @@ DEPENDENCIES:
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
   - Flutter (from `Flutter`)
+  - flutter_keyboard_visibility_temp_fork (from `.symlinks/plugins/flutter_keyboard_visibility_temp_fork/ios`)
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/darwin`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
@@ -1563,6 +1570,8 @@ SPEC REPOS:
     - RecaptchaInterop
 
 EXTERNAL SOURCES:
+  audioplayers_darwin:
+    :path: ".symlinks/plugins/audioplayers_darwin/darwin"
   cloud_firestore:
     :path: ".symlinks/plugins/cloud_firestore/ios"
   firebase_analytics:
@@ -1577,6 +1586,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_storage/ios"
   Flutter:
     :path: Flutter
+  flutter_keyboard_visibility_temp_fork:
+    :path: ".symlinks/plugins/flutter_keyboard_visibility_temp_fork/ios"
   flutter_local_notifications:
     :path: ".symlinks/plugins/flutter_local_notifications/ios"
   google_sign_in_ios:
@@ -1594,6 +1605,7 @@ SPEC CHECKSUMS:
   abseil: a05cc83bf02079535e17169a73c5be5ba47f714b
   AppAuth: d4f13a8fe0baf391b2108511793e4b479691fb73
   AppCheckCore: cc8fd0a3a230ddd401f326489c99990b013f0c4f
+  audioplayers_darwin: 4f9ca89d92d3d21cec7ec580e78ca888e5fb68bd
   BoringSSL-GRPC: dded2a44897e45f28f08ae87a55ee4bcd19bc508
   cloud_firestore: fdcc87898326e396d6ef6df543acf9b5c2034b95
   Firebase: d99ac19b909cd2c548339c2241ecd0d1599ab02e
@@ -1616,6 +1628,7 @@ SPEC CHECKSUMS:
   FirebaseSharedSwift: e17c654ef1f1a616b0b33054e663ad1035c8fd40
   FirebaseStorage: 50fc9ee147392943e492467db6b52759b0447037
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  flutter_keyboard_visibility_temp_fork: 95b2d534bacf6ac62e7fcbe5c2a9e2c2a17ce06f
   flutter_local_notifications: a5a732f069baa862e728d839dd2ebb904737effb
   google_sign_in_ios: b48bb9af78576358a168361173155596c845f0b9
   GoogleAdsOnDeviceConversion: 2be6297a4f048459e0ae17fad9bfd2844e10cf64

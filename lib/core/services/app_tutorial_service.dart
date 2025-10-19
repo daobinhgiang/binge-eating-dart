@@ -6,6 +6,7 @@ enum TutorialStep {
   firstLesson,
   toolsTab,
   journalTab,
+  completion,
 }
 
 class AppTutorialService {
@@ -383,6 +384,171 @@ class AppTutorialService {
     Future.delayed(const Duration(milliseconds: 500), () {
       _tutorialCoachMark?.show(context: context);
     });
+  }
+
+  // Show completion tutorial (full screen celebration)
+  void showCompletionTutorial({
+    required BuildContext context,
+    required GlobalKey completionKey,
+    required VoidCallback onFinish,
+  }) {
+    _currentStep = TutorialStep.completion;
+    
+    // Show a full-screen overlay with completion message
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: EdgeInsets.zero,
+          child: Container(
+            width: double.infinity,
+            height: double.infinity,
+            color: Colors.black.withOpacity(0.8), // Full-screen black overlay
+            child: SafeArea(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  // Scale elements based on screen height
+                  final screenHeight = constraints.maxHeight;
+                  final isSmallScreen = screenHeight < 600;
+                  final isMediumScreen = screenHeight < 700;
+                  
+                  // Responsive sizing
+                  final iconSize = isSmallScreen ? 100.0 : (isMediumScreen ? 120.0 : 140.0);
+                  final iconInnerSize = isSmallScreen ? 50.0 : (isMediumScreen ? 60.0 : 70.0);
+                  final titleFontSize = isSmallScreen ? 24.0 : (isMediumScreen ? 28.0 : 32.0);
+                  final subtitleFontSize = isSmallScreen ? 20.0 : (isMediumScreen ? 22.0 : 24.0);
+                  final bodyFontSize = isSmallScreen ? 15.0 : (isMediumScreen ? 16.0 : 18.0);
+                  final smallFontSize = isSmallScreen ? 14.0 : 16.0;
+                  final buttonFontSize = isSmallScreen ? 16.0 : 18.0;
+                  
+                  final verticalPadding = isSmallScreen ? 16.0 : (isMediumScreen ? 24.0 : 32.0);
+                  final spacing1 = isSmallScreen ? 20.0 : (isMediumScreen ? 30.0 : 40.0);
+                  final spacing2 = isSmallScreen ? 12.0 : (isMediumScreen ? 16.0 : 24.0);
+                  final spacing3 = isSmallScreen ? 8.0 : (isMediumScreen ? 12.0 : 16.0);
+                  final spacing4 = isSmallScreen ? 20.0 : (isMediumScreen ? 24.0 : 32.0);
+                  
+                  return SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 24.0,
+                        vertical: verticalPadding,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Celebration icon
+                          Container(
+                            width: iconSize,
+                            height: iconSize,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF66BB6A),
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF66BB6A).withOpacity(0.5),
+                                  blurRadius: 30,
+                                  spreadRadius: 10,
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              Icons.celebration,
+                              size: iconInnerSize,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(height: spacing1),
+                          
+                          // Main title
+                          Text(
+                            "🎉 Tutorial Complete! 🎉",
+                            style: TextStyle(
+                              fontSize: titleFontSize,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: spacing2),
+                          
+                          // Success message
+                          Text(
+                            "Congratulations!",
+                            style: TextStyle(
+                              fontSize: subtitleFontSize,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: spacing3),
+                          
+                          // Encouraging message
+                          Text(
+                            "You've completed the tutorial and learned about all the key features of Nurtra.",
+                            style: TextStyle(
+                              fontSize: bodyFontSize,
+                              color: Colors.white,
+                              height: 1.5,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: spacing3),
+                          
+                          // Simplified empowering message (no box to save space)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text(
+                              "Now you're ready to start your recovery journey!",
+                              style: TextStyle(
+                                fontSize: smallFontSize,
+                                color: Colors.white,
+                                height: 1.5,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          SizedBox(height: spacing4),
+                          
+                          // Call to action button
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              onFinish();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF66BB6A),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: isSmallScreen ? 32 : 48,
+                                vertical: isSmallScreen ? 12 : 16,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
+                              elevation: 8,
+                            ),
+                            child: Text(
+                              "Start Your Journey",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: buttonFontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   // Dispose tutorial

@@ -73,9 +73,9 @@ class _LessonS301ScreenState extends State<LessonS301Screen> {
     }
   }
 
-  void _finishLesson() {
+  void _finishLesson() async {
     if (_lesson != null) {
-      _lessonService.markLessonCompleted(_lesson!.id);
+      await _lessonService.markLessonCompleted(_lesson!.id);
     }
     Navigator.of(context).pop();
   }

@@ -95,54 +95,45 @@ class ToolsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(context),
-            const SizedBox(height: 24),
-            Expanded(
-              child: ListView(
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/background.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: SafeArea(
+          child: CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                pinned: false,
+                backgroundColor: Colors.transparent,
+                surfaceTintColor: Colors.transparent,
+                elevation: 0,
+                automaticallyImplyLeading: false,
+                title: Text(
+                  'Exercises',
+                  style: GoogleFonts.fredoka(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
+                ),
+                centerTitle: false,
+              ),
+            SliverPadding(
+              padding: const EdgeInsets.only(top: 24),
+              sliver: SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                children: [
-                  ...exercises.map((exercise) => _buildExerciseCard(context, exercise)),
-                  const SizedBox(height: 24),
-                ],
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    ...exercises.map((exercise) => _buildExerciseCard(context, exercise)),
+                    const SizedBox(height: 24),
+                  ]),
+                ),
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context) {
-    return _buildHeaderContent(context);
-  }
-
-  Widget _buildHeaderContent(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        border: const Border(
-          bottom: BorderSide(
-            color: Colors.grey,
-            width: 1.0,
-          ),
-        ),
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
-          child: Text(
-            'Exercises',
-            style: GoogleFonts.fredoka(
-              fontSize: 36,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
-            ),
-            textAlign: TextAlign.center,
           ),
         ),
       ),
@@ -167,32 +158,35 @@ class ToolsScreen extends ConsumerWidget {
                   height: tileSize,
                   duration: const Duration(milliseconds: 200),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(40.0),
                     boxShadow: isHovered ? [
                       BoxShadow(
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.25),
+                        spreadRadius: 2,
+                        blurRadius: 20,
+                        offset: const Offset(0, 6),
                       ),
                       BoxShadow(
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
-                        blurRadius: 20,
-                        offset: const Offset(0, 8),
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
+                        spreadRadius: 1,
+                        blurRadius: 28,
+                        offset: const Offset(0, 10),
                       ),
                     ] : [
                       BoxShadow(
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                        spreadRadius: 1,
+                        blurRadius: 16,
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(40.0),
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(40.0),
                         onTap: () => exercise.onTap(context),
                         child: Column(
                           children: [
@@ -239,16 +233,6 @@ class ToolsScreen extends ConsumerWidget {
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  const SizedBox(height: 6),
-                                  Text(
-                                    exercise.description,
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                          color: Colors.grey[700],
-                                          height: 1.3,
-                                        ),
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
                                   const SizedBox(height: 12),
                                   Center(
                                     child: Container(
@@ -256,7 +240,7 @@ class ToolsScreen extends ConsumerWidget {
                                       height: 40,
                                       decoration: BoxDecoration(
                                         color: exercise.color[600],
-                                        borderRadius: BorderRadius.circular(20),
+                                        borderRadius: BorderRadius.circular(40.0),
                                         boxShadow: [
                                           BoxShadow(
                                             color: exercise.color[600]!.withOpacity(0.3),
@@ -268,7 +252,7 @@ class ToolsScreen extends ConsumerWidget {
                                       child: Material(
                                         color: Colors.transparent,
                                         child: InkWell(
-                                          borderRadius: BorderRadius.circular(20),
+                                          borderRadius: BorderRadius.circular(40.0),
                                           onTap: () => exercise.onTap(context),
                                           child: Center(
                                             child: Text(

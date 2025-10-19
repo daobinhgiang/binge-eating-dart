@@ -171,7 +171,7 @@ class _LessonS3021ScreenState extends ConsumerState<LessonS3021Screen> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.teal[50],
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.0),
                   border: Border.all(color: Colors.teal[200]!),
                 ),
                 child: Column(
@@ -207,7 +207,7 @@ class _LessonS3021ScreenState extends ConsumerState<LessonS3021Screen> {
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.0),
                         ),
                       ),
                     ),

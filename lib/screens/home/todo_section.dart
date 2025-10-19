@@ -64,7 +64,7 @@ class TodoSection extends ConsumerWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: Colors.grey[200]!,
           width: 1,
@@ -103,7 +103,7 @@ class TodoSection extends ConsumerWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: Colors.grey[200]!,
           width: 1,
@@ -155,7 +155,7 @@ class TodoSection extends ConsumerWidget {
             Color(0xFF4CAF50),
           ],
         ),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: Colors.white,
           width: 1,

@@ -27,74 +27,46 @@ class MoneyDiaryMainScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Navigation Bar
-            _buildNavigationBar(context),
+      body: Column(
+        children: [
+          // Navigation Bar
+          _buildNavigationBar(context),
+          
+          // Main Content
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Total Money Spent Header
+                  _buildTotalSpentHeader(context, totalSpent),
             
-            // Main Content
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Total Money Spent Header
-                    _buildTotalSpentHeader(context, totalSpent),
-              
-                    const SizedBox(height: 24),
-                    
-                    // Today's Entries Section
-                    Text(
-                      "Today's Spending",
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  const SizedBox(height: 24),
+                  
+                  // Recent Spending Section
+                  Text(
+                    'Recent Spending',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
-                    
-                    const SizedBox(height: 16),
-                    
-                    // Today's Entries with Add Entry Card
-                    _buildTodaysEntries(context, currentWeekMoneyDiaries),
-                    
-                    const SizedBox(height: 24),
-                    
-                    // Recent Entries Section
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Recent Spending',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    
-                    const SizedBox(height: 16),
-                    
-                    // Recent Entries (Vertical Scroll)
-                    _buildRecentEntries(context, allMoneyDiaries),
-                  ],
-                ),
+                  ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Add Entry Button
+                  _buildAddEntryButton(context),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Recent Entries (Organized by Date)
+                  _buildRecentEntries(context, allMoneyDiaries),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _navigateToSurvey(context),
-        backgroundColor: Colors.amber[600],
-        foregroundColor: Colors.white,
-        elevation: 8,
-        child: const Icon(
-          Icons.add,
-          size: 28,
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
@@ -123,15 +95,21 @@ class MoneyDiaryMainScreen extends ConsumerWidget {
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
               ),
-              const SizedBox(width: 16),
-              Text(
-                'Spending Diary',
-                style: GoogleFonts.fredoka(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    'Spending Diary',
+                    style: GoogleFonts.fredoka(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
+              const SizedBox(width: 48), // Balance the back button width
             ],
           ),
         ),
@@ -145,7 +123,7 @@ class MoneyDiaryMainScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.amber[50],
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: Colors.amber[100]!,
           width: 2,
@@ -212,141 +190,45 @@ class MoneyDiaryMainScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTodaysEntries(BuildContext context, AsyncValue<List<MoneyDiary>> currentWeekEntries) {
-    return currentWeekEntries.when(
-      data: (entries) {
-        // Filter today's entries
-        final now = DateTime.now();
-        final today = DateTime(now.year, now.month, now.day);
-        final todaysEntries = entries.where((entry) {
-          final entryDate = DateTime(entry.spentAt.year, entry.spentAt.month, entry.spentAt.day);
-          return entryDate.isAtSameMomentAs(today);
-        }).toList();
-
-        return Column(
-          children: [
-            // Add Entry Card
-            _buildAddEntryCard(context),
-            const SizedBox(height: 12),
-            
-            // Today's entries
-            if (todaysEntries.isEmpty)
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: Colors.grey[50],
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.grey[200]!),
-                ),
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.money_off,
-                      size: 48,
-                      color: Colors.grey[400],
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'No spending recorded today',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Keep up the good work!',
-                      style: TextStyle(
-                        color: Colors.grey[500],
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            else
-              ...todaysEntries.map((entry) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _buildMoneyEntryCard(context, entry),
-              )),
-          ],
-        );
-      },
-      loading: () => const SizedBox(
-        height: 100,
-        child: Center(child: CircularProgressIndicator()),
-      ),
-      error: (error, _) => Container(
-        padding: const EdgeInsets.all(16),
-        child: Text('Error loading entries: $error'),
-      ),
-    );
-  }
-
-  Widget _buildAddEntryCard(BuildContext context) {
+  Widget _buildAddEntryButton(BuildContext context) {
     return Container(
+      width: double.infinity,
+      height: 56,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.amber[300]!,
-          width: 2,
-          style: BorderStyle.solid,
-        ),
-        color: Colors.amber[50],
+        color: Colors.amber[600],
+        borderRadius: BorderRadius.circular(40.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.amber[600]!.withOpacity(0.3),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _navigateToSurvey(context),
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.amber[600],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.add,
-                    color: Colors.white,
-                    size: 24,
-                  ),
+          borderRadius: BorderRadius.circular(40.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.add,
+                color: Colors.white,
+                size: 24,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Add New Entry',
+                style: GoogleFonts.fredoka(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Add Spending Entry',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.amber[800],
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Track money spent on binge eating',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.amber[700],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  color: Colors.amber[600],
-                  size: 16,
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -357,51 +239,113 @@ class MoneyDiaryMainScreen extends ConsumerWidget {
     return allEntries.when(
       data: (entries) {
         if (entries.isEmpty) {
-          return Container(
-            padding: const EdgeInsets.all(32),
-            decoration: BoxDecoration(
-              color: Colors.grey[50],
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.grey[200]!),
-            ),
-            child: Column(
-              children: [
-                Icon(
-                  Icons.history,
-                  size: 48,
-                  color: Colors.grey[400],
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'No spending entries yet',
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.account_balance_wallet_outlined,
+                    size: 64,
+                    color: Colors.grey[300],
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Start tracking your spending to gain insights into your binge eating patterns.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.grey[500],
-                    fontSize: 14,
+                  const SizedBox(height: 16),
+                  Text(
+                    'No entries yet',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[600],
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  Text(
+                    'Tap "Add New Entry" to start tracking',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[500],
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         }
 
-        // Show recent entries (limit to 10)
-        final recentEntries = entries.take(10).toList();
-        
+        // Categorize entries by date
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
+        final yesterday = today.subtract(const Duration(days: 1));
+
+        final todayEntries = <MoneyDiary>[];
+        final yesterdayEntries = <MoneyDiary>[];
+        final beforeEntries = <MoneyDiary>[];
+
+        for (final entry in entries) {
+          final entryDate = DateTime(entry.spentAt.year, entry.spentAt.month, entry.spentAt.day);
+          
+          if (entryDate.isAtSameMomentAs(today)) {
+            todayEntries.add(entry);
+          } else if (entryDate.isAtSameMomentAs(yesterday)) {
+            yesterdayEntries.add(entry);
+          } else {
+            beforeEntries.add(entry);
+          }
+        }
+
         return Column(
-          children: recentEntries.map((entry) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: _buildMoneyEntryCard(context, entry),
-          )).toList(),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Today's Entries
+            if (todayEntries.isNotEmpty) ...[
+              Text(
+                'Today',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[700],
+                ),
+              ),
+              const SizedBox(height: 12),
+              ...todayEntries.map((entry) => Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                child: _buildMoneyEntryCard(context, entry),
+              )),
+              const SizedBox(height: 16),
+            ],
+            
+            // Yesterday's Entries
+            if (yesterdayEntries.isNotEmpty) ...[
+              Text(
+                'Yesterday',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[700],
+                ),
+              ),
+              const SizedBox(height: 12),
+              ...yesterdayEntries.map((entry) => Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                child: _buildMoneyEntryCard(context, entry),
+              )),
+              const SizedBox(height: 16),
+            ],
+            
+            // Before (Earlier) Entries
+            if (beforeEntries.isNotEmpty) ...[
+              Text(
+                'Before',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[700],
+                ),
+              ),
+              const SizedBox(height: 12),
+              ...beforeEntries.map((entry) => Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                child: _buildMoneyEntryCard(context, entry),
+              )),
+            ],
+          ],
         );
       },
       loading: () => const SizedBox(
@@ -420,7 +364,7 @@ class MoneyDiaryMainScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
           BoxShadow(

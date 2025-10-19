@@ -36,13 +36,60 @@ class _BodyImageDiarySurveyScreenState extends ConsumerState<BodyImageDiarySurve
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Body Image Diary'),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        elevation: 0,
-      ),
-      body: Column(
-        children: [
+      backgroundColor: Colors.grey[50],
+      body: GestureDetector(
+        onTap: () {
+          // Dismiss keyboard when tapping outside of text fields
+          FocusScope.of(context).unfocus();
+        },
+        child: SafeArea(
+        child: Column(
+          children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.fromLTRB(16, 12, 8, 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  spreadRadius: 0,
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 4),
+                  child: IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.arrow_back, color: Colors.black87),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ),
+                Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Body Image Diary',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 48), // Balance the back button width
+              ],
+            ),
+          ),
+          
           // Progress indicator
           Container(
             padding: const EdgeInsets.all(16),
@@ -128,7 +175,9 @@ class _BodyImageDiarySurveyScreenState extends ConsumerState<BodyImageDiarySurve
             ),
           ),
         ],
+        ),
       ),
+    ),
     );
   }
 
@@ -173,6 +222,10 @@ class _BodyImageDiarySurveyScreenState extends ConsumerState<BodyImageDiarySurve
                     const SizedBox(height: 16),
                     TextField(
                       controller: _customHowController,
+                      textInputAction: TextInputAction.done,
+                      onEditingComplete: () {
+                        FocusScope.of(context).unfocus();
+                      },
                       decoration: const InputDecoration(
                         labelText: 'Please specify how you checked',
                         border: OutlineInputBorder(),
@@ -215,7 +268,7 @@ class _BodyImageDiarySurveyScreenState extends ConsumerState<BodyImageDiarySurve
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.teal[200]!),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(40.0),
                   color: Colors.teal[50],
                 ),
                 child: Column(
@@ -302,6 +355,10 @@ class _BodyImageDiarySurveyScreenState extends ConsumerState<BodyImageDiarySurve
                     const SizedBox(height: 16),
                     TextField(
                       controller: _customWhereController,
+                      textInputAction: TextInputAction.done,
+                      onEditingComplete: () {
+                        FocusScope.of(context).unfocus();
+                      },
                       decoration: const InputDecoration(
                         labelText: 'Please specify where you checked',
                         border: OutlineInputBorder(),
@@ -342,6 +399,10 @@ class _BodyImageDiarySurveyScreenState extends ConsumerState<BodyImageDiarySurve
               controller: _contextController,
               maxLines: null,
               expands: true,
+              textInputAction: TextInputAction.done,
+              onEditingComplete: () {
+                FocusScope.of(context).unfocus();
+              },
               textAlignVertical: TextAlignVertical.top,
               decoration: const InputDecoration(
                 hintText: 'e.g., I was feeling anxious about how I looked before going out. I noticed my reflection in the mirror and started examining my stomach area. I felt disappointed and kept checking for several minutes...',

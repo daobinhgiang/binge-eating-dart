@@ -49,17 +49,54 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: const Text(
-          'Daily Meal Plan',
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: IconThemeData(color: Colors.green[600]),
-      ),
-      body: Column(
+      body: SafeArea(
+      child: Column(
         children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.fromLTRB(16, 12, 8, 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  spreadRadius: 0,
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 4),
+                  child: IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.arrow_back, color: Colors.black87),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ),
+                Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Daily Meal Plan',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 48), // Balance the back button width
+              ],
+            ),
+          ),
+          
           // Progress indicator
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -89,7 +126,7 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: Colors.green[50],
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       child: Text(
                         '${((_currentPage + 1) / 8 * 100).round()}%',
@@ -103,7 +140,7 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
                 ),
                 const SizedBox(height: 12),
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(40.0),
                   child: LinearProgressIndicator(
                     value: (_currentPage + 1) / 8,
                     backgroundColor: Colors.grey[200],
@@ -164,7 +201,7 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
                         side: BorderSide(color: Colors.green[600]!),
                         foregroundColor: Colors.green[600],
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(40.0),
                         ),
                       ),
                       child: const Text(
@@ -183,7 +220,7 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                     ),
                     child: _isSubmitting
@@ -206,6 +243,7 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
           ),
         ],
       ),
+      ),
     );
   }
 
@@ -223,7 +261,7 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(40.0),
             ),
             child: Row(
               children: [
@@ -231,7 +269,7 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                   child: Icon(
                     Icons.calendar_today,
@@ -288,7 +326,7 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(40.0),
                 border: Border.all(color: Colors.green[300]!),
                 boxShadow: [
                   BoxShadow(
@@ -304,7 +342,7 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: Colors.green[50],
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(40.0),
                     ),
                     child: Icon(
                       Icons.calendar_month,
@@ -367,7 +405,7 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(40.0),
                 ),
                 child: Icon(
                   Icons.restaurant_menu,
@@ -471,7 +509,7 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
           BoxShadow(
@@ -568,7 +606,7 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
                   margin: const EdgeInsets.only(bottom: 8),
                   decoration: BoxDecoration(
                     color: _selectedLocation == location ? Colors.green[50] : Colors.white,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(40.0),
                     border: Border.all(
                       color: _selectedLocation == location ? Colors.green[300]! : Colors.grey[200]!,
                       width: _selectedLocation == location ? 2 : 1,
@@ -598,7 +636,7 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.grey[50],
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(40.0),
                     border: Border.all(color: Colors.grey[300]!),
                   ),
                   child: TextField(
@@ -661,7 +699,7 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
                 margin: const EdgeInsets.only(bottom: 8),
                 decoration: BoxDecoration(
                   color: isSelected ? Colors.green[50] : Colors.white,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(40.0),
                   border: Border.all(
                     color: isSelected ? Colors.green[300]! : Colors.grey[200]!,
                     width: isSelected ? 2 : 1,
@@ -760,7 +798,7 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(40.0),
             ),
             child: Icon(
               icon,
@@ -832,7 +870,7 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
             height: 250,
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(40.0),
               border: Border.all(color: Colors.grey[300]!),
               boxShadow: [
                 BoxShadow(
@@ -999,7 +1037,7 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
         ),
         backgroundColor: Colors.red[400],
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
         margin: const EdgeInsets.all(16),
       ),
     );
@@ -1045,7 +1083,7 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
             ),
             backgroundColor: Colors.green[600],
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
             margin: const EdgeInsets.all(16),
           ),
         );
@@ -1064,7 +1102,7 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
             ),
             backgroundColor: Colors.red[400],
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
             margin: const EdgeInsets.all(16),
           ),
         );

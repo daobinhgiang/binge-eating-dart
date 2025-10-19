@@ -28,10 +28,13 @@ class _LessonS235ScreenState extends ConsumerState<LessonS235Screen> {
     try {
       // Load from the Stage 2 data structure
       final stage2 = Stage2Data.getStage2();
-      final lesson35 = stage2.chapters[3].lessons[4]; // Chapter 3 (index 3), Lesson 5 (index 4)
+      final lesson = stage2.chapters
+          .firstWhere((chapter) => chapter.chapterNumber == 3)
+          .lessons
+          .firstWhere((lesson) => lesson.id == 'lesson_s2_3_5');
       
       setState(() {
-        _lesson = lesson35;
+        _lesson = lesson;
         _isLoading = false;
       });
     } catch (e) {
@@ -174,7 +177,7 @@ class _LessonS235ScreenState extends ConsumerState<LessonS235Screen> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.purple[50],
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.0),
                   border: Border.all(color: Colors.purple[200]!),
                 ),
                 child: Column(
@@ -210,7 +213,7 @@ class _LessonS235ScreenState extends ConsumerState<LessonS235Screen> {
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.0),
                         ),
                       ),
                     ),

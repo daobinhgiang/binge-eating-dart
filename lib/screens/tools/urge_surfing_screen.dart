@@ -47,43 +47,36 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
             ),
             child: SafeArea(
               bottom: false,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          icon: const Icon(Icons.arrow_back, color: Colors.white),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                        ),
-                        const Spacer(),
-                        IconButton(
-                          onPressed: () {
-                            ref.read(userActivitiesProvider(user.id).notifier).refreshActivities();
-                          },
-                          icon: const Icon(Icons.refresh, color: Colors.white),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                    child: Text(
-                      'Urge Surfing',
-                      style: GoogleFonts.fredoka(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 8, 20),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4),
+                      child: IconButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                  ),
-                ],
+                    Expanded(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          'Urge Surfing',
+                          style: GoogleFonts.fredoka(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 48), // Balance the back button width
+                  ],
+                ),
               ),
             ),
           ),
@@ -161,7 +154,7 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(40.0),
                 ),
               ),
             ),
@@ -214,7 +207,7 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
               duration: const Duration(milliseconds: 200),
               decoration: BoxDecoration(
                 color: isIdeal ? Colors.green[50] : Colors.teal[50],
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(40.0),
                 border: Border.all(
                   color: isIdeal ? Colors.green[300]! : Colors.teal.withOpacity(0.2),
                   width: isIdeal ? 2 : 1,
@@ -241,7 +234,7 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(40.0),
                   onTap: () => _editActivity(context, activity, index),
                   child: Container(
                     padding: const EdgeInsets.all(16),
@@ -255,7 +248,7 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
                               height: 32,
                               decoration: BoxDecoration(
                                 color: isIdeal ? Colors.green[600] : Colors.teal[600],
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: BorderRadius.circular(40.0),
                               ),
                               child: Center(
                                 child: isIdeal
@@ -302,7 +295,7 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
                                 color: _getCriteriaColor(criteriaCount).withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(40.0),
                               ),
                               child: Text(
                                 '$criteriaCount/3',
@@ -344,11 +337,12 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
                         const SizedBox(height: 12),
                         Row(
                           children: [
-                            _buildCriteriaChip('Active', activity.isActive),
-                            const SizedBox(width: 8),
-                            _buildCriteriaChip('Enjoyable', activity.isEnjoyable),
-                            const SizedBox(width: 8),
-                            _buildCriteriaChip('Realistic', activity.isRealistic),
+                            Text(
+                              activity.description,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Colors.grey[600],
+                              ),
+                            ),
                           ],
                         ),
                       ],
@@ -364,34 +358,6 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
   }
 
 
-  Widget _buildCriteriaChip(String label, bool isMet) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: isMet ? Colors.green[100] : Colors.grey[200],
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            isMet ? Icons.check : Icons.close,
-            size: 12,
-            color: isMet ? Colors.green[700] : Colors.grey[600],
-          ),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: isMet ? Colors.green[700] : Colors.grey[600],
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Color _getCriteriaColor(int count) {
     switch (count) {
@@ -536,9 +502,6 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
   void _showActivityDialog(BuildContext context, {AlternativeActivity? existingActivity}) {
     final nameController = TextEditingController(text: existingActivity?.name ?? '');
     final descriptionController = TextEditingController(text: existingActivity?.description ?? '');
-    bool isActive = existingActivity?.isActive ?? false;
-    bool isEnjoyable = existingActivity?.isEnjoyable ?? false;
-    bool isRealistic = existingActivity?.isRealistic ?? false;
 
     showDialog(
       context: context,
@@ -569,34 +532,6 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text(
-                  'Properties:',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                CheckboxListTile(
-                  title: const Text('Active'),
-                  subtitle: const Text('Involves doing something rather than being passive'),
-                  value: isActive,
-                  onChanged: (value) => setDialogState(() => isActive = value ?? false),
-                  dense: true,
-                ),
-                CheckboxListTile(
-                  title: const Text('Enjoyable'),
-                  subtitle: const Text('Something you enjoy, not a chore'),
-                  value: isEnjoyable,
-                  onChanged: (value) => setDialogState(() => isEnjoyable = value ?? false),
-                  dense: true,
-                ),
-                CheckboxListTile(
-                  title: const Text('Realistic'),
-                  subtitle: const Text('Something you can actually do when urges strike'),
-                  value: isRealistic,
-                  onChanged: (value) => setDialogState(() => isRealistic = value ?? false),
-                  dense: true,
-                ),
               ],
             ),
           ),
@@ -623,18 +558,12 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
                         activityId: existingActivity.id,
                         name: nameController.text.trim(),
                         description: descriptionController.text.trim(),
-                        isActive: isActive,
-                        isEnjoyable: isEnjoyable,
-                        isRealistic: isRealistic,
                       );
                     } else {
                       // Add new activity
                       await ref.read(userActivitiesProvider(user.id).notifier).addActivity(
                         name: nameController.text.trim(),
                         description: descriptionController.text.trim(),
-                        isActive: isActive,
-                        isEnjoyable: isEnjoyable,
-                        isRealistic: isRealistic,
                       );
                     }
 

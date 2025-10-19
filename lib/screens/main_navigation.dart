@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'home_screen.dart';
@@ -6,8 +7,6 @@ import 'education/lessons_screen.dart';
 import 'tools/tools_screen.dart';
 import 'journal/journal_screen.dart';
 import 'profile/profile_screen.dart';
-import '../widgets/comforting_background.dart';
-import '../widgets/forest_background.dart';
 import '../core/services/app_tutorial_service.dart';
 import '../providers/auth_provider.dart';
 import '../models/user_model.dart';
@@ -29,35 +28,36 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
   final GlobalKey _educationTabKey = GlobalKey();
   final GlobalKey _toolsTabKey = GlobalKey();
   final GlobalKey _journalTabKey = GlobalKey();
+  final GlobalKey _completionKey = GlobalKey();
 
   final List<NavigationItem> _navigationItems = [
     NavigationItem(
       icon: Icons.home_outlined,
-      activeIcon: Icons.home,
+      activeIcon: Icons.home_rounded,
       label: 'Home',
       route: '/home',
     ),
     NavigationItem(
-      icon: Icons.school_outlined,
-      activeIcon: Icons.school,
+      icon: Icons.menu_book_outlined,
+      activeIcon: Icons.menu_book_rounded,
       label: 'Lessons',
       route: '/education',
     ),
     NavigationItem(
-      icon: Icons.build_outlined,
-      activeIcon: Icons.build,
+      icon: Icons.psychology_outlined,
+      activeIcon: Icons.psychology_rounded,
       label: 'Tools',
       route: '/tools',
     ),
     NavigationItem(
-      icon: Icons.edit_note_outlined,
-      activeIcon: Icons.edit_note,
+      icon: Icons.auto_stories_outlined,
+      activeIcon: Icons.auto_stories_rounded,
       label: 'Journal',
       route: '/journal',
     ),
     NavigationItem(
-      icon: Icons.person_outline,
-      activeIcon: Icons.person,
+      icon: Icons.account_circle_outlined,
+      activeIcon: Icons.account_circle_rounded,
       label: 'You',
       route: '/profile',
     ),
@@ -90,9 +90,17 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
             hasSeenAppTutorial: true,
           );
         },
-        onTabClick: () {
+        onTabClick: () async {
+          // Update the status BEFORE navigating to prevent tutorial from showing again
+          await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
+            hasSeenAppTutorial: true,
+          );
+          // Longer delay to ensure state update fully propagates to all listeners
+          await Future.delayed(const Duration(milliseconds: 100));
           // Navigate to education tab when user clicks the highlighted tab
-          context.go('/education');
+          if (mounted) {
+            context.go('/education');
+          }
         },
       );
     }
@@ -125,9 +133,17 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
           hasSeenToolsTutorial: true,
         );
       },
-      onTabClick: () {
+      onTabClick: () async {
+        // Update the status BEFORE navigating to prevent tutorial from showing again
+        await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
+          hasSeenToolsTutorial: true,
+        );
+        // Small delay to ensure state update propagates
+        await Future.delayed(const Duration(milliseconds: 100));
         // Navigate to tools tab when user clicks the highlighted tab
-        context.go('/tools');
+        if (mounted) {
+          context.go('/tools');
+        }
       },
     );
   }
@@ -141,14 +157,52 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
       context: context,
       journalTabKey: _journalTabKey,
       onFinish: () async {
-        // Mark that user has seen the journal tutorial - completing the full tutorial flow
+        // Mark that user has seen the journal tutorial
         await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
           hasSeenJournalTutorial: true,
         );
+        
+        // Show completion tutorial after a short delay
+        if (mounted) {
+          await Future.delayed(const Duration(milliseconds: 1500));
+          if (mounted) {
+            _showCompletionTutorial();
+          }
+        }
       },
-      onTabClick: () {
+      onTabClick: () async {
+        // Update the status BEFORE navigating to prevent tutorial from showing again
+        await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
+          hasSeenJournalTutorial: true,
+        );
+        // Small delay to ensure state update propagates
+        await Future.delayed(const Duration(milliseconds: 100));
         // Navigate to journal tab when user clicks the highlighted tab
-        context.go('/journal');
+        if (mounted) {
+          context.go('/journal');
+        }
+        
+        // Show completion tutorial after navigation
+        await Future.delayed(const Duration(milliseconds: 1500));
+        if (mounted) {
+          _showCompletionTutorial();
+        }
+      },
+    );
+  }
+
+  void _showCompletionTutorial() {
+    if (!mounted) return;
+    
+    AppTutorialService().showCompletionTutorial(
+      context: context,
+      completionKey: _completionKey, // Still pass the key but it won't be used for spotlight
+      onFinish: () {
+        print('🎉 Tutorial flow complete! User is ready to start their journey.');
+        // Navigate back to home tab
+        if (mounted) {
+          context.go('/');
+        }
       },
     );
   }
@@ -214,31 +268,18 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
     _updateCurrentIndex(location);
     
     return Scaffold(
-      body: _currentIndex == 2 
-          ? ForestBackground(
-              child: IndexedStack(
-                index: _currentIndex,
-                children: const [
-                  HomeScreen(),
-                  LessonsScreen(),
-                  ToolsScreen(),
-                  JournalScreen(),
-                  ProfileScreen(),
-                ],
-              ),
-            )
-          : ComfortingBackground(
-              child: IndexedStack(
-                index: _currentIndex,
-                children: const [
-                  HomeScreen(),
-                  LessonsScreen(),
-                  ToolsScreen(),
-                  JournalScreen(),
-                  ProfileScreen(),
-                ],
-              ),
-            ),
+      key: _completionKey,
+      backgroundColor: Colors.white,
+      body: IndexedStack(
+        index: _currentIndex,
+        children: const [
+          HomeScreen(),
+          LessonsScreen(),
+          ToolsScreen(),
+          JournalScreen(),
+          ProfileScreen(),
+        ],
+      ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -250,8 +291,9 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
           ),
         ),
         child: SafeArea(
+          bottom: true,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: _navigationItems.asMap().entries.map((entry) {
@@ -270,40 +312,91 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
                 }
                 
                 return Expanded(
-                  child: GestureDetector(
+                  child: _NavigationButton(
                     key: tabKey,
+                    item: item,
+                    isSelected: isSelected,
                     onTap: () {
                       context.go(item.route);
                     },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            isSelected ? item.activeIcon : item.icon,
-                            color: isSelected 
-                                ? Theme.of(context).colorScheme.primary
-                                : Colors.grey[600],
-                            size: 24,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            item.label,
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: isSelected 
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Colors.grey[600],
-                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   ),
                 );
               }).toList(),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NavigationButton extends StatefulWidget {
+  final NavigationItem item;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _NavigationButton({
+    super.key,
+    required this.item,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  State<_NavigationButton> createState() => _NavigationButtonState();
+}
+
+class _NavigationButtonState extends State<_NavigationButton> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) {
+        // Trigger medium strength haptic feedback on iOS
+        HapticFeedback.mediumImpact();
+        setState(() {
+          _isPressed = true;
+        });
+      },
+      onTapUp: (_) {
+        setState(() {
+          _isPressed = false;
+        });
+        widget.onTap();
+      },
+      onTapCancel: () {
+        setState(() {
+          _isPressed = false;
+        });
+      },
+      child: AnimatedScale(
+        scale: _isPressed ? 0.70 : 1.0,
+        duration: const Duration(milliseconds: 100),
+        curve: Curves.easeInOut,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                widget.isSelected ? widget.item.activeIcon : widget.item.icon,
+                color: widget.isSelected 
+                    ? const Color(0xFF4CAF50)
+                    : Colors.grey[600],
+                size: 24,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                widget.item.label,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: widget.isSelected 
+                      ? const Color(0xFF4CAF50)
+                      : Colors.grey[600],
+                  fontWeight: widget.isSelected ? FontWeight.w600 : FontWeight.normal,
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -324,3 +417,5 @@ class NavigationItem {
     required this.route,
   });
 }
+
+

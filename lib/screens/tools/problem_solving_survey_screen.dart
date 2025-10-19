@@ -45,17 +45,54 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: const Text(
-          'Problem Solving Exercise',
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: IconThemeData(color: Colors.deepOrange[600]),
-      ),
-      body: Column(
+      body: SafeArea(
+      child: Column(
         children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.fromLTRB(16, 12, 8, 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  spreadRadius: 0,
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 4),
+                  child: IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.arrow_back, color: Colors.black87),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ),
+                Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Problem Solving Exercise',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 48), // Balance the back button width
+              ],
+            ),
+          ),
+          
           // Progress indicator
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -85,7 +122,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: Colors.deepOrange[50],
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       child: Text(
                         '${((_currentPage + 1) / 5 * 100).round()}%',
@@ -99,7 +136,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                 ),
                 const SizedBox(height: 12),
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(40.0),
                   child: LinearProgressIndicator(
                     value: (_currentPage + 1) / 5,
                     backgroundColor: Colors.grey[200],
@@ -157,7 +194,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                         side: BorderSide(color: Colors.deepOrange[600]!),
                         foregroundColor: Colors.deepOrange[600],
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(40.0),
                         ),
                       ),
                       child: const Text(
@@ -176,7 +213,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                     ),
                     child: _isSubmitting
@@ -199,66 +236,21 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
           ),
         ],
       ),
+      ),
     );
   }
 
   Widget _buildIdentifyProblemStep() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.deepOrange[50]!, Colors.orange[50]!],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    Icons.psychology_outlined,
-                    size: 32,
-                    color: Colors.deepOrange[600],
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Identify the Problem',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.deepOrange[800],
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Step 1 of 5',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.deepOrange[700],
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
+    return GestureDetector(
+      onTap: () {
+        // Dismiss keyboard when tapping outside text fields
+        FocusScope.of(context).unfocus();
+      },
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
           Text(
             'What\'s on your mind?',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -279,7 +271,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
             height: 300,
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(40.0),
               border: Border.all(color: Colors.grey[300]!),
               boxShadow: [
                 BoxShadow(
@@ -301,66 +293,28 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.all(20),
               ),
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) {
+                // Dismiss keyboard when Done is pressed
+                FocusScope.of(context).unfocus();
+              },
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
       ),
     );
   }
 
   Widget _buildSpecifyProblemsStep() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.deepOrange[50]!, Colors.orange[50]!],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.list_alt_rounded,
-                  size: 28,
-                  color: Colors.deepOrange[600],
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Specify Root Causes',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.deepOrange[800],
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Step 2 of 5',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.deepOrange[700],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+    return GestureDetector(
+      onTap: () {
+        // Dismiss keyboard when tapping outside text fields
+        FocusScope.of(context).unfocus();
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
         Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -407,31 +361,9 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Specific Problems (${_specificProblems.length})',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: _addSpecificProblem,
-                    icon: const Icon(Icons.add),
-                    label: const Text('Add Problem'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepOrange[600],
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                ],
               ),
             ],
           ),
@@ -480,62 +412,19 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                 ),
         ),
       ],
+      ),
     );
   }
 
   Widget _buildConsiderSolutionsStep() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.deepOrange[50]!, Colors.orange[50]!],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.lightbulb_outlined,
-                  size: 28,
-                  color: Colors.deepOrange[600],
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Brainstorm Solutions',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.deepOrange[800],
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Step 3 of 5',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.deepOrange[700],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+    return GestureDetector(
+      onTap: () {
+        // Dismiss keyboard when tapping outside text fields
+        FocusScope.of(context).unfocus();
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
         Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -582,31 +471,9 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Potential Solutions (${_potentialSolutions.length})',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: _addPotentialSolution,
-                    icon: const Icon(Icons.add),
-                    label: const Text('Add Solution'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepOrange[600],
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                ],
               ),
             ],
           ),
@@ -655,71 +522,19 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                 ),
         ),
       ],
+      ),
     );
   }
 
   Widget _buildImplicationsStep() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.deepOrange[50]!, Colors.orange[50]!],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.analytics_outlined,
-                  size: 28,
-                  color: Colors.deepOrange[600],
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Think Through Implications',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.deepOrange[800],
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Step 4 of 5',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.deepOrange[700],
-                        fontWeight: FontWeight.w500,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Go back to Step 3 to add solutions first',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[500],
-                          fontSize: 12,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+    return GestureDetector(
+      onTap: () {
+        // Dismiss keyboard when tapping outside text fields
+        FocusScope.of(context).unfocus();
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
         Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -789,71 +604,19 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
             ),
           ),
       ],
+      ),
     );
   }
 
   Widget _buildChooseSolutionsStep() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.deepOrange[50]!, Colors.orange[50]!],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.check_circle_outline,
-                  size: 28,
-                  color: Colors.deepOrange[600],
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Choose Solutions',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.deepOrange[800],
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Step 5 of 5',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.deepOrange[700],
-                        fontWeight: FontWeight.w500,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Go back to Step 3 to add solutions first',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[500],
-                          fontSize: 12,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+    return GestureDetector(
+      onTap: () {
+        // Dismiss keyboard when tapping outside text fields
+        FocusScope.of(context).unfocus();
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
         Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -910,8 +673,8 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                       color: Colors.grey[500],
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           )
         else
@@ -925,7 +688,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: Colors.deepOrange[50],
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(40.0),
                       border: Border.all(color: Colors.deepOrange[200]!),
                     ),
                     child: Row(
@@ -961,6 +724,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
             ),
           ),
       ],
+      ),
     );
   }
 
@@ -969,7 +733,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
           BoxShadow(
@@ -988,7 +752,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: Colors.deepOrange[50],
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(40.0),
               ),
               child: Icon(
                 Icons.adjust,
@@ -1009,7 +773,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
             const SizedBox(width: 8),
             InkWell(
               onTap: () => _removeSpecificProblem(index),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(40.0),
               child: Container(
                 padding: const EdgeInsets.all(8),
                 child: Icon(
@@ -1032,7 +796,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
           BoxShadow(
@@ -1054,7 +818,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: Colors.orange[50],
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                   child: Icon(
                     Icons.lightbulb,
@@ -1077,7 +841,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                   const SizedBox(width: 8),
                   InkWell(
                     onTap: () => _removePotentialSolution(index),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(40.0),
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       child: Icon(
@@ -1096,7 +860,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   color: Colors.grey[50],
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(40.0),
                 ),
                 child: Row(
                   children: [
@@ -1120,7 +884,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
               Container(
                 decoration: BoxDecoration(
                   color: Colors.grey[50],
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(40.0),
                   border: Border.all(color: Colors.grey[300]!),
                 ),
                 child: TextField(
@@ -1135,6 +899,11 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.all(12),
                   ),
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) {
+                    // Dismiss keyboard when Done is pressed
+                    FocusScope.of(context).unfocus();
+                  },
                   onChanged: (value) => _updateSolutionImplications(index, value),
                 ),
               ),
@@ -1164,7 +933,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
           color: isSelected ? Colors.deepOrange[50] : Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(40.0),
           border: Border.all(
             color: isSelected ? Colors.deepOrange[300]! : Colors.grey[200]!,
             width: isSelected ? 2 : 1,
@@ -1223,7 +992,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: isSelected ? Colors.white : Colors.grey[50],
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(40.0),
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1265,21 +1034,26 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
         final controller = TextEditingController();
         return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(40.0),
           ),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+          child: GestureDetector(
+            onTap: () {
+              // Dismiss keyboard when tapping outside text fields
+              FocusScope.of(context).unfocus();
+            },
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                 Row(
                   children: [
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: Colors.deepOrange[50],
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       child: Icon(
                         Icons.add_circle_outline,
@@ -1303,7 +1077,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.grey[50],
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(40.0),
                     border: Border.all(color: Colors.grey[300]!),
                   ),
                   child: TextField(
@@ -1317,6 +1091,11 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.all(16),
                     ),
+                    textInputAction: TextInputAction.done,
+                    onSubmitted: (_) {
+                      // Dismiss keyboard when Done is pressed
+                      FocusScope.of(context).unfocus();
+                    },
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -1330,7 +1109,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                           side: BorderSide(color: Colors.grey[300]!),
                           foregroundColor: Colors.grey[700],
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(40.0),
                           ),
                         ),
                         child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
@@ -1353,7 +1132,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                           foregroundColor: Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(40.0),
                           ),
                         ),
                         child: const Text('Add', style: TextStyle(fontWeight: FontWeight.w600)),
@@ -1362,6 +1141,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                   ],
                 ),
               ],
+              ),
             ),
           ),
         );
@@ -1382,21 +1162,26 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
         final controller = TextEditingController();
         return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(40.0),
           ),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+          child: GestureDetector(
+            onTap: () {
+              // Dismiss keyboard when tapping outside text fields
+              FocusScope.of(context).unfocus();
+            },
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                 Row(
                   children: [
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: Colors.orange[50],
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       child: Icon(
                         Icons.lightbulb_outline,
@@ -1420,7 +1205,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.grey[50],
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(40.0),
                     border: Border.all(color: Colors.grey[300]!),
                   ),
                   child: TextField(
@@ -1434,6 +1219,11 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.all(16),
                     ),
+                    textInputAction: TextInputAction.done,
+                    onSubmitted: (_) {
+                      // Dismiss keyboard when Done is pressed
+                      FocusScope.of(context).unfocus();
+                    },
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -1447,7 +1237,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                           side: BorderSide(color: Colors.grey[300]!),
                           foregroundColor: Colors.grey[700],
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(40.0),
                           ),
                         ),
                         child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
@@ -1476,7 +1266,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                           foregroundColor: Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(40.0),
                           ),
                         ),
                         child: const Text('Add', style: TextStyle(fontWeight: FontWeight.w600)),
@@ -1485,6 +1275,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
                   ],
                 ),
               ],
+              ),
             ),
           ),
         );
@@ -1585,7 +1376,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
         ),
         backgroundColor: Colors.red[400],
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
         margin: const EdgeInsets.all(16),
       ),
     );
@@ -1623,7 +1414,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
             ),
             backgroundColor: Colors.green[600],
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
             margin: const EdgeInsets.all(16),
           ),
         );
@@ -1642,7 +1433,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
             ),
             backgroundColor: Colors.red[400],
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
             margin: const EdgeInsets.all(16),
           ),
         );

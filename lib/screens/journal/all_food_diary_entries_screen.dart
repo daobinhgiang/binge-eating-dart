@@ -177,7 +177,7 @@ class _AllFoodDiaryEntriesScreenState extends ConsumerState<AllFoodDiaryEntriesS
             height: 40,
             decoration: BoxDecoration(
               color: const Color(0xFF4CAF50),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(40.0),
               boxShadow: [
                 BoxShadow(
                   color: const Color(0xFF4CAF50).withOpacity(0.3),
@@ -191,7 +191,7 @@ class _AllFoodDiaryEntriesScreenState extends ConsumerState<AllFoodDiaryEntriesS
               color: Colors.transparent,
               child: InkWell(
                 onTap: () => Navigator.of(context).pop(),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(40.0),
                 child: const Icon(
                   Icons.arrow_back,
                   color: Colors.white,
@@ -212,7 +212,7 @@ class _AllFoodDiaryEntriesScreenState extends ConsumerState<AllFoodDiaryEntriesS
           Container(
             decoration: BoxDecoration(
               color: const Color(0xFF4CAF50).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(40.0),
               border: Border.all(
                 color: const Color(0xFF4CAF50).withOpacity(0.3),
                 width: 1,
@@ -222,7 +222,7 @@ class _AllFoodDiaryEntriesScreenState extends ConsumerState<AllFoodDiaryEntriesS
               color: Colors.transparent,
               child: InkWell(
                 onTap: _clearFilters,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(40.0),
                 child: const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   child: Row(
@@ -275,11 +275,11 @@ class _AllFoodDiaryEntriesScreenState extends ConsumerState<AllFoodDiaryEntriesS
               hintText: 'Search food, drinks, or comments...',
               prefixIcon: const Icon(Icons.search, color: Color(0xFF4CAF50)),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(40.0),
                 borderSide: BorderSide(color: Colors.grey[300]!),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(40.0),
                 borderSide: const BorderSide(color: Color(0xFF4CAF50)),
               ),
               filled: true,
@@ -340,7 +340,7 @@ class _AllFoodDiaryEntriesScreenState extends ConsumerState<AllFoodDiaryEntriesS
     return Container(
       decoration: BoxDecoration(
         color: isActive ? const Color(0xFF4CAF50) : Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: isActive ? const Color(0xFF4CAF50) : Colors.grey[300]!,
         ),
@@ -349,7 +349,7 @@ class _AllFoodDiaryEntriesScreenState extends ConsumerState<AllFoodDiaryEntriesS
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(40.0),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: Text(
@@ -440,7 +440,7 @@ class _AllFoodDiaryEntriesScreenState extends ConsumerState<AllFoodDiaryEntriesS
           margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(40.0),
             border: Border.all(color: Colors.grey[300]!),
             boxShadow: [
               BoxShadow(
@@ -455,7 +455,7 @@ class _AllFoodDiaryEntriesScreenState extends ConsumerState<AllFoodDiaryEntriesS
             color: Colors.transparent,
             child: InkWell(
               onTap: () => _showEntryDetails(context, entry),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(40.0),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -468,7 +468,7 @@ class _AllFoodDiaryEntriesScreenState extends ConsumerState<AllFoodDiaryEntriesS
                           height: 32,
                           decoration: BoxDecoration(
                             color: const Color(0xFF4CAF50).withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(40.0),
                           ),
                           child: const Icon(
                             Icons.restaurant,
@@ -505,7 +505,7 @@ class _AllFoodDiaryEntriesScreenState extends ConsumerState<AllFoodDiaryEntriesS
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: entry.isBinge ? Colors.red[50] : Colors.green[50],
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(40.0),
                           ),
                           child: Text(
                             entry.isBinge ? 'Binge' : 'Normal',
@@ -535,7 +535,7 @@ class _AllFoodDiaryEntriesScreenState extends ConsumerState<AllFoodDiaryEntriesS
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                           color: Colors.orange[50],
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(40.0),
                         ),
                         child: Text(
                           'Purge: ${entry.purgeMethodDisplay}',

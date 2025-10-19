@@ -24,15 +24,21 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(context),
-            Expanded(child: _buildContent(context)),
-            _buildFooter(context),
-          ],
+    return GestureDetector(
+      onTap: () {
+        // Dismiss keyboard when tapping outside
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildHeader(context),
+              Expanded(child: _buildContent(context)),
+              _buildFooter(context),
+            ],
+          ),
         ),
       ),
     );
@@ -66,14 +72,25 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
           ),
           const SizedBox(width: 16),
           Expanded(
-            child: Text(
-              'Weight Diary',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.center,
+              child: Text(
+                'Weight Diary',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+                textAlign: TextAlign.center,
               ),
             ),
+          ),
+          const SizedBox(width: 16),
+          // Invisible spacer to balance the back button on the left
+          SizedBox(
+            width: 20, // Match the icon size
+            height: 20,
           ),
         ],
       ),
@@ -87,7 +104,7 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(40.0),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.1),
@@ -126,13 +143,15 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
                   child: TextField(
                     controller: _weightController,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    textInputAction: TextInputAction.done,
+                    onSubmitted: (_) => _submit(),
                     decoration: InputDecoration(
                       labelText: 'Weight',
                       hintText: 'e.g., 68.5',
                       filled: true,
                       fillColor: Colors.grey[50],
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40.0),
                         borderSide: BorderSide(color: Colors.grey[200]!, width: 1),
                       ),
                     ),
@@ -152,7 +171,7 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
                       filled: true,
                       fillColor: Colors.grey[50],
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40.0),
                         borderSide: BorderSide(color: Colors.grey[200]!, width: 1),
                       ),
                     ),
@@ -183,7 +202,7 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: Colors.orange[50],
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(40.0),
               ),
               child: Icon(
                 Icons.timeline,
@@ -209,7 +228,7 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(40.0),
             border: Border.all(color: Colors.grey[200]!),
             boxShadow: [
               BoxShadow(
@@ -296,7 +315,7 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                           color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(40.0),
                         ),
                         child: Text(
                           _formatTick(from),
@@ -311,7 +330,7 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                           color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(40.0),
                         ),
                         child: Text(
                           _formatTick(now),
@@ -423,7 +442,7 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
             padding: const EdgeInsets.symmetric(vertical: 16),
             backgroundColor: Theme.of(context).primaryColor,
             foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
             elevation: 0,
           ),
           child: _isSubmitting
@@ -565,8 +584,8 @@ class _WeightChartPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     final paddingLeft = 50.0; // Increased for Y-axis labels
-    final paddingRight = 12.0;
-    final paddingTop = 12.0;
+    final paddingRight = 40.0;
+    final paddingTop = 40.0;
     final paddingBottom = 20.0;
 
     final chartWidth = size.width - paddingLeft - paddingRight;

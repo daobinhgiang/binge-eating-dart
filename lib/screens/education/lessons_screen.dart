@@ -115,8 +115,20 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
   }
 
   void _checkAndShowTutorial() async {
+    if (!mounted || _hasShownTutorial) return;
+    
+    // Wait a bit longer to ensure state has propagated from main_navigation
+    await Future.delayed(const Duration(milliseconds: 100));
+    
+    if (!mounted) return;
+    
     final user = ref.read(authNotifierProvider).value;
-    if (user == null || !mounted || _hasShownTutorial) return;
+    if (user == null) {
+      print('❌ Tutorial check: User is null');
+      return;
+    }
+
+    print('✅ Tutorial check: hasSeenAppTutorial=${user.hasSeenAppTutorial}, hasCompletedFirstLesson=${user.hasCompletedFirstLesson}');
 
     // Show first lesson tutorial ONLY if:
     // 1. User HAS seen the app tutorial (meaning they clicked on the education tab)
@@ -124,19 +136,25 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
     if (user.hasSeenAppTutorial && !user.hasCompletedFirstLesson) {
       _hasShownTutorial = true;
       
-      // Wait a bit for the layout to settle
-      await Future.delayed(const Duration(milliseconds: 800));
+      print('🎯 Showing first lesson tutorial...');
+      
+      // Wait a bit more for the layout to settle and stages to load
+      await Future.delayed(const Duration(milliseconds: 100));
       
       if (!mounted) return;
+      
+      print('🎓 Calling AppTutorialService.showFirstLessonTutorial()');
       
       AppTutorialService().showFirstLessonTutorial(
         context: context,
         firstLessonKey: _firstLessonKey,
         onFinish: () {
+          print('✅ First lesson tutorial finished');
           // Tutorial completed - no need to update status here
           // The hasSeenAppTutorial is already true from the education tab tutorial
         },
         onLessonClick: () {
+          print('👆 First lesson clicked from tutorial');
           // Navigate to the first lesson when user clicks the highlighted lesson card
           final firstLesson = _stages.isNotEmpty && 
                              _stages.first.chapters.isNotEmpty && 
@@ -148,6 +166,8 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
           }
         },
       );
+    } else {
+      print('⏭️  Skipping tutorial: hasSeenAppTutorial=${user.hasSeenAppTutorial}, hasCompletedFirstLesson=${user.hasCompletedFirstLesson}');
     }
   }
 
@@ -164,8 +184,8 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
   }
 
   void _updateCurrentSection() {
-    // Calculate the threshold position (Learning Path header + Sticky header)
-    const double headerHeight = 56.0 + 88.0; // AppBar + Sticky header height (updated for larger content)
+    // Calculate the threshold position (Sticky header)
+    const double headerHeight = 129.0; // Sticky header height (enlarged by 1.5x)
     
     for (var stage in _stages) {
       for (var chapter in stage.chapters) {
@@ -415,36 +435,16 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              const Color(0xFF66BB6A).withOpacity(0.1),
-              Colors.white,
-              Colors.white,
-            ],
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/background.png'),
+            fit: BoxFit.cover,
           ),
         ),
         child: SafeArea(
           child: CustomScrollView(
             controller: _scrollController,
             slivers: [
-              SliverAppBar(
-                pinned: true,
-                backgroundColor: const Color(0xFFF5F5F5),
-                elevation: 2,
-                automaticallyImplyLeading: false,
-                title: const Text(
-                  'Learning Path',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                    color: Colors.black87,
-                  ),
-                ),
-                centerTitle: true,
-              ),
               // Sticky header showing current stage and chapter
               if (_currentStage != null && _currentChapter != null)
                 SliverPersistentHeader(
@@ -462,7 +462,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
                 ),
               ),
               // Add some bottom padding
-              const SliverToBoxAdapter(
+              const               SliverToBoxAdapter(
                 child: SizedBox(height: 50),
               ),
             ],
@@ -476,70 +476,67 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
   // Build sticky header for current section with chapter tile only
   Widget _buildStickyHeader(Stage stage, Chapter chapter) {
     return Container(
-      color: const Color(0xFFF5F5F5),
+      color: Colors.transparent,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: _getStageColor(stage.stageNumber),
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: _getStageColor(stage.stageNumber).withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'STAGE ${stage.stageNumber}, CHAPTER ${chapter.chapterNumber}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.8,
-                          ),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+            decoration: BoxDecoration(
+              color: _getStageColor(stage.stageNumber),
+              borderRadius: BorderRadius.circular(18.0),
+              boxShadow: [
+                BoxShadow(
+                  color: _getStageColor(stage.stageNumber).withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'STAGE ${stage.stageNumber}, CHAPTER ${chapter.chapterNumber}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          chapter.title,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        chapter.title,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 21,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
-                    ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
-                  Icon(
-                    Icons.menu_book,
-                    color: Colors.white.withOpacity(0.8),
-                    size: 20,
-                  ),
-                ],
-              ),
+                ),
+                Icon(
+                  Icons.menu_book,
+                  color: Colors.white.withOpacity(0.8),
+                  size: 30,
+                ),
+              ],
             ),
           ),
-          // Divider line below sticky header
-          Container(
-            height: 2,
-            color: Colors.grey.shade300,
-          ),
-        ],
+        ),
+        // Divider line below sticky header (hidden)
+        const SizedBox(height: 0),
+      ],
       ),
     );
   }
@@ -569,11 +566,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
               // Add spacing before divider (except for first chapter)
               if (i > 0 || stage.stageNumber > 1)
                 const SizedBox(height: 100),
-              // Section divider line to mark the start of each section
-              Container(
-                height: 2,
-                color: Colors.grey.shade300,
-              ),
+              // Section divider line to mark the start of each section (hidden)
               const SizedBox(height: 100),
               // Add lessons in the chapter with Duolingo-style layout
               _buildChapterLessons(chapter, stage, lessonIndex),
@@ -624,6 +617,8 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
                       isLocked: isLocked,
                       position: position,
                       stageColor: _getStageColor(stage.stageNumber),
+                      // Attach the first lesson key for tutorial highlighting
+                      lessonKey: lesson.id == 'lesson_1_1' ? _firstLessonKey : null,
                     ),
                     if (index < chapter.lessons.length - 1)
                       _buildConnectingPath(position, _getLessonPosition(index + 1)),
@@ -639,10 +634,12 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
     );
   }
 
-  // Get lesson position in the path (-1 = left, 0 = center, 1 = right)
-  int _getLessonPosition(int index) {
-    // Create a winding path like Duolingo
-    final pattern = [0, -1, 0, 1, 0, -1, 1, 0, -1, 0, 1, 0];
+  // Get lesson position in the path (uses fractional values for ultra-smooth S-curve)
+  // Returns position as fraction: -1.0 = most left, 0 = center, 1.0 = most right
+  double _getLessonPosition(int index) {
+    // Create an ultra-smooth S-curve pattern with gradual transitions
+    // This creates a flowing wave that moves smoothly through multiple positions
+    final pattern = [0.0, -0.66, -1.0, -0.66, 0.0, 0.66, 1.0, 0.66];
     return pattern[index % pattern.length];
   }
 
@@ -652,7 +649,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
     required int lessonNumber,
     required bool isCompleted,
     required bool isLocked,
-    required int position,
+    required double position,
     required Color stageColor,
     GlobalKey? lessonKey,
   }) {
@@ -662,22 +659,58 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
             ? Colors.grey.shade400
             : Colors.grey.shade500; // Grey for uncompleted lessons
 
-    // Calculate alignment based on position
-    Alignment alignment;
-    if (position < 0) {
-      alignment = Alignment.centerLeft;
-    } else if (position > 0) {
-      alignment = Alignment.centerRight;
-    } else {
-      alignment = Alignment.center;
-    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenWidth = constraints.maxWidth;
+        final buttonRadius = 35.0; // Half of button width (70/2)
+        
+        // Calculate positions based on fractional position value
+        // position = -1.0 (most left): 55 from left edge
+        // position = 0.0 (center): width/2
+        // position = 1.0 (most right): width - 55 from left edge
+        
+        final mostLeftPos = 55.0;
+        final mostRightPos = screenWidth - 55.0;
+        final centerPos = screenWidth / 2;
+        
+        // Calculate the actual X position by interpolating based on the position value
+        double targetXPos;
+        if (position < 0) {
+          // Interpolate between most left and center
+          targetXPos = centerPos + (position * (centerPos - mostLeftPos));
+        } else {
+          // Interpolate between center and most right
+          targetXPos = centerPos + (position * (mostRightPos - centerPos));
+        }
+        
+        // Calculate padding based on position
+        double leftPadding = 0;
+        double rightPadding = 0;
+        Alignment alignment;
+        
+        if (position < -0.01) {
+          // Left side
+          leftPadding = targetXPos - buttonRadius;
+          rightPadding = 0;
+          alignment = Alignment.centerLeft;
+        } else if (position > 0.01) {
+          // Right side
+          leftPadding = 0;
+          rightPadding = screenWidth - targetXPos - buttonRadius;
+          alignment = Alignment.centerRight;
+        } else {
+          // Center
+          leftPadding = 0;
+          rightPadding = 0;
+          alignment = Alignment.center;
+        }
 
     return Align(
       alignment: alignment,
       child: Padding(
         padding: EdgeInsets.only(
-          left: position == -1 ? 40 : position == 0 ? 0 : 0,
-          right: position == 1 ? 40 : position == 0 ? 0 : 0,
+          left: leftPadding,
+          right: rightPadding,
         ),
         child: GestureDetector(
           key: lessonKey,
@@ -726,16 +759,18 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
         ),
       ),
     );
+      },
+    );
   }
 
   // Build connecting path between lessons
-  Widget _buildConnectingPath(int fromPosition, int toPosition) {
+  Widget _buildConnectingPath(double fromPosition, double toPosition) {
     return CustomPaint(
-      size: const Size(double.infinity, 40),
+      size: const Size(double.infinity, 50),
       painter: PathPainter(
         fromPosition: fromPosition,
         toPosition: toPosition,
-        color: const Color(0xFF66BB6A).withOpacity(0.3),
+        color: Colors.transparent, // Make lines invisible
       ),
     );
   }
@@ -776,10 +811,10 @@ class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
   _StickyHeaderDelegate({required this.child});
 
   @override
-  double get minExtent => 88.0; // Increased height for larger padding and font sizes + divider
+  double get minExtent => 129.0; // Enlarged by 1.5x for larger padding and font sizes
 
   @override
-  double get maxExtent => 88.0; // Increased height for larger padding and font sizes + divider
+  double get maxExtent => 129.0; // Enlarged by 1.5x for larger padding and font sizes
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
@@ -794,8 +829,8 @@ class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
 
 // Custom painter for drawing paths between lesson buttons
 class PathPainter extends CustomPainter {
-  final int fromPosition;
-  final int toPosition;
+  final double fromPosition;
+  final double toPosition;
   final Color color;
 
   PathPainter({
@@ -808,42 +843,50 @@ class PathPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = color
-      ..strokeWidth = 4
+      ..strokeWidth = 5
       ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
 
     final path = Path();
 
-    // Calculate start and end positions
+    // Calculate positions using same interpolation logic as button positioning
+    final mostLeftPos = 55.0;
+    final mostRightPos = size.width - 55.0;
+    final centerPos = size.width / 2;
+
+    // Calculate start X position by interpolating based on fromPosition value
     double startX;
+    if (fromPosition < 0) {
+      // Interpolate between most left and center
+      startX = centerPos + (fromPosition * (centerPos - mostLeftPos));
+    } else {
+      // Interpolate between center and most right
+      startX = centerPos + (fromPosition * (mostRightPos - centerPos));
+    }
+
+    // Calculate end X position by interpolating based on toPosition value
     double endX;
-
-    if (fromPosition == -1) {
-      startX = 75; // Left position (40 padding + 35 half of button)
-    } else if (fromPosition == 0) {
-      startX = size.width / 2;
+    if (toPosition < 0) {
+      // Interpolate between most left and center
+      endX = centerPos + (toPosition * (centerPos - mostLeftPos));
     } else {
-      startX = size.width - 75; // Right position
+      // Interpolate between center and most right
+      endX = centerPos + (toPosition * (mostRightPos - centerPos));
     }
 
-    if (toPosition == -1) {
-      endX = 75;
-    } else if (toPosition == 0) {
-      endX = size.width / 2;
-    } else {
-      endX = size.width - 75;
-    }
-
-    // Draw curved path
+    // Draw smooth S-curve path like Duolingo
     path.moveTo(startX, 0);
     
-    // Add curve for smoother transition
-    final controlPoint1Y = size.height * 0.33;
-    final controlPoint2Y = size.height * 0.67;
+    // Create smooth bezier curve that flows naturally
+    // Use dynamic control points based on the distance between start and end
+    final midX = (startX + endX) / 2;
+    final controlPoint1X = startX + (midX - startX) * 0.5;
+    final controlPoint2X = endX - (endX - midX) * 0.5;
     
     path.cubicTo(
-      startX, controlPoint1Y,
-      endX, controlPoint2Y,
+      controlPoint1X, size.height * 0.25,
+      controlPoint2X, size.height * 0.75,
       endX, size.height,
     );
 

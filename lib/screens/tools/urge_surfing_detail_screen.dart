@@ -13,24 +13,65 @@ class UrgeSurfingDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Activity List Details'),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        elevation: 0,
-        actions: [
-          IconButton(
-            onPressed: () => _navigateToActivities(context),
-            icon: const Icon(Icons.list),
-            tooltip: 'Manage Activities',
+      backgroundColor: Colors.grey[50],
+      body: SafeArea(
+      child: Column(
+        children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.fromLTRB(16, 12, 8, 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  spreadRadius: 0,
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 4),
+                  child: IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.arrow_back, color: Colors.black87),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ),
+                Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Activity List Details',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  onPressed: () => _navigateToActivities(context),
+                  icon: const Icon(Icons.list),
+                  tooltip: 'Manage Activities',
+                ),
+                IconButton(
+                  onPressed: () => _deleteExercise(context, ref),
+                  icon: const Icon(Icons.delete_outline),
+                  color: Colors.red[600],
+                ),
+              ],
+            ),
           ),
-          IconButton(
-            onPressed: () => _deleteExercise(context, ref),
-            icon: const Icon(Icons.delete_outline),
-            color: Colors.red[600],
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
+          Expanded(
+            child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,7 +91,7 @@ class UrgeSurfingDetailScreen extends ConsumerWidget {
                           height: 56,
                           decoration: BoxDecoration(
                             color: Colors.teal[600],
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(40.0),
                           ),
                           child: const Icon(
                             Icons.waves,
@@ -83,7 +124,7 @@ class UrgeSurfingDetailScreen extends ConsumerWidget {
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
                               color: Colors.green[50],
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(40.0),
                               border: Border.all(color: Colors.green[200]!),
                             ),
                             child: Text(
@@ -158,6 +199,10 @@ class UrgeSurfingDetailScreen extends ConsumerWidget {
           ],
         ),
       ),
+          ),
+        ],
+      ),
+      ),
     );
   }
 
@@ -169,7 +214,7 @@ class UrgeSurfingDetailScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isIdeal ? Colors.green[50] : Colors.teal[50],
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: isIdeal ? Colors.green[300]! : Colors.teal[200]!,
           width: isIdeal ? 2 : 1,
@@ -213,7 +258,7 @@ class UrgeSurfingDetailScreen extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: _getCriteriaColor(criteriaCount).withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(40.0),
                 ),
                 child: Text(
                   '$criteriaCount/3',
@@ -230,52 +275,17 @@ class UrgeSurfingDetailScreen extends ConsumerWidget {
             const SizedBox(height: 8),
             Text(
               activity.description,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.grey[700],
+                height: 1.4,
+              ),
             ),
           ],
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              _buildCriteriaChip('Active', activity.isActive),
-              const SizedBox(width: 8),
-              _buildCriteriaChip('Enjoyable', activity.isEnjoyable),
-              const SizedBox(width: 8),
-              _buildCriteriaChip('Realistic', activity.isRealistic),
-            ],
-          ),
         ],
       ),
     );
   }
 
-  Widget _buildCriteriaChip(String label, bool isMet) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: isMet ? Colors.green[100] : Colors.grey[200],
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            isMet ? Icons.check : Icons.close,
-            size: 12,
-            color: isMet ? Colors.green[700] : Colors.grey[600],
-          ),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: isMet ? Colors.green[700] : Colors.grey[600],
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Color _getCriteriaColor(int count) {
     switch (count) {
@@ -305,7 +315,7 @@ class UrgeSurfingDetailScreen extends ConsumerWidget {
                   height: 40,
                   decoration: BoxDecoration(
                     color: Colors.blue[600],
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                   child: const Icon(
                     Icons.info,
@@ -371,7 +381,7 @@ class UrgeSurfingDetailScreen extends ConsumerWidget {
           height: 32,
           decoration: BoxDecoration(
             color: color[100],
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(40.0),
           ),
           child: Icon(
             icon,
@@ -418,7 +428,7 @@ class UrgeSurfingDetailScreen extends ConsumerWidget {
                   height: 40,
                   decoration: BoxDecoration(
                     color: color[600],
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                   child: Icon(
                     icon,
@@ -451,7 +461,7 @@ class UrgeSurfingDetailScreen extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(40.0),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

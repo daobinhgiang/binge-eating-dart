@@ -241,7 +241,10 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
       appBar: AppBar(
         backgroundColor: const Color(0xFF2C2C2E),
         foregroundColor: Colors.white,
-        title: const Text('Review Assessment'),
+        title: const Text(
+          'Review Assessment',
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
         actions: [
           IconButton(
@@ -281,7 +284,7 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(12.0),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(24),
@@ -329,7 +332,7 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
                                       _selectedOption = index;
                                     });
                                   },
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(12.0),
                                   child: Container(
                                     padding: const EdgeInsets.all(16),
                                     decoration: BoxDecoration(
@@ -339,7 +342,7 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
                                             : Colors.grey[300]!,
                                         width: isSelected ? 2 : 1,
                                       ),
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: BorderRadius.circular(12.0),
                                       color: isSelected 
                                           ? const Color(0xFF007AFF).withOpacity(0.1)
                                           : Colors.white,
@@ -391,7 +394,7 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
                                 style: OutlinedButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(vertical: 16),
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(12.0),
                                   ),
                                 ),
                                 child: const Text('Previous'),
@@ -408,7 +411,7 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
                                 foregroundColor: Colors.white,
                                 padding: const EdgeInsets.symmetric(vertical: 16),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(12.0),
                                 ),
                                 elevation: 0,
                               ),

@@ -34,14 +34,13 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildNavigationBar(context),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
-                child: allExercises.when(
+      body: Column(
+        children: [
+          _buildNavigationBar(context),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+              child: allExercises.when(
                   data: (exercises) {
                     if (exercises.isEmpty) {
                       return _buildEmptyState(context);
@@ -57,10 +56,6 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Header
-                        _buildHeaderCard(context),
-
-                        const SizedBox(height: 24),
 
                         // Today's/Latest Exercise section
                         Text(
@@ -87,7 +82,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
                             Container(
                               decoration: BoxDecoration(
                                 color: Colors.deepOrange.withOpacity(0.08),
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius: BorderRadius.circular(40.0),
                                 border: Border.all(
                                   color: Colors.deepOrange.withOpacity(0.3),
                                   width: 1,
@@ -97,7 +92,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
                                 color: Colors.transparent,
                                 child: InkWell(
                                   onTap: () => _navigateToAllExercises(context, user.id),
-                                  borderRadius: BorderRadius.circular(20),
+                                  borderRadius: BorderRadius.circular(40.0),
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                     child: Row(
@@ -154,12 +149,11 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
-                  ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _navigateToProblemSolvingSurvey(context),
@@ -191,66 +185,36 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-          child: Column(
+          padding: const EdgeInsets.fromLTRB(16, 12, 8, 20),
+          child: Row(
             children: [
-              Row(
-                children: [
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Problem Solving',
-                style: GoogleFonts.fredoka(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
+              Padding(
+                padding: const EdgeInsets.only(left: 4),
+                child: IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
                 ),
-                textAlign: TextAlign.center,
               ),
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    'Problem Solving',
+                    style: GoogleFonts.fredoka(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 48), // Balance the back button width
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildHeaderCard(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.deepOrange[50],
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.deepOrange[100]!,
-          width: 2,
-        ),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.psychology,
-            color: Colors.deepOrange[600],
-            size: 48,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Tackle challenges with a clear, structured plan',
-            style: GoogleFonts.fredoka(
-              fontSize: 16,
-              color: Colors.deepOrange[700],
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
       ),
     );
   }
@@ -280,14 +244,14 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
       height: 200,
       decoration: BoxDecoration(
         color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.grey[300]!),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _navigateToProblemSolvingSurvey(context),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(40.0),
           child: const Center(
             child: Icon(
               Icons.add,
@@ -305,7 +269,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
       height: 200,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.grey[300]!),
         boxShadow: [
           BoxShadow(
@@ -320,7 +284,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _navigateToExerciseDetail(context, exercise),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(40.0),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -333,7 +297,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
                       height: 32,
                       decoration: BoxDecoration(
                         color: Colors.deepOrange.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       child: const Icon(
                         Icons.psychology,
@@ -346,7 +310,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: exercise.isComplete ? Colors.green[50] : Colors.orange[50],
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       child: Text(
                         exercise.isComplete ? 'Complete' : 'In Progress',
@@ -390,7 +354,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
       height: 120,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.grey[300]!),
         boxShadow: [
           BoxShadow(
@@ -405,7 +369,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _navigateToExerciseDetail(context, exercise),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(40.0),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -418,7 +382,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
                       height: 24,
                       decoration: BoxDecoration(
                         color: Colors.deepOrange.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       child: const Icon(
                         Icons.psychology,
@@ -431,7 +395,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                       decoration: BoxDecoration(
                         color: exercise.isComplete ? Colors.green[50] : Colors.orange[50],
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       child: Text(
                         exercise.isComplete ? 'Complete' : 'In Progress',
@@ -494,7 +458,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
               duration: const Duration(milliseconds: 200),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.95),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(40.0),
                 border: Border.all(
                   color: Colors.deepOrange.withOpacity(0.2),
                   width: 1,
@@ -521,7 +485,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(40.0),
                   onTap: () => _navigateToExerciseDetail(context, exercise),
                   child: Container(
                     padding: const EdgeInsets.all(16),
@@ -532,7 +496,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color: Colors.deepOrange.withOpacity(0.08),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(40.0),
                             border: Border.all(
                               color: Colors.deepOrange.withOpacity(0.2),
                               width: 1,
@@ -589,7 +553,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: Colors.deepOrange.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(40.0),
                             border: Border.all(
                               color: Colors.deepOrange.withOpacity(0.3),
                               width: 1,
@@ -669,7 +633,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
                         height: 56,
                         decoration: BoxDecoration(
                           color: Colors.deepOrange[600],
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(40.0),
                         ),
                         child: const Icon(
                           Icons.psychology,
@@ -702,7 +666,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
                             color: Colors.green[50],
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(40.0),
                             border: Border.all(color: Colors.green[200]!),
                           ),
                           child: Text(
@@ -768,7 +732,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.orange[50],
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(40.0),
                     border: Border.all(color: Colors.orange[200]!),
                   ),
                   child: Row(
@@ -779,7 +743,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
                         height: 24,
                         decoration: BoxDecoration(
                           color: Colors.orange[600],
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(40.0),
                         ),
                         child: Center(
                           child: Text(
@@ -826,7 +790,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: isChosen ? Colors.green[50] : Colors.blue[50],
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(40.0),
                     border: Border.all(
                       color: isChosen ? Colors.green[300]! : Colors.blue[200]!,
                       width: isChosen ? 2 : 1,
@@ -871,7 +835,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
                                 color: Colors.green[100],
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(40.0),
                               ),
                               child: Text(
                                 'Chosen',
@@ -890,7 +854,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(40.0),
                             border: Border.all(color: Colors.grey[300]!),
                           ),
                           child: Column(
@@ -944,7 +908,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: Colors.green[50],
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(40.0),
                       border: Border.all(color: Colors.green[200]!),
                     ),
                     child: Row(
@@ -987,7 +951,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
                   height: 40,
                   decoration: BoxDecoration(
                     color: color[600],
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                   child: Icon(
                     icon,
@@ -1020,7 +984,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(40.0),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

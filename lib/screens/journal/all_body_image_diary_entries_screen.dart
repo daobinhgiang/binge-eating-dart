@@ -167,7 +167,7 @@ class _AllBodyImageDiaryEntriesScreenState extends ConsumerState<AllBodyImageDia
             height: 40,
             decoration: BoxDecoration(
               color: Colors.teal[600],
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(40.0),
               boxShadow: [
                 BoxShadow(
                   color: Colors.teal[600]!.withOpacity(0.3),
@@ -181,7 +181,7 @@ class _AllBodyImageDiaryEntriesScreenState extends ConsumerState<AllBodyImageDia
               color: Colors.transparent,
               child: InkWell(
                 onTap: () => Navigator.of(context).pop(),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(40.0),
                 child: const Icon(
                   Icons.arrow_back,
                   color: Colors.white,
@@ -202,7 +202,7 @@ class _AllBodyImageDiaryEntriesScreenState extends ConsumerState<AllBodyImageDia
           Container(
             decoration: BoxDecoration(
               color: Colors.teal[50],
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(40.0),
               border: Border.all(
                 color: Colors.teal[200]!,
                 width: 1,
@@ -212,7 +212,7 @@ class _AllBodyImageDiaryEntriesScreenState extends ConsumerState<AllBodyImageDia
               color: Colors.transparent,
               child: InkWell(
                 onTap: _clearFilters,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(40.0),
                 child: const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   child: Row(
@@ -265,11 +265,11 @@ class _AllBodyImageDiaryEntriesScreenState extends ConsumerState<AllBodyImageDia
               hintText: 'Search context and feelings...',
               prefixIcon: Icon(Icons.search, color: Colors.teal[600]),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(40.0),
                 borderSide: BorderSide(color: Colors.grey[300]!),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(40.0),
                 borderSide: BorderSide(color: Colors.teal[600]!),
               ),
               filled: true,
@@ -324,7 +324,7 @@ class _AllBodyImageDiaryEntriesScreenState extends ConsumerState<AllBodyImageDia
     return Container(
       decoration: BoxDecoration(
         color: isActive ? Colors.teal[600] : Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: isActive ? Colors.teal[600]! : Colors.grey[300]!,
         ),
@@ -333,7 +333,7 @@ class _AllBodyImageDiaryEntriesScreenState extends ConsumerState<AllBodyImageDia
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(40.0),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: Text(
@@ -424,7 +424,7 @@ class _AllBodyImageDiaryEntriesScreenState extends ConsumerState<AllBodyImageDia
           margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(40.0),
             border: Border.all(color: Colors.grey[300]!),
             boxShadow: [
               BoxShadow(
@@ -439,7 +439,7 @@ class _AllBodyImageDiaryEntriesScreenState extends ConsumerState<AllBodyImageDia
             color: Colors.transparent,
             child: InkWell(
               onTap: () => _showEntryDetails(context, entry),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(40.0),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -452,7 +452,7 @@ class _AllBodyImageDiaryEntriesScreenState extends ConsumerState<AllBodyImageDia
                           height: 32,
                           decoration: BoxDecoration(
                             color: Colors.teal[600]!.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(40.0),
                           ),
                           child: const Icon(
                             Icons.visibility,
@@ -489,7 +489,7 @@ class _AllBodyImageDiaryEntriesScreenState extends ConsumerState<AllBodyImageDia
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: Colors.teal[50],
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(40.0),
                           ),
                           child: Text(
                             'Body Check',

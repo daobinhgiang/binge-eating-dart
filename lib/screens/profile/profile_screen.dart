@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/exp_provider.dart';
-import '../../widgets/profile_background.dart';
 import '../../widgets/level_badge.dart';
 import '../../core/services/exp_service.dart';
 
@@ -15,47 +14,53 @@ class ProfileScreen extends ConsumerWidget {
     final authState = ref.watch(authNotifierProvider);
 
     return Scaffold(
-      body: SafeArea(
-        child: ProfileBackground(
-          child: authState.when(
-          data: (user) {
-            if (user == null) {
-              return _buildLoginPrompt(context);
-            }
-
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
-                  
-                  // Beautiful profile header with level and EXP integrated - Duolingo style
-                  _buildProfileHeader(context, user),
-                  
-                  const SizedBox(height: 24),
-                  
-                  // Profile options with modern design
-                  _buildProfileOptions(context),
-                  
-                  const SizedBox(height: 32),
-                  
-                  // Logout section
-                  _buildLogoutSection(context, ref),
-                  
-                  const SizedBox(height: 16),
-                  
-                  // Delete account section
-                  _buildDeleteAccountSection(context, ref),
-                  
-                  const SizedBox(height: 20),
-                ],
-              ),
-            );
-          },
-          loading: () => _buildLoadingState(context),
-          error: (error, stackTrace) => _buildErrorState(context, error),
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/background.png'),
+            fit: BoxFit.cover,
+          ),
         ),
-      ),
+        child: SafeArea(
+          child: authState.when(
+            data: (user) {
+              if (user == null) {
+                return _buildLoginPrompt(context);
+              }
+
+              return SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    
+                    // Beautiful profile header with level and EXP integrated - Duolingo style
+                    _buildProfileHeader(context, user),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Profile options with modern design
+                    _buildProfileOptions(context),
+                    
+                    const SizedBox(height: 32),
+                    
+                    // Logout section
+                    _buildLogoutSection(context, ref),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Delete account section
+                    _buildDeleteAccountSection(context, ref),
+                    
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              );
+            },
+            loading: () => _buildLoadingState(context),
+            error: (error, stackTrace) => _buildErrorState(context, error),
+          ),
+        ),
       ),
     );
   }
@@ -116,7 +121,7 @@ class ProfileScreen extends ConsumerWidget {
                 gradient: const LinearGradient(
                   colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(12.0),
                 boxShadow: [
                   BoxShadow(
                     color: const Color(0xFF4CAF50).withOpacity(0.3),
@@ -131,7 +136,7 @@ class ProfileScreen extends ConsumerWidget {
                   backgroundColor: Colors.transparent,
                   shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
@@ -169,7 +174,7 @@ class ProfileScreen extends ConsumerWidget {
             Color(0xFF43A047),
           ],
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(12.0),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFF4CAF50).withOpacity(0.3),
@@ -267,7 +272,7 @@ class ProfileScreen extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -339,7 +344,7 @@ class ProfileScreen extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -365,7 +370,7 @@ class ProfileScreen extends ConsumerWidget {
                 return Column(
                   children: [
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12.0),
                       child: LinearProgressIndicator(
                         value: progress,
                         minHeight: 8,
@@ -412,17 +417,6 @@ class ProfileScreen extends ConsumerWidget {
   Widget _buildProfileOptions(BuildContext context) {
     final options = [
       _ProfileOption(
-        icon: Icons.person_outline,
-        title: 'Edit Profile',
-        subtitle: 'Update your personal information',
-        color: const Color(0xFF4CAF50),
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Edit profile coming soon!')),
-          );
-        },
-      ),
-      _ProfileOption(
         icon: Icons.schedule,
         title: 'Regular Eating',
         subtitle: 'Set meal times and intervals',
@@ -450,35 +444,6 @@ class ProfileScreen extends ConsumerWidget {
         color: const Color(0xFF9C27B0),
         onTap: () => context.go('/onboarding/review'),
       ),
-      _ProfileOption(
-        icon: Icons.settings_outlined,
-        title: 'Settings',
-        subtitle: 'App preferences and configuration',
-        color: const Color(0xFF607D8B),
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Settings coming soon!')),
-          );
-        },
-      ),
-      _ProfileOption(
-        icon: Icons.help_outline,
-        title: 'Help & Support',
-        subtitle: 'Get help and contact support',
-        color: const Color(0xFF795548),
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Help & support coming soon!')),
-          );
-        },
-      ),
-      _ProfileOption(
-        icon: Icons.info_outline,
-        title: 'About',
-        subtitle: 'App information and version',
-        color: const Color(0xFF3F51B5),
-        onTap: () => _showAboutDialog(context),
-      ),
     ];
 
     return Column(
@@ -491,7 +456,7 @@ class ProfileScreen extends ConsumerWidget {
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12.0),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -504,7 +469,7 @@ class ProfileScreen extends ConsumerWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: option.onTap,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12.0),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Row(
@@ -518,7 +483,7 @@ class ProfileScreen extends ConsumerWidget {
                         option.color.withOpacity(0.05),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.0),
                     border: Border.all(
                       color: option.color.withOpacity(0.2),
                       width: 1,
@@ -579,7 +544,7 @@ class ProfileScreen extends ConsumerWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12.0),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -592,7 +557,7 @@ class ProfileScreen extends ConsumerWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _showLogoutDialog(context, ref),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12.0),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Row(
@@ -601,7 +566,7 @@ class ProfileScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.red.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.0),
                     border: Border.all(
                       color: Colors.red.withOpacity(0.2),
                       width: 1,
@@ -745,38 +710,12 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  void _showAboutDialog(BuildContext context) {
-    showAboutDialog(
-      context: context,
-      applicationName: 'BED Support App',
-      applicationVersion: '1.0.0',
-      applicationIcon: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
-          ),
-          shape: BoxShape.circle,
-        ),
-        child: const Icon(
-          Icons.favorite,
-          size: 32,
-          color: Colors.white,
-        ),
-      ),
-      children: [
-        const Text(
-          'A supportive app designed to help individuals with Binge Eating Disorder through education, resources, and tools for recovery.',
-        ),
-      ],
-    );
-  }
 
   Widget _buildDeleteAccountSection(BuildContext context, WidgetRef ref) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12.0),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -789,7 +728,7 @@ class ProfileScreen extends ConsumerWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _showDeleteAccountDialog(context, ref),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12.0),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Row(
@@ -798,7 +737,7 @@ class ProfileScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.red.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.0),
                     border: Border.all(
                       color: Colors.red.withOpacity(0.2),
                       width: 1,
@@ -860,7 +799,7 @@ class ProfileScreen extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12.0),
         ),
         title: Row(
           children: [
@@ -903,7 +842,7 @@ class ProfileScreen extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12.0),
         ),
         title: Row(
           children: [
@@ -942,7 +881,7 @@ class ProfileScreen extends ConsumerWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.red.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12.0),
                 border: Border.all(
                   color: Colors.red.withOpacity(0.3),
                   width: 1,
@@ -1000,7 +939,7 @@ class ProfileScreen extends ConsumerWidget {
         barrierDismissible: false,
         builder: (context) => AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12.0),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -1067,3 +1006,4 @@ class _ProfileOption {
     required this.onTap,
   });
 }
+

@@ -7,6 +7,7 @@ class WeightGraphWidget extends ConsumerWidget {
   final VoidCallback? onTap;
   final double height;
   final bool showTitle;
+  final bool showAxisLabels;
 
   const WeightGraphWidget({
     super.key,
@@ -14,6 +15,7 @@ class WeightGraphWidget extends ConsumerWidget {
     this.onTap,
     this.height = 200,
     this.showTitle = true,
+    this.showAxisLabels = true,
   });
 
   @override
@@ -23,7 +25,7 @@ class WeightGraphWidget extends ConsumerWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
           BoxShadow(
@@ -37,87 +39,58 @@ class WeightGraphWidget extends ConsumerWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(40.0),
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (showTitle) ...[
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.orange[50],
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Icon(
-                          Icons.trending_up,
-                          color: Colors.orange[600],
-                          size: 20,
-                        ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4),
+                    child: Text(
+                      'Weight',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[800],
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'Weight Progress',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey[800],
-                          ),
-                        ),
-                      ),
-                      if (onTap != null)
-                        Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Icon(
-                            Icons.arrow_forward_ios,
-                            size: 12,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                    ],
+                    ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
                 ],
-                SizedBox(
-                  height: height - (showTitle ? 80 : 40),
+                Expanded(
                   child: weightDiaries.when(
                     data: (entries) {
                       if (entries.isEmpty) {
                         return Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               Container(
-                                padding: const EdgeInsets.all(20),
+                                padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
                                   color: Colors.orange[50],
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
                                   Icons.monitor_weight_outlined,
-                                  size: 40,
+                                  size: 32,
                                   color: Colors.orange[400],
                                 ),
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 12),
                               Text(
                                 'No weight entries yet',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                   color: Colors.grey[800],
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: 4),
                               Text(
                                 'Tap to add your first entry',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                   color: Colors.grey[600],
                                 ),
                               ),
@@ -149,61 +122,65 @@ class WeightGraphWidget extends ConsumerWidget {
                               points: normalized,
                               color: Colors.orange[600]!,
                               originalUnit: entries.isNotEmpty ? entries.first.unit : 'kg',
+                              showAxisLabels: showAxisLabels,
                             ),
                           ),
-                          const SizedBox(height: 12),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[100],
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  _formatTick(from),
-                                  style: TextStyle(
-                                    color: Colors.grey[700], 
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w500,
+                          if (showAxisLabels) ...[
+                            const SizedBox(height: 12),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[100],
+                                    borderRadius: BorderRadius.circular(40.0),
+                                  ),
+                                  child: Text(
+                                    _formatTick(from),
+                                    style: TextStyle(
+                                      color: Colors.grey[700], 
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[100],
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  _formatTick(now),
-                                  style: TextStyle(
-                                    color: Colors.grey[700], 
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w500,
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[100],
+                                    borderRadius: BorderRadius.circular(40.0),
+                                  ),
+                                  child: Text(
+                                    _formatTick(now),
+                                    style: TextStyle(
+                                      color: Colors.grey[700], 
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            ),
+                          ],
                         ],
                       );
                     },
                     loading: () => Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(Colors.orange[600]!),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 8),
                           Text(
                             'Loading weight data...',
                             style: TextStyle(
                               color: Colors.grey[600],
-                              fontSize: 12,
+                              fontSize: 11,
                             ),
                           ),
                         ],
@@ -212,20 +189,21 @@ class WeightGraphWidget extends ConsumerWidget {
                     error: (error, _) => Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               color: Colors.red[50],
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
                               Icons.error_outline,
-                              size: 32,
+                              size: 28,
                               color: Colors.red[400],
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 8),
                           Text(
                             'Failed to load graph',
                             style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -233,12 +211,12 @@ class WeightGraphWidget extends ConsumerWidget {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 2),
                           Text(
                             'Please try again',
                             style: TextStyle(
                               color: Colors.grey[600],
-                              fontSize: 12,
+                              fontSize: 11,
                             ),
                           ),
                         ],
@@ -269,6 +247,7 @@ class _WeightChart extends StatelessWidget {
   final List<({DateTime time, double valueKg, double originalWeight, String originalUnit})> points;
   final Color color;
   final String originalUnit;
+  final bool showAxisLabels;
 
   const _WeightChart({
     required this.from,
@@ -276,6 +255,7 @@ class _WeightChart extends StatelessWidget {
     required this.points,
     required this.color,
     required this.originalUnit,
+    required this.showAxisLabels,
   });
 
   @override
@@ -287,6 +267,7 @@ class _WeightChart extends StatelessWidget {
         points: points,
         color: color,
         originalUnit: originalUnit,
+        showAxisLabels: showAxisLabels,
       ),
       child: Container(),
     );
@@ -299,6 +280,7 @@ class _WeightChartPainter extends CustomPainter {
   final List<({DateTime time, double valueKg, double originalWeight, String originalUnit})> points;
   final Color color;
   final String originalUnit;
+  final bool showAxisLabels;
 
   _WeightChartPainter({
     required this.from,
@@ -306,6 +288,7 @@ class _WeightChartPainter extends CustomPainter {
     required this.points,
     required this.color,
     required this.originalUnit,
+    required this.showAxisLabels,
   });
 
   @override
@@ -330,10 +313,11 @@ class _WeightChartPainter extends CustomPainter {
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
       ..style = PaintingStyle.fill;
 
-    final paddingLeft = 50.0; // Increased for Y-axis labels
-    final paddingRight = 12.0;
-    final paddingTop = 12.0;
-    final paddingBottom = 20.0;
+    // Adjust padding based on whether axis labels are shown
+    final paddingLeft = showAxisLabels ? 50.0 : 8.0;
+    final paddingRight = 8.0;
+    final paddingTop = 8.0;
+    final paddingBottom = 8.0;
 
     final chartWidth = size.width - paddingLeft - paddingRight;
     final chartHeight = size.height - paddingTop - paddingBottom;
@@ -376,8 +360,10 @@ class _WeightChartPainter extends CustomPainter {
       maxY = 5.0;
     }
 
-    // Draw Y-axis labels
-    _drawYAxisLabels(canvas, size, minY, maxY, origin, chartHeight);
+    // Draw Y-axis labels only if enabled
+    if (showAxisLabels) {
+      _drawYAxisLabels(canvas, size, minY, maxY, origin, chartHeight);
+    }
 
     final totalMs = to.millisecondsSinceEpoch - from.millisecondsSinceEpoch;
     Offset mapPoint(DateTime t, double v) {
@@ -514,6 +500,7 @@ class _WeightChartPainter extends CustomPainter {
            oldDelegate.color != color || 
            oldDelegate.from != from || 
            oldDelegate.to != to ||
-           oldDelegate.originalUnit != originalUnit;
+           oldDelegate.originalUnit != originalUnit ||
+           oldDelegate.showAxisLabels != showAxisLabels;
   }
 }

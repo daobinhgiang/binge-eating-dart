@@ -21,24 +21,35 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
   DateTime _spentAt = DateTime.now();
   bool _isSubmitting = false;
 
+  final FocusNode _amountFocusNode = FocusNode();
+  final FocusNode _notesFocusNode = FocusNode();
+
   @override
   void dispose() {
     _amountController.dispose();
     _notesController.dispose();
+    _amountFocusNode.dispose();
+    _notesFocusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(context),
-            Expanded(child: _buildContent(context)),
-            _buildFooter(context),
-          ],
+    return GestureDetector(
+      onTap: () {
+        // Dismiss keyboard when tapping outside of input fields
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        backgroundColor: Colors.grey[50],
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildHeader(context),
+              Expanded(child: _buildContent(context)),
+              _buildFooter(context),
+            ],
+          ),
         ),
       ),
     );
@@ -72,12 +83,17 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
           ),
           const SizedBox(width: 16),
           Expanded(
-            child: Text(
-              'Add Spending Entry',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.center,
+              child: Text(
+                'Add Spending Entry',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+                textAlign: TextAlign.center,
               ),
             ),
           ),
@@ -93,7 +109,7 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(40.0),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.1),
@@ -116,7 +132,7 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey[300]!),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
@@ -149,22 +165,32 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
                 Expanded(
                   child: TextFormField(
                     controller: _amountController,
+                    focusNode: _amountFocusNode,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    textInputAction: TextInputAction.done,
+                    onEditingComplete: () {
+                      // Move focus to notes or dismiss keyboard if amount is valid
+                      if (_canSubmit()) {
+                        FocusScope.of(context).requestFocus(_notesFocusNode);
+                      } else {
+                        FocusScope.of(context).unfocus();
+                      }
+                    },
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
                     ],
                     decoration: InputDecoration(
                       hintText: '0.00',
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(40.0),
                         borderSide: BorderSide(color: Colors.grey[300]!),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(40.0),
                         borderSide: BorderSide(color: Colors.grey[300]!),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(40.0),
                         borderSide: BorderSide(color: Colors.amber[600]!, width: 2),
                       ),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -188,7 +214,7 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey[300]!),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(40.0),
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
@@ -250,19 +276,29 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
             const SizedBox(height: 12),
             TextFormField(
               controller: _notesController,
+              focusNode: _notesFocusNode,
               maxLines: 3,
+              textInputAction: TextInputAction.done,
+              onEditingComplete: () {
+                // Dismiss keyboard when done with notes
+                FocusScope.of(context).unfocus();
+                // If amount is valid, try to submit
+                if (_canSubmit()) {
+                  _submitEntry();
+                }
+              },
               decoration: InputDecoration(
                 hintText: 'How were you feeling? What triggered this spending?',
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(40.0),
                   borderSide: BorderSide(color: Colors.grey[300]!),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(40.0),
                   borderSide: BorderSide(color: Colors.grey[300]!),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(40.0),
                   borderSide: BorderSide(color: Colors.amber[600]!, width: 2),
                 ),
                 contentPadding: const EdgeInsets.all(16),
@@ -277,7 +313,7 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.amber[50],
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(40.0),
                 border: Border.all(color: Colors.amber[200]!),
               ),
               child: Column(
@@ -342,12 +378,12 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
   ) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(40.0),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.grey[300]!),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(40.0),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -403,7 +439,7 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(40.0),
             ),
             elevation: 0,
           ),
@@ -469,7 +505,7 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
             backgroundColor: Colors.green,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(40.0),
             ),
           ),
         );
@@ -482,7 +518,7 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(40.0),
             ),
           ),
         );

@@ -27,12 +27,13 @@ class MealPlanningScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
+      body: Column(
           children: [
             _buildNavigationBar(context),
             Expanded(
-              child: SingleChildScrollView(
+              child: SafeArea(
+                top: false,
+                child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
                 child: allPlans.when(
                   data: (plans) {
@@ -77,7 +78,7 @@ class MealPlanningScreen extends ConsumerWidget {
                             Container(
                               decoration: BoxDecoration(
                                 color: const Color(0xFF4CAF50).withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius: BorderRadius.circular(40.0),
                                 border: Border.all(
                                   color: const Color(0xFF4CAF50).withOpacity(0.3),
                                   width: 1,
@@ -87,7 +88,7 @@ class MealPlanningScreen extends ConsumerWidget {
                                 color: Colors.transparent,
                                 child: InkWell(
                                   onTap: () => _navigateToAllPlans(context, user.id),
-                                  borderRadius: BorderRadius.circular(20),
+                                  borderRadius: BorderRadius.circular(40.0),
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                     child: Row(
@@ -147,8 +148,8 @@ class MealPlanningScreen extends ConsumerWidget {
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _navigateToMealPlanSurvey(context),
@@ -181,28 +182,29 @@ class MealPlanningScreen extends ConsumerWidget {
         bottom: false,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-          child: Column(
+          child: Row(
             children: [
-              Row(
-                children: [
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
+              IconButton(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+              ),
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    'Meal Planning',
+                    style: GoogleFonts.fredoka(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Meal Planning',
-                style: GoogleFonts.fredoka(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
                 ),
-                textAlign: TextAlign.center,
               ),
+              const SizedBox(width: 48), // Balance the back button width
             ],
           ),
         ),
@@ -216,7 +218,7 @@ class MealPlanningScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.green[50],
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: Colors.green[100]!,
           width: 2,
@@ -269,14 +271,14 @@ class MealPlanningScreen extends ConsumerWidget {
       height: 200,
       decoration: BoxDecoration(
         color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.grey[300]!),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _navigateToMealPlanSurvey(context),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(40.0),
           child: const Center(
             child: Icon(
               Icons.add,
@@ -294,7 +296,7 @@ class MealPlanningScreen extends ConsumerWidget {
       height: 200,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.grey[300]!),
         boxShadow: [
           BoxShadow(
@@ -309,7 +311,7 @@ class MealPlanningScreen extends ConsumerWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _navigateToPlanDetail(context, plan),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(40.0),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -322,7 +324,7 @@ class MealPlanningScreen extends ConsumerWidget {
                       height: 32,
                       decoration: BoxDecoration(
                         color: const Color(0xFF4CAF50).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       child: const Icon(
                         Icons.restaurant_menu,
@@ -335,7 +337,7 @@ class MealPlanningScreen extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: Colors.green[50],
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       child: Text(
                         plan.formattedPlanDate,
@@ -379,7 +381,7 @@ class MealPlanningScreen extends ConsumerWidget {
       height: 120,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.grey[300]!),
         boxShadow: [
           BoxShadow(
@@ -394,7 +396,7 @@ class MealPlanningScreen extends ConsumerWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _navigateToPlanDetail(context, plan),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(40.0),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -407,7 +409,7 @@ class MealPlanningScreen extends ConsumerWidget {
                       height: 24,
                       decoration: BoxDecoration(
                         color: const Color(0xFF4CAF50).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       child: const Icon(
                         Icons.restaurant_menu,
@@ -420,7 +422,7 @@ class MealPlanningScreen extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                       decoration: BoxDecoration(
                         color: Colors.green[50],
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       child: Text(
                         plan.formattedPlanDate,
@@ -484,7 +486,7 @@ class MealPlanningScreen extends ConsumerWidget {
               duration: const Duration(milliseconds: 200),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.95),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(40.0),
                 border: Border.all(
                   color: Colors.green.withOpacity(0.2),
                   width: 1,
@@ -511,7 +513,7 @@ class MealPlanningScreen extends ConsumerWidget {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(40.0),
                   onTap: () => _navigateToPlanDetail(context, plan),
                   child: Container(
                     padding: const EdgeInsets.all(16),
@@ -522,7 +524,7 @@ class MealPlanningScreen extends ConsumerWidget {
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color: Colors.green.withOpacity(0.08),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(40.0),
                             border: Border.all(
                               color: Colors.green.withOpacity(0.2),
                               width: 1,
@@ -571,7 +573,7 @@ class MealPlanningScreen extends ConsumerWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: Colors.green.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(40.0),
                             border: Border.all(
                               color: Colors.green.withOpacity(0.3),
                               width: 1,
@@ -660,7 +662,7 @@ class MealPlanningScreen extends ConsumerWidget {
                         height: 56,
                         decoration: BoxDecoration(
                           color: Colors.green[600],
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(40.0),
                         ),
                         child: const Icon(
                           Icons.restaurant_menu,
@@ -693,7 +695,7 @@ class MealPlanningScreen extends ConsumerWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
                             color: Colors.green[50],
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(40.0),
                             border: Border.all(color: Colors.green[200]!),
                           ),
                           child: Text(
@@ -794,7 +796,7 @@ class MealPlanningScreen extends ConsumerWidget {
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
                                   color: Colors.blue[50],
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(40.0),
                                   border: Border.all(color: Colors.blue[200]!),
                                 ),
                                 child: Text(
@@ -852,7 +854,7 @@ class MealPlanningScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.green[50],
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.green[200]!),
       ),
       child: Row(
@@ -907,7 +909,7 @@ class MealPlanningScreen extends ConsumerWidget {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: Colors.orange[50],
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(40.0),
             border: Border.all(color: Colors.orange[200]!),
           ),
           child: Text(
@@ -934,7 +936,7 @@ class MealPlanningScreen extends ConsumerWidget {
                   height: 40,
                   decoration: BoxDecoration(
                     color: color[600],
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                   child: Icon(
                     icon,
@@ -967,7 +969,7 @@ class MealPlanningScreen extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(40.0),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

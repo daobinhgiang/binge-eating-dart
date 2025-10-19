@@ -193,229 +193,149 @@ class _AccountabilityPartnerScreenState extends ConsumerState<AccountabilityPart
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: const Text('Accountability Partner'),
+        title: const Text(
+          'Accountability Partner',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+          ),
+        ),
         centerTitle: true,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back_ios, size: 20),
           onPressed: () => context.go('/'),
         ),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                const Color(0xFF4CAF50).withOpacity(0.15),
-                const Color(0xFF66BB6A).withOpacity(0.12),
-                const Color(0xFF388E3C).withOpacity(0.08),
-              ],
-            ),
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              setState(() {
-                _messages.clear();
-              });
-              _loadUserContext();
-              _addWelcomeMessage();
-            },
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Start new conversation',
-          ),
-        ],
       ),
-      body: ComfortingBackground(
+      body: GestureDetector(
+        onTap: () {
+          // Dismiss keyboard when tapping outside
+          FocusScope.of(context).unfocus();
+        },
         child: Column(
           children: [
-            // Loading context indicator
+            // Subtle loading indicator
             if (_isLoadingContext)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                color: const Color(0xFF4CAF50).withOpacity(0.1),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          const Color(0xFF4CAF50),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Text(
-                        'Loading your accountability context...',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Color(0xFF4CAF50),
-                        ),
-                      ),
-                    ),
-                  ],
+                height: 3,
+                child: const LinearProgressIndicator(
+                  backgroundColor: Colors.transparent,
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF4CAF50)),
                 ),
               ),
-            // Info banner
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              margin: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFF4CAF50).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: const Color(0xFF4CAF50).withOpacity(0.3),
-                  width: 1,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.support_agent,
-                    color: const Color(0xFF4CAF50),
-                    size: 20,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Your accountability partner is here to help you stay committed to your recovery goals',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: const Color(0xFF4CAF50),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
             
             // Messages list
             Expanded(
               child: ListView.builder(
                 controller: _scrollController,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                itemCount: _messages.length,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                itemCount: _messages.length + (_isLoading ? 1 : 0),
                 itemBuilder: (context, index) {
+                  if (index == _messages.length && _isLoading) {
+                    return _buildTypingIndicator();
+                  }
                   final message = _messages[index];
                   return _buildMessageBubble(message);
                 },
               ),
             ),
-            
-            // Loading indicator
-            if (_isLoading)
-              Container(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    const SizedBox(width: 16),
-                    SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          const Color(0xFF4CAF50).withOpacity(0.7),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'Your accountability partner is thinking...',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: const Color(0xFF4CAF50).withOpacity(0.7),
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                  ],
+          
+          // Message input
+          Container(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, -2),
                 ),
-              ),
-            
-            // Message input
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 8,
-                    offset: const Offset(0, -2),
-                  ),
-                ],
-              ),
+              ],
+            ),
+            child: SafeArea(
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Expanded(
-                    child: TextField(
-                      controller: _messageController,
-                      decoration: InputDecoration(
-                        hintText: 'Share your goals, progress, or challenges...',
-                        hintStyle: TextStyle(
-                          color: Colors.grey[500],
-                          fontSize: 14,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(24),
-                          borderSide: BorderSide(
-                            color: const Color(0xFF4CAF50).withOpacity(0.3),
-                            width: 1,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(24),
-                          borderSide: BorderSide(
-                            color: const Color(0xFF4CAF50).withOpacity(0.3),
-                            width: 1,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(24),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF4CAF50),
-                            width: 2,
-                          ),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF5F5F5),
+                        borderRadius: BorderRadius.circular(12.0),
                       ),
-                      maxLines: null,
-                      textInputAction: TextInputAction.newline,
-                      onSubmitted: (_) => _sendMessage(),
+                      child: TextField(
+                        controller: _messageController,
+                        decoration: InputDecoration(
+                          hintText: 'Message...',
+                          hintStyle: TextStyle(
+                            color: Colors.grey[500],
+                            fontSize: 15,
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                        ),
+                        maxLines: null,
+                        maxLength: 1000,
+                        buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
+                        textInputAction: TextInputAction.newline,
+                        textCapitalization: TextCapitalization.sentences,
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 10),
                   Container(
+                    height: 46,
+                    width: 46,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF4CAF50),
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: IconButton(
-                      onPressed: _isLoading ? null : _sendMessage,
-                      icon: const Icon(
-                        Icons.send,
-                        color: Colors.white,
-                        size: 20,
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                      constraints: const BoxConstraints(
-                        minWidth: 48,
-                        minHeight: 48,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF4CAF50).withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: _isLoading ? null : _sendMessage,
+                        borderRadius: BorderRadius.circular(12.0),
+                        child: Center(
+                          child: _isLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  ),
+                                )
+                              : const Icon(
+                                  Icons.arrow_upward_rounded,
+                                  color: Colors.white,
+                                  size: 22,
+                                ),
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
             ),
+          ),
           ],
         ),
       ),
@@ -423,68 +343,213 @@ class _AccountabilityPartnerScreenState extends ConsumerState<AccountabilityPart
   }
 
   Widget _buildMessageBubble(ChatMessage message) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
       child: Row(
         mainAxisAlignment: message.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!message.isUser) ...[
             Container(
-              width: 32,
-              height: 32,
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
-                color: const Color(0xFF4CAF50).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF4CAF50).withOpacity(0.2),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: const Icon(
-                Icons.support_agent,
-                color: Color(0xFF4CAF50),
-                size: 16,
+                Icons.support_agent_rounded,
+                color: Colors.white,
+                size: 20,
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 10),
           ],
           Flexible(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: message.isUser 
-                    ? const Color(0xFF4CAF50)
-                    : Colors.grey[100],
-                borderRadius: BorderRadius.circular(18).copyWith(
-                  bottomLeft: message.isUser ? const Radius.circular(18) : const Radius.circular(4),
-                  bottomRight: message.isUser ? const Radius.circular(4) : const Radius.circular(18),
+                gradient: message.isUser
+                    ? const LinearGradient(
+                        colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      )
+                    : null,
+                color: message.isUser ? null : Colors.white,
+                borderRadius: BorderRadius.circular(12.0).copyWith(
+                  bottomLeft: message.isUser ? const Radius.circular(20) : const Radius.circular(4),
+                  bottomRight: message.isUser ? const Radius.circular(4) : const Radius.circular(20),
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: message.isUser 
+                        ? const Color(0xFF4CAF50).withOpacity(0.2)
+                        : Colors.black.withOpacity(0.05),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              child: Text(
-                message.content,
-                style: TextStyle(
-                  color: message.isUser ? Colors.white : Colors.grey[800],
-                  fontSize: 14,
-                  height: 1.4,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    message.content,
+                    style: TextStyle(
+                      color: message.isUser ? Colors.white : const Color(0xFF2C2C2C),
+                      fontSize: 15,
+                      height: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    _formatTime(message.timestamp),
+                    style: TextStyle(
+                      color: message.isUser 
+                          ? Colors.white.withOpacity(0.8)
+                          : Colors.grey[500],
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
           if (message.isUser) ...[
-            const SizedBox(width: 8),
+            const SizedBox(width: 10),
             Container(
-              width: 32,
-              height: 32,
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
-                color: const Color(0xFF4CAF50).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16),
+                gradient: LinearGradient(
+                  colors: [Colors.grey[300]!, Colors.grey[400]!],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                shape: BoxShape.circle,
               ),
               child: const Icon(
-                Icons.person,
-                color: Color(0xFF4CAF50),
-                size: 16,
+                Icons.person_rounded,
+                color: Colors.white,
+                size: 20,
               ),
             ),
           ],
         ],
       ),
     );
+  }
+
+  Widget _buildTypingIndicator() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF4CAF50).withOpacity(0.2),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.support_agent_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12.0).copyWith(
+                bottomLeft: const Radius.circular(4),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildTypingDot(0),
+                const SizedBox(width: 5),
+                _buildTypingDot(1),
+                const SizedBox(width: 5),
+                _buildTypingDot(2),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTypingDot(int index) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: Duration(milliseconds: 600 + (index * 100)),
+      builder: (context, value, child) {
+        final animatedValue = (value * 2).clamp(0.0, 1.0);
+        return Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            color: const Color(0xFF4CAF50).withOpacity(0.3 + (0.5 * animatedValue)),
+            shape: BoxShape.circle,
+          ),
+        );
+      },
+      onEnd: () {
+        // Restart animation
+        if (mounted) {
+          setState(() {});
+        }
+      },
+    );
+  }
+
+  String _formatTime(DateTime timestamp) {
+    final now = DateTime.now();
+    final difference = now.difference(timestamp);
+
+    if (difference.inMinutes < 1) {
+      return 'Just now';
+    } else if (difference.inHours < 1) {
+      return '${difference.inMinutes}m ago';
+    } else if (difference.inDays < 1) {
+      return '${difference.inHours}h ago';
+    } else {
+      return '${difference.inDays}d ago';
+    }
   }
 }

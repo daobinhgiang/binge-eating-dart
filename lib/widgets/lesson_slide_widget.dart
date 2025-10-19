@@ -1,5 +1,346 @@
 import 'package:flutter/material.dart';
 import '../models/lesson_slide.dart';
+import 'audio_button_widget.dart';
+
+String? _getAudioPathForSlide(String slideId) {
+  // Map slide IDs to their corresponding audio files
+  final audioMap = {
+    // Lesson 1.1 slides
+    'slide_1_1_1': 'audio_lessons/lesson_1_1__slide_1_1_1.wav',
+    'slide_1_1_2': 'audio_lessons/lesson_1_1__slide_1_1_2.wav',
+    'slide_1_1_3': 'audio_lessons/lesson_1_1__slide_1_1_3.wav',
+    'slide_1_1_4': 'audio_lessons/lesson_1_1__slide_1_1_4.wav',
+    
+    // Lesson 1.3 slides
+    'slide_1_3_1': 'audio_lessons/lesson_1_3__slide_1_3_1.wav',
+    'slide_1_3_2': 'audio_lessons/lesson_1_3__slide_1_3_2.wav',
+    'slide_1_3_3': 'audio_lessons/lesson_1_3__slide_1_3_3.wav',
+    'slide_1_3_4': 'audio_lessons/lesson_1_3__slide_1_3_4.wav',
+    
+    // Lesson 3.1 slides
+    'slide_3_1_1': 'audio_lessons/lesson_3_1__slide_3_1_1.wav',
+    'slide_3_1_2': 'audio_lessons/lesson_3_1__slide_3_1_2.wav',
+    'slide_3_1_3': 'audio_lessons/lesson_3_1__slide_3_1_3.wav',
+    'slide_3_1_4': 'audio_lessons/lesson_3_1__slide_3_1_4.wav',
+    
+    // Lesson 3.2 slides
+    'slide_3_2_1': 'audio_lessons/lesson_3_2__slide_3_2_1.wav',
+    'slide_3_2_2': 'audio_lessons/lesson_3_2__slide_3_2_2.wav',
+    'slide_3_2_3': 'audio_lessons/lesson_3_2__slide_3_2_3.wav',
+    'slide_3_2_4': 'audio_lessons/lesson_3_2__slide_3_2_4.wav',
+    'slide_3_2_5': 'audio_lessons/lesson_3_2__slide_3_2_5.wav',
+    
+    // Lesson 3.3 slides
+    'slide_3_3_1': 'audio_lessons/lesson_3_3__slide_3_3_1.wav',
+    'slide_3_3_2': 'audio_lessons/lesson_3_3__slide_3_3_2.wav',
+    'slide_3_3_3': 'audio_lessons/lesson_3_3__slide_3_3_3.wav',
+    'slide_3_3_4': 'audio_lessons/lesson_3_3__slide_3_3_4.wav',
+    
+    // Lesson 3.4 slides
+    'slide_3_4_1': 'audio_lessons/lesson_3_4__slide_3_4_1.wav',
+    'slide_3_4_2': 'audio_lessons/lesson_3_4__slide_3_4_2.wav',
+    'slide_3_4_3': 'audio_lessons/lesson_3_4__slide_3_4_3.wav',
+    'slide_3_4_4': 'audio_lessons/lesson_3_4__slide_3_4_4.wav',
+    
+    // Lesson 3.5 slides
+    'slide_3_5_1': 'audio_lessons/lesson_3_5__slide_3_5_1.wav',
+    'slide_3_5_2': 'audio_lessons/lesson_3_5__slide_3_5_2.wav',
+    'slide_3_5_3': 'audio_lessons/lesson_3_5__slide_3_5_3.wav',
+    'slide_3_5_4': 'audio_lessons/lesson_3_5__slide_3_5_4.wav',
+    'slide_3_5_5': 'audio_lessons/lesson_3_5__slide_3_5_5.wav',
+    
+    // Lesson 3.6 slides
+    'slide_3_6_1': 'audio_lessons/lesson_3_6__slide_3_6_1.wav',
+    'slide_3_6_2': 'audio_lessons/lesson_3_6__slide_3_6_2.wav',
+    'slide_3_6_3': 'audio_lessons/lesson_3_6__slide_3_6_3.wav',
+    'slide_3_6_4': 'audio_lessons/lesson_3_6__slide_3_6_4.wav',
+    
+    // Lesson 3.7 slides
+    'slide_3_7_1': 'audio_lessons/lesson_3_7__slide_3_7_1.wav',
+    'slide_3_7_2': 'audio_lessons/lesson_3_7__slide_3_7_2.wav',
+    'slide_3_7_3': 'audio_lessons/lesson_3_7__slide_3_7_3.wav',
+    'slide_3_7_4': 'audio_lessons/lesson_3_7__slide_3_7_4.wav',
+    
+    // Lesson 3.8 slides
+    'slide_3_8_1': 'audio_lessons/lesson_3_8__slide_3_8_1.wav',
+    'slide_3_8_2': 'audio_lessons/lesson_3_8__slide_3_8_2.wav',
+    'slide_3_8_3': 'audio_lessons/lesson_3_8__slide_3_8_3.wav',
+    'slide_3_8_4': 'audio_lessons/lesson_3_8__slide_3_8_4.wav',
+    
+    // Lesson 3.9 slides
+    'slide_3_9_1': 'audio_lessons/lesson_3_9__slide_3_9_1.wav',
+    'slide_3_9_2': 'audio_lessons/lesson_3_9__slide_3_9_2.wav',
+    'slide_3_9_3': 'audio_lessons/lesson_3_9__slide_3_9_3.wav',
+    'slide_3_9_4': 'audio_lessons/lesson_3_9__slide_3_9_4.wav',
+    
+    // Lesson 3.10 slides
+    'slide_3_10_1': 'audio_lessons/lesson_3_10__slide_3_10_1.wav',
+    'slide_3_10_2': 'audio_lessons/lesson_3_10__slide_3_10_2.wav',
+    'slide_3_10_3': 'audio_lessons/lesson_3_10__slide_3_10_3.wav',
+    'slide_3_10_4': 'audio_lessons/lesson_3_10__slide_3_10_4.wav',
+    
+    // Stage 2 Lesson s2_0_1 slides
+    'slide_s2_0_1_1': 'audio_lessons/lesson_s2_0_1__slide_s2_0_1_1.wav',
+    'slide_s2_0_1_2': 'audio_lessons/lesson_s2_0_1__slide_s2_0_1_2.wav',
+    'slide_s2_0_1_3': 'audio_lessons/lesson_s2_0_1__slide_s2_0_1_3.wav',
+    
+    // Stage 2 Lesson s2_0_2 slides
+    'slide_s2_0_2_1': 'audio_lessons/lesson_s2_0_2__slide_s2_0_2_1.wav',
+    'slide_s2_0_2_2': 'audio_lessons/lesson_s2_0_2__slide_s2_0_2_2.wav',
+    'slide_s2_0_2_3': 'audio_lessons/lesson_s2_0_2__slide_s2_0_2_3.wav',
+    'slide_s2_0_2_4': 'audio_lessons/lesson_s2_0_2__slide_s2_0_2_4.wav',
+    'slide_s2_0_2_5': 'audio_lessons/lesson_s2_0_2__slide_s2_0_2_5.wav',
+    
+    // Stage 2 Lesson s2_0_3 slides
+    'slide_s2_0_3_1': 'audio_lessons/lesson_s2_0_3__slide_s2_0_3_1.wav',
+    'slide_s2_0_3_2': 'audio_lessons/lesson_s2_0_3__slide_s2_0_3_2.wav',
+    'slide_s2_0_3_3': 'audio_lessons/lesson_s2_0_3__slide_s2_0_3_3.wav',
+    
+    // Stage 2 Lesson s2_0_4 slides
+    'slide_s2_0_4_1': 'audio_lessons/lesson_s2_0_4__slide_s2_0_4_1.wav',
+    'slide_s2_0_4_2': 'audio_lessons/lesson_s2_0_4__slide_s2_0_4_2.wav',
+    'slide_s2_0_4_3': 'audio_lessons/lesson_s2_0_4__slide_s2_0_4_3.wav',
+    'slide_s2_0_4_4': 'audio_lessons/lesson_s2_0_4__slide_s2_0_4_4.wav',
+    
+    // Stage 2 Lesson s2_0_5 slides
+    'slide_s2_0_5_1': 'audio_lessons/lesson_s2_0_5__slide_s2_0_5_1.wav',
+    'slide_s2_0_5_2': 'audio_lessons/lesson_s2_0_5__slide_s2_0_5_2.wav',
+    'slide_s2_0_5_3': 'audio_lessons/lesson_s2_0_5__slide_s2_0_5_3.wav',
+    'slide_s2_0_5_4': 'audio_lessons/lesson_s2_0_5__slide_s2_0_5_4.wav',
+    
+    // Stage 2 Lesson s2_0_6 slides
+    'slide_s2_0_6_1': 'audio_lessons/lesson_s2_0_6__slide_s2_0_6_1.wav',
+    'slide_s2_0_6_2': 'audio_lessons/lesson_s2_0_6__slide_s2_0_6_2.wav',
+    'slide_s2_0_6_3': 'audio_lessons/lesson_s2_0_6__slide_s2_0_6_3.wav',
+    'slide_s2_0_6_4': 'audio_lessons/lesson_s2_0_6__slide_s2_0_6_4.wav',
+    
+    // Stage 2 Lesson s2_1_1 slides
+    'slide_s2_1_1_1': 'audio_lessons/lesson_s2_1_1__slide_s2_1_1_1.wav',
+    'slide_s2_1_1_2': 'audio_lessons/lesson_s2_1_1__slide_s2_1_1_2.wav',
+    'slide_s2_1_1_3': 'audio_lessons/lesson_s2_1_1__slide_s2_1_1_3.wav',
+    'slide_s2_1_1_4': 'audio_lessons/lesson_s2_1_1__slide_s2_1_1_4.wav',
+    
+    // Stage 2 Lesson s2_1_2 slides
+    'slide_s2_1_2_1': 'audio_lessons/lesson_s2_1_2__slide_s2_1_2_1.wav',
+    'slide_s2_1_2_2': 'audio_lessons/lesson_s2_1_2__slide_s2_1_2_2.wav',
+    'slide_s2_1_2_3': 'audio_lessons/lesson_s2_1_2__slide_s2_1_2_3.wav',
+    'slide_s2_1_2_4': 'audio_lessons/lesson_s2_1_2__slide_s2_1_2_4.wav',
+    
+    // Stage 2 Lesson s2_1_3 slides
+    'slide_s2_1_3_1': 'audio_lessons/lesson_s2_1_3__slide_s2_1_3_1.wav',
+    'slide_s2_1_3_2': 'audio_lessons/lesson_s2_1_3__slide_s2_1_3_2.wav',
+    'slide_s2_1_3_3': 'audio_lessons/lesson_s2_1_3__slide_s2_1_3_3.wav',
+    'slide_s2_1_3_4': 'audio_lessons/lesson_s2_1_3__slide_s2_1_3_4.wav',
+    
+    // Stage 2 Lesson s2_2_1 slides
+    'slide_s2_2_1_1': 'audio_lessons/lesson_s2_2_1__slide_s2_2_1_1.wav',
+    'slide_s2_2_1_2': 'audio_lessons/lesson_s2_2_1__slide_s2_2_1_2.wav',
+    'slide_s2_2_1_3': 'audio_lessons/lesson_s2_2_1__slide_s2_2_1_3.wav',
+    'slide_s2_2_1_4': 'audio_lessons/lesson_s2_2_1__slide_s2_2_1_4.wav',
+    
+    // Stage 2 Lesson s2_2_2 slides
+    'slide_s2_2_2_1': 'audio_lessons/lesson_s2_2_2__slide_s2_2_2_1.wav',
+    'slide_s2_2_2_2': 'audio_lessons/lesson_s2_2_2__slide_s2_2_2_2.wav',
+    'slide_s2_2_2_3': 'audio_lessons/lesson_s2_2_2__slide_s2_2_2_3.wav',
+    
+    // Stage 2 Lesson s2_2_3 slides
+    'slide_s2_2_3_1': 'audio_lessons/lesson_s2_2_3__slide_s2_2_3_1.wav',
+    'slide_s2_2_3_2': 'audio_lessons/lesson_s2_2_3__slide_s2_2_3_2.wav',
+    'slide_s2_2_3_3': 'audio_lessons/lesson_s2_2_3__slide_s2_2_3_3.wav',
+    
+    // Stage 2 Lesson s2_2_4 slides
+    'slide_s2_2_4_1': 'audio_lessons/lesson_s2_2_4__slide_s2_2_4_1.wav',
+    'slide_s2_2_4_2': 'audio_lessons/lesson_s2_2_4__slide_s2_2_4_2.wav',
+    'slide_s2_2_4_3': 'audio_lessons/lesson_s2_2_4__slide_s2_2_4_3.wav',
+    'slide_s2_2_4_4': 'audio_lessons/lesson_s2_2_4__slide_s2_2_4_4.wav',
+    
+    // Stage 2 Lesson s2_2_5 slides
+    'slide_s2_2_5_1': 'audio_lessons/lesson_s2_2_5__slide_s2_2_5_1.wav',
+    'slide_s2_2_5_2': 'audio_lessons/lesson_s2_2_5__slide_s2_2_5_2.wav',
+    'slide_s2_2_5_3': 'audio_lessons/lesson_s2_2_5__slide_s2_2_5_3.wav',
+    'slide_s2_2_5_4': 'audio_lessons/lesson_s2_2_5__slide_s2_2_5_4.wav',
+    
+    // Stage 2 Lesson s2_2_5_1 slides
+    'slide_s2_2_5_1_1': 'audio_lessons/lesson_s2_2_5_1__slide_s2_2_5_1_1.wav',
+    'slide_s2_2_5_1_2': 'audio_lessons/lesson_s2_2_5_1__slide_s2_2_5_1_2.wav',
+    'slide_s2_2_5_1_3': 'audio_lessons/lesson_s2_2_5_1__slide_s2_2_5_1_3.wav',
+    'slide_s2_2_5_1_4': 'audio_lessons/lesson_s2_2_5_1__slide_s2_2_5_1_4.wav',
+    
+    // Stage 2 Lesson s2_3_1 slides
+    'slide_s2_3_1_1': 'audio_lessons/lesson_s2_3_1__slide_s2_3_1_1.wav',
+    'slide_s2_3_1_2': 'audio_lessons/lesson_s2_3_1__slide_s2_3_1_2.wav',
+    'slide_s2_3_1_3': 'audio_lessons/lesson_s2_3_1__slide_s2_3_1_3.wav',
+    'slide_s2_3_1_4': 'audio_lessons/lesson_s2_3_1__slide_s2_3_1_4.wav',
+    'slide_s2_3_1_5': 'audio_lessons/lesson_s2_3_1__slide_s2_3_1_5.wav',
+    
+    // Stage 2 Lesson s2_3_2 slides
+    'slide_s2_3_2_1': 'audio_lessons/lesson_s2_3_2__slide_s2_3_2_1.wav',
+    'slide_s2_3_2_2': 'audio_lessons/lesson_s2_3_2__slide_s2_3_2_2.wav',
+    'slide_s2_3_2_3': 'audio_lessons/lesson_s2_3_2__slide_s2_3_2_3.wav',
+    'slide_s2_3_2_4': 'audio_lessons/lesson_s2_3_2__slide_s2_3_2_4.wav',
+    
+    // Stage 2 Lesson s2_3_2_1 slides
+    'slide_s2_3_2_1_1': 'audio_lessons/lesson_s2_3_2_1__slide_s2_3_2_1_1.wav',
+    'slide_s2_3_2_1_2': 'audio_lessons/lesson_s2_3_2_1__slide_s2_3_2_1_2.wav',
+    'slide_s2_3_2_1_3': 'audio_lessons/lesson_s2_3_2_1__slide_s2_3_2_1_3.wav',
+    'slide_s2_3_2_1_4': 'audio_lessons/lesson_s2_3_2_1__slide_s2_3_2_1_4.wav',
+    
+    // Stage 2 Lesson s2_3_3 slides
+    'slide_s2_3_3_1': 'audio_lessons/lesson_s2_3_3__slide_s2_3_3_1.wav',
+    'slide_s2_3_3_2': 'audio_lessons/lesson_s2_3_3__slide_s2_3_3_2.wav',
+    'slide_s2_3_3_3': 'audio_lessons/lesson_s2_3_3__slide_s2_3_3_3.wav',
+    'slide_s2_3_3_4': 'audio_lessons/lesson_s2_3_3__slide_s2_3_3_4.wav',
+    
+    // Stage 2 Lesson s2_3_4 slides
+    'slide_s2_3_4_1': 'audio_lessons/lesson_s2_3_4__slide_s2_3_4_1.wav',
+    'slide_s2_3_4_2': 'audio_lessons/lesson_s2_3_4__slide_s2_3_4_2.wav',
+    'slide_s2_3_4_3': 'audio_lessons/lesson_s2_3_4__slide_s2_3_4_3.wav',
+    'slide_s2_3_4_4': 'audio_lessons/lesson_s2_3_4__slide_s2_3_4_4.wav',
+    
+    // Stage 2 Lesson s2_4_1 slides
+    'slide_s2_4_1_1': 'audio_lessons/lesson_s2_4_1__slide_s2_4_1_1.wav',
+    'slide_s2_4_1_2': 'audio_lessons/lesson_s2_4_1__slide_s2_4_1_2.wav',
+    'slide_s2_4_1_3': 'audio_lessons/lesson_s2_4_1__slide_s2_4_1_3.wav',
+    'slide_s2_4_1_4': 'audio_lessons/lesson_s2_4_1__slide_s2_4_1_4.wav',
+    
+    // Stage 2 Lesson s2_4_2 slides
+    'slide_s2_4_2_1': 'audio_lessons/lesson_s2_4_2__slide_s2_4_2_1.wav',
+    'slide_s2_4_2_2': 'audio_lessons/lesson_s2_4_2__slide_s2_4_2_2.wav',
+    'slide_s2_4_2_3': 'audio_lessons/lesson_s2_4_2__slide_s2_4_2_3.wav',
+    'slide_s2_4_2_4': 'audio_lessons/lesson_s2_4_2__slide_s2_4_2_4.wav',
+    
+    // Stage 2 Lesson s2_4_2_1 slides
+    'slide_s2_4_2_1_1': 'audio_lessons/lesson_s2_4_2_1__slide_s2_4_2_1_1.wav',
+    'slide_s2_4_2_1_2': 'audio_lessons/lesson_s2_4_2_1__slide_s2_4_2_1_2.wav',
+    'slide_s2_4_2_1_3': 'audio_lessons/lesson_s2_4_2_1__slide_s2_4_2_1_3.wav',
+    'slide_s2_4_2_1_4': 'audio_lessons/lesson_s2_4_2_1__slide_s2_4_2_1_4.wav',
+    
+    // Stage 2 Lesson s2_5_1 slides
+    'slide_s2_5_1_1': 'audio_lessons/lesson_s2_5_1__slide_s2_5_1_1.wav',
+    'slide_s2_5_1_2': 'audio_lessons/lesson_s2_5_1__slide_s2_5_1_2.wav',
+    'slide_s2_5_1_3': 'audio_lessons/lesson_s2_5_1__slide_s2_5_1_3.wav',
+    'slide_s2_5_1_4': 'audio_lessons/lesson_s2_5_1__slide_s2_5_1_4.wav',
+    
+    // Stage 2 Lesson s2_5_2 slides
+    'slide_s2_5_2_1': 'audio_lessons/lesson_s2_5_2__slide_s2_5_2_1.wav',
+    'slide_s2_5_2_2': 'audio_lessons/lesson_s2_5_2__slide_s2_5_2_2.wav',
+    'slide_s2_5_2_3': 'audio_lessons/lesson_s2_5_2__slide_s2_5_2_3.wav',
+    'slide_s2_5_2_4': 'audio_lessons/lesson_s2_5_2__slide_s2_5_2_4.wav',
+    
+    // Stage 2 Lesson s2_6_1 slides
+    'slide_s2_6_1_1': 'audio_lessons/lesson_s2_6_1__slide_s2_6_1_1.wav',
+    'slide_s2_6_1_2': 'audio_lessons/lesson_s2_6_1__slide_s2_6_1_2.wav',
+    'slide_s2_6_1_3': 'audio_lessons/lesson_s2_6_1__slide_s2_6_1_3.wav',
+    'slide_s2_6_1_4': 'audio_lessons/lesson_s2_6_1__slide_s2_6_1_4.wav',
+    
+    // Stage 2 Lesson s2_6_2 slides
+    'slide_s2_6_2_1': 'audio_lessons/lesson_s2_6_2__slide_s2_6_2_1.wav',
+    'slide_s2_6_2_2': 'audio_lessons/lesson_s2_6_2__slide_s2_6_2_2.wav',
+    'slide_s2_6_2_3': 'audio_lessons/lesson_s2_6_2__slide_s2_6_2_3.wav',
+    'slide_s2_6_2_4': 'audio_lessons/lesson_s2_6_2__slide_s2_6_2_4.wav',
+    
+    // Stage 2 Lesson s2_6_3 slides
+    'slide_s2_6_3_1': 'audio_lessons/lesson_s2_6_3__slide_s2_6_3_1.wav',
+    'slide_s2_6_3_2': 'audio_lessons/lesson_s2_6_3__slide_s2_6_3_2.wav',
+    'slide_s2_6_3_3': 'audio_lessons/lesson_s2_6_3__slide_s2_6_3_3.wav',
+    'slide_s2_6_3_4': 'audio_lessons/lesson_s2_6_3__slide_s2_6_3_4.wav',
+    
+    // Stage 2 Lesson s2_7_1 slides
+    'slide_s2_7_1_1': 'audio_lessons/lesson_s2_7_1__slide_s2_7_1_1.wav',
+    'slide_s2_7_1_2': 'audio_lessons/lesson_s2_7_1__slide_s2_7_1_2.wav',
+    'slide_s2_7_1_3': 'audio_lessons/lesson_s2_7_1__slide_s2_7_1_3.wav',
+    'slide_s2_7_1_4': 'audio_lessons/lesson_s2_7_1__slide_s2_7_1_4.wav',
+    
+    // Stage 2 Lesson s2_7_2 slides
+    'slide_s2_7_2_1': 'audio_lessons/lesson_s2_7_2__slide_s2_7_2_1.wav',
+    'slide_s2_7_2_2': 'audio_lessons/lesson_s2_7_2__slide_s2_7_2_2.wav',
+    'slide_s2_7_2_3': 'audio_lessons/lesson_s2_7_2__slide_s2_7_2_3.wav',
+    'slide_s2_7_2_4': 'audio_lessons/lesson_s2_7_2__slide_s2_7_2_4.wav',
+    
+    // Stage 2 Lesson s2_7_2_1 slides
+    'slide_s2_7_2_1_1': 'audio_lessons/lesson_s2_7_2_1__slide_s2_7_2_1_1.wav',
+    'slide_s2_7_2_1_2': 'audio_lessons/lesson_s2_7_2_1__slide_s2_7_2_1_2.wav',
+    'slide_s2_7_2_1_3': 'audio_lessons/lesson_s2_7_2_1__slide_s2_7_2_1_3.wav',
+    'slide_s2_7_2_1_4': 'audio_lessons/lesson_s2_7_2_1__slide_s2_7_2_1_4.wav',
+    
+    // Stage 2 Lesson s2_7_3 slides
+    'slide_s2_7_3_1': 'audio_lessons/lesson_s2_7_3__slide_s2_7_3_1.wav',
+    'slide_s2_7_3_2': 'audio_lessons/lesson_s2_7_3__slide_s2_7_3_2.wav',
+    'slide_s2_7_3_3': 'audio_lessons/lesson_s2_7_3__slide_s2_7_3_3.wav',
+    'slide_s2_7_3_4': 'audio_lessons/lesson_s2_7_3__slide_s2_7_3_4.wav',
+    
+    // Stage 2 Lesson s2_7_4 slides
+    'slide_s2_7_4_1': 'audio_lessons/lesson_s2_7_4__slide_s2_7_4_1.wav',
+    'slide_s2_7_4_2': 'audio_lessons/lesson_s2_7_4__slide_s2_7_4_2.wav',
+    'slide_s2_7_4_3': 'audio_lessons/lesson_s2_7_4__slide_s2_7_4_3.wav',
+    'slide_s2_7_4_4': 'audio_lessons/lesson_s2_7_4__slide_s2_7_4_4.wav',
+    
+    // Stage 2 Lesson s2_7_5 slides
+    'slide_s2_7_5_1': 'audio_lessons/lesson_s2_7_5__slide_s2_7_5_1.wav',
+    'slide_s2_7_5_2': 'audio_lessons/lesson_s2_7_5__slide_s2_7_5_2.wav',
+    'slide_s2_7_5_3': 'audio_lessons/lesson_s2_7_5__slide_s2_7_5_3.wav',
+    'slide_s2_7_5_4': 'audio_lessons/lesson_s2_7_5__slide_s2_7_5_4.wav',
+    
+    // Stage 2 Lesson s2_7_6 slides
+    'slide_s2_7_6_1': 'audio_lessons/lesson_s2_7_6__slide_s2_7_6_1.wav',
+    'slide_s2_7_6_2': 'audio_lessons/lesson_s2_7_6__slide_s2_7_6_2.wav',
+    'slide_s2_7_6_3': 'audio_lessons/lesson_s2_7_6__slide_s2_7_6_3.wav',
+    'slide_s2_7_6_4': 'audio_lessons/lesson_s2_7_6__slide_s2_7_6_4.wav',
+    
+    // Stage 2 Lesson s2_7_7 slides
+    'slide_s2_7_7_1': 'audio_lessons/lesson_s2_7_7__slide_s2_7_7_1.wav',
+    'slide_s2_7_7_2': 'audio_lessons/lesson_s2_7_7__slide_s2_7_7_2.wav',
+    'slide_s2_7_7_3': 'audio_lessons/lesson_s2_7_7__slide_s2_7_7_3.wav',
+    'slide_s2_7_7_4': 'audio_lessons/lesson_s2_7_7__slide_s2_7_7_4.wav',
+    
+    // Stage 2 Lesson s2_7_8 slides
+    'slide_s2_7_8_1': 'audio_lessons/lesson_s2_7_8__slide_s2_7_8_1.wav',
+    'slide_s2_7_8_2': 'audio_lessons/lesson_s2_7_8__slide_s2_7_8_2.wav',
+    'slide_s2_7_8_3': 'audio_lessons/lesson_s2_7_8__slide_s2_7_8_3.wav',
+    
+    // Quiz slides
+    'slide_quiz_0_1': 'audio_lessons/quiz_0_chapter_0__slide_quiz_0_1.wav',
+    'slide_quiz_s2_1_1': 'audio_lessons/quiz_1_stage_2__slide_quiz_s2_1_1.wav',
+    'slide_quiz_s2_2_1': 'audio_lessons/quiz_2_stage_2__slide_quiz_s2_2_1.wav',
+    'slide_quiz_s2_3_1': 'audio_lessons/quiz_3_stage_2__slide_quiz_s2_3_1.wav',
+    'slide_quiz_s2_4_1': 'audio_lessons/quiz_4_stage_2__slide_quiz_s2_4_1.wav',
+    'slide_quiz_s2_5_1': 'audio_lessons/quiz_5_stage_2__slide_quiz_s2_5_1.wav',
+    'slide_quiz_s2_6_1': 'audio_lessons/quiz_6_stage_2__slide_quiz_s2_6_1.wav',
+    'slide_quiz_s2_7_1': 'audio_lessons/quiz_7_stage_2__slide_quiz_s2_7_1.wav',
+    
+    // Stage 3 Lesson s3_0_1 slides
+    'slide_s3_0_1_1': 'audio_lessons/lesson_s3_0_1__slide_s3_0_1_1.wav',
+    'slide_s3_0_1_2': 'audio_lessons/lesson_s3_0_1__slide_s3_0_1_2.wav',
+    'slide_s3_0_1_3': 'audio_lessons/lesson_s3_0_1__slide_s3_0_1_3.wav',
+    'slide_s3_0_1_4': 'audio_lessons/lesson_s3_0_1__slide_s3_0_1_4.wav',
+    
+    // Stage 3 Lesson s3_0_2 slides
+    'slide_s3_0_2_1': 'audio_lessons/lesson_s3_0_2__slide_s3_0_2_1.wav',
+    'slide_s3_0_2_2': 'audio_lessons/lesson_s3_0_2__slide_s3_0_2_2.wav',
+    'slide_s3_0_2_3': 'audio_lessons/lesson_s3_0_2__slide_s3_0_2_3.wav',
+    'slide_s3_0_2_4': 'audio_lessons/lesson_s3_0_2__slide_s3_0_2_4.wav',
+    
+    // Stage 3 Lesson s3_0_2_1 slides
+    'slide_s3_0_2_1_1': 'audio_lessons/lesson_s3_0_2_1__slide_s3_0_2_1_1.wav',
+    'slide_s3_0_2_1_2': 'audio_lessons/lesson_s3_0_2_1__slide_s3_0_2_1_2.wav',
+    'slide_s3_0_2_1_3': 'audio_lessons/lesson_s3_0_2_1__slide_s3_0_2_1_3.wav',
+    'slide_s3_0_2_1_4': 'audio_lessons/lesson_s3_0_2_1__slide_s3_0_2_1_4.wav',
+    
+    // Stage 3 Lesson s3_0_3 slides
+    'slide_s3_0_3_1': 'audio_lessons/lesson_s3_0_3__slide_s3_0_3_1.wav',
+    'slide_s3_0_3_2': 'audio_lessons/lesson_s3_0_3__slide_s3_0_3_2.wav',
+    'slide_s3_0_3_3': 'audio_lessons/lesson_s3_0_3__slide_s3_0_3_3.wav',
+    'slide_s3_0_3_4': 'audio_lessons/lesson_s3_0_3__slide_s3_0_3_4.wav',
+    
+    // Stage 3 Lesson s3_0_4 slides
+    'slide_s3_0_4_1': 'audio_lessons/lesson_s3_0_4__slide_s3_0_4_1.wav',
+    'slide_s3_0_4_2': 'audio_lessons/lesson_s3_0_4__slide_s3_0_4_2.wav',
+    'slide_s3_0_4_3': 'audio_lessons/lesson_s3_0_4__slide_s3_0_4_3.wav',
+    'slide_s3_0_4_4': 'audio_lessons/lesson_s3_0_4__slide_s3_0_4_4.wav',
+  };
+  
+  return audioMap[slideId];
+}
 
 class LessonSlideWidget extends StatelessWidget {
   final LessonSlide slide;
@@ -76,7 +417,7 @@ class LessonSlideWidget extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Top row with back button and lesson title
+          // Top row with back button, lesson title, and audio button
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
             child: Row(
@@ -87,7 +428,7 @@ class LessonSlideWidget extends StatelessWidget {
                   height: 36,
                   decoration: BoxDecoration(
                     color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(12.0),
                     border: Border.all(
                       color: const Color(0xFF66BB6A).withOpacity(0.15),
                       width: 1,
@@ -97,7 +438,7 @@ class LessonSlideWidget extends StatelessWidget {
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () => Navigator.of(context).pop(),
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(12.0),
                       splashColor: const Color(0xFF66BB6A).withOpacity(0.1),
                       highlightColor: const Color(0xFF66BB6A).withOpacity(0.05),
                       child: Icon(
@@ -123,6 +464,15 @@ class LessonSlideWidget extends StatelessWidget {
                     ),
                   ),
                 ),
+                
+                // Audio button
+                if (_getAudioPathForSlide(slide.id) != null) ...[
+                  const SizedBox(width: 16),
+                  AudioButtonWidget(
+                    audioPath: _getAudioPathForSlide(slide.id)!,
+                    slideId: slide.id,
+                  ),
+                ],
               ],
             ),
           ),
@@ -137,7 +487,7 @@ class LessonSlideWidget extends StatelessWidget {
                   height: 8,
                   decoration: BoxDecoration(
                     color: const Color(0xFF66BB6A).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
                 ),
                 // Progress fill with shimmer effect
@@ -153,7 +503,7 @@ class LessonSlideWidget extends StatelessWidget {
                           const Color(0xFF66BB6A),
                         ],
                       ),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(12.0),
                       boxShadow: [
                         BoxShadow(
                           color: const Color(0xFF66BB6A).withOpacity(0.4),
@@ -183,7 +533,7 @@ class LessonSlideWidget extends StatelessWidget {
           padding: const EdgeInsets.all(32),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(12.0),
             boxShadow: [
               BoxShadow(
                 color: const Color(0xFF66BB6A).withOpacity(0.06),
@@ -236,7 +586,7 @@ class LessonSlideWidget extends StatelessWidget {
                         const Color(0xFFFFECB3).withOpacity(0.5),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(12.0),
                     border: Border.all(
                       color: const Color(0xFFFFD54F).withOpacity(0.4),
                       width: 2,
@@ -310,7 +660,7 @@ class LessonSlideWidget extends StatelessWidget {
                 Container(
                   margin: const EdgeInsets.only(top: 8),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(12.0),
                     boxShadow: [
                       BoxShadow(
                         color: const Color(0xFF66BB6A).withOpacity(0.15),
@@ -320,7 +670,7 @@ class LessonSlideWidget extends StatelessWidget {
                     ],
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(12.0),
                     child: Image.network(
                       slide.imageUrl!,
                       width: double.infinity,
@@ -363,13 +713,13 @@ class LessonSlideWidget extends StatelessWidget {
                   height: 56,
                   decoration: BoxDecoration(
                     color: const Color(0xFF66BB6A).withOpacity(0.08),
-                    borderRadius: BorderRadius.circular(18),
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: onPrevious,
-                      borderRadius: BorderRadius.circular(18),
+                      borderRadius: BorderRadius.circular(12.0),
                       child: Center(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -412,7 +762,7 @@ class LessonSlideWidget extends StatelessWidget {
                       const Color(0xFF66BB6A).withOpacity(0.8),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(12.0),
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0xFF66BB6A).withOpacity(0.4),
@@ -425,7 +775,7 @@ class LessonSlideWidget extends StatelessWidget {
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: isLastSlide ? onFinish : onNext,
-                    borderRadius: BorderRadius.circular(18),
+                    borderRadius: BorderRadius.circular(12.0),
                     child: Center(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -487,7 +837,7 @@ class _BulletPoint extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12.0),
         border: Border.all(
           color: bulletColor.withOpacity(0.15),
           width: 1.5,
@@ -544,4 +894,5 @@ class _BulletPoint extends StatelessWidget {
       ),
     );
   }
+
 }

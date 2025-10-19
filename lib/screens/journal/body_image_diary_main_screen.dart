@@ -29,15 +29,16 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
+      body: Column(
+        children: [
             // Navigation Bar
             _buildNavigationBar(context),
             
             // Main Content
             Expanded(
-              child: SingleChildScrollView(
+              child: SafeArea(
+                top: false,
+                child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,21 +58,6 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
               
                     const SizedBox(height: 24),
                     
-                    // Today's Entries Section
-                    Text(
-                      "Today's Entries",
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    
-                    const SizedBox(height: 16),
-                    
-                    // Today's Entries with Add Entry Card
-                    _buildTodaysEntries(context, currentWeekBodyImageDiaries),
-                    
-                    const SizedBox(height: 24),
-                    
                     // Recent Entries Section
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -85,7 +71,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
                         Container(
                           decoration: BoxDecoration(
                             color: Colors.teal[50],
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(40.0),
                             border: Border.all(
                               color: Colors.teal[200]!,
                               width: 1,
@@ -95,7 +81,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
                             color: Colors.transparent,
                             child: InkWell(
                               onTap: () => _showAllEntries(context, user.id),
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(40.0),
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                 child: Row(
@@ -125,26 +111,20 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
                     
                     const SizedBox(height: 16),
                     
-                    // Recent Entries (Vertical Scroll)
+                    // Add Entry Button
+                    _buildAddEntryButton(context),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Recent Entries (Organized by Date)
                     _buildRecentEntries(context, currentWeekBodyImageDiaries, allBodyImageDiaries),
                   ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _navigateToSurvey(context),
-        backgroundColor: Colors.teal[600],
-        foregroundColor: Colors.white,
-        elevation: 8,
-        child: const Icon(
-          Icons.add,
-          size: 28,
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
@@ -174,14 +154,22 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
                 constraints: const BoxConstraints(),
               ),
               const SizedBox(width: 16),
-              Text(
-                'Body Image Diary',
-                style: GoogleFonts.fredoka(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Body Image Diary',
+                    style: GoogleFonts.fredoka(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
+              const SizedBox(width: 48), // Balance the back button width
             ],
           ),
         ),
@@ -195,7 +183,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.cyan[50],
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: Colors.cyan[100]!,
           width: 2,
@@ -233,100 +221,45 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTodaysEntries(BuildContext context, AsyncValue<List<BodyImageDiary>> bodyImageDiaries) {
-    return bodyImageDiaries.when(
-      data: (entries) {
-        final today = DateTime.now();
-        final todayEntries = entries.where((entry) {
-          final entryDate = DateTime(entry.checkTime.year, entry.checkTime.month, entry.checkTime.day);
-          final todayDate = DateTime(today.year, today.month, today.day);
-          return entryDate == todayDate;
-        }).toList();
-
-        if (todayEntries.isEmpty) {
-          return _buildTodaysEmptyState(context);
-        }
-
-        return _buildTodaysEntriesWithAddCard(context, todayEntries);
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, _) => Container(
-        padding: const EdgeInsets.all(16),
-        child: Text('Error loading entries: $error'),
-      ),
-    );
-  }
-
-  Widget _buildTodaysEmptyState(BuildContext context) {
+  Widget _buildAddEntryButton(BuildContext context) {
     return Container(
-      height: 200,
+      width: double.infinity,
+      height: 56,
       decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[300]!),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => _navigateToSurvey(context),
-          borderRadius: BorderRadius.circular(16),
-          child: const Center(
-            child: Icon(
-              Icons.add,
-              size: 32,
-              color: Colors.grey,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTodaysEntriesWithAddCard(BuildContext context, List<BodyImageDiary> entries) {
-    // Sort entries by time (most recent first) and take only 1
-    final sortedEntries = List<BodyImageDiary>.from(entries);
-    sortedEntries.sort((a, b) => b.checkTime.compareTo(a.checkTime));
-    final mostRecentEntry = sortedEntries.isNotEmpty ? sortedEntries.first : null;
-    
-    return SizedBox(
-      height: 200,
-      child: Row(
-        children: [
-          if (mostRecentEntry != null) ...[
-            Expanded(
-              flex: 2,
-              child: _buildBodyImageDiaryCard(context, mostRecentEntry),
-            ),
-            const SizedBox(width: 12),
-          ],
-          SizedBox(
-            width: 200,
-            child: _buildAddEntryCard(context),
+        color: Colors.teal[600],
+        borderRadius: BorderRadius.circular(40.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.teal[600]!.withOpacity(0.3),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildAddEntryCard(BuildContext context) {
-    return Container(
-      height: 200,
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[300]!),
-      ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _navigateToSurvey(context),
-          borderRadius: BorderRadius.circular(16),
-          child: const Center(
-            child: Icon(
-              Icons.add,
-              size: 32,
-              color: Colors.grey,
-            ),
+          borderRadius: BorderRadius.circular(40.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.add,
+                color: Colors.white,
+                size: 24,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Add New Entry',
+                style: GoogleFonts.fredoka(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -351,23 +284,117 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
 
   Widget _buildRecentEntriesFromCurrentWeek(BuildContext context, List<BodyImageDiary> currentWeekEntries) {
     if (currentWeekEntries.isEmpty) {
-      return const SizedBox.shrink();
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            children: [
+              Icon(
+                Icons.visibility_outlined,
+                size: 64,
+                color: Colors.grey[300],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'No entries yet',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[600],
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Tap "Add New Entry" to start tracking',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[500],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
     // Sort by date (most recent first)
     final sortedEntries = List<BodyImageDiary>.from(currentWeekEntries);
     sortedEntries.sort((a, b) => b.checkTime.compareTo(a.checkTime));
 
-    // Limit to 5 most recent entries
-    final limitedEntries = sortedEntries.take(5).toList();
+    // Categorize entries
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+
+    final todayEntries = <BodyImageDiary>[];
+    final yesterdayEntries = <BodyImageDiary>[];
+    final beforeEntries = <BodyImageDiary>[];
+
+    for (final entry in sortedEntries) {
+      final entryDate = DateTime(entry.checkTime.year, entry.checkTime.month, entry.checkTime.day);
+      
+      if (entryDate == today) {
+        todayEntries.add(entry);
+      } else if (entryDate == yesterday) {
+        yesterdayEntries.add(entry);
+      } else {
+        beforeEntries.add(entry);
+      }
+    }
 
     return Column(
-      children: limitedEntries.map((entry) {
-        return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          child: _buildRecentBodyImageDiaryCard(context, entry),
-        );
-      }).toList(),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Today's Entries
+        if (todayEntries.isNotEmpty) ...[
+          Text(
+            'Today',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[700],
+            ),
+          ),
+          const SizedBox(height: 12),
+          ...todayEntries.map((entry) => Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            child: _buildRecentBodyImageDiaryCard(context, entry),
+          )),
+          const SizedBox(height: 16),
+        ],
+        
+        // Yesterday's Entries
+        if (yesterdayEntries.isNotEmpty) ...[
+          Text(
+            'Yesterday',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[700],
+            ),
+          ),
+          const SizedBox(height: 12),
+          ...yesterdayEntries.map((entry) => Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            child: _buildRecentBodyImageDiaryCard(context, entry),
+          )),
+          const SizedBox(height: 16),
+        ],
+        
+        // Before (Earlier) Entries
+        if (beforeEntries.isNotEmpty) ...[
+          Text(
+            'Before',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[700],
+            ),
+          ),
+          const SizedBox(height: 12),
+          ...beforeEntries.map((entry) => Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            child: _buildRecentBodyImageDiaryCard(context, entry),
+          )),
+        ],
+      ],
     );
   }
 
@@ -376,7 +403,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
       height: 120,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(
           color: Colors.grey[300]!,
           width: 1,
@@ -394,7 +421,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _showEntryDetails(context, entry),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(40.0),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -407,7 +434,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
                       height: 24,
                       decoration: BoxDecoration(
                         color: Colors.teal[600]!.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       child: const Icon(
                         Icons.visibility,
@@ -420,7 +447,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                       decoration: BoxDecoration(
                         color: Colors.teal[50],
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(40.0),
                       ),
                       child: Text(
                         'Body Check',
@@ -462,100 +489,6 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildBodyImageDiaryCard(BuildContext context, BodyImageDiary entry) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.grey[300]!,
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 0,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => _showEntryDetails(context, entry),
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      entry.displayCheckTime,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.teal[600],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.teal[50],
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'Body Check',
-                        style: TextStyle(
-                          color: Colors.teal[700],
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '${entry.displayHowChecked} • ${entry.displayWhereChecked}',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                if (entry.contextAndFeelings.isNotEmpty) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    entry.contextAndFeelings,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
-                      fontStyle: FontStyle.italic,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    const Spacer(),
-                    Text(
-                      _formatDate(entry.checkTime),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[500],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   String _formatDate(DateTime dateTime) {
     final now = DateTime.now();

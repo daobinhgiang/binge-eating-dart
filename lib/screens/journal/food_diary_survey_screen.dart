@@ -52,7 +52,12 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return GestureDetector(
+      onTap: () {
+        // Dismiss keyboard when tapping outside
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
       backgroundColor: Colors.grey[50],
       body: SafeArea(
         child: Column(
@@ -69,6 +74,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
             _buildFooter(context),
           ],
         ),
+      ),
       ),
     );
   }
@@ -107,12 +113,17 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
               
               // Title
               Expanded(
-                child: Text(
-                  'Food Diary',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Food Diary',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ),
@@ -200,7 +211,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
                     width: 1.5,
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                 ),
                 child: Text(
@@ -225,7 +236,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
                 backgroundColor: Theme.of(context).primaryColor,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(40.0),
                 ),
                 elevation: 0,
               ),
@@ -257,7 +268,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
@@ -289,35 +300,6 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.grey[50],
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.grey[200]!,
-                width: 1,
-              ),
-            ),
-            child: TextField(
-              controller: _foodController,
-              maxLines: 6,
-              decoration: InputDecoration(
-                hintText: 'e.g., Chicken salad with lettuce, tomatoes, and ranch dressing. Glass of water.',
-                hintStyle: TextStyle(
-                  color: Colors.grey[500],
-                  fontFamily: 'SF Pro Text',
-                ),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.all(16),
-              ),
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.black87,
-                fontFamily: 'SF Pro Text',
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
           // Action buttons row
           Row(
             children: [
@@ -348,7 +330,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
                       width: 1.5,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(40.0),
                     ),
                   ),
                 ),
@@ -373,12 +355,45 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
                       width: 1.5,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(40.0),
                     ),
                   ),
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 16),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.grey[50],
+              borderRadius: BorderRadius.circular(40.0),
+              border: Border.all(
+                color: Colors.grey[200]!,
+                width: 1,
+              ),
+            ),
+            child: TextField(
+              controller: _foodController,
+              maxLines: 6,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) {
+                FocusScope.of(context).unfocus();
+              },
+              decoration: InputDecoration(
+                hintText: 'e.g., Chicken salad with lettuce, tomatoes, and ranch dressing. Glass of water.',
+                hintStyle: TextStyle(
+                  color: Colors.grey[500],
+                  fontFamily: 'SF Pro Text',
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.all(16),
+              ),
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black87,
+                fontFamily: 'SF Pro Text',
+              ),
+            ),
           ),
           if (_isAnalyzingImage)
             Padding(
@@ -401,7 +416,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.blue[50],
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(40.0),
                 border: Border.all(
                   color: Colors.blue[200]!,
                   width: 1,
@@ -436,6 +451,10 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
                   TextField(
                     controller: _foodSearchController,
                     onChanged: _onFoodSearchChanged,
+                    textInputAction: TextInputAction.done,
+                    onSubmitted: (_) {
+                      FocusScope.of(context).unfocus();
+                    },
                     decoration: InputDecoration(
                       hintText: 'Search for foods (e.g., "chicken", "apple")',
                       hintStyle: TextStyle(
@@ -444,11 +463,11 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
                       ),
                       prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(40.0),
                         borderSide: BorderSide(color: Colors.blue[300]!),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(40.0),
                         borderSide: BorderSide(color: Colors.blue[500]!, width: 2),
                       ),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -464,7 +483,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
                       height: 200,
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(40.0),
                         border: Border.all(color: Colors.blue[200]!),
                       ),
                       child: ListView.builder(
@@ -500,7 +519,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
@@ -537,7 +556,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: Colors.grey[50],
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(40.0),
               border: Border.all(
                 color: Colors.grey[200]!,
                 width: 1,
@@ -571,7 +590,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(40.0),
                     ),
                     elevation: 0,
                   ),
@@ -597,7 +616,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
@@ -636,7 +655,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
                 margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(
                   color: isSelected ? Theme.of(context).primaryColor.withOpacity(0.1) : Colors.grey[50],
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(40.0),
                   border: Border.all(
                     color: isSelected ? Theme.of(context).primaryColor : Colors.grey[200]!,
                     width: isSelected ? 2 : 1,
@@ -669,7 +688,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
               Container(
                 decoration: BoxDecoration(
                   color: Colors.grey[50],
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(40.0),
                   border: Border.all(
                     color: Colors.grey[200]!,
                     width: 1,
@@ -677,6 +696,10 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
                 ),
                 child: TextField(
                   controller: _customLocationController,
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) {
+                    FocusScope.of(context).unfocus();
+                  },
                   decoration: InputDecoration(
                     labelText: 'Please specify location',
                     labelStyle: TextStyle(
@@ -705,7 +728,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
@@ -765,7 +788,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isSelected ? Theme.of(context).primaryColor.withOpacity(0.1) : Colors.grey[50],
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(40.0),
           border: Border.all(
             color: isSelected ? Theme.of(context).primaryColor : Colors.grey[200]!,
             width: isSelected ? 2 : 1,
@@ -809,7 +832,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
@@ -848,7 +871,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
                 margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(
                   color: isSelected ? Theme.of(context).primaryColor.withOpacity(0.1) : Colors.grey[50],
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(40.0),
                   border: Border.all(
                     color: isSelected ? Theme.of(context).primaryColor : Colors.grey[200]!,
                     width: isSelected ? 2 : 1,
@@ -915,7 +938,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
@@ -950,7 +973,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
           Container(
             decoration: BoxDecoration(
               color: Colors.grey[50],
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(40.0),
               border: Border.all(
                 color: Colors.grey[200]!,
                 width: 1,
@@ -959,6 +982,10 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
             child: TextField(
               controller: _contextController,
               maxLines: 6,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) {
+                FocusScope.of(context).unfocus();
+              },
               decoration: InputDecoration(
                 hintText: 'e.g., I was feeling stressed after work. Ate quickly while watching TV. Felt guilty afterwards.',
                 hintStyle: TextStyle(

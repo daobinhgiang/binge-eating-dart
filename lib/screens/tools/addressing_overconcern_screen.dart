@@ -67,93 +67,51 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: const Text(
-          'Addressing Overconcern',
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: IconThemeData(color: Colors.orange[600]),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ElevatedButton.icon(
-              onPressed: _isLoading ? null : () => _saveImportanceItems(user.id),
-              icon: _isLoading
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
-                    )
-                  : const Icon(Icons.save, size: 18),
-              label: const Text('Save'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange[600],
-                foregroundColor: Colors.white,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
       body: Column(
         children: [
           // Header Section
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.orange[50]!, Colors.deepOrange[50]!],
+                colors: [Colors.orange[600]!, Colors.deepOrange[500]!],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
             ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    Icons.pie_chart,
-                    size: 32,
-                    color: Colors.orange[600],
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Self-Evaluation Exercise',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.orange[800],
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 8, 20),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4),
+                      child: IconButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ),
+                    Expanded(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          'Addressing Overconcern',
+                          style: GoogleFonts.fredoka(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Visualize your self-worth distribution',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.orange[700],
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 48), // Balance the back button width
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
 
@@ -182,7 +140,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.blue[100]!),
       ),
       child: Padding(
@@ -196,7 +154,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: Colors.blue[100],
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
                   child: Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
                 ),
@@ -229,7 +187,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(40.0),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -315,7 +273,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(40.0),
                 ),
               ),
             ),
@@ -353,7 +311,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
                   color: _isBalanced() ? Colors.green[50] : Colors.orange[50],
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(40.0),
                   border: Border.all(
                     color: _isBalanced() ? Colors.green[200]! : Colors.orange[200]!,
                     width: 2,
@@ -389,7 +347,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(40.0),
                 border: Border.all(color: Colors.grey[200]!),
                 boxShadow: [
                   BoxShadow(
@@ -459,7 +417,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(40.0),
         border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
           BoxShadow(
@@ -485,7 +443,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(40.0),
                 boxShadow: [
                   BoxShadow(
                     color: _getItemColor(index).withOpacity(0.3),
@@ -520,7 +478,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: Colors.orange[50],
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(40.0),
                 border: Border.all(color: Colors.orange[200]!),
               ),
               child: Text(
@@ -535,7 +493,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
             const SizedBox(width: 8),
             InkWell(
               onTap: () => _editImportanceItem(index),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(40.0),
               child: Container(
                 padding: const EdgeInsets.all(8),
                 child: Icon(Icons.edit, size: 18, color: Colors.grey[600]),
@@ -543,7 +501,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
             ),
             InkWell(
               onTap: () => _removeImportanceItem(index),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(40.0),
               child: Container(
                 padding: const EdgeInsets.all(8),
                 child: Icon(Icons.delete_outline, size: 18, color: Colors.red[400]),
@@ -587,7 +545,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: Colors.grey[50],
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(40.0),
           border: Border.all(color: Colors.grey[200]!),
         ),
         child: Row(
@@ -662,6 +620,10 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
       _importanceItems.removeAt(index);
     });
     // Auto-save after removing item
+    _autoSave();
+  }
+
+  void _autoSave() {
     final user = ref.read(currentUserDataProvider);
     if (user != null) {
       _saveImportanceItems(user.id, showSuccessMessage: false);
@@ -675,51 +637,56 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
     showDialog(
       context: context,
       builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Container(
-          constraints: const BoxConstraints(maxWidth: 500),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Header
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.orange[50]!, Colors.deepOrange[50]!],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
+        child: GestureDetector(
+          onTap: () {
+            // Dismiss keyboard when tapping anywhere on the dialog
+            FocusScope.of(context).unfocus();
+          },
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.orange[50]!, Colors.deepOrange[50]!],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
                   ),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.orange[100],
+                          borderRadius: BorderRadius.circular(40.0),
+                        ),
+                        child: Icon(
+                          existingItem != null ? Icons.edit : Icons.add_circle_outline,
+                          color: Colors.orange[700],
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        existingItem != null ? 'Edit Item' : 'Add New Item',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.orange[800],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.orange[100],
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        existingItem != null ? Icons.edit : Icons.add_circle_outline,
-                        color: Colors.orange[700],
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      existingItem != null ? 'Edit Item' : 'Add New Item',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.orange[800],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
 
               // Content
               SingleChildScrollView(
@@ -739,7 +706,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.grey[50],
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40.0),
                         border: Border.all(color: Colors.grey[300]!),
                       ),
                       child: TextField(
@@ -750,6 +717,11 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                           contentPadding: EdgeInsets.all(16),
                         ),
                         maxLines: 2,
+                        textInputAction: TextInputAction.done,
+                        onSubmitted: (_) {
+                          // Dismiss keyboard when Done is pressed
+                          FocusScope.of(context).unfocus();
+                        },
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -764,7 +736,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.grey[50],
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(40.0),
                         border: Border.all(color: Colors.grey[300]!),
                       ),
                       child: TextField(
@@ -776,6 +748,11 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                           suffixText: '%',
                         ),
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        textInputAction: TextInputAction.done,
+                        onSubmitted: (_) {
+                          // Dismiss keyboard when Done is pressed
+                          FocusScope.of(context).unfocus();
+                        },
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -783,7 +760,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: Colors.blue[50],
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(40.0),
                         border: Border.all(color: Colors.blue[100]!),
                       ),
                       child: Row(
@@ -818,7 +795,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                         side: BorderSide(color: Colors.grey[300]!),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(40.0),
                         ),
                       ),
                       child: const Text('Cancel'),
@@ -853,11 +830,8 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
 
                         Navigator.of(context).pop();
                         
-                        // Auto-save after adding/editing item
-                        final user = ref.read(currentUserDataProvider);
-                        if (user != null) {
-                          _saveImportanceItems(user.id, showSuccessMessage: false);
-                        }
+                        // Auto-save after any change
+                        _autoSave();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange[600],
@@ -865,7 +839,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(40.0),
                         ),
                       ),
                       child: Text(existingItem != null ? 'Update' : 'Add'),
@@ -874,6 +848,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                 ),
               ),
             ],
+          ),
           ),
         ),
       ),
@@ -892,7 +867,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
         ),
         backgroundColor: Colors.red[600],
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
         margin: const EdgeInsets.all(16),
       ),
     );
@@ -949,7 +924,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
             ),
             backgroundColor: Colors.green[600],
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
             margin: const EdgeInsets.all(16),
             duration: const Duration(seconds: 2),
           ),
@@ -968,7 +943,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
             ),
             backgroundColor: Colors.red[600],
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
             margin: const EdgeInsets.all(16),
             duration: const Duration(seconds: 3),
           ),

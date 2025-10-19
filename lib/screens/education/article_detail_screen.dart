@@ -88,7 +88,7 @@ class ArticleDetailScreen extends ConsumerWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.primary,
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(12.0),
                           ),
                           child: Text(
                             'Featured Article',
@@ -181,7 +181,7 @@ class ArticleDetailScreen extends ConsumerWidget {
                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                               decoration: BoxDecoration(
                                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: BorderRadius.circular(12.0),
                               ),
                               child: Text(
                                 tag,
