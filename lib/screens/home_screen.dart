@@ -17,6 +17,7 @@ import '../core/services/exp_service.dart';
 import '../models/todo_item.dart';
 import '../core/services/user_learning_service.dart';
 import '../widgets/level_badge.dart';
+import '../widgets/tree_growth_widget.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -1518,25 +1519,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ],
       ),
-      child: Column(
-        children: [
-          const SizedBox(height: 280), // Match the height of the circular progress
-          const SizedBox(height: 12),
-          Text(
-            'Track your binge-free progress in the Journal tab',
-            style: GoogleFonts.fredoka(
-              color: Colors.black87,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 12),
-          const SizedBox(height: 40), // Space for time units
-          const SizedBox(height: 16),
-          const SizedBox(height: 44), // Space for button
-        ],
-      ),
+      child: const TreeGrowthWidget(),
     );
   }
 }

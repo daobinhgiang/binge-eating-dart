@@ -6,6 +6,8 @@ class LevelUpDialog extends StatefulWidget {
   final int newLevel;
   final int expEarned;
   final int totalExp;
+  final VoidCallback? onContinue;
+  final bool shouldNavigateToHome;
 
   const LevelUpDialog({
     super.key,
@@ -13,6 +15,8 @@ class LevelUpDialog extends StatefulWidget {
     required this.newLevel,
     required this.expEarned,
     required this.totalExp,
+    this.onContinue,
+    this.shouldNavigateToHome = false,
   });
 
   @override
@@ -206,7 +210,15 @@ class _LevelUpDialogState extends State<LevelUpDialog>
                         FadeTransition(
                           opacity: _fadeAnimation,
                           child: ElevatedButton(
-                            onPressed: () => Navigator.of(context).pop(),
+                            onPressed: () {
+                              widget.onContinue?.call();
+                              // Return a map with level info and navigation flag
+                              Navigator.of(context).pop({
+                                'shouldNavigate': widget.shouldNavigateToHome,
+                                'oldLevel': widget.oldLevel,
+                                'newLevel': widget.newLevel,
+                              });
+                            },
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 32,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../models/assessment.dart';
 import '../models/assessment_question.dart';
 import '../models/assessment_response.dart';
@@ -7,6 +8,7 @@ import '../core/services/assessment_service.dart';
 import '../core/services/exp_service.dart';
 import '../core/services/lesson_service.dart';
 import '../providers/exp_provider.dart';
+import '../providers/tree_animation_provider.dart';
 import '../models/quiz_submission.dart';
 import './level_up_dialog.dart';
 
@@ -663,7 +665,7 @@ class _AssessmentWidgetState extends ConsumerState<AssessmentWidget> {
             await Future.delayed(const Duration(milliseconds: 500));
             
             if (mounted) {
-              await showDialog(
+              final result = await showDialog(
                 context: context,
                 barrierDismissible: false,
                 builder: (context) => LevelUpDialog(
@@ -671,11 +673,37 @@ class _AssessmentWidgetState extends ConsumerState<AssessmentWidget> {
                   newLevel: newLevel,
                   expEarned: submission.expAwarded ?? 0,
                   totalExp: newExp,
+                  shouldNavigateToHome: true,
                 ),
               );
+              
+              print('🎭 [AssessmentWidget] Dialog closed, result: $result');
+              print('   - Result type: ${result.runtimeType}');
+              if (result is Map) {
+                print('   - shouldNavigate: ${result['shouldNavigate']}');
+                print('   - oldLevel: ${result['oldLevel']}');
+                print('   - newLevel: ${result['newLevel']}');
+              }
+              
+              // Navigate to home screen with smooth animation and trigger tree animation
+              if (result != null && result is Map && result['shouldNavigate'] == true && mounted) {
+                final fromLevel = result['oldLevel'] as int;
+                final toLevel = result['newLevel'] as int;
+                print('✅ [AssessmentWidget] Conditions met, calling _navigateToHomeWithAnimation');
+                await _navigateToHomeWithAnimation(fromLevel, toLevel);
+                // Don't call onCompleted since we're navigating to home instead
+                return;
+              } else {
+                print('❌ [AssessmentWidget] Conditions not met for navigation');
+                print('   - result != null: ${result != null}');
+                print('   - result is Map: ${result is Map}');
+                if (result is Map) print('   - shouldNavigate: ${result['shouldNavigate']}');
+                print('   - mounted: $mounted');
+              }
             }
           }
 
+          // Only call onCompleted if we didn't navigate to home
           widget.onCompleted?.call();
         } else if (submission.status == SubmissionStatus.failed && mounted) {
           // Close loading dialog
@@ -722,6 +750,27 @@ class _AssessmentWidgetState extends ConsumerState<AssessmentWidget> {
         widget.onCompleted?.call();
       }
     });
+  }
+
+  Future<void> _navigateToHomeWithAnimation(int oldLevel, int newLevel) async {
+    if (!mounted) return;
+    
+    print('🚀 [AssessmentWidget] Starting navigation to home with animation');
+    print('📊 [AssessmentWidget] Level change: $oldLevel -> $newLevel');
+    
+    // IMPORTANT: Trigger the animation BEFORE navigating away
+    // This ensures the provider state is set before this widget is unmounted
+    print('🔔 [AssessmentWidget] Triggering tree animation NOW (before navigation)');
+    ref.read(treeAnimationProvider.notifier).triggerGrowthAnimation(oldLevel, newLevel);
+    print('✨ [AssessmentWidget] Animation state set in provider');
+    
+    // Wait a moment to let the animation state propagate
+    await Future.delayed(const Duration(milliseconds: 100));
+    
+    // Navigate to home screen using go_router
+    print('🏠 [AssessmentWidget] Navigating to home now');
+    context.go('/');
+    print('✅ [AssessmentWidget] Navigation to home completed');
   }
 }
 
