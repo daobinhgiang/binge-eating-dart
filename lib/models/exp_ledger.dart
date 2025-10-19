@@ -3,10 +3,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ExpLedger {
   final String id;
   final String userId;
-  final String quizId;
+  final String? quizId; // Made optional for journal entries
+  final String? entryType; // 'quiz', 'food_diary', 'weight_diary', 'body_image_diary', 'money_diary'
   final int expAwarded;
-  final int score;
-  final int totalQuestions;
+  final int score; // For quizzes, this is correct count
+  final int? totalQuestions; // Made optional, only for quizzes
   final int oldLevel;
   final int newLevel;
   final DateTime createdAt;
@@ -14,10 +15,11 @@ class ExpLedger {
   const ExpLedger({
     required this.id,
     required this.userId,
-    required this.quizId,
+    this.quizId,
+    this.entryType,
     required this.expAwarded,
     required this.score,
-    required this.totalQuestions,
+    this.totalQuestions,
     required this.oldLevel,
     required this.newLevel,
     required this.createdAt,
@@ -28,10 +30,11 @@ class ExpLedger {
     return ExpLedger(
       id: doc.id,
       userId: data['userId'] ?? '',
-      quizId: data['quizId'] ?? '',
+      quizId: data['quizId'],
+      entryType: data['entryType'],
       expAwarded: data['expAwarded'] ?? 0,
       score: data['score'] ?? 0,
-      totalQuestions: data['totalQuestions'] ?? 0,
+      totalQuestions: data['totalQuestions'],
       oldLevel: data['oldLevel'] ?? 1,
       newLevel: data['newLevel'] ?? 1,
       createdAt: (data['createdAt'] as Timestamp).toDate(),
@@ -41,23 +44,28 @@ class ExpLedger {
   Map<String, dynamic> toFirestore() {
     return {
       'userId': userId,
-      'quizId': quizId,
+      if (quizId != null) 'quizId': quizId,
+      if (entryType != null) 'entryType': entryType,
       'expAwarded': expAwarded,
       'score': score,
-      'totalQuestions': totalQuestions,
+      if (totalQuestions != null) 'totalQuestions': totalQuestions,
       'oldLevel': oldLevel,
       'newLevel': newLevel,
       'createdAt': Timestamp.fromDate(createdAt),
     };
   }
 
-  double get scorePercentage => totalQuestions > 0 ? (score / totalQuestions) * 100 : 0;
+  double get scorePercentage => totalQuestions != null && totalQuestions! > 0 ? (score / totalQuestions!) * 100 : 0;
 
   bool get leveledUp => newLevel > oldLevel;
 
   @override
   String toString() {
-    return 'ExpLedger(id: $id, quizId: $quizId, score: $score/$totalQuestions, expAwarded: $expAwarded, $oldLevel→$newLevel)';
+    if (quizId != null) {
+      return 'ExpLedger(id: $id, quizId: $quizId, score: $score/$totalQuestions, expAwarded: $expAwarded, $oldLevel→$newLevel)';
+    } else {
+      return 'ExpLedger(id: $id, entryType: $entryType, expAwarded: $expAwarded, $oldLevel→$newLevel)';
+    }
   }
 }
 
