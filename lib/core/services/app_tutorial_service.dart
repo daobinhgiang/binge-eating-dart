@@ -89,6 +89,7 @@ class AppTutorialService {
       colorShadow: Colors.black,
       paddingFocus: 10,
       opacityShadow: 0.8,
+      hideSkip: true,
       onClickTarget: (target) {
         // Allow clicking on the highlighted education tab
         if (target.identify == "education_tab") {
@@ -182,6 +183,7 @@ class AppTutorialService {
       colorShadow: Colors.black,
       paddingFocus: 10,
       opacityShadow: 0.8,
+      hideSkip: true,
       onClickTarget: (target) {
         // Allow clicking on the highlighted first lesson
         if (target.identify == "first_lesson") {
@@ -274,6 +276,7 @@ class AppTutorialService {
       colorShadow: Colors.black,
       paddingFocus: 10,
       opacityShadow: 0.8,
+      hideSkip: true,
       onClickTarget: (target) {
         // Allow clicking on the highlighted exercises tab
         if (target.identify == "exercises_tab") {
@@ -366,6 +369,7 @@ class AppTutorialService {
       colorShadow: Colors.black,
       paddingFocus: 10,
       opacityShadow: 0.8,
+      hideSkip: true,
       onClickTarget: (target) {
         // Allow clicking on the highlighted journal tab
         if (target.identify == "journal_tab") {
@@ -459,6 +463,7 @@ class AppTutorialService {
       colorShadow: Colors.black,
       paddingFocus: 10,
       opacityShadow: 0.8,
+      hideSkip: true,
       onClickTarget: (target) {
         // Allow clicking on the highlighted weight diary
         if (target.identify == "weight_diary") {
@@ -494,8 +499,7 @@ class AppTutorialService {
         identify: "plant_growth",
         keyTarget: plantKey,
         alignSkip: Alignment.topRight,
-        shape: ShapeLightFocus.RRect,
-        radius: 40,
+        shape: ShapeLightFocus.Circle,
         contents: [
           TargetContent(
             align: ContentAlign.bottom,
@@ -517,7 +521,7 @@ class AppTutorialService {
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      "This is your personal plant that grows as you progress! Swipe left to see your binge-free timer, or keep building habits to help your plant grow.",
+                      "This is your personal plant that grows as you progress! Each time you complete activities, your plant will grow and evolve. Swipe left to see your binge-free timer.",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16.0,
@@ -553,6 +557,7 @@ class AppTutorialService {
       colorShadow: Colors.black,
       paddingFocus: 10,
       opacityShadow: 0.8,
+      hideSkip: true,
       onFinish: onFinish,
       onSkip: () {
         onFinish();

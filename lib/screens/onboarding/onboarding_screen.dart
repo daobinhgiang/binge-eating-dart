@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../models/onboarding_answer.dart';
@@ -29,40 +30,40 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       number: 1,
       question: "How often do you binge?",
       options: [
-        "Rarely or never",
-        "Once or twice a month",
-        "Several times a week",
         "Daily or multiple times a day",
+        "Several times a week",
+        "Once or twice a month",
+        "Rarely or never",
       ],
     ),
     OnboardingQuestion(
       number: 2,
       question: "Have the binges gotten more intense?",
       options: [
-        "No, they've stayed the same",
-        "Slightly more intense",
-        "Moderately more intense",
         "Much more intense",
+        "Moderately more intense",
+        "Slightly more intense",
+        "No, they've stayed the same",
       ],
     ),
     OnboardingQuestion(
       number: 3,
       question: "When did you start binging?",
       options: [
-        "Within the past few months",
-        "Within the past year",
-        "1-5 years ago",
         "More than 5 years ago",
+        "1-5 years ago",
+        "Within the past year",
+        "Within the past few months",
       ],
     ),
     OnboardingQuestion(
       number: 4,
       question: "Do you find it difficult to cope with urges to binge?",
       options: [
-        "I can usually cope with the urges",
-        "Sometimes I struggle but can manage",
-        "I find it very difficult most of the time",
         "I feel completely overwhelmed by the urges",
+        "I find it very difficult most of the time",
+        "Sometimes I struggle but can manage",
+        "I can usually cope with the urges",
       ],
     ),
     OnboardingQuestion(
@@ -119,15 +120,198 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       number: 10,
       question: "What's your daily goal for time spent on your recovery with the app?",
       options: [
-        "5 minutes per day",
-        "10 minutes per day",
-        "15 minutes per day",
         "20 minutes per day",
+        "15 minutes per day",
+        "10 minutes per day",
+        "5 minutes per day",
       ],
     ),
   ];
 
   final List<OnboardingAnswer> _answers = [];
+
+  /// Triggers maximum intensity haptic feedback for the most severe options
+  void _triggerMaximumHapticFeedback() {
+    // Triple heavy impact with delays for maximum intensity
+    HapticFeedback.heavyImpact();
+    Future.delayed(const Duration(milliseconds: 30), () {
+      HapticFeedback.heavyImpact();
+      Future.delayed(const Duration(milliseconds: 30), () {
+        HapticFeedback.heavyImpact();
+      });
+    });
+  }
+
+  /// Triggers haptic feedback based on the severity of the selected option
+  /// For questions with severity-based options, index 0 is most severe, index 3 is least severe
+  void _triggerHapticFeedback(int questionNumber, int optionIndex) {
+    // Only trigger haptic feedback on iOS
+    if (Theme.of(context).platform != TargetPlatform.iOS) return;
+    
+    // Debug print to ensure function is being called
+    print('Haptic feedback triggered: Question $questionNumber, Option $optionIndex');
+    
+    switch (questionNumber) {
+      case 1: // "How often do you binge?"
+        // Most severe (daily) = strongest haptic, least severe (rarely) = lightest
+        switch (optionIndex) {
+          case 0: 
+            // Daily or multiple times - MAXIMUM intensity
+            _triggerMaximumHapticFeedback();
+            break;
+          case 1: 
+            // Several times a week - Strong impact
+            HapticFeedback.heavyImpact();
+            break;
+          case 2: 
+            // Once or twice a month - Medium impact
+            HapticFeedback.mediumImpact();
+            break;
+          case 3: 
+            // Rarely or never - Very light impact
+            HapticFeedback.selectionClick();
+            break;
+        }
+        break;
+        
+      case 2: // "Have the binges gotten more intense?"
+        // Most severe (much more intense) = strongest haptic
+        switch (optionIndex) {
+          case 0: 
+            // Much more intense - MAXIMUM intensity
+            _triggerMaximumHapticFeedback();
+            break;
+          case 1: 
+            // Moderately more intense - Strong impact
+            HapticFeedback.heavyImpact();
+            break;
+          case 2: 
+            // Slightly more intense - Medium impact
+            HapticFeedback.mediumImpact();
+            break;
+          case 3: 
+            // Stayed the same - Very light impact
+            HapticFeedback.selectionClick();
+            break;
+        }
+        break;
+        
+      case 3: // "When did you start binging?"
+        // Most severe (longer struggle) = stronger haptic
+        switch (optionIndex) {
+          case 0: 
+            // More than 5 years ago - MAXIMUM intensity
+            _triggerMaximumHapticFeedback();
+            break;
+          case 1: 
+            // 1-5 years ago - Strong impact
+            HapticFeedback.heavyImpact();
+            break;
+          case 2: 
+            // Within the past year - Medium impact
+            HapticFeedback.mediumImpact();
+            break;
+          case 3: 
+            // Within the past few months - Very light impact
+            HapticFeedback.selectionClick();
+            break;
+        }
+        break;
+        
+      case 4: // "Do you find it difficult to cope with urges?"
+        // Most severe (completely overwhelmed) = strongest haptic
+        switch (optionIndex) {
+          case 0: 
+            // Completely overwhelmed - MAXIMUM intensity
+            _triggerMaximumHapticFeedback();
+            break;
+          case 1: 
+            // Very difficult most of the time - Strong impact
+            HapticFeedback.heavyImpact();
+            break;
+          case 2: 
+            // Sometimes struggle but can manage - Medium impact
+            HapticFeedback.mediumImpact();
+            break;
+          case 3: 
+            // Can usually cope - Very light impact
+            HapticFeedback.selectionClick();
+            break;
+        }
+        break;
+        
+      case 5: // "When you binge, what emotions are involved?"
+        // Most severe (emotional pain) = strongest haptic
+        switch (optionIndex) {
+          case 0: 
+            // Primarily emotional pain - MAXIMUM intensity
+            _triggerMaximumHapticFeedback();
+            break;
+          case 1: 
+            // Physical discomfort - Strong impact
+            HapticFeedback.heavyImpact();
+            break;
+          case 2: 
+            // Stress - Medium impact
+            HapticFeedback.mediumImpact();
+            break;
+          case 3: 
+            // Boredom or mix - Very light impact
+            HapticFeedback.selectionClick();
+            break;
+        }
+        break;
+        
+      case 9: // "How motivated do you feel?"
+        // Most severe (low motivation) = stronger haptic
+        switch (optionIndex) {
+          case 0: 
+            // 1-3 (Low motivation) - MAXIMUM intensity
+            _triggerMaximumHapticFeedback();
+            break;
+          case 1: 
+            // 4-6 (Moderate motivation) - Strong impact
+            HapticFeedback.heavyImpact();
+            break;
+          case 2: 
+            // 7-8 (High motivation) - Medium impact
+            HapticFeedback.mediumImpact();
+            break;
+          case 3: 
+            // 9-10 (Very high motivation) - Very light impact
+            HapticFeedback.selectionClick();
+            break;
+        }
+        break;
+        
+      case 10: // "Daily goal for recovery time"
+        // Higher commitment (more time) = stronger haptic
+        switch (optionIndex) {
+          case 0: 
+            // 20 minutes per day - MAXIMUM intensity
+            _triggerMaximumHapticFeedback();
+            break;
+          case 1: 
+            // 15 minutes per day - Strong impact
+            HapticFeedback.heavyImpact();
+            break;
+          case 2: 
+            // 10 minutes per day - Medium impact
+            HapticFeedback.mediumImpact();
+            break;
+          case 3: 
+            // 5 minutes per day - Very light impact
+            HapticFeedback.selectionClick();
+            break;
+        }
+        break;
+        
+      default:
+        // For questions without severity (6, 7, 8), use medium impact
+        HapticFeedback.mediumImpact();
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -229,6 +413,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                 setState(() {
                                   _selectedOption = index;
                                 });
+                                // Trigger haptic feedback based on option severity
+                                _triggerHapticFeedback(currentQuestion.number, index);
                               },
                               borderRadius: BorderRadius.circular(12.0),
                               child: Container(
@@ -379,51 +565,59 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Main message
-              Text(
-                "Let's set up a Daily Routine!",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.grey[900],
-                  fontSize: 32,
-                  fontWeight: FontWeight.w700,
-                  height: 1.3,
+        child: Stack(
+          children: [
+            // Centered images like the intro screen
+            Center(
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/onboarding/daily_routine_dialogue.png'),
+                    const SizedBox(height: 16),
+                    Image.asset('assets/onboarding/daily_routine.png'),
+                  ],
                 ),
               ),
-              
-              const Spacer(),
-              
-              // Continue button
-                      SizedBox(
-                        width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _continueToQuestion10,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF4CAF50),
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor: Colors.grey[300],
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: const Text(
-                    'Continue',
-                            style: TextStyle(
-                      fontSize: 16,
-                              fontWeight: FontWeight.w600,
+            ),
+
+            // Continue button pinned to bottom
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _continueToQuestion10,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF4CAF50),
+                        foregroundColor: Colors.white,
+                        disabledBackgroundColor: Colors.grey[300],
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        'Continue',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -433,60 +627,70 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Main message
-              Text(
-                "Let's start your recovery journey, shall we?",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.grey[900],
-                  fontSize: 32,
-                  fontWeight: FontWeight.w700,
-                  height: 1.3,
+        child: Stack(
+          children: [
+            // Centered images like the intro screen
+            Center(
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Start recovery dialogue image
+                    Image.asset('assets/onboarding/start_recovery_dialogue.png'),
+                    const SizedBox(height: 16),
+                    // Character image
+                    Image.asset('assets/onboarding/start_recovery.png'),
+                  ],
                 ),
               ),
-              
-              const Spacer(),
-              
-              // Continue button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _completeOnboarding,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF4CAF50),
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor: Colors.grey[300],
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        )
-                      : const Text(
-                          'Start Your Journey',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+            ),
+
+            // Continue button pinned to bottom
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _completeOnboarding,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF4CAF50),
+                        foregroundColor: Colors.white,
+                        disabledBackgroundColor: Colors.grey[300],
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0),
                         ),
+                        elevation: 0,
+                      ),
+                      child: _isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          : const Text(
+                              'Start Your Journey',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                    ),
+                  ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -499,60 +703,70 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Progress message
-              Text(
-                "That's $progressPercentage% progress in your first month!",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.grey[900],
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
-                  height: 1.3,
-                ),
-              ),
-              
-              const Spacer(),
-              
-              // Continue button
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                  onPressed: _isLoading ? null : _showProgressCelebration,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF4CAF50),
-                            foregroundColor: Colors.white,
-                            disabledBackgroundColor: Colors.grey[300],
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: _isLoading
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                  ),
-                                )
-                              : const Text(
-                          'Continue',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                        ),
-                      ),
+        child: Stack(
+          children: [
+            // Centered images like the intro screen
+            Center(
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Progress dialogue image
+                    Image.asset('assets/onboarding/progress_${progressPercentage}%.png'),
+                    const SizedBox(height: 16),
+                    // Character image (using the same character from daily routine)
+                    Image.asset('assets/onboarding/progress.png'),
                   ],
                 ),
+              ),
+            ),
+
+            // Continue button pinned to bottom
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _showProgressCelebration,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF4CAF50),
+                        foregroundColor: Colors.white,
+                        disabledBackgroundColor: Colors.grey[300],
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: _isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          : const Text(
+                              'Continue',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -700,8 +914,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       }
 
       // Extract the minutes from the selected option
-      // Options are: "5 minutes per day", "10 minutes per day", etc.
-      final minutes = [5, 10, 15, 20][_selectedOption!];
+      // Options are now: "20 minutes per day", "15 minutes per day", "10 minutes per day", "5 minutes per day"
+      final minutes = [20, 15, 10, 5][_selectedOption!];
       _dailyGoalMinutes = minutes;
       
       // Show progress celebration screen

@@ -114,97 +114,31 @@ class _BingeFreeTimerCarouselWidgetState
           ),
         ),
         const SizedBox(height: 16),
-        // Navigation buttons and dot indicators
+        // Dot indicators only
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Left arrow
-            if (_currentPage > 0)
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-                  color: const Color(0xFF4CAF50),
-                  onPressed: () {
-                    _pageController.previousPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    );
-                  },
-                ),
-              )
-            else
-              const SizedBox(width: 48), // Placeholder for alignment when arrow not visible
-            
-            const SizedBox(width: 16),
-            
-            // Dot indicators
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(2, (index) {
-                return GestureDetector(
-                  onTap: () {
-                    _pageController.animateToPage(
-                      index,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    );
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 6),
-                    width: _currentPage == index ? 10 : 8,
-                    height: _currentPage == index ? 10 : 8,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: _currentPage == index
-                          ? const Color(0xFF4CAF50)
-                          : Colors.grey[300],
-                    ),
-                  ),
+          children: List.generate(2, (index) {
+            return GestureDetector(
+              onTap: () {
+                _pageController.animateToPage(
+                  index,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
                 );
-              }),
-            ),
-            
-            const SizedBox(width: 16),
-            
-            // Right arrow
-            if (_currentPage < 1)
-              Container(
+              },
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 6),
+                width: 10,
+                height: 10,
                 decoration: BoxDecoration(
-                  color: Colors.white,
                   shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+                  color: _currentPage == index
+                      ? const Color(0xFF4CAF50)
+                      : Colors.grey[300],
                 ),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_forward_ios, size: 20),
-                  color: const Color(0xFF4CAF50),
-                  onPressed: () {
-                    _pageController.nextPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    );
-                  },
-                ),
-              )
-            else
-              const SizedBox(width: 48), // Placeholder for alignment when arrow not visible
-          ],
+              ),
+            );
+          }),
         ),
       ],
     );
@@ -227,7 +161,7 @@ class _BingeFreeTimerCarouselWidgetState
           ),
         ],
       ),
-      child: const TreeGrowthWidget(),
+      child: TreeGrowthWidget(treeImageKey: widget.treeWidgetKey),
     );
   }
 
@@ -236,6 +170,8 @@ class _BingeFreeTimerCarouselWidgetState
       return Container(
         width: double.infinity,
         padding: const EdgeInsets.all(12),
+        constraints: const BoxConstraints(minHeight: 360),
+        alignment: Alignment.center,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(40.0),
@@ -249,6 +185,8 @@ class _BingeFreeTimerCarouselWidgetState
           ],
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               'Start tracking your binge-free progress',

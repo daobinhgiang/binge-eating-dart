@@ -6,7 +6,9 @@ import '../providers/tree_animation_provider.dart';
 import '../core/services/tree_service.dart';
 
 class TreeGrowthWidget extends ConsumerStatefulWidget {
-  const TreeGrowthWidget({super.key});
+  final GlobalKey? treeImageKey;
+  
+  const TreeGrowthWidget({super.key, this.treeImageKey});
 
   @override
   ConsumerState<TreeGrowthWidget> createState() => _TreeGrowthWidgetState();
@@ -284,9 +286,11 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
       width: 200,
       child: Image.asset(
         treeData.imagePath,
+        key: widget.treeImageKey, // Apply the GlobalKey to the tree image
         fit: BoxFit.contain,
         errorBuilder: (context, error, stackTrace) {
           return Container(
+            key: widget.treeImageKey, // Apply the GlobalKey to the error container too
             decoration: BoxDecoration(
               color: Colors.grey[200],
               borderRadius: BorderRadius.circular(8),
@@ -325,9 +329,11 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
         opacity: _crossFadeAnimation,
         child: Image.asset(
           treeData.imagePath,
+          key: widget.treeImageKey, // Apply the GlobalKey to the tree image
           fit: BoxFit.contain,
           errorBuilder: (context, error, stackTrace) {
             return Container(
+              key: widget.treeImageKey, // Apply the GlobalKey to the error container too
               decoration: BoxDecoration(
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(8),

@@ -41,7 +41,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       children: [
                         // App Logo
                         Image.asset(
-                          'nurtra.png',
+                          'assets/nurtra.png',
                           height: 65,
                           fit: BoxFit.contain,
                         ),
