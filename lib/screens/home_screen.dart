@@ -38,8 +38,13 @@ class QuestProgressInfo {
 
 class HomeScreen extends ConsumerStatefulWidget {
   final GlobalKey? treeWidgetKey;
+  final GlobalKey<BingeFreeTimerCarouselWidgetState>? carouselKey;
   
-  const HomeScreen({super.key, this.treeWidgetKey});
+  const HomeScreen({
+    super.key, 
+    this.treeWidgetKey,
+    this.carouselKey,
+  });
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -424,7 +429,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // Carousel with tree and binge-free timer - full width, no horizontal padding
-        BingeFreeTimerCarouselWidget(treeWidgetKey: widget.treeWidgetKey),
+        BingeFreeTimerCarouselWidget(
+          key: widget.carouselKey,
+          treeWidgetKey: widget.treeWidgetKey,
+          carouselKey: widget.carouselKey,
+        ),
         
         // Add padding for the rest of the content
         Padding(

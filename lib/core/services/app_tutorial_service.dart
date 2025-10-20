@@ -489,6 +489,7 @@ class AppTutorialService {
   void showPlantGrowthTutorial({
     required BuildContext context,
     required GlobalKey plantKey,
+    required GlobalKey carouselKey,
     required VoidCallback onFinish,
     required VoidCallback onNext,
   }) {

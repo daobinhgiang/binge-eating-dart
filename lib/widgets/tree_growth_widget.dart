@@ -217,20 +217,22 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Tree display with animation
-        // Use growth animation if animating, otherwise use simple scale animation
-        _isAnimating
-            ? ScaleTransition(
-                scale: _growthScaleAnimation,
-                child: _buildTreeImageWithCrossFade(currentTreeData),
-              )
-            : ScaleTransition(
-                scale: _scaleAnimation,
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: _buildTreeImage(currentTreeData),
+        // Tree display with animation - apply the key here to avoid duplicate key errors
+        Container(
+          key: widget.treeImageKey, // Apply the GlobalKey once at this level
+          child: _isAnimating
+              ? ScaleTransition(
+                  scale: _growthScaleAnimation,
+                  child: _buildTreeImageWithCrossFade(currentTreeData),
+                )
+              : ScaleTransition(
+                  scale: _scaleAnimation,
+                  child: FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: _buildTreeImage(currentTreeData),
+                  ),
                 ),
-              ),
+        ),
         const SizedBox(height: 20),
         // Current level display
         Text(
@@ -286,11 +288,9 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
       width: 200,
       child: Image.asset(
         treeData.imagePath,
-        key: widget.treeImageKey, // Apply the GlobalKey to the tree image
         fit: BoxFit.contain,
         errorBuilder: (context, error, stackTrace) {
           return Container(
-            key: widget.treeImageKey, // Apply the GlobalKey to the error container too
             decoration: BoxDecoration(
               color: Colors.grey[200],
               borderRadius: BorderRadius.circular(8),
@@ -329,11 +329,9 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
         opacity: _crossFadeAnimation,
         child: Image.asset(
           treeData.imagePath,
-          key: widget.treeImageKey, // Apply the GlobalKey to the tree image
           fit: BoxFit.contain,
           errorBuilder: (context, error, stackTrace) {
             return Container(
-              key: widget.treeImageKey, // Apply the GlobalKey to the error container too
               decoration: BoxDecoration(
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(8),

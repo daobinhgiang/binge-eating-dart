@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,15 +9,20 @@ import 'tree_growth_widget.dart';
 
 class BingeFreeTimerCarouselWidget extends ConsumerStatefulWidget {
   final GlobalKey? treeWidgetKey;
+  final GlobalKey<BingeFreeTimerCarouselWidgetState>? carouselKey;
   
-  const BingeFreeTimerCarouselWidget({super.key, this.treeWidgetKey});
+  const BingeFreeTimerCarouselWidget({
+    super.key, 
+    this.treeWidgetKey,
+    this.carouselKey,
+  });
 
   @override
   ConsumerState<BingeFreeTimerCarouselWidget> createState() =>
-      _BingeFreeTimerCarouselWidgetState();
+      BingeFreeTimerCarouselWidgetState();
 }
 
-class _BingeFreeTimerCarouselWidgetState
+class BingeFreeTimerCarouselWidgetState
     extends ConsumerState<BingeFreeTimerCarouselWidget> {
   late PageController _pageController;
   int _currentPage = 0;
@@ -32,10 +38,12 @@ class _BingeFreeTimerCarouselWidgetState
     );
     _loadLastResetTime();
     _startTimer();
+    print('🎯 Carousel: Widget initialized');
   }
 
   @override
   void dispose() {
+    print('🎯 Carousel: DISPOSING');
     _updateTimer?.cancel();
     _pageController.dispose();
     super.dispose();
@@ -65,8 +73,80 @@ class _BingeFreeTimerCarouselWidgetState
     });
   }
 
+  // Public method to navigate to a specific page (for tutorial use)
+  void navigateToPage(int pageIndex) {
+    print('🎯 navigateToPage method called with index: $pageIndex');
+    print('🎯 Platform: ${kIsWeb ? "WEB" : "MOBILE"}');
+    print('🎯 Widget mounted: $mounted');
+    print('🎯 PageController hasClients: ${_pageController.hasClients}');
+    
+    if (!mounted) {
+      print('❌ Widget not mounted');
+      return;
+    }
+    
+    if (!_pageController.hasClients) {
+      print('❌ PageController has no clients, trying to attach...');
+      // Wait longer on web for the PageView to attach to the controller
+      final delay = kIsWeb ? const Duration(milliseconds: 300) : const Duration(milliseconds: 100);
+      Future.delayed(delay, () {
+        if (mounted && _pageController.hasClients) {
+          print('✅ PageController now has clients, retrying navigation');
+          navigateToPage(pageIndex);
+        } else {
+          print('❌ Still no clients after delay');
+        }
+      });
+      return;
+    }
+    
+    try {
+      print('🎯 Current page: ${_pageController.page}');
+      print('🎯 Position has dimensions: ${_pageController.position.haveDimensions}');
+      print('🎯 Animating to page $pageIndex');
+      
+      // On web, use jumpToPage first, then animate for smoother transition
+      if (kIsWeb) {
+        print('🌐 Using web-specific navigation');
+        // First jump to the page immediately
+        _pageController.jumpToPage(pageIndex);
+        setState(() {
+          _currentPage = pageIndex;
+        });
+        print('✅ Jumped to page $pageIndex');
+      } else {
+        // On mobile, use the normal animation
+        _pageController.animateToPage(
+          pageIndex,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        ).then((_) {
+          print('✅ Animation completed');
+          setState(() {
+            _currentPage = pageIndex;
+          });
+        }).catchError((error) {
+          print('❌ Animation error: $error');
+        });
+      }
+    } catch (e) {
+      print('❌ Exception during navigation: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Register this widget instance with the key for external access
+    if (widget.carouselKey != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (widget.carouselKey!.currentState == null) {
+          print('⚠️  Carousel key currentState is null');
+        } else {
+          print('✅ Carousel key currentState is available');
+        }
+      });
+    }
+    
     return Column(
       children: [
         // PageView carousel
@@ -74,43 +154,89 @@ class _BingeFreeTimerCarouselWidgetState
           height: 480, // Increased height to accommodate shadows (400 + 80 for top/bottom shadows)
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 30), // Increased vertical padding for shadows
-            child: PageView.builder(
-              clipBehavior: Clip.none, // Prevent clipping of shadows
-            controller: _pageController,
-            onPageChanged: (index) {
-              setState(() {
-                _currentPage = index;
-              });
-            },
-            itemCount: 2,
-            itemBuilder: (context, index) {
-              return AnimatedBuilder(
-                animation: _pageController,
-                builder: (context, child) {
-                  double value = 1.0;
-                  if (_pageController.position.haveDimensions) {
-                    value = _pageController.page! - index;
-                    value = (1 - (value.abs() * 0.3)).clamp(0.7, 1.0);
+            child: GestureDetector(
+              onPanUpdate: (details) {
+                // Handle mouse drag for web compatibility
+                if (details.delta.dx.abs() > details.delta.dy.abs()) {
+                  // Horizontal drag detected
+                  final sensitivity = 0.5;
+                  final offset = details.delta.dx * sensitivity;
+                  _pageController.position.moveTo(_pageController.position.pixels - offset);
+                }
+              },
+              onPanEnd: (details) {
+                // Snap to nearest page after drag ends
+                final velocity = details.velocity.pixelsPerSecond.dx;
+                if (velocity.abs() > 500) {
+                  // Fast swipe - go to next/previous page
+                  if (velocity > 0 && _currentPage > 0) {
+                    _pageController.previousPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  } else if (velocity < 0 && _currentPage < 1) {
+                    _pageController.nextPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  } else {
+                    // Snap back to current page
+                    _pageController.animateToPage(
+                      _currentPage,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
                   }
-                  
-                  final scale = Curves.easeInOut.transform(value);
-                  
-                  return Center(
-                    child: Transform.scale(
-                      scale: scale,
-                      child: Opacity(
-                        opacity: value,
-                        child: child,
-                      ),
-                    ),
+                } else {
+                  // Slow drag - snap to nearest page
+                  final currentOffset = _pageController.position.pixels;
+                  final pageWidth = _pageController.position.viewportDimension;
+                  final targetPage = (currentOffset / pageWidth).round();
+                  _pageController.animateToPage(
+                    targetPage.clamp(0, 1),
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                }
+              },
+              child: PageView.builder(
+                clipBehavior: Clip.none, // Prevent clipping of shadows
+                controller: _pageController,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                },
+                itemCount: 2,
+                itemBuilder: (context, index) {
+                  return AnimatedBuilder(
+                    animation: _pageController,
+                    builder: (context, child) {
+                      double value = 1.0;
+                      if (_pageController.position.haveDimensions) {
+                        value = _pageController.page! - index;
+                        value = (1 - (value.abs() * 0.3)).clamp(0.7, 1.0);
+                      }
+                      
+                      final scale = Curves.easeInOut.transform(value);
+                      
+                      return Center(
+                        child: Transform.scale(
+                          scale: scale,
+                          child: Opacity(
+                            opacity: value,
+                            child: child,
+                          ),
+                        ),
+                      );
+                    },
+                    child: index == 0
+                        ? _buildTreeContainer()
+                        : _buildBingeFreeTimer(),
                   );
                 },
-                child: index == 0
-                    ? _buildTreeContainer()
-                    : _buildBingeFreeTimer(),
-              );
-            },
-          ),
+              ),
+            ),
           ),
         ),
         const SizedBox(height: 16),
@@ -146,7 +272,6 @@ class _BingeFreeTimerCarouselWidgetState
 
   Widget _buildTreeContainer() {
     return Container(
-      key: widget.treeWidgetKey, // Use the GlobalKey for tutorial targeting
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(

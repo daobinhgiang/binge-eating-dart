@@ -11,6 +11,7 @@ import 'profile/profile_screen.dart';
 import '../core/services/app_tutorial_service.dart';
 import '../providers/auth_provider.dart';
 import '../models/user_model.dart';
+import '../widgets/binge_free_timer_carousel_widget.dart';
 
 class MainNavigation extends ConsumerStatefulWidget {
   const MainNavigation({super.key});
@@ -33,6 +34,7 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
   final GlobalKey _journalTabKey = GlobalKey();
   final GlobalKey _weightDiaryKey = GlobalKey();
   final GlobalKey _treeWidgetKey = GlobalKey();
+  final GlobalKey<BingeFreeTimerCarouselWidgetState> _carouselKey = GlobalKey<BingeFreeTimerCarouselWidgetState>();
 
   final List<NavigationItem> _navigationItems = [
     NavigationItem(
@@ -219,28 +221,67 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
   }
   
   void _showPlantGrowthTutorial() {
-    if (_hasShownPlantGrowthTutorial || !mounted) return;
+    print('🌱 _showPlantGrowthTutorial called');
+    print('🌱 _hasShownPlantGrowthTutorial: $_hasShownPlantGrowthTutorial');
+    print('🌱 mounted: $mounted');
+    
+    if (_hasShownPlantGrowthTutorial || !mounted) {
+      print('❌ Returning early: hasShown=$_hasShownPlantGrowthTutorial, mounted=$mounted');
+      return;
+    }
     
     _hasShownPlantGrowthTutorial = true;
+    print('✅ Setting _hasShownPlantGrowthTutorial = true');
     
     // Mark that user has seen the plant growth tutorial
     ref.read(authNotifierProvider.notifier).updateTutorialStatus(
       hasSeenPlantGrowthTutorial: true,
     );
+    print('✅ Marked tutorial status in Firebase');
     
     // Use post-frame callback to ensure the widget with the key is fully built
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
+      print('🌱 Post-frame callback executing');
+      if (!mounted) {
+        print('❌ Not mounted in post-frame callback');
+        return;
+      }
       
+      print('🌱 Calling AppTutorialService.showPlantGrowthTutorial');
       AppTutorialService().showPlantGrowthTutorial(
         context: context,
         plantKey: _treeWidgetKey,
+        carouselKey: _carouselKey,
         onFinish: () {
           // Tutorial dismissed
         },
         onNext: () {
-          // Tutorial flow complete
-          print('🎉 Tutorial flow complete! User is ready to start their journey.');
+          print('🎯 Tutorial onNext callback triggered!');
+          // Trigger swipe to timer page after a short delay
+          Future.delayed(const Duration(milliseconds: 300), () {
+            print('🎯 Delayed callback executing...');
+            if (mounted) {
+              print('🎯 Widget is mounted, accessing carousel state');
+              // Access the carousel state directly through the typed GlobalKey
+              final carouselState = _carouselKey.currentState;
+              print('🎯 Carousel state is null: ${carouselState == null}');
+              if (carouselState != null) {
+                print('🎯 Calling navigateToPage on carousel state');
+                carouselState.navigateToPage(1); // Page 1 is the timer
+              } else {
+                print('❌ Carousel state is null!');
+              }
+            } else {
+              print('❌ Widget not mounted!');
+            }
+          });
+          
+          // Show completion after swipe animation
+          Future.delayed(const Duration(milliseconds: 1000), () {
+            if (mounted) {
+              print('🎉 Tutorial flow complete! User is ready to start their journey.');
+            }
+          });
         },
       );
     });
@@ -310,20 +351,38 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
     
     // Check if we should show plant growth tutorial (when on home tab)
     final user = ref.watch(authNotifierProvider).valueOrNull;
+    print('🔍 Checking plant tutorial conditions:');
+    print('   user != null: ${user != null}');
+    if (user != null) {
+      print('   hasSeenJournalTutorial: ${user.hasSeenJournalTutorial}');
+      print('   hasLoggedWeightDuringTutorial: ${user.hasLoggedWeightDuringTutorial}');
+      print('   hasSeenPlantGrowthTutorial: ${user.hasSeenPlantGrowthTutorial}');
+      print('   _hasShownPlantGrowthTutorial: $_hasShownPlantGrowthTutorial');
+      print('   _currentIndex: $_currentIndex');
+    }
+    
     if (user != null &&
         user.hasSeenJournalTutorial &&
         user.hasLoggedWeightDuringTutorial &&
         !user.hasSeenPlantGrowthTutorial &&
         !_hasShownPlantGrowthTutorial &&
         _currentIndex == 0) {
+      print('✅ All conditions met, scheduling plant tutorial');
       // Trigger tutorial after frame is built
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        print('📅 Post-frame callback for tutorial trigger');
         Future.delayed(const Duration(milliseconds: 500), () {
+          print('⏰ Delayed trigger executing');
           if (mounted && _currentIndex == 0) {
+            print('✅ Calling _showPlantGrowthTutorial');
             _showPlantGrowthTutorial();
+          } else {
+            print('❌ Not calling tutorial: mounted=$mounted, index=$_currentIndex');
           }
         });
       });
+    } else {
+      print('❌ Plant tutorial conditions not met');
     }
     
     return Scaffold(
@@ -331,7 +390,10 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          HomeScreen(treeWidgetKey: _treeWidgetKey),
+          HomeScreen(
+            treeWidgetKey: _treeWidgetKey,
+            carouselKey: _carouselKey,
+          ),
           const LessonsScreen(),
           const ExercisesScreen(),
           JournalScreen(weightDiaryKey: _weightDiaryKey),
