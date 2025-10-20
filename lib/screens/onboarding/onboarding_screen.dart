@@ -179,33 +179,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       else
                         const SizedBox(width: 48),
                       Expanded(
-                        child: Text(
-                          'Question ${_currentQuestionIndex + 1} of ${_questions.length}',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.grey[800],
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(4),
+                          child: LinearProgressIndicator(
+                            value: progress,
+                            minHeight: 6,
+                            backgroundColor: Colors.grey[200],
+                            valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF4CAF50)),
                           ),
                         ),
                       ),
-                      IconButton(
-                        onPressed: () => _showExitDialog(),
-                        icon: const Icon(Icons.close, size: 24),
-                        color: Colors.grey[700],
-                      ),
+                      const SizedBox(width: 48),
                     ],
-                  ),
-                  const SizedBox(height: 12),
-                  // Simple progress bar
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: LinearProgressIndicator(
-                      value: progress,
-                      minHeight: 6,
-                      backgroundColor: Colors.grey[200],
-                      valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF6366F1)),
-                    ),
                   ),
                 ],
               ),
@@ -250,11 +235,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
                                   color: isSelected 
-                                      ? const Color(0xFF6366F1).withOpacity(0.1)
+                                      ? const Color(0xFF4CAF50).withOpacity(0.1)
                                       : Colors.grey[50],
                                   border: Border.all(
                                     color: isSelected 
-                                        ? const Color(0xFF6366F1)
+                                        ? const Color(0xFF4CAF50)
                                         : Colors.grey[300]!,
                                     width: isSelected ? 2 : 1,
                                   ),
@@ -270,12 +255,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                         shape: BoxShape.circle,
                                         border: Border.all(
                                           color: isSelected 
-                                              ? const Color(0xFF6366F1)
+                                              ? const Color(0xFF4CAF50)
                                               : Colors.grey[400]!,
                                           width: 2,
                                         ),
                                         color: isSelected 
-                                            ? const Color(0xFF6366F1)
+                                            ? const Color(0xFF4CAF50)
                                             : Colors.white,
                                       ),
                                       child: isSelected
@@ -323,7 +308,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                     : _nextQuestion)
                               : null,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF6366F1),
+                            backgroundColor: const Color(0xFF4CAF50),
                             foregroundColor: Colors.white,
                             disabledBackgroundColor: Colors.grey[300],
                             disabledForegroundColor: Colors.grey[500],
@@ -399,23 +384,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Icon
-              Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6366F1).withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.event_repeat,
-                  size: 50,
-                  color: Color(0xFF6366F1),
-                ),
-              ),
-              
-              const SizedBox(height: 32),
-              
               // Main message
               Text(
                 "Let's set up a Daily Routine!",
@@ -428,18 +396,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 ),
               ),
               
-              const SizedBox(height: 16),
-              
-              Text(
-                "Building a consistent daily practice is key to your recovery success.",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 16,
-                  height: 1.5,
-                ),
-              ),
-              
               const Spacer(),
               
               // Continue button
@@ -448,7 +404,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _continueToQuestion10,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF6366F1),
+                    backgroundColor: const Color(0xFF4CAF50),
                     foregroundColor: Colors.white,
                     disabledBackgroundColor: Colors.grey[300],
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -482,23 +438,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Icon
-              Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6366F1).withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.rocket_launch,
-                  size: 50,
-                  color: Color(0xFF6366F1),
-                ),
-              ),
-              
-              const SizedBox(height: 32),
-              
               // Main message
               Text(
                 "Let's start your recovery journey, shall we?",
@@ -511,18 +450,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 ),
               ),
               
-              const SizedBox(height: 16),
-              
-              Text(
-                "You've taken an important step by committing to your recovery. We're here to support you every step of the way.",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                              color: Colors.grey[600],
-                  fontSize: 16,
-                  height: 1.5,
-                ),
-              ),
-              
               const Spacer(),
               
               // Continue button
@@ -531,7 +458,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _completeOnboarding,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF6366F1),
+                    backgroundColor: const Color(0xFF4CAF50),
                     foregroundColor: Colors.white,
                     disabledBackgroundColor: Colors.grey[300],
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -577,23 +504,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Celebration icon
-              Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6366F1).withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.celebration,
-                  size: 50,
-                  color: Color(0xFF6366F1),
-                ),
-              ),
-              
-              const SizedBox(height: 32),
-              
               // Progress message
               Text(
                 "That's $progressPercentage% progress in your first month!",
@@ -606,65 +516,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 ),
               ),
               
-              const SizedBox(height: 16),
-              
-              Text(
-                "With $_dailyGoalMinutes minutes a day, you're making a real commitment to your recovery.",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 16,
-                  height: 1.5,
-                ),
-              ),
-              
-              const SizedBox(height: 48),
-              
-              // Visual progress indicator
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6366F1).withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: const Color(0xFF6366F1).withOpacity(0.2),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.timer_outlined,
-                          color: const Color(0xFF6366F1),
-                          size: 24,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          '$_dailyGoalMinutes min/day',
-                          style: TextStyle(
-                            color: const Color(0xFF6366F1),
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: LinearProgressIndicator(
-                        value: progressPercentage / 100,
-                        minHeight: 12,
-                        backgroundColor: Colors.grey[200],
-                        valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF6366F1)),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              
               const Spacer(),
               
               // Continue button
@@ -673,7 +524,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         child: ElevatedButton(
                   onPressed: _isLoading ? null : _showProgressCelebration,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF6366F1),
+                            backgroundColor: const Color(0xFF4CAF50),
                             foregroundColor: Colors.white,
                             disabledBackgroundColor: Colors.grey[300],
                             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -972,7 +823,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             child: Text(
               'Continue Survey',
               style: TextStyle(
-                color: const Color(0xFF6366F1),
+                color: const Color(0xFF4CAF50),
                 fontWeight: FontWeight.w600,
               ),
             ),

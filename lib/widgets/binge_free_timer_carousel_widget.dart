@@ -7,7 +7,9 @@ import '../core/services/reset_timer_service.dart';
 import 'tree_growth_widget.dart';
 
 class BingeFreeTimerCarouselWidget extends ConsumerStatefulWidget {
-  const BingeFreeTimerCarouselWidget({super.key});
+  final GlobalKey? treeWidgetKey;
+  
+  const BingeFreeTimerCarouselWidget({super.key, this.treeWidgetKey});
 
   @override
   ConsumerState<BingeFreeTimerCarouselWidget> createState() =>
@@ -26,6 +28,7 @@ class _BingeFreeTimerCarouselWidgetState
     super.initState();
     _pageController = PageController(
       viewportFraction: 0.75, // Show more of adjacent pages
+      initialPage: 0, // Always start on the plant page (index 0)
     );
     _loadLastResetTime();
     _startTimer();
@@ -68,8 +71,11 @@ class _BingeFreeTimerCarouselWidgetState
       children: [
         // PageView carousel
         SizedBox(
-          height: 400,
-          child: PageView.builder(
+          height: 480, // Increased height to accommodate shadows (400 + 80 for top/bottom shadows)
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 30), // Increased vertical padding for shadows
+            child: PageView.builder(
+              clipBehavior: Clip.none, // Prevent clipping of shadows
             controller: _pageController,
             onPageChanged: (index) {
               setState(() {
@@ -90,22 +96,21 @@ class _BingeFreeTimerCarouselWidgetState
                   final scale = Curves.easeInOut.transform(value);
                   
                   return Center(
-                    child: ClipRect(
-                      child: Transform.scale(
-                        scale: scale,
-                        child: Opacity(
-                          opacity: value,
-                          child: child,
-                        ),
+                    child: Transform.scale(
+                      scale: scale,
+                      child: Opacity(
+                        opacity: value,
+                        child: child,
                       ),
                     ),
                   );
                 },
                 child: index == 0
-                    ? const TreeGrowthWidget()
+                    ? _buildTreeContainer()
                     : _buildBingeFreeTimer(),
               );
             },
+          ),
           ),
         ),
         const SizedBox(height: 16),
@@ -205,11 +210,32 @@ class _BingeFreeTimerCarouselWidgetState
     );
   }
 
+  Widget _buildTreeContainer() {
+    return Container(
+      key: widget.treeWidgetKey, // Use the GlobalKey for tutorial targeting
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(40.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 2,
+            blurRadius: 20,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: const TreeGrowthWidget(),
+    );
+  }
+
   Widget _buildBingeFreeTimer() {
     if (_lastResetTime == null) {
       return Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(40.0),
@@ -228,7 +254,7 @@ class _BingeFreeTimerCarouselWidgetState
               'Start tracking your binge-free progress',
               style: GoogleFonts.fredoka(
                 color: Colors.black87,
-                fontSize: 16,
+                fontSize: 18,
                 fontWeight: FontWeight.w500,
               ),
               textAlign: TextAlign.center,
@@ -240,7 +266,7 @@ class _BingeFreeTimerCarouselWidgetState
               label: Text(
                 'Start Timer',
                 style: GoogleFonts.fredoka(
-                  fontSize: 16,
+                  fontSize: 18,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -318,10 +344,10 @@ class _BingeFreeTimerCarouselWidgetState
         borderRadius: BorderRadius.circular(40.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 1,
-            blurRadius: 16,
-            offset: const Offset(0, 4),
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 2,
+            blurRadius: 20,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -337,7 +363,7 @@ class _BingeFreeTimerCarouselWidgetState
             label: Text(
               'Reset Timer',
               style: GoogleFonts.fredoka(
-                fontSize: 16,
+                fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -360,12 +386,12 @@ class _BingeFreeTimerCarouselWidgetState
       int hours, int minutes, int seconds) {
     return Column(
       children: [
-        // Circular progress rings - larger size
-        SizedBox(
-          width: 220,
-          height: 220,
-          child: CustomPaint(
-            size: const Size(220, 220),
+          // Circular progress rings - larger size
+          SizedBox(
+            width: 240,
+            height: 240,
+            child: CustomPaint(
+              size: const Size(240, 240),
             painter: CircularTimerPainter(
               days: days,
               hours: hours,
@@ -380,7 +406,7 @@ class _BingeFreeTimerCarouselWidgetState
           "You've been binge-free for:",
           style: GoogleFonts.fredoka(
             color: Colors.black87,
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: FontWeight.w500,
           ),
           textAlign: TextAlign.center,
@@ -389,9 +415,9 @@ class _BingeFreeTimerCarouselWidgetState
         // Time units displayed in a row below the circle
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: timeUnits.map((unit) {
-            final fontSize = 18.0;
-            final labelSize = 10.0;
+            children: timeUnits.map((unit) {
+              final fontSize = 20.0;
+              final labelSize = 11.0;
 
             // Determine color based on the time unit type
             Color unitColor;

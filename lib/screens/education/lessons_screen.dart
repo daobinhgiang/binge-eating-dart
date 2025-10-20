@@ -639,7 +639,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
   double _getLessonPosition(int index) {
     // Create an ultra-smooth S-curve pattern with gradual transitions
     // This creates a flowing wave that moves smoothly through multiple positions
-    final pattern = [0.0, -0.66, -1.0, -0.66, 0.0, 0.66, 1.0, 0.66];
+    final pattern = [0.0, -0.75, -1.0, -0.75, 0.0, 0.75, 1.0, 0.75];
     return pattern[index % pattern.length];
   }
 

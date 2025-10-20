@@ -26,7 +26,6 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
   bool _hasShownJournalTutorial = false;
   bool _hasShownWeightDiaryTutorial = false;
   bool _hasShownPlantGrowthTutorial = false;
-  bool _hasShownCompletionTutorial = false;
 
   // Global keys for tutorial targets
   final GlobalKey _educationTabKey = GlobalKey();
@@ -34,7 +33,6 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
   final GlobalKey _journalTabKey = GlobalKey();
   final GlobalKey _weightDiaryKey = GlobalKey();
   final GlobalKey _treeWidgetKey = GlobalKey();
-  final GlobalKey _completionKey = GlobalKey();
 
   final List<NavigationItem> _navigationItems = [
     NavigationItem(
@@ -241,34 +239,13 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
           // Tutorial dismissed
         },
         onNext: () {
-          // User clicked next - show completion tutorial
-          Future.delayed(const Duration(milliseconds: 500), () {
-            if (mounted) {
-              _showCompletionTutorial();
-            }
-          });
+          // Tutorial flow complete
+          print('🎉 Tutorial flow complete! User is ready to start their journey.');
         },
       );
     });
   }
 
-  void _showCompletionTutorial() {
-    if (!mounted || _hasShownCompletionTutorial) return;
-    
-    _hasShownCompletionTutorial = true;
-    
-    AppTutorialService().showCompletionTutorial(
-      context: context,
-      completionKey: _completionKey, // Still pass the key but it won't be used for spotlight
-      onFinish: () {
-        print('🎉 Tutorial flow complete! User is ready to start their journey.');
-        // Navigate back to home tab
-        if (mounted) {
-          context.go('/');
-        }
-      },
-    );
-  }
 
   void _updateCurrentIndex(String location) {
     switch (location) {
@@ -350,14 +327,13 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
     }
     
     return Scaffold(
-      key: _completionKey,
       backgroundColor: Colors.white,
       body: IndexedStack(
         index: _currentIndex,
         children: [
           HomeScreen(treeWidgetKey: _treeWidgetKey),
           const LessonsScreen(),
-          const ToolsScreen(),
+          const ExercisesScreen(),
           JournalScreen(weightDiaryKey: _weightDiaryKey),
           const ProfileScreen(),
         ],

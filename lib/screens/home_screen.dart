@@ -404,31 +404,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     
     if (user == null) return const SizedBox.shrink();
     
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Carousel with tree and binge-free timer
-          const BingeFreeTimerCarouselWidget(),
-          
-          const SizedBox(height: 16),
-          
-          // Urge Help and Motivation buttons in same row
-          Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        // Carousel with tree and binge-free timer - full width, no horizontal padding
+        BingeFreeTimerCarouselWidget(treeWidgetKey: widget.treeWidgetKey),
+        
+        // Add padding for the rest of the content
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          child: Column(
             children: [
-              Expanded(
-                child: _buildUrgeHelpButton(),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildMotivationButton(),
+              // Urge Help and Motivation buttons in same row
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildUrgeHelpButton(),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _buildMotivationButton(),
+                  ),
+                ],
               ),
             ],
           ),
-          
-        ],
-      ),
+        ),
+      ],
     );
   }
 
