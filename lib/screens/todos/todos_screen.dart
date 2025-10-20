@@ -58,7 +58,7 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
       );
     }
 
-    final userTodosAsync = ref.watch(userTodosProvider(user.id));
+    final userTodosAsync = ref.watch(userTodosStreamProvider(user.id));
 
     return Scaffold(
       body: Container(

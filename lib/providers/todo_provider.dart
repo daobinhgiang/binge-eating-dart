@@ -62,6 +62,80 @@ final userTodosStreamProvider = StreamProvider.family<List<TodoItem>, String>((r
   return service.getUserTodosStream(userId);
 });
 
+// Seeds stream provider (daily tasks) - real-time updates
+final seedsStreamProvider = StreamProvider.family<List<TodoItem>, String>((ref, userId) {
+  final service = ref.read(todoServiceProvider);
+  return service.getUserTodosStream(userId).map((todos) =>
+    todos.where((todo) => todo.tier == TaskTier.seeds).toList()
+  );
+});
+
+// Growth tasks stream provider (weekly tasks) - real-time updates
+final growthTasksStreamProvider = StreamProvider.family<List<TodoItem>, String>((ref, userId) {
+  final service = ref.read(todoServiceProvider);
+  return service.getUserTodosStream(userId).map((todos) =>
+    todos.where((todo) => todo.tier == TaskTier.growthTasks).toList()
+  );
+});
+
+// Mastery quests stream provider (persistent tasks) - real-time updates
+final masteryQuestsStreamProvider = StreamProvider.family<List<TodoItem>, String>((ref, userId) {
+  final service = ref.read(todoServiceProvider);
+  return service.getUserTodosStream(userId).map((todos) =>
+    todos.where((todo) => todo.tier == TaskTier.masteryQuests).toList()
+  );
+});
+
+// Today's todos stream provider - real-time updates
+final todayTodosStreamProvider = StreamProvider.family<List<TodoItem>, String>((ref, userId) {
+  final service = ref.read(todoServiceProvider);
+  return service.getUserTodosStream(userId).map((todos) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    
+    return todos.where((todo) {
+      final due = DateTime(todo.dueDate.year, todo.dueDate.month, todo.dueDate.day);
+      return today.isAtSameMomentAs(due);
+    }).toList();
+  });
+});
+
+// Pending todos stream provider - real-time updates
+final pendingTodosStreamProvider = StreamProvider.family<List<TodoItem>, String>((ref, userId) {
+  final service = ref.read(todoServiceProvider);
+  return service.getUserTodosStream(userId).map((todos) =>
+    todos.where((todo) => !todo.isCompleted).toList()
+  );
+});
+
+// Completed todos stream provider - real-time updates
+final completedTodosStreamProvider = StreamProvider.family<List<TodoItem>, String>((ref, userId) {
+  final service = ref.read(todoServiceProvider);
+  return service.getUserTodosStream(userId).map((todos) {
+    final completed = todos.where((todo) => todo.isCompleted).toList();
+    // Sort by completion date (most recent first)
+    completed.sort((a, b) {
+      if (a.completedAt == null && b.completedAt == null) return 0;
+      if (a.completedAt == null) return 1;
+      if (b.completedAt == null) return -1;
+      return b.completedAt!.compareTo(a.completedAt!);
+    });
+    return completed;
+  });
+});
+
+// Overdue todos stream provider - real-time updates
+final overdueTodosStreamProvider = StreamProvider.family<List<TodoItem>, String>((ref, userId) {
+  final service = ref.read(todoServiceProvider);
+  return service.getUserTodosStream(userId).map((todos) {
+    final now = DateTime.now();
+    return todos.where((todo) => 
+      !todo.isCompleted &&
+      todo.dueDate.isBefore(now)
+    ).toList();
+  });
+});
+
 // Tier-based providers
 
 // Seeds provider (daily tasks)

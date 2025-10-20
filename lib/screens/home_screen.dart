@@ -795,7 +795,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           data: (user) {
             if (user == null) return const SizedBox.shrink();
             
-            final userTodosAsync = ref.watch(userTodosProvider(user.id));
+            final userTodosAsync = ref.watch(userTodosStreamProvider(user.id));
             
             return userTodosAsync.when(
               data: (todos) => _buildDailyQuestsWidget(context, todos, ref),

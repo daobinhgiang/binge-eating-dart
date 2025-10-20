@@ -12,10 +12,9 @@ class TaskRegenerationService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final TodoService _todoService = TodoService();
   
-  // Session-level cache: Maps userId -> last regeneration check timestamp
-  // This prevents duplicate regeneration checks within the same session
-  final Map<String, DateTime> _lastRegenerationCheck = {};
-  final Duration _regenerationCheckCooldown = const Duration(minutes: 5);
+  // In-memory cache of last regeneration log per user
+  // This prevents race conditions where Firestore hasn't synced yet
+  final Map<String, RegenerationLog> _lastRegenerationCache = {};
  
   /// Check and regenerate tasks if needed
   /// Returns: List of newly generated tasks
@@ -23,24 +22,8 @@ class TaskRegenerationService {
     try {
       print('\n═══════════════════════════════════════════════════════════');
       print('🔍 REGENERATION CHECK STARTED for userId: $userId');
+      print('⏰ Current time: ${DateTime.now()}');
       print('═══════════════════════════════════════════════════════════');
-      
-      // Prevent duplicate checks within 5 minutes (session cache)
-      final lastCheck = _lastRegenerationCheck[userId];
-      final now = DateTime.now();
-      print('⏰ Current time: $now');
-      print('💾 Last check time: $lastCheck');
-      
-      if (lastCheck != null && DateTime.now().difference(lastCheck).inMinutes < _regenerationCheckCooldown.inMinutes) {
-        final minutesAgo = DateTime.now().difference(lastCheck).inMinutes;
-        print('⏭️  SKIPPING - Already checked $minutesAgo minutes ago (< 5 min cooldown)');
-        print('═══════════════════════════════════════════════════════════\n');
-        return [];
-      }
-      
-      // Update last check time
-      _lastRegenerationCheck[userId] = DateTime.now();
-      print('✅ Session cache updated - proceeding with regeneration check');
       
       print('\n📖 Querying Firestore for last regeneration log...');
       final lastLog = await getLastRegeneration(userId);
@@ -59,30 +42,44 @@ class TaskRegenerationService {
 
       // Check if Seeds need regeneration (daily)
       print('\n🌱 CHECKING SEEDS...');
-      final seedsNeedRegen = _seedsNeedRegeneration(lastLog);
-      print('Seeds need regeneration? $seedsNeedRegen');
-      
-      if (seedsNeedRegen) {
-        print('🔄 Generating seeds...');
-        final seeds = await generateSeeds(userId);
-        newTasks.addAll(seeds);
-        print('✅ Generated ${seeds.length} seeds');
+      // FIRST: Check if seeds already exist for today (most reliable)
+      final seedsExist = await _existingSeedsForTodayExist(userId);
+      if (seedsExist) {
+        print('✅ Seeds already exist for today - NO REGENERATION NEEDED');
       } else {
-        print('⏭️  Skipping seeds - already generated today');
+        // SECOND: Check log if no seeds exist
+        final seedsNeedRegen = _seedsNeedRegeneration(lastLog);
+        print('Seeds need regeneration? $seedsNeedRegen');
+        
+        if (seedsNeedRegen) {
+          print('🔄 Generating seeds...');
+          final seeds = await generateSeeds(userId);
+          newTasks.addAll(seeds);
+          print('✅ Generated ${seeds.length} seeds');
+        } else {
+          print('⏭️  Skipping seeds - already generated today');
+        }
       }
 
       // Check if Growth Tasks need regeneration (weekly)
       print('\n📈 CHECKING GROWTH TASKS...');
-      final growthNeedRegen = _growthTasksNeedRegeneration(lastLog);
-      print('Growth tasks need regeneration? $growthNeedRegen');
-      
-      if (growthNeedRegen) {
-        print('🔄 Generating growth tasks...');
-        final growthTasks = await generateGrowthTasks(userId);
-        newTasks.addAll(growthTasks);
-        print('✅ Generated ${growthTasks.length} growth tasks');
+      // FIRST: Check if growth tasks already exist for this week (most reliable)
+      final growthTasksExist = await _existingGrowthTasksForThisWeekExist(userId);
+      if (growthTasksExist) {
+        print('✅ Growth tasks already exist for this week - NO REGENERATION NEEDED');
       } else {
-        print('⏭️  Skipping growth tasks - already generated this week');
+        // SECOND: Check log if no growth tasks exist
+        final growthNeedRegen = _growthTasksNeedRegeneration(lastLog);
+        print('Growth tasks need regeneration? $growthNeedRegen');
+        
+        if (growthNeedRegen) {
+          print('🔄 Generating growth tasks...');
+          final growthTasks = await generateGrowthTasks(userId);
+          newTasks.addAll(growthTasks);
+          print('✅ Generated ${growthTasks.length} growth tasks');
+        } else {
+          print('⏭️  Skipping growth tasks - already generated this week');
+        }
       }
 
       // Clean up expired tasks
@@ -320,31 +317,95 @@ class TaskRegenerationService {
   }
 
   /// Get last regeneration log
+  /// Checks in-memory cache first, then Firestore
   Future<RegenerationLog?> getLastRegeneration(String userId) async {
     try {
-      print('   Querying regenerationLog collection...');
-      final querySnapshot = await _firestore
-          .collection('users')
-          .doc(userId)
-          .collection('regenerationLog')
-          .orderBy('regeneratedAt', descending: true)
-          .limit(1)
-          .get();
+      // Check in-memory cache first
+      if (_lastRegenerationCache.containsKey(userId)) {
+        print('   ✅ Found regeneration log in memory cache');
+        final cachedLog = _lastRegenerationCache[userId]!;
+        print('   Cache details: regeneratedAt=${cachedLog.regeneratedAt}, seedsDate=${cachedLog.seedsDate}, growthWeek=${cachedLog.growthWeek}');
+        return cachedLog;
+      }
       
-      print('   Query returned ${querySnapshot.docs.length} document(s)');
+      print('   No cache found, querying Firestore...');
+      print('   Path: users/$userId/regenerationLog');
+      
+      QuerySnapshot<Map<String, dynamic>> querySnapshot;
+      
+      try {
+        // Try with orderBy first
+        querySnapshot = await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('regenerationLog')
+            .orderBy('regeneratedAt', descending: true)
+            .limit(1)
+            .get();
+        
+        print('   Query with orderBy completed - returned ${querySnapshot.docs.length} document(s)');
+      } catch (orderByError) {
+        print('   ⚠️  OrderBy query failed (might need index): $orderByError');
+        print('   Falling back to getting all documents and sorting manually...');
+        
+        // Fallback: get all documents and sort manually
+        querySnapshot = await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('regenerationLog')
+            .get();
+        
+        print('   Retrieved ${querySnapshot.docs.length} documents for manual sorting');
+      }
       
       if (querySnapshot.docs.isEmpty) {
-        print('   ❌ No documents found in regenerationLog');
+        print('   ❌ No documents found in regenerationLog collection');
         return null;
       }
       
-      final log = RegenerationLog.fromFirestore(querySnapshot.docs.first);
-      print('   ✅ Found regeneration log');
+      // If we have multiple docs (from fallback), find the most recent one
+      DocumentSnapshot<Map<String, dynamic>> latestDoc;
+      if (querySnapshot.docs.length == 1) {
+        latestDoc = querySnapshot.docs.first;
+      } else {
+        // Sort manually by regeneratedAt
+        final sortedDocs = querySnapshot.docs.toList()..sort((a, b) {
+          final aData = a.data();
+          final bData = b.data();
+          final aTime = _getTimestampValue(aData['regeneratedAt']);
+          final bTime = _getTimestampValue(bData['regeneratedAt']);
+          return bTime.compareTo(aTime); // descending
+        });
+        latestDoc = sortedDocs.first;
+        print('   Manually sorted ${sortedDocs.length} documents, selected most recent');
+      }
+      
+      print('   Found document ID: ${latestDoc.id}');
+      print('   Document data: ${latestDoc.data()}');
+      
+      final log = RegenerationLog.fromFirestore(latestDoc);
+      print('   ✅ Successfully parsed regeneration log from Firestore');
+      print('   Log details: regeneratedAt=${log.regeneratedAt}, seedsDate=${log.seedsDate}, growthWeek=${log.growthWeek}');
+      
+      // Cache it for future checks
+      _lastRegenerationCache[userId] = log;
+      print('   💾 Cached regeneration log in memory');
+      
       return log;
-    } catch (e) {
+    } catch (e, stackTrace) {
       print('   ❌ Error getting last regeneration: $e');
+      print('   Stack trace: $stackTrace');
       return null;
     }
+  }
+  
+  /// Helper to get timestamp value for sorting
+  int _getTimestampValue(dynamic value) {
+    if (value == null) return 0;
+    if (value is Timestamp) return value.millisecondsSinceEpoch;
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    return 0;
   }
 
   /// Log a regeneration event
@@ -357,35 +418,109 @@ class TaskRegenerationService {
   }) async {
     try {
       print('   Creating regeneration log entry...');
+      final now = DateTime.now();
+      
+      // If we already have a cached log from today, merge with it
+      final existingCache = _lastRegenerationCache[userId];
+      final isSameDay = existingCache != null && 
+          existingCache.regeneratedAt.year == now.year &&
+          existingCache.regeneratedAt.month == now.month &&
+          existingCache.regeneratedAt.day == now.day;
+      
       final log = RegenerationLog(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        id: now.millisecondsSinceEpoch.toString(),
         userId: userId,
-        regeneratedAt: DateTime.now(),
-        seedsDate: seedsDate,
-        growthWeek: growthWeek,
-        growthYear: growthYear,
+        regeneratedAt: now,
+        // Merge with existing if from today, otherwise use new values
+        seedsDate: seedsDate ?? (isSameDay ? existingCache.seedsDate : null),
+        growthWeek: growthWeek ?? (isSameDay ? existingCache.growthWeek : null),
+        growthYear: growthYear ?? (isSameDay ? existingCache.growthYear : null),
         generatedTaskIds: generatedTaskIds,
       );
       
-      print('   Log data:');
+      print('   Log data to be saved:');
+      print('      - regeneratedAt: ${log.regeneratedAt}');
       print('      - seedsDate: $seedsDate');
       print('      - growthWeek: $growthWeek');
       print('      - growthYear: $growthYear');
       print('      - taskIds: ${generatedTaskIds.length} tasks');
       
-      await _firestore
+      final docRef = await _firestore
           .collection('users')
           .doc(userId)
           .collection('regenerationLog')
           .add(log.toFirestore());
       
-      print('   ✅ Regeneration log saved to Firestore');
-    } catch (e) {
+      print('   ✅ Regeneration log saved to Firestore with ID: ${docRef.id}');
+      print('   Path: users/$userId/regenerationLog/${docRef.id}');
+      
+      // IMPORTANT: Update the in-memory cache immediately
+      // This prevents race conditions on the next check
+      final cachedLog = log.copyWith(id: docRef.id);
+      _lastRegenerationCache[userId] = cachedLog;
+      print('   💾 Updated in-memory cache with new regeneration log');
+      
+      // Update user document with regeneration info for fast lookups
+      await _updateUserRegenerationInfo(
+        userId: userId,
+        seedsDate: log.seedsDate,
+        growthWeek: log.growthWeek,
+        growthYear: log.growthYear,
+      );
+      
+      // Verify the write by reading it back
+      final verification = await docRef.get();
+      if (verification.exists) {
+        print('   ✅ Verified: Document exists in Firestore');
+      } else {
+        print('   ⚠️  Warning: Document not found immediately after write');
+      }
+    } catch (e, stackTrace) {
       print('   ❌ Error logging regeneration: $e');
+      print('   Stack trace: $stackTrace');
+    }
+  }
+
+  /// Update user document with latest regeneration timestamps
+  /// This enables fast lookups via the user document instead of querying the regenerationLog collection
+  Future<void> _updateUserRegenerationInfo({
+    required String userId,
+    String? seedsDate,
+    int? growthWeek,
+    int? growthYear,
+  }) async {
+    try {
+      final updates = <String, dynamic>{};
+      
+      if (seedsDate != null) {
+        updates['lastSeedsGeneratedDate'] = seedsDate;
+        updates['lastSeedsGeneratedAt'] = DateTime.now().millisecondsSinceEpoch;
+        print('   📝 Updating user doc with seeds info: $seedsDate');
+      }
+      
+      if (growthWeek != null) {
+        updates['lastGrowthWeek'] = growthWeek;
+        updates['lastGrowthYear'] = growthYear;
+        updates['lastGrowthTasksGeneratedAt'] = DateTime.now().millisecondsSinceEpoch;
+        print('   📝 Updating user doc with growth week: $growthWeek/$growthYear');
+      }
+      
+      if (updates.isEmpty) return;
+      
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .update(updates);
+      
+      print('   ✅ User document updated successfully');
+    } catch (e) {
+      print('   ⚠️  Warning: Could not update user document: $e');
+      // Don't throw - this is optional for backwards compatibility
     }
   }
 
   /// Check if Seeds need regeneration
+  /// Compares ONLY the date (not time) - regenerates if the date has changed
   bool _seedsNeedRegeneration(RegenerationLog? lastLog) {
     print('   Checking if seeds need regeneration...');
     
@@ -403,21 +538,18 @@ class TaskRegenerationService {
       final lastDate = DateTime.parse(lastLog.seedsDate!);
       final today = DateTime.now();
       
-      print('   📅 Comparing dates:');
-      print('      Last seeds generated: ${lastLog.seedsDate} ($lastDate)');
+      print('   📅 Comparing dates (ignoring time):');
+      print('      Last seeds generated: ${lastLog.seedsDate}');
       print('      Today: ${today.toString().split(' ')[0]}');
       
       final lastDateOnly = DateTime(lastDate.year, lastDate.month, lastDate.day);
       final todayOnly = DateTime(today.year, today.month, today.day);
       
-      print('      Last date only: $lastDateOnly');
-      print('      Today only: $todayOnly');
-      
       final isSameDay = lastDateOnly.isAtSameMomentAs(todayOnly);
       print('      Same day? $isSameDay');
       
       final needsRegen = !isSameDay;
-      print('   ${needsRegen ? '❌' : '✅'} Needs regeneration: $needsRegen');
+      print('   ${needsRegen ? '✅ Will regenerate' : '⏭️  No regeneration needed'}: Date ${needsRegen ? 'changed' : 'unchanged'}');
       
       return needsRegen;
     } catch (e) {
@@ -427,6 +559,7 @@ class TaskRegenerationService {
   }
 
   /// Check if Growth Tasks need regeneration
+  /// Compares week number and year - regenerates if the week has changed
   bool _growthTasksNeedRegeneration(RegenerationLog? lastLog) {
     print('   Checking if growth tasks need regeneration...');
     
@@ -455,7 +588,7 @@ class TaskRegenerationService {
       print('      Year match? $yearMatch');
       
       final needsRegen = !weekMatch || !yearMatch;
-      print('   ${needsRegen ? '❌' : '✅'} Needs regeneration: $needsRegen');
+      print('   ${needsRegen ? '✅ Will regenerate' : '⏭️  No regeneration needed'}: Week ${needsRegen ? 'changed' : 'unchanged'}');
       
       return needsRegen;
     } catch (e) {
@@ -477,6 +610,50 @@ class TaskRegenerationService {
   DateTime _getMonday(DateTime date) {
     final daysToSubtract = date.weekday - 1; // Monday is 1
     return date.subtract(Duration(days: daysToSubtract));
+  }
+
+  /// Check if seeds already exist for today
+  Future<bool> _existingSeedsForTodayExist(String userId) async {
+    try {
+      final allTodos = await _todoService.getUserTodos(userId);
+      final today = DateTime.now();
+      final todayString = today.toIso8601String().split('T')[0];
+      
+      final todaySeeds = allTodos.where((todo) {
+        return todo.isSeed && 
+               !todo.isCompleted && 
+               todo.regenerationBatchId != null &&
+               todo.regenerationBatchId!.contains(todayString);
+      }).toList();
+      
+      print('   Found ${todaySeeds.length} existing seeds for today');
+      return todaySeeds.isNotEmpty;
+    } catch (e) {
+      print('   ⚠️  Error checking existing seeds: $e');
+      return false;
+    }
+  }
+
+  /// Check if growth tasks already exist for this week
+  Future<bool> _existingGrowthTasksForThisWeekExist(String userId) async {
+    try {
+      final allTodos = await _todoService.getUserTodos(userId);
+      final now = DateTime.now();
+      final weekNumber = _getISOWeekNumber(now);
+      
+      final thisWeekGrowthTasks = allTodos.where((todo) {
+        return todo.isGrowthTask && 
+               !todo.isCompleted && 
+               todo.regenerationBatchId != null &&
+               todo.regenerationBatchId!.contains('growth_w$weekNumber');
+      }).toList();
+      
+      print('   Found ${thisWeekGrowthTasks.length} existing growth tasks for week $weekNumber');
+      return thisWeekGrowthTasks.isNotEmpty;
+    } catch (e) {
+      print('   ⚠️  Error checking existing growth tasks: $e');
+      return false;
+    }
   }
 
   /// Initialize mastery quests for a user

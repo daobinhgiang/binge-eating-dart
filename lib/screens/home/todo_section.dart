@@ -16,7 +16,7 @@ class TodoSection extends ConsumerWidget {
       data: (user) {
         if (user == null) return const SizedBox.shrink();
         
-        final userTodosAsync = ref.watch(userTodosProvider(user.id));
+        final userTodosAsync = ref.watch(userTodosStreamProvider(user.id));
         
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
