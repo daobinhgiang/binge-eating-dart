@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'task_template.dart';
 
 enum TodoType {
   lesson,
@@ -19,6 +20,13 @@ class TodoItem {
   final DateTime? completedAt;
   final DateTime createdAt;
   final DateTime updatedAt;
+  
+  // New tier-related fields
+  final TaskTier? tier;                    // Seeds, GrowthTasks, MasteryQuests
+  final String? templateId;                // Reference to template
+  final String? regenerationBatchId;       // Track regeneration batches
+  final DateTime? autoDeleteDate;          // Auto-clear date for Seeds/Growth Tasks
+  final Map<String, dynamic>? tierMetadata; // Tier-specific data
 
   const TodoItem({
     required this.id,
@@ -33,6 +41,11 @@ class TodoItem {
     this.completedAt,
     required this.createdAt,
     required this.updatedAt,
+    this.tier,
+    this.templateId,
+    this.regenerationBatchId,
+    this.autoDeleteDate,
+    this.tierMetadata,
   });
 
   factory TodoItem.fromFirestore(DocumentSnapshot doc, {String? userId}) {
@@ -68,6 +81,20 @@ class TodoItem {
           : null,
       createdAt: _parseDateTime(data['createdAt']),
       updatedAt: _parseDateTime(data['updatedAt']),
+      tier: data['tier'] != null
+          ? TaskTier.values.firstWhere(
+              (e) => e.toString() == 'TaskTier.${data['tier']}',
+              orElse: () => TaskTier.seeds,
+            )
+          : null,
+      templateId: data['templateId'],
+      regenerationBatchId: data['regenerationBatchId'],
+      autoDeleteDate: data['autoDeleteDate'] != null
+          ? _parseDateTime(data['autoDeleteDate'])
+          : null,
+      tierMetadata: data['tierMetadata'] != null
+          ? Map<String, dynamic>.from(data['tierMetadata'])
+          : null,
     );
   }
 
@@ -99,6 +126,11 @@ class TodoItem {
       'completedAt': completedAt != null ? Timestamp.fromDate(completedAt!) : null,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
+      'tier': tier?.toString().split('.').last,
+      'templateId': templateId,
+      'regenerationBatchId': regenerationBatchId,
+      'autoDeleteDate': autoDeleteDate != null ? Timestamp.fromDate(autoDeleteDate!) : null,
+      'tierMetadata': tierMetadata,
     };
   }
 
@@ -115,6 +147,11 @@ class TodoItem {
     DateTime? completedAt,
     DateTime? createdAt,
     DateTime? updatedAt,
+    TaskTier? tier,
+    String? templateId,
+    String? regenerationBatchId,
+    DateTime? autoDeleteDate,
+    Map<String, dynamic>? tierMetadata,
   }) {
     return TodoItem(
       id: id ?? this.id,
@@ -129,6 +166,11 @@ class TodoItem {
       completedAt: completedAt ?? this.completedAt,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      tier: tier ?? this.tier,
+      templateId: templateId ?? this.templateId,
+      regenerationBatchId: regenerationBatchId ?? this.regenerationBatchId,
+      autoDeleteDate: autoDeleteDate ?? this.autoDeleteDate,
+      tierMetadata: tierMetadata ?? this.tierMetadata,
     );
   }
 
@@ -176,5 +218,38 @@ class TodoItem {
     final now = DateTime.now();
     final difference = dueDate.difference(now).inDays;
     return difference >= 0 && difference <= 3; // Due within 3 days
+  }
+
+  // Helper methods for tiers
+  bool get isSeed => tier == TaskTier.seeds;
+  bool get isGrowthTask => tier == TaskTier.growthTasks;
+  bool get isMasteryQuest => tier == TaskTier.masteryQuests;
+  
+  String get tierDisplayName {
+    if (tier == null) return 'Quest';
+    switch (tier!) {
+      case TaskTier.seeds:
+        return 'Daily Seed';
+      case TaskTier.growthTasks:
+        return 'Growth Task';
+      case TaskTier.masteryQuests:
+        return 'Mastery Quest';
+    }
+  }
+  
+  int get expReward {
+    if (tierMetadata != null && tierMetadata!.containsKey('expReward')) {
+      return tierMetadata!['expReward'] as int;
+    }
+    // Default EXP rewards by tier
+    if (tier == null) return 50;
+    switch (tier!) {
+      case TaskTier.seeds:
+        return 50;
+      case TaskTier.growthTasks:
+        return 200;
+      case TaskTier.masteryQuests:
+        return 500;
+    }
   }
 }

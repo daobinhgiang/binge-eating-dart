@@ -370,14 +370,22 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
                 }
                 
                 return Expanded(
-                  child: _NavigationButton(
-                    key: tabKey,
-                    item: item,
-                    isSelected: isSelected,
-                    onTap: () {
-                      context.go(item.route);
-                    },
-                  ),
+                  child: tabKey != null
+                      ? _NavigationButton(
+                          key: tabKey,
+                          item: item,
+                          isSelected: isSelected,
+                          onTap: () {
+                            context.go(item.route);
+                          },
+                        )
+                      : _NavigationButton(
+                          item: item,
+                          isSelected: isSelected,
+                          onTap: () {
+                            context.go(item.route);
+                          },
+                        ),
                 );
               }).toList(),
             ),

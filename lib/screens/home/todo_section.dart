@@ -16,7 +16,7 @@ class TodoSection extends ConsumerWidget {
       data: (user) {
         if (user == null) return const SizedBox.shrink();
         
-        final userTodosAsync = ref.watch(userTodosProvider(user.id));
+        final userTodosAsync = ref.watch(userTodosStreamProvider(user.id));
         
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -25,7 +25,7 @@ class TodoSection extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Your To-Do List',
+                  'Your Quest List',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -205,7 +205,7 @@ class TodoSection extends ConsumerWidget {
             const SizedBox(height: 8),
             if (totalTasks > 0)
               Text(
-                '$completedTasks/$totalTasks Tasks Done',
+                '$completedTasks/$totalTasks Quests Done',
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w500,
@@ -225,7 +225,7 @@ class TodoSection extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'To-Do List',
+          'Quest List',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: Colors.black,
@@ -249,7 +249,7 @@ class TodoSection extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'To-Do List',
+          'Quest List',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: Colors.black,
@@ -270,7 +270,7 @@ class TodoSection extends ConsumerWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              'No tasks for today',
+              'No quests for today',
               style: TextStyle(
                 color: Colors.grey[600],
                 fontSize: 12,
@@ -299,7 +299,7 @@ class TodoSection extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Text(
-        'No tasks scheduled for today',
+        'No quests scheduled for today',
         style: TextStyle(
           color: Colors.grey[600],
           fontStyle: FontStyle.italic,
@@ -313,16 +313,27 @@ class TodoSection extends ConsumerWidget {
     
     return Container(
       key: key,
-      margin: const EdgeInsets.only(bottom: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(6),
+        color: _getTodoBackgroundColor(todo.type),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: _getTodoBorderColor(todo.type),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: _getTodoShadowColor(todo.type).withOpacity(0.15),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          _buildTodoTypeIcon(todo.type),
-          const SizedBox(width: 8),
+          _buildTodoTypeIconWithBackground(todo.type),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -330,19 +341,20 @@ class TodoSection extends ConsumerWidget {
                 Text(
                   todo.title,
                   style: const TextStyle(
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
                     color: Colors.black,
                     fontSize: 13,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 3),
                 Text(
                   timeText,
                   style: TextStyle(
-                    color: Colors.grey[600],
+                    color: Colors.grey[700],
                     fontSize: 10,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -353,38 +365,68 @@ class TodoSection extends ConsumerWidget {
     );
   }
 
-  Widget _buildTodoTypeIcon(TodoType type) {
-    IconData iconData;
-    
-    switch (type) {
-      case TodoType.journal:
-        iconData = Icons.edit_note;
-        break;
-      case TodoType.lesson:
-        iconData = Icons.school;
-        break;
-      case TodoType.tool:
-        iconData = Icons.build;
-        break;
-    }
+  Widget _buildTodoTypeIconWithBackground(TodoType type) {
+    final (iconData, backgroundColor, iconColor) = _getTodoTypeIcon(type);
     
     return Container(
-      width: 24,
-      height: 24,
+      width: 40,
+      height: 40,
       decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(
-          color: const Color(0xFF4CAF50),
-          width: 2,
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Center(
+        child: Icon(
+          iconData,
+          color: iconColor,
+          size: 20,
         ),
       ),
-      child: Icon(
-        iconData,
-        color: const Color(0xFF4CAF50),
-        size: 14,
-      ),
     );
+  }
+
+  (IconData, Color, Color) _getTodoTypeIcon(TodoType type) {
+    switch (type) {
+      case TodoType.journal:
+        return (Icons.auto_stories_rounded, const Color(0xFFE8D5F2), const Color(0xFFA29BFE));
+      case TodoType.lesson:
+        return (Icons.menu_book_rounded, const Color(0xFFD6E9F8), const Color(0xFF0984E3));
+      case TodoType.tool:
+        return (Icons.psychology_rounded, const Color(0xFFFFD6D6), const Color(0xFFD63031));
+    }
+  }
+
+  Color _getTodoBackgroundColor(TodoType type) {
+    switch (type) {
+      case TodoType.journal:
+        return const Color(0xFFFAF3FF);
+      case TodoType.lesson:
+        return const Color(0xFFF0F7FF);
+      case TodoType.tool:
+        return const Color(0xFFFFF4F4);
+    }
+  }
+
+  Color _getTodoBorderColor(TodoType type) {
+    switch (type) {
+      case TodoType.journal:
+        return const Color(0xFFE8D5F2);
+      case TodoType.lesson:
+        return const Color(0xFFD6E9F8);
+      case TodoType.tool:
+        return const Color(0xFFFFD6D6);
+    }
+  }
+
+  Color _getTodoShadowColor(TodoType type) {
+    switch (type) {
+      case TodoType.journal:
+        return const Color(0xFFA29BFE);
+      case TodoType.lesson:
+        return const Color(0xFF0984E3);
+      case TodoType.tool:
+        return const Color(0xFFD63031);
+    }
   }
 
   Widget _buildTodoLoadingCard(BuildContext context) {
@@ -396,7 +438,7 @@ class TodoSection extends ConsumerWidget {
             const CircularProgressIndicator(),
             const SizedBox(width: 16),
             Text(
-              'Loading your tasks...',
+              'Loading your quests...',
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ],
@@ -409,7 +451,7 @@ class TodoSection extends ConsumerWidget {
     return Card(
       child: ListTile(
         leading: const Icon(Icons.error_outline, color: Colors.orange),
-        title: const Text('Unable to load tasks'),
+        title: const Text('Unable to load quests'),
         subtitle: const Text('Tap to try again'),
         trailing: const Icon(Icons.arrow_forward_ios),
         onTap: () => context.go('/todos'),

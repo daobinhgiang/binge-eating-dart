@@ -56,7 +56,7 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> with TickerProvid
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Task'),
+        title: const Text('Add Quest'),
         centerTitle: true,
         actions: [
           TextButton(
@@ -107,7 +107,7 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> with TickerProvid
             ),
           ),
           
-          // Task Details Section
+          // Quest Details Section
           if (_selectedActivityId != null)
             Container(
               decoration: BoxDecoration(
@@ -116,7 +116,7 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> with TickerProvid
                   top: BorderSide(color: Colors.grey[300]!),
                 ),
               ),
-              child: _buildTaskDetailsSection(),
+              child: _buildQuestDetailsSection(),
             ),
         ],
       ),
@@ -326,7 +326,7 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> with TickerProvid
     );
   }
 
-  Widget _buildTaskDetailsSection() {
+  Widget _buildQuestDetailsSection() {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -334,7 +334,7 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> with TickerProvid
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Task Details',
+            'Quest Details',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -345,7 +345,7 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> with TickerProvid
           TextField(
             controller: _titleController,
             decoration: const InputDecoration(
-              labelText: 'Task Title',
+              labelText: 'Quest Title',
               hintText: 'Enter a custom title or use the default',
               border: OutlineInputBorder(),
             ),
@@ -401,7 +401,7 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> with TickerProvid
                         Text('Creating...'),
                       ],
                     )
-                  : const Text('Create Task'),
+                  : const Text('Create Quest'),
             ),
           ),
         ],
@@ -535,7 +535,7 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> with TickerProvid
       if (todo != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Task created successfully!'),
+            content: Text('Quest created successfully!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -543,7 +543,7 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> with TickerProvid
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Failed to create task. Please try again.'),
+            content: Text('Failed to create quest. Please try again.'),
             backgroundColor: Colors.red,
           ),
         );

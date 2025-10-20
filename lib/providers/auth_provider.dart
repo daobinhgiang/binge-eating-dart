@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/services/auth_service.dart';
 import '../core/services/firebase_analytics_service.dart';
 import '../core/services/app_initialization_service.dart';
+import '../core/services/task_regeneration_service.dart';
 import '../models/user_model.dart';
 
 // Auth service provider
@@ -53,6 +54,14 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         userRole: user?.role.name,
         onboardingCompleted: user?.onboardingCompleted,
       );
+      // Check and regenerate daily quests on login
+      if (user != null) {
+        try {
+          await TaskRegenerationService().checkAndRegenerateTasks(user.id);
+        } catch (e) {
+          print('Error during daily quest check on login: $e');
+        }
+      }
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
@@ -83,6 +92,14 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         userRole: user?.role.name,
         onboardingCompleted: user?.onboardingCompleted,
       );
+      // Check and regenerate daily quests on sign up
+      if (user != null) {
+        try {
+          await TaskRegenerationService().checkAndRegenerateTasks(user.id);
+        } catch (e) {
+          print('Error during daily quest check on sign up: $e');
+        }
+      }
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
@@ -108,6 +125,12 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         userRole: user.role.name,
         onboardingCompleted: user.onboardingCompleted,
       );
+      // Check and regenerate daily quests on login
+      try {
+        await TaskRegenerationService().checkAndRegenerateTasks(user.id);
+      } catch (e) {
+        print('Error during daily quest check on Google login: $e');
+      }
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
@@ -133,6 +156,12 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         userRole: user.role.name,
         onboardingCompleted: user.onboardingCompleted,
       );
+      // Check and regenerate daily quests on login
+      try {
+        await TaskRegenerationService().checkAndRegenerateTasks(user.id);
+      } catch (e) {
+        print('Error during daily quest check on Apple login: $e');
+      }
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }

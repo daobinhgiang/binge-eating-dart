@@ -40,6 +40,11 @@ class UserModel {
   final bool hasSeenPlantGrowthTutorial;
   final int level;
   final int exp;
+  final String? lastSeedsGeneratedDate; // YYYY-MM-DD format
+  final int? lastGrowthWeek;            // ISO week number
+  final int? lastGrowthYear;            // Year for growth tasks
+  final DateTime? lastSeedsGeneratedAt; // Full timestamp
+  final DateTime? lastGrowthTasksGeneratedAt; // Full timestamp
 
   const UserModel({
     required this.id,
@@ -65,6 +70,11 @@ class UserModel {
     this.hasSeenPlantGrowthTutorial = false,
     this.level = 1,
     this.exp = 0,
+    this.lastSeedsGeneratedDate,
+    this.lastGrowthWeek,
+    this.lastGrowthYear,
+    this.lastSeedsGeneratedAt,
+    this.lastGrowthTasksGeneratedAt,
   });
 
   String get fullName => '$firstName $lastName';
@@ -103,6 +113,15 @@ class UserModel {
       hasSeenPlantGrowthTutorial: data['hasSeenPlantGrowthTutorial'] ?? false,
       level: data['level'] ?? 1,
       exp: data['exp'] ?? 0,
+      lastSeedsGeneratedDate: data['lastSeedsGeneratedDate'],
+      lastGrowthWeek: data['lastGrowthWeek'],
+      lastGrowthYear: data['lastGrowthYear'],
+      lastSeedsGeneratedAt: data['lastSeedsGeneratedAt'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(data['lastSeedsGeneratedAt'])
+          : null,
+      lastGrowthTasksGeneratedAt: data['lastGrowthTasksGeneratedAt'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(data['lastGrowthTasksGeneratedAt'])
+          : null,
     );
   }
 
@@ -130,6 +149,11 @@ class UserModel {
       'hasSeenPlantGrowthTutorial': hasSeenPlantGrowthTutorial,
       'level': level,
       'exp': exp,
+      'lastSeedsGeneratedDate': lastSeedsGeneratedDate,
+      'lastGrowthWeek': lastGrowthWeek,
+      'lastGrowthYear': lastGrowthYear,
+      'lastSeedsGeneratedAt': lastSeedsGeneratedAt?.millisecondsSinceEpoch,
+      'lastGrowthTasksGeneratedAt': lastGrowthTasksGeneratedAt?.millisecondsSinceEpoch,
     };
   }
 
@@ -157,6 +181,11 @@ class UserModel {
     bool? hasSeenPlantGrowthTutorial,
     int? level,
     int? exp,
+    String? lastSeedsGeneratedDate,
+    int? lastGrowthWeek,
+    int? lastGrowthYear,
+    DateTime? lastSeedsGeneratedAt,
+    DateTime? lastGrowthTasksGeneratedAt,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -182,6 +211,11 @@ class UserModel {
       hasSeenPlantGrowthTutorial: hasSeenPlantGrowthTutorial ?? this.hasSeenPlantGrowthTutorial,
       level: level ?? this.level,
       exp: exp ?? this.exp,
+      lastSeedsGeneratedDate: lastSeedsGeneratedDate ?? this.lastSeedsGeneratedDate,
+      lastGrowthWeek: lastGrowthWeek ?? this.lastGrowthWeek,
+      lastGrowthYear: lastGrowthYear ?? this.lastGrowthYear,
+      lastSeedsGeneratedAt: lastSeedsGeneratedAt ?? this.lastSeedsGeneratedAt,
+      lastGrowthTasksGeneratedAt: lastGrowthTasksGeneratedAt ?? this.lastGrowthTasksGeneratedAt,
     );
   }
 

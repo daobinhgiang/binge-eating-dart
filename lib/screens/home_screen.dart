@@ -20,6 +20,22 @@ import '../widgets/level_badge.dart';
 import '../widgets/tree_growth_widget.dart';
 import '../widgets/binge_free_timer_carousel_widget.dart';
 
+enum ProgressType { percentage, counter }
+
+class QuestProgressInfo {
+  final double progress;
+  final String displayText;
+  final String description;
+  final ProgressType type;
+
+  QuestProgressInfo({
+    required this.progress,
+    required this.displayText,
+    required this.description,
+    required this.type,
+  });
+}
+
 class HomeScreen extends ConsumerStatefulWidget {
   final GlobalKey? treeWidgetKey;
   
@@ -781,10 +797,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           data: (user) {
             if (user == null) return const SizedBox.shrink();
             
-            final userTodosAsync = ref.watch(userTodosProvider(user.id));
+            final userTodosAsync = ref.watch(userTodosStreamProvider(user.id));
             
             return userTodosAsync.when(
-              data: (todos) => _buildDailyTasksWidget(context, todos, ref),
+              data: (todos) => _buildDailyQuestsWidget(context, todos, ref),
                   loading: () => _buildTodoLoadingCard(context),
                   error: (error, stack) => _buildTodoErrorCard(context),
             );
@@ -796,7 +812,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildDailyTasksWidget(BuildContext context, List<TodoItem> todos, WidgetRef ref) {
+  Widget _buildDailyQuestsWidget(BuildContext context, List<TodoItem> todos, WidgetRef ref) {
     // Get today's todos - include both completed and incomplete
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -833,7 +849,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Daily Tasks',
+                  'Daily Quests',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
@@ -859,11 +875,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ],
       ),
           ),
-          // Tasks list
+          // Quests list
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
             child: Column(
-              children: todayTodos.map((todo) => _buildDailyTaskItem(context, todo, ref)).toList(),
+              children: todayTodos.map((todo) => _buildDailyQuestItem(context, todo, ref)).toList(),
             ),
             ),
           ],
@@ -871,58 +887,259 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildDailyTaskItem(BuildContext context, TodoItem todo, WidgetRef ref) {
+  Widget _buildDailyQuestItem(BuildContext context, TodoItem todo, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: () => _navigateToTodoItem(todo),
-        borderRadius: BorderRadius.circular(40.0),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          decoration: BoxDecoration(
+            color: _getTodoBackgroundColor(todo.type),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: _getTodoBorderColor(todo.type),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: _getTodoShadowColor(todo.type).withOpacity(0.15),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Checkbox
-              GestureDetector(
-                onTap: () => _toggleTodoCompletion(todo, ref),
-                child: Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: todo.isCompleted ? const Color(0xFF4CAF50) : Colors.white,
-                    borderRadius: BorderRadius.circular(40.0),
-        border: Border.all(
-                      color: todo.isCompleted ? const Color(0xFF4CAF50) : Colors.grey[300]!,
-                      width: 1.5,
+              // Icon spanning from title to progress bar
+              _buildTodoTypeIconWithBackground(todo.type),
+              const SizedBox(width: 12),
+              // Title and progress bar content
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title
+                    Text(
+                      todo.title,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Colors.black87,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        decoration: todo.isCompleted ? TextDecoration.lineThrough : null,
+                        decorationColor: Colors.grey[400],
+                        decorationThickness: 2,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  child: todo.isCompleted
-                      ? const Icon(
-                          Icons.check,
-                    color: Colors.white,
-                          size: 16,
-                        )
-                      : null,
+                    const SizedBox(height: 8),
+                    // Progress bar
+                    _buildQuestProgressBar(context, todo),
+                  ],
                 ),
               ),
-              const SizedBox(width: 12),
-              // Task text
-          Expanded(
-                child: Text(
-                  todo.title,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Colors.black87,
-                    fontSize: 16,
-                    decoration: todo.isCompleted ? TextDecoration.lineThrough : null,
-                    decorationColor: Colors.grey[400],
-                    decorationThickness: 2,
-                  ),
-                  ),
-                ),
-              ],
-            ),
+            ],
           ),
+        ),
       ),
     );
+  }
+
+  Widget _buildTodoTypeIconWithBackground(TodoType type) {
+    final (iconData, backgroundColor, iconColor) = _getTodoTypeIcon(type);
+    
+    return Container(
+      width: 50,
+      height: 50,
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Center(
+        child: Icon(
+          iconData,
+          color: iconColor,
+          size: 24,
+        ),
+      ),
+    );
+  }
+
+  (IconData, Color, Color) _getTodoTypeIcon(TodoType type) {
+    switch (type) {
+      case TodoType.journal:
+        return (Icons.auto_stories_rounded, const Color(0xFFE8D5F2), const Color(0xFFA29BFE));
+      case TodoType.lesson:
+        return (Icons.menu_book_rounded, const Color(0xFFD6E9F8), const Color(0xFF0984E3));
+      case TodoType.tool:
+        return (Icons.psychology_rounded, const Color(0xFFFFD6D6), const Color(0xFFD63031));
+    }
+  }
+
+  Color _getTodoBackgroundColor(TodoType type) {
+    switch (type) {
+      case TodoType.journal:
+        return const Color(0xFFFAF3FF);
+      case TodoType.lesson:
+        return const Color(0xFFF0F7FF);
+      case TodoType.tool:
+        return const Color(0xFFFFF4F4);
+    }
+  }
+
+  Color _getTodoBorderColor(TodoType type) {
+    switch (type) {
+      case TodoType.journal:
+        return const Color(0xFFE8D5F2);
+      case TodoType.lesson:
+        return const Color(0xFFD6E9F8);
+      case TodoType.tool:
+        return const Color(0xFFFFD6D6);
+    }
+  }
+
+  Color _getTodoShadowColor(TodoType type) {
+    switch (type) {
+      case TodoType.journal:
+        return const Color(0xFFA29BFE);
+      case TodoType.lesson:
+        return const Color(0xFF0984E3);
+      case TodoType.tool:
+        return const Color(0xFFD63031);
+    }
+  }
+
+  Widget _buildQuestProgressBar(BuildContext context, TodoItem todo) {
+    final progressInfo = _getQuestProgressInfo(todo);
+    
+    return SizedBox(
+      width: double.infinity, // Span to the edge on the right
+      child: Stack(
+        children: [
+          // Progress bar background
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: LinearProgressIndicator(
+              value: progressInfo.progress,
+              minHeight: 22,
+              backgroundColor: Colors.grey[200],
+              valueColor: AlwaysStoppedAnimation<Color>(
+                todo.isCompleted ? const Color(0xFF4CAF50) : _getProgressBarColor(progressInfo.type),
+              ),
+            ),
+          ),
+          // Progress text centered on the bar
+          Positioned.fill(
+            child: Center(
+              child: Text(
+                progressInfo.displayText,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 10,
+                  shadows: [
+                    Shadow(
+                      offset: const Offset(0, 1),
+                      blurRadius: 2,
+                      color: Colors.black.withOpacity(0.3),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  QuestProgressInfo _getQuestProgressInfo(TodoItem todo) {
+    // If completed, show 100%
+    if (todo.isCompleted) {
+      return QuestProgressInfo(
+        progress: 1.0,
+        displayText: '100%',
+        description: 'Completed',
+        type: ProgressType.percentage,
+      );
+    }
+
+    // Parse activity data for progress information
+    final activityData = todo.activityData ?? {};
+    
+    // Determine progress based on quest type
+    switch (todo.type) {
+      case TodoType.lesson:
+        // For lessons: show minutes if available, or generic progress
+        final minutes = (activityData['duration'] as int?) ?? 0;
+        if (minutes > 0) {
+          // Assume lesson is 15 minutes by default, calculate progress
+          const totalMinutes = 15;
+          final progress = (minutes / totalMinutes).clamp(0.0, 1.0);
+          return QuestProgressInfo(
+            progress: progress,
+            displayText: '$minutes/$totalMinutes min',
+            description: 'Lesson progress',
+            type: ProgressType.counter,
+          );
+        }
+        return QuestProgressInfo(
+          progress: 0.0,
+          displayText: '0%',
+          description: 'Not started',
+          type: ProgressType.percentage,
+        );
+        
+      case TodoType.journal:
+        // For journal: show entries or simple progress
+        final entries = (activityData['entries'] as int?) ?? 0;
+        if (entries > 0) {
+          return QuestProgressInfo(
+            progress: 1.0,
+            displayText: 'Logged',
+            description: 'Journal entry recorded',
+            type: ProgressType.counter,
+          );
+        }
+        return QuestProgressInfo(
+          progress: 0.0,
+          displayText: '0%',
+          description: 'Not started',
+          type: ProgressType.percentage,
+        );
+        
+      case TodoType.tool:
+        // For tools/exercises: show completion or reps
+        final reps = (activityData['reps'] as int?) ?? 0;
+        final targetReps = (activityData['targetReps'] as int?) ?? 1;
+        if (targetReps > 0) {
+          final progress = (reps / targetReps).clamp(0.0, 1.0);
+          return QuestProgressInfo(
+            progress: progress,
+            displayText: '$reps/$targetReps',
+            description: 'Exercise progress',
+            type: ProgressType.counter,
+          );
+        }
+        return QuestProgressInfo(
+          progress: 0.0,
+          displayText: '0%',
+          description: 'Not started',
+          type: ProgressType.percentage,
+        );
+    }
+  }
+
+  Color _getProgressBarColor(ProgressType type) {
+    switch (type) {
+      case ProgressType.percentage:
+        return const Color(0xFF2196F3); // Blue for percentage
+      case ProgressType.counter:
+        return const Color(0xFF4CAF50); // Green for counter
+    }
   }
 
   Future<void> _toggleTodoCompletion(TodoItem todo, WidgetRef ref) async {
@@ -1039,7 +1256,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             const CircularProgressIndicator(),
             const SizedBox(width: 16),
             Text(
-              'Loading your tasks...',
+              'Loading your quests...',
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ],
@@ -1052,7 +1269,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Card(
       child: ListTile(
         leading: const Icon(Icons.error_outline, color: Colors.orange),
-        title: const Text('Unable to load tasks'),
+        title: const Text('Unable to load quests'),
         subtitle: const Text('Tap to try again'),
         trailing: const Icon(Icons.arrow_forward_ios),
         onTap: () => context.go('/todos'),
