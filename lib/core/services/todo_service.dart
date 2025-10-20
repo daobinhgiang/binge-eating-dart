@@ -24,56 +24,6 @@ class TodoService {
         .collection(_todosSubcollectionName);
   }
 
-  // Create a new todo item
-  Future<TodoItem> createTodo({
-    required String userId,
-    required String title,
-    required String description,
-    required TodoType type,
-    required String activityId,
-    Map<String, dynamic>? activityData,
-    required DateTime dueDate,
-  }) async {
-    try {
-      final now = DateTime.now();
-      
-      final todoData = {
-        'title': title,
-        'description': description,
-        'type': type.toString().split('.').last,
-        'activityId': activityId,
-        'activityData': activityData,
-        'dueDate': Timestamp.fromDate(dueDate),
-        'isCompleted': false,
-        'completedAt': null,
-        'createdAt': Timestamp.fromDate(now),
-        'updatedAt': Timestamp.fromDate(now),
-      };
-
-      final docRef = await _getTodosCollection(userId).add(todoData);
-      
-      // Clear cache since we added a new todo
-      _clearCache(userId);
-      
-      return TodoItem(
-        id: docRef.id,
-        userId: userId,
-        title: title,
-        description: description,
-        type: type,
-        activityId: activityId,
-        activityData: activityData,
-        dueDate: dueDate,
-        isCompleted: false,
-        completedAt: null,
-        createdAt: now,
-        updatedAt: now,
-      );
-    } catch (e) {
-      throw 'Failed to create todo: $e';
-    }
-  }
-
   // Get all todos for a specific user
   Future<List<TodoItem>> getUserTodos(String userId) async {
     try {
@@ -232,13 +182,8 @@ class TodoService {
     }
   }
 
-  // Mark todo as completed
-  Future<TodoItem> markTodoCompleted(String todoId) async {
-    throw 'markTodoCompleted is deprecated. Use markTodoCompletedForUser(userId, todoId) instead.';
-  }
 
-  // Mark todo as completed for a specific user
-  Future<TodoItem> markTodoCompletedForUser(String userId, String todoId) async {
+  Future<TodoItem> _markTodoCompletedForUser(String userId, String todoId) async {
     try {
       final doc = await _getTodosCollection(userId).doc(todoId).get();
       
@@ -271,54 +216,10 @@ class TodoService {
       throw 'Failed to mark todo as completed: $e';
     }
   }
-
-  // Mark todo as incomplete
-  Future<TodoItem> markTodoIncomplete(String todoId) async {
-    throw 'markTodoIncomplete is deprecated. Use markTodoIncompleteForUser(userId, todoId) instead.';
-  }
-
-  // Mark todo as incomplete for a specific user
-  Future<TodoItem> markTodoIncompleteForUser(String userId, String todoId) async {
-    try {
-      final doc = await _getTodosCollection(userId).doc(todoId).get();
-      
-      if (!doc.exists) {
-        throw 'Todo not found';
-      }
-
-      final todo = TodoItem.fromFirestore(doc, userId: userId);
-      
-      final now = DateTime.now();
-      
-      final updatedTodo = todo.copyWith(
-        isCompleted: false,
-        completedAt: null,
-        updatedAt: now,
-      );
-
-      await _getTodosCollection(userId)
-          .doc(todoId)
-          .update({
-            'isCompleted': false,
-            'completedAt': null,
-            'updatedAt': Timestamp.fromDate(now),
-          });
-
-      // Clear cache since we updated a todo
-      _clearCache(userId);
-
-      return updatedTodo;
-    } catch (e) {
-      throw 'Failed to mark todo as incomplete: $e';
-    }
-  }
-
   // Delete a todo item
-  Future<void> deleteTodo(String todoId) async {
-    throw 'deleteTodo is deprecated. Use deleteTodoForUser(userId, todoId) instead.';
-  }
 
-  // Delete a todo item for a specific user
+
+  // Delete a todo item for a specific user (internal use for system operations)
   Future<void> deleteTodoForUser(String userId, String todoId) async {
     try {
       await _getTodosCollection(userId).doc(todoId).delete();
@@ -328,7 +229,6 @@ class TodoService {
       throw 'Failed to delete todo: $e';
     }
   }
-
   // Get a specific todo by ID
   Future<TodoItem?> getTodoById(String todoId) async {
     throw 'getTodoById is deprecated. Use getTodoByIdForUser(userId, todoId) instead.';
@@ -423,7 +323,7 @@ class TodoService {
       );
       
       // Mark it as completed
-      return await markTodoCompletedForUser(userId, matchingTodo.id);
+      return await _markTodoCompletedForUser(userId, matchingTodo.id);
     } catch (e) {
       // If no matching todo is found, return null instead of throwing
       if (e.toString().contains('No matching pending todo found')) {

@@ -45,6 +45,8 @@ class UserModel {
   final int? lastGrowthYear;            // Year for growth tasks
   final DateTime? lastSeedsGeneratedAt; // Full timestamp
   final DateTime? lastGrowthTasksGeneratedAt; // Full timestamp
+  final int streak;                      // Current streak count
+  final DateTime? lastStreakDate;        // Date of last streak update
 
   const UserModel({
     required this.id,
@@ -75,6 +77,8 @@ class UserModel {
     this.lastGrowthYear,
     this.lastSeedsGeneratedAt,
     this.lastGrowthTasksGeneratedAt,
+    this.streak = 0,
+    this.lastStreakDate,
   });
 
   String get fullName => '$firstName $lastName';
@@ -122,6 +126,10 @@ class UserModel {
       lastGrowthTasksGeneratedAt: data['lastGrowthTasksGeneratedAt'] != null
           ? DateTime.fromMillisecondsSinceEpoch(data['lastGrowthTasksGeneratedAt'])
           : null,
+      streak: data['streak'] ?? 0,
+      lastStreakDate: data['lastStreakDate'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(data['lastStreakDate'])
+          : null,
     );
   }
 
@@ -154,6 +162,8 @@ class UserModel {
       'lastGrowthYear': lastGrowthYear,
       'lastSeedsGeneratedAt': lastSeedsGeneratedAt?.millisecondsSinceEpoch,
       'lastGrowthTasksGeneratedAt': lastGrowthTasksGeneratedAt?.millisecondsSinceEpoch,
+      'streak': streak,
+      'lastStreakDate': lastStreakDate?.millisecondsSinceEpoch,
     };
   }
 
@@ -186,6 +196,8 @@ class UserModel {
     int? lastGrowthYear,
     DateTime? lastSeedsGeneratedAt,
     DateTime? lastGrowthTasksGeneratedAt,
+    int? streak,
+    DateTime? lastStreakDate,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -216,6 +228,8 @@ class UserModel {
       lastGrowthYear: lastGrowthYear ?? this.lastGrowthYear,
       lastSeedsGeneratedAt: lastSeedsGeneratedAt ?? this.lastSeedsGeneratedAt,
       lastGrowthTasksGeneratedAt: lastGrowthTasksGeneratedAt ?? this.lastGrowthTasksGeneratedAt,
+      streak: streak ?? this.streak,
+      lastStreakDate: lastStreakDate ?? this.lastStreakDate,
     );
   }
 

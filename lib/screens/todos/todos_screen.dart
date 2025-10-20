@@ -88,20 +88,6 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.go('/todos/add'),
-        backgroundColor: const Color(0xFF6C5CE7),
-        foregroundColor: Colors.white,
-        elevation: 4,
-        icon: const Icon(Icons.add_rounded, size: 24),
-        label: Text(
-          'Add Quest',
-          style: GoogleFonts.inter(
-            fontWeight: FontWeight.w600,
-            fontSize: 15,
-          ),
-        ),
-      ),
     );
   }
 
@@ -471,27 +457,6 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Checkbox
-                    GestureDetector(
-                      onTap: () => ref.read(userTodosProvider(userId).notifier).toggleCompletion(todo.id),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        width: 28,
-                        height: 28,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: todo.isCompleted ? tierColor : const Color(0xFFDFE6E9),
-                            width: 2,
-                          ),
-                          color: todo.isCompleted ? tierColor : Colors.transparent,
-                        ),
-                        child: todo.isCompleted
-                            ? const Icon(Icons.check_rounded, color: Colors.white, size: 16)
-                            : null,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
                     
                     // Content
                     Expanded(
@@ -622,35 +587,6 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
                               ],
                             ),
                           ),
-                        PopupMenuItem(
-                          value: 'edit',
-                          child: Row(
-                            children: [
-                              const Icon(Icons.edit_rounded, size: 18, color: Color(0xFF636E72)),
-                              const SizedBox(width: 12),
-                              Text(
-                                'Edit',
-                                style: GoogleFonts.inter(fontWeight: FontWeight.w500),
-                              ),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'delete',
-                          child: Row(
-                            children: [
-                              const Icon(Icons.delete_rounded, size: 18, color: Color(0xFFFF7675)),
-                              const SizedBox(width: 12),
-                              Text(
-                                'Delete',
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w500,
-                                  color: const Color(0xFFFF7675),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                       ],
                     ),
                   ],
@@ -728,53 +664,7 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
       case 'start':
         NavigationService().navigateToTodoActivity(context, todo, ref);
         break;
-      case 'edit':
-        context.go('/todos/edit/${todo.id}');
-        break;
-      case 'delete':
-        _showDeleteConfirmation(todo, userId);
-        break;
     }
-  }
-
-  void _showDeleteConfirmation(TodoItem todo, String userId) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Delete Quest?',
-          style: GoogleFonts.inter(fontWeight: FontWeight.bold),
-        ),
-        content: Text(
-          'Are you sure you want to delete "${todo.title}"?',
-          style: GoogleFonts.inter(),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(
-              'Cancel',
-              style: GoogleFonts.inter(color: const Color(0xFF636E72)),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              ref.read(userTodosProvider(userId).notifier).deleteTodo(todo.id);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFFF7675),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-            child: Text(
-              'Delete',
-              style: GoogleFonts.inter(fontWeight: FontWeight.w600),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildEmptyState() {

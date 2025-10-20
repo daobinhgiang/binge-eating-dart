@@ -19,6 +19,8 @@ import '../core/services/user_learning_service.dart';
 import '../widgets/level_badge.dart';
 import '../widgets/tree_growth_widget.dart';
 import '../widgets/binge_free_timer_carousel_widget.dart';
+import '../widgets/streak_display.dart';
+import '../widgets/streak_animation_popup.dart';
 
 enum ProgressType { percentage, counter }
 
@@ -182,8 +184,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         final expRemaining = service.getExpRemainingForNextLevel(userExp.exp, userExp.level);
         final isMaxLevel = userExp.level >= 5;
         
-        final textColor = Colors.black87;  // Always use dark text for better visibility
-        final subtextColor = Colors.grey[700]!;  // Slightly darker grey for better contrast
+        final textColor = Colors.black87;
+        final subtextColor = Colors.grey[700]!;
         
         return Row(
           children: [
@@ -193,49 +195,72 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               size: 56,
               showLabel: true,
             ),
-            const SizedBox(width: 16),
-            // EXP info
+            const SizedBox(width: 12),
+            // EXP info - More Compact
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    '${userExp.exp} EXP',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  // EXP text with subtle animation
+                  AnimatedDefaultTextStyle(
+                    duration: const Duration(milliseconds: 400),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: textColor,
-                      fontSize: 20,
-                    ),
+                      fontSize: 16,
+                    ) ?? const TextStyle(),
+                    child: Text('${userExp.exp} EXP'),
                   ),
-                  const SizedBox(height: 4),
                   if (!isMaxLevel) ...[
+                    const SizedBox(height: 2),
+                    // EXP remaining text - smaller and more compact
                     Text(
-                      '$expRemaining to Level ${userExp.level + 1}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      '$expRemaining more to Level ${userExp.level + 1}',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: subtextColor,
-                        fontSize: 12,
+                        fontSize: 11,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
+                    // Compact animated progress bar
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: LinearProgressIndicator(
-                        value: progress,
-                        minHeight: 6,
-                        backgroundColor: Colors.grey[200],  // Light grey background
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          const Color(0xFF4CAF50),  // Always use green for progress
-                        ),
+                      borderRadius: BorderRadius.circular(3),
+                      child: AnimatedBuilder(
+                        animation: AlwaysStoppedAnimation(progress),
+                        builder: (context, child) {
+                          return TweenAnimationBuilder<double>(
+                            tween: Tween<double>(begin: 0, end: progress),
+                            duration: const Duration(milliseconds: 600),
+                            curve: Curves.easeOutCubic,
+                            builder: (context, value, child) {
+                              return LinearProgressIndicator(
+                                value: value,
+                                minHeight: 4,
+                                backgroundColor: Colors.grey[200],
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Color.lerp(
+                                    Colors.amber[400],
+                                    const Color(0xFF4CAF50),
+                                    value,
+                                  )!,
+                                ),
+                              );
+                            },
+                          );
+                        },
                       ),
                     ),
                   ] else
-                    Text(
-                      'Max Level!',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: subtextColor,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        'Max Level! 🎉',
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: const Color(0xFF4CAF50),
+                          fontWeight: FontWeight.w700,
+                          fontSize: 11,
+                        ),
                       ),
                     ),
                 ],
@@ -250,6 +275,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authNotifierProvider);
+    
+    // Listen for streak changes and show animation
+    ref.listen(userStreakProvider, (previous, next) {
+      if (previous != null && next != null && previous != next) {
+        print('🔥 Streak changed: $previous → $next');
+        // Show animation in next frame to ensure context is ready
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showStreakAnimation(
+            context,
+            oldStreak: previous,
+            newStreak: next,
+            isReset: next == 0,
+          );
+        });
+      }
+    });
 
     return Scaffold(
       body: Container(
@@ -398,6 +439,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             // Level and EXP display
                             Expanded(
                               child: _buildLevelExpDisplay(shouldShowLearningSection),
+                            ),
+                            const SizedBox(width: 16),
+                            // Streak display on the right
+                            Consumer(
+                              builder: (context, ref, child) {
+                                final userStreak = ref.watch(userStreakProvider);
+                                if (userStreak == null) {
+                                  return const SizedBox.shrink();
+                                }
+                                return StreakDisplay(
+                                  streak: userStreak,
+                                  onTap: () {
+                                    print('Streak tapped: $userStreak');
+                                  },
+                                );
+                              },
                             ),
                           ],
                         ),
@@ -1140,25 +1197,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
-  Future<void> _toggleTodoCompletion(TodoItem todo, WidgetRef ref) async {
-    final authState = ref.read(authNotifierProvider);
-    final user = authState.valueOrNull;
-    if (user == null) return;
-    
-    final todoNotifier = ref.read(userTodosProvider(user.id).notifier);
-    await todoNotifier.toggleCompletion(todo.id);
-  }
-
   Future<void> _navigateToTodoItem(TodoItem todo) async {
-    // Mark the todo as completed in the background
-    final authState = ref.read(authNotifierProvider);
-    final user = authState.valueOrNull;
-    if (user != null) {
-      final todoNotifier = ref.read(userTodosProvider(user.id).notifier);
-      // Mark as completed asynchronously without waiting
-      todoNotifier.markCompleted(todo.id);
-    }
-    
     // Navigate based on the todo type and activity ID
     switch (todo.type) {
       case TodoType.lesson:

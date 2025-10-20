@@ -22,7 +22,6 @@ import 'screens/exercises/urge_surfing_screen.dart';
 import 'screens/exercises/addressing_overconcern_screen.dart';
 import 'screens/exercises/addressing_setbacks_screen.dart';
 import 'screens/todos/todos_screen.dart';
-import 'screens/todos/add_todo_screen.dart';
 import 'screens/profile/regular_eating_screen.dart';
 import 'screens/profile/app_blocker_screen.dart';
 import 'screens/profile/web_blocker_screen.dart';
@@ -404,10 +403,6 @@ final _router = GoRouter(
     GoRoute(
       path: '/todos',
       builder: (context, state) => const AuthGuard(child: TodosScreen()),
-    ),
-    GoRoute(
-      path: '/todos/add',
-      builder: (context, state) => const AuthGuard(child: AddTodoScreen()),
     ),
     // Chatbot route removed
     GoRoute(

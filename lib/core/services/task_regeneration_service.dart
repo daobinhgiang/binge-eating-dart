@@ -3,6 +3,7 @@ import '../../models/todo_item.dart';
 import '../../models/regeneration_log.dart';
 import '../../data/task_templates.dart';
 import 'todo_service.dart';
+import 'streak_service.dart';
 
 class TaskRegenerationService {
   static final TaskRegenerationService _instance = TaskRegenerationService._internal();
@@ -39,6 +40,16 @@ class TaskRegenerationService {
       }
       
       final newTasks = <TodoItem>[];
+
+      // Check streak if it's a new day
+      print('\n🔥 CHECKING STREAK...');
+      final streakService = StreakService();
+      final streakWasReset = await streakService.checkAndResetStreakIfNeeded(userId);
+      if (streakWasReset) {
+        print('🔄 Streak was reset today');
+      } else {
+        print('✅ Streak check complete');
+      }
 
       // Check if Seeds need regeneration (daily)
       print('\n🌱 CHECKING SEEDS...');
