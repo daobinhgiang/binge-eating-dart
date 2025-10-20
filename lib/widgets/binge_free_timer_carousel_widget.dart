@@ -28,6 +28,7 @@ class BingeFreeTimerCarouselWidgetState
   int _currentPage = 0;
   DateTime? _lastResetTime;
   Timer? _updateTimer;
+  final GlobalKey _timerButtonKey = GlobalKey();
 
   @override
   void initState() {
@@ -132,6 +133,18 @@ class BingeFreeTimerCarouselWidgetState
     } catch (e) {
       print('❌ Exception during navigation: $e');
     }
+  }
+
+  // Expose the timer button key for tutorials
+  GlobalKey get timerButtonKey => _timerButtonKey;
+
+  // Expose whether timer has been started
+  bool get hasStartedTimer => _lastResetTime != null;
+
+  // Public method to trigger timer button (for tutorial use)
+  void triggerTimerButton() {
+    print('🎯 triggerTimerButton called from tutorial');
+    _handleResetButton();
   }
 
   @override
@@ -324,6 +337,7 @@ class BingeFreeTimerCarouselWidgetState
             ),
             const SizedBox(height: 16),
             ElevatedButton.icon(
+              key: _timerButtonKey,
               onPressed: _handleResetButton,
               icon: const Icon(Icons.play_arrow, size: 20),
               label: Text(
@@ -421,6 +435,7 @@ class BingeFreeTimerCarouselWidgetState
           const SizedBox(height: 16),
           // Reset Timer button
           ElevatedButton.icon(
+            key: _timerButtonKey,
             onPressed: _handleResetButton,
             icon: const Icon(Icons.refresh, size: 20),
             label: Text(

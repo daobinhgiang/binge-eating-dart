@@ -8,6 +8,7 @@ enum TutorialStep {
   journalTab,
   weightDiary,
   plantGrowth,
+  timerButton,
 }
 
 class AppTutorialService {
@@ -571,6 +572,101 @@ class AppTutorialService {
     });
   }
 
+  // Show tutorial for timer button
+  void showTimerButtonTutorial({
+    required BuildContext context,
+    required GlobalKey timerButtonKey,
+    required VoidCallback onFinish,
+    required VoidCallback onButtonClick,
+  }) {
+    _currentStep = TutorialStep.timerButton;
+    
+    final targets = [
+      TargetFocus(
+        identify: "timer_button",
+        keyTarget: timerButtonKey,
+        alignSkip: Alignment.topRight,
+        shape: ShapeLightFocus.RRect,
+        radius: 40,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            builder: (context, controller) {
+              return Container(
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Track Your Progress ⏱️",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 24.0,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      "This is your binge-free timer! Tap 'Start Timer' to begin tracking your recovery journey. You can reset it anytime if needed.",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16.0,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        controller.next();
+                        onButtonClick();
+                        _tutorialCoachMark?.finish();
+                        onFinish();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF66BB6A),
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      ),
+                      child: const Text(
+                        "Got it!",
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    ];
+
+    _tutorialCoachMark = TutorialCoachMark(
+      targets: targets,
+      colorShadow: Colors.black,
+      paddingFocus: 10,
+      opacityShadow: 0.8,
+      hideSkip: true,
+      onClickTarget: (target) {
+        // Allow clicking on the highlighted timer button
+        if (target.identify == "timer_button") {
+          onButtonClick();
+          _tutorialCoachMark?.finish();
+          onFinish();
+        }
+      },
+      onFinish: onFinish,
+      onSkip: () {
+        onFinish();
+        return true;
+      },
+    );
+
+    Future.delayed(const Duration(milliseconds: 500), () {
+      _tutorialCoachMark?.show(context: context);
+    });
+  }
 
   // Dispose tutorial
   void dispose() {

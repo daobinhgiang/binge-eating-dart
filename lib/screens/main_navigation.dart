@@ -276,10 +276,11 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
             }
           });
           
-          // Show completion after swipe animation
+          // Show timer button tutorial after swipe animation
           Future.delayed(const Duration(milliseconds: 1000), () {
             if (mounted) {
-              print('🎉 Tutorial flow complete! User is ready to start their journey.');
+              print('🎉 Starting timer button tutorial!');
+              _showTimerButtonTutorial();
             }
           });
         },
@@ -287,6 +288,40 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
     });
   }
 
+  void _showTimerButtonTutorial() {
+    print('⏱️ _showTimerButtonTutorial called');
+    
+    if (!mounted) {
+      print('❌ Not mounted in timer tutorial');
+      return;
+    }
+    
+    // Get the timer button key from the carousel
+    final carouselState = _carouselKey.currentState;
+    if (carouselState == null) {
+      print('❌ Carousel state is null for timer tutorial');
+      return;
+    }
+    
+    print('✅ Calling AppTutorialService.showTimerButtonTutorial');
+    AppTutorialService().showTimerButtonTutorial(
+      context: context,
+      timerButtonKey: carouselState.timerButtonKey,
+      onFinish: () {
+        print('✅ Timer button tutorial completed');
+      },
+      onButtonClick: () {
+        print('✅ User clicked timer button during tutorial');
+        // Actually trigger the timer button programmatically
+        final carouselState = _carouselKey.currentState;
+        if (carouselState != null) {
+          print('🎯 Triggering timer button programmatically');
+          // Call the public method to start/reset the timer
+          carouselState.triggerTimerButton();
+        }
+      },
+    );
+  }
 
   void _updateCurrentIndex(String location) {
     switch (location) {
