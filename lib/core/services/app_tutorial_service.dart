@@ -6,6 +6,8 @@ enum TutorialStep {
   firstLesson,
   exercisesTab,
   journalTab,
+  weightDiary,
+  plantGrowth,
   completion,
 }
 
@@ -374,6 +376,184 @@ class AppTutorialService {
           onFinish();
         }
       },
+      onFinish: onFinish,
+      onSkip: () {
+        onFinish();
+        return true;
+      },
+    );
+
+    Future.delayed(const Duration(milliseconds: 500), () {
+      _tutorialCoachMark?.show(context: context);
+    });
+  }
+
+  // Show tutorial for weight diary
+  void showWeightDiaryTutorial({
+    required BuildContext context,
+    required GlobalKey weightDiaryKey,
+    required VoidCallback onFinish,
+    required VoidCallback onWeightDiaryClick,
+  }) {
+    _currentStep = TutorialStep.weightDiary;
+    
+    final targets = [
+      TargetFocus(
+        identify: "weight_diary",
+        keyTarget: weightDiaryKey,
+        alignSkip: Alignment.topRight,
+        shape: ShapeLightFocus.RRect,
+        radius: 40,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            builder: (context, controller) {
+              return Container(
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Track Your Weight 📊",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 24.0,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      "This is your Weight Diary! Tap here to log your current weight. Tracking your weight helps you monitor your progress over time.",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16.0,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        controller.next();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF66BB6A),
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      ),
+                      child: const Text(
+                        "Log Weight!",
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    ];
+
+    _tutorialCoachMark = TutorialCoachMark(
+      targets: targets,
+      colorShadow: Colors.black,
+      paddingFocus: 10,
+      opacityShadow: 0.8,
+      onClickTarget: (target) {
+        // Allow clicking on the highlighted weight diary
+        if (target.identify == "weight_diary") {
+          // Navigate and finish immediately - the tutorial will handle the transition
+          onWeightDiaryClick();
+          _tutorialCoachMark?.finish();
+          onFinish();
+        }
+      },
+      onFinish: onFinish,
+      onSkip: () {
+        onFinish();
+        return true;
+      },
+    );
+
+    Future.delayed(const Duration(milliseconds: 500), () {
+      _tutorialCoachMark?.show(context: context);
+    });
+  }
+
+  // Show tutorial for plant growth
+  void showPlantGrowthTutorial({
+    required BuildContext context,
+    required GlobalKey plantKey,
+    required VoidCallback onFinish,
+    required VoidCallback onNext,
+  }) {
+    _currentStep = TutorialStep.plantGrowth;
+    
+    final targets = [
+      TargetFocus(
+        identify: "plant_growth",
+        keyTarget: plantKey,
+        alignSkip: Alignment.topRight,
+        shape: ShapeLightFocus.RRect,
+        radius: 40,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            builder: (context, controller) {
+              return Container(
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Your Growth Journey 🌱",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 24.0,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      "Nice job! Now let's build a habit of practicing and growing your plant everyday.",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16.0,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        controller.next();
+                        onNext();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF66BB6A),
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      ),
+                      child: const Text(
+                        "Next",
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    ];
+
+    _tutorialCoachMark = TutorialCoachMark(
+      targets: targets,
+      colorShadow: Colors.black,
+      paddingFocus: 10,
+      opacityShadow: 0.8,
       onFinish: onFinish,
       onSkip: () {
         onFinish();

@@ -6,6 +6,7 @@ import 'home_screen.dart';
 import 'education/lessons_screen.dart';
 import 'exercises/exercises_screen.dart';
 import 'journal/journal_screen.dart';
+import 'journal/weight_diary_survey_screen.dart';
 import 'profile/profile_screen.dart';
 import '../core/services/app_tutorial_service.dart';
 import '../providers/auth_provider.dart';
@@ -23,11 +24,16 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
   bool _hasShownEducationTutorial = false;
   bool _hasShownExercisesTutorial = false;
   bool _hasShownJournalTutorial = false;
+  bool _hasShownWeightDiaryTutorial = false;
+  bool _hasShownPlantGrowthTutorial = false;
+  bool _hasShownCompletionTutorial = false;
 
   // Global keys for tutorial targets
   final GlobalKey _educationTabKey = GlobalKey();
   final GlobalKey _exercisesTabKey = GlobalKey();
   final GlobalKey _journalTabKey = GlobalKey();
+  final GlobalKey _weightDiaryKey = GlobalKey();
+  final GlobalKey _treeWidgetKey = GlobalKey();
   final GlobalKey _completionKey = GlobalKey();
 
   final List<NavigationItem> _navigationItems = [
@@ -117,6 +123,7 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
              !_hasShownJournalTutorial) {
       _showJournalTutorial();
     }
+    // Don't trigger weight diary tutorial here - it's handled in _showJournalTutorial's onTabClick callback
   }
 
   void _showExercisesTutorial() {
@@ -161,14 +168,6 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
         await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
           hasSeenJournalTutorial: true,
         );
-        
-        // Show completion tutorial after a short delay
-        if (mounted) {
-          await Future.delayed(const Duration(milliseconds: 1500));
-          if (mounted) {
-            _showCompletionTutorial();
-          }
-        }
       },
       onTabClick: () async {
         // Update the status BEFORE navigating to prevent tutorial from showing again
@@ -182,17 +181,81 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
           context.go('/journal');
         }
         
-        // Show completion tutorial after navigation
-        await Future.delayed(const Duration(milliseconds: 1500));
+        // Show weight diary tutorial after navigation (only if not already seen)
+        await Future.delayed(const Duration(milliseconds: 500));
         if (mounted) {
-          _showCompletionTutorial();
+          final currentUser = ref.read(authNotifierProvider).valueOrNull;
+          if (currentUser != null && !currentUser.hasSeenWeightDiaryTutorial) {
+            _showWeightDiaryTutorial();
+          }
         }
       },
     );
   }
+  
+  void _showWeightDiaryTutorial() {
+    if (_hasShownWeightDiaryTutorial || !mounted) return;
+    
+    _hasShownWeightDiaryTutorial = true;
+    
+    // Mark that user has seen the weight diary tutorial
+    ref.read(authNotifierProvider.notifier).updateTutorialStatus(
+      hasSeenWeightDiaryTutorial: true,
+    );
+    
+    AppTutorialService().showWeightDiaryTutorial(
+      context: context,
+      weightDiaryKey: _weightDiaryKey,
+      onFinish: () {
+        // Tutorial dismissed or completed
+      },
+      onWeightDiaryClick: () {
+        // User clicked on the weight diary - navigate to weight logging screen
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const WeightDiarySurveyScreen(),
+          ),
+        );
+      },
+    );
+  }
+  
+  void _showPlantGrowthTutorial() {
+    if (_hasShownPlantGrowthTutorial || !mounted) return;
+    
+    _hasShownPlantGrowthTutorial = true;
+    
+    // Mark that user has seen the plant growth tutorial
+    ref.read(authNotifierProvider.notifier).updateTutorialStatus(
+      hasSeenPlantGrowthTutorial: true,
+    );
+    
+    // Use post-frame callback to ensure the widget with the key is fully built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      
+      AppTutorialService().showPlantGrowthTutorial(
+        context: context,
+        plantKey: _treeWidgetKey,
+        onFinish: () {
+          // Tutorial dismissed
+        },
+        onNext: () {
+          // User clicked next - show completion tutorial
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (mounted) {
+              _showCompletionTutorial();
+            }
+          });
+        },
+      );
+    });
+  }
 
   void _showCompletionTutorial() {
-    if (!mounted) return;
+    if (!mounted || _hasShownCompletionTutorial) return;
+    
+    _hasShownCompletionTutorial = true;
     
     AppTutorialService().showCompletionTutorial(
       context: context,
@@ -259,6 +322,7 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
               }
             });
           }
+          // Plant growth tutorial is triggered separately when on home tab
         }
       });
     });
@@ -267,17 +331,35 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
     final location = GoRouterState.of(context).uri.path;
     _updateCurrentIndex(location);
     
+    // Check if we should show plant growth tutorial (when on home tab)
+    final user = ref.watch(authNotifierProvider).valueOrNull;
+    if (user != null &&
+        user.hasSeenJournalTutorial &&
+        user.hasLoggedWeightDuringTutorial &&
+        !user.hasSeenPlantGrowthTutorial &&
+        !_hasShownPlantGrowthTutorial &&
+        _currentIndex == 0) {
+      // Trigger tutorial after frame is built
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted && _currentIndex == 0) {
+            _showPlantGrowthTutorial();
+          }
+        });
+      });
+    }
+    
     return Scaffold(
       key: _completionKey,
       backgroundColor: Colors.white,
       body: IndexedStack(
         index: _currentIndex,
-        children: const [
-          HomeScreen(),
-          LessonsScreen(),
-          ExercisesScreen(),
-          JournalScreen(),
-          ProfileScreen(),
+        children: [
+          HomeScreen(treeWidgetKey: _treeWidgetKey),
+          const LessonsScreen(),
+          const ToolsScreen(),
+          JournalScreen(weightDiaryKey: _weightDiaryKey),
+          const ProfileScreen(),
         ],
       ),
       bottomNavigationBar: Container(

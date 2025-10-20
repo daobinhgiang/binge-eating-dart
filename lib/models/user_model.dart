@@ -35,6 +35,9 @@ class UserModel {
   final bool hasCompletedFirstLesson;
   final bool hasSeenExercisesTutorial;
   final bool hasSeenJournalTutorial;
+  final bool hasLoggedWeightDuringTutorial;
+  final bool hasSeenWeightDiaryTutorial;
+  final bool hasSeenPlantGrowthTutorial;
   final int level;
   final int exp;
 
@@ -57,6 +60,9 @@ class UserModel {
     this.hasCompletedFirstLesson = false,
     this.hasSeenExercisesTutorial = false,
     this.hasSeenJournalTutorial = false,
+    this.hasLoggedWeightDuringTutorial = false,
+    this.hasSeenWeightDiaryTutorial = false,
+    this.hasSeenPlantGrowthTutorial = false,
     this.level = 1,
     this.exp = 0,
   });
@@ -92,6 +98,9 @@ class UserModel {
       hasCompletedFirstLesson: data['hasCompletedFirstLesson'] ?? false,
       hasSeenExercisesTutorial: data['hasSeenExercisesTutorial'] ?? false,
       hasSeenJournalTutorial: data['hasSeenJournalTutorial'] ?? false,
+      hasLoggedWeightDuringTutorial: data['hasLoggedWeightDuringTutorial'] ?? false,
+      hasSeenWeightDiaryTutorial: data['hasSeenWeightDiaryTutorial'] ?? false,
+      hasSeenPlantGrowthTutorial: data['hasSeenPlantGrowthTutorial'] ?? false,
       level: data['level'] ?? 1,
       exp: data['exp'] ?? 0,
     );
@@ -116,6 +125,9 @@ class UserModel {
       'hasCompletedFirstLesson': hasCompletedFirstLesson,
       'hasSeenExercisesTutorial': hasSeenExercisesTutorial,
       'hasSeenJournalTutorial': hasSeenJournalTutorial,
+      'hasLoggedWeightDuringTutorial': hasLoggedWeightDuringTutorial,
+      'hasSeenWeightDiaryTutorial': hasSeenWeightDiaryTutorial,
+      'hasSeenPlantGrowthTutorial': hasSeenPlantGrowthTutorial,
       'level': level,
       'exp': exp,
     };
@@ -140,6 +152,9 @@ class UserModel {
     bool? hasCompletedFirstLesson,
     bool? hasSeenExercisesTutorial,
     bool? hasSeenJournalTutorial,
+    bool? hasLoggedWeightDuringTutorial,
+    bool? hasSeenWeightDiaryTutorial,
+    bool? hasSeenPlantGrowthTutorial,
     int? level,
     int? exp,
   }) {
@@ -162,6 +177,9 @@ class UserModel {
       hasCompletedFirstLesson: hasCompletedFirstLesson ?? this.hasCompletedFirstLesson,
       hasSeenExercisesTutorial: hasSeenExercisesTutorial ?? this.hasSeenExercisesTutorial,
       hasSeenJournalTutorial: hasSeenJournalTutorial ?? this.hasSeenJournalTutorial,
+      hasLoggedWeightDuringTutorial: hasLoggedWeightDuringTutorial ?? this.hasLoggedWeightDuringTutorial,
+      hasSeenWeightDiaryTutorial: hasSeenWeightDiaryTutorial ?? this.hasSeenWeightDiaryTutorial,
+      hasSeenPlantGrowthTutorial: hasSeenPlantGrowthTutorial ?? this.hasSeenPlantGrowthTutorial,
       level: level ?? this.level,
       exp: exp ?? this.exp,
     );

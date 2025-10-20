@@ -141,7 +141,7 @@ void _checkAndShowTutorial() async {
     _hasShownTutorial = true;
     
     // Wait a bit more for the layout to settle and stages to load
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 0));
     
     if (!mounted) return;
     

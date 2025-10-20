@@ -21,7 +21,9 @@ import '../widgets/tree_growth_widget.dart';
 import '../widgets/binge_free_timer_carousel_widget.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
+  final GlobalKey? treeWidgetKey;
+  
+  const HomeScreen({super.key, this.treeWidgetKey});
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();

@@ -19,166 +19,110 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   int _currentQuestionIndex = 0;
   int? _selectedOption;
   bool _isLoading = false;
+  bool _showProgressScreen = false;
+  bool _showSetupRoutineScreen = false;
+  bool _showStartJourneyScreen = false;
+  int _dailyGoalMinutes = 0;
 
   final List<OnboardingQuestion> _questions = [
-    // First 4 questions (required) - reordered to 1, 4, 8, 16
     OnboardingQuestion(
       number: 1,
-      question: "How self-conscious do you feel about your weight or body size around others?",
+      question: "How often do you binge?",
       options: [
-        "I don't feel self-conscious about my weight or body size when I'm with others.",
-        "I feel concerned about how I look to others, but it normally does not make me feel disappointed with myself.",
-        "I do get self-conscious about my appearance and weight which makes me feel disappointed in myself.",
-        "I feel very self-conscious about my weight and frequently feel intense shame and disgust for myself. I try to avoid social contact because of this.",
+        "Rarely or never",
+        "Once or twice a month",
+        "Several times a week",
+        "Daily or multiple times a day",
       ],
     ),
     OnboardingQuestion(
       number: 2,
-      question: "How often do you eat when you are bored?",
+      question: "Have the binges gotten more intense?",
       options: [
-        "I don't have the habit of eating when I'm bored.",
-        "I sometimes eat when I'm bored, but can usually distract myself.",
-        "I regularly eat when I'm bored, though occasionally I can resist.",
-        "I strongly eat when I'm bored, and nothing seems to break the habit.",
+        "No, they've stayed the same",
+        "Slightly more intense",
+        "Moderately more intense",
+        "Much more intense",
       ],
     ),
     OnboardingQuestion(
       number: 3,
-      question: "How often do you eat until uncomfortably stuffed?",
+      question: "When did you start binging?",
       options: [
-        " I rarely eat so much food that I feel uncomfortably stuffed afterwards.",
-        "Usually about once a month, I eat such a quantity of food, I end up feeling very stuffed.",
-        "I have regular periods during the month when I eat large amounts of food, either at mealtime or at snacks.",
-        "I eat so much food that I regularly feel quite uncomfortable after eating and sometimes a bit nauseous.",
+        "Within the past few months",
+        "Within the past year",
+        "1-5 years ago",
+        "More than 5 years ago",
       ],
     ),
     OnboardingQuestion(
       number: 4,
-      question: "How certain are you about recognizing physical hunger?",
+      question: "Do you find it difficult to cope with urges to binge?",
       options: [
-        "I usually know when I'm physically hungry and eat the right portion.",
-        "Occasionally I'm uncertain and don't know how much food I need.",
-        "Even if I know the calories, I don't know what's a \"normal\" amount for me.",
+        "I can usually cope with the urges",
+        "Sometimes I struggle but can manage",
+        "I find it very difficult most of the time",
+        "I feel completely overwhelmed by the urges",
       ],
     ),
-    // Remaining questions (optional) - 2, 3, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15
     OnboardingQuestion(
       number: 5,
-      question: "How would you describe your eating speed and fullness?",
+      question: "When you binge, what emotions are involved?",
       options: [
-        "I don't have any difficulty eating slowly in the proper manner.",
-        "Although I seem to \"gobble down\" foods, I don't end up feeling stuffed.",
-        "At times, I tend to eat quickly and then feel uncomfortably full afterwards.",
-        "I bolt down food without really chewing, and usually feel stuffed afterwards.",
+        "Primarily emotional pain",
+        "Physical discomfort",
+        "Stress",
+        "Boredom or a mix of several emotions",
       ],
     ),
     OnboardingQuestion(
       number: 6,
-      question: "How capable do you feel in controlling your eating urges?",
+      question: "Why do you want to overcome binge eating?",
       options: [
-        "I feel capable of controlling my eating urges when I want to.",
-        "I feel like I have failed to control my eating more than the average person.",
-        "I feel utterly helpless when it comes to controlling my eating urges.",
-        "I feel so helpless about controlling eating that I have become desperate about it.",
+        "To improve my physical health",
+        "To improve my mental well-being",
+        "To feel more in control of my life",
+        "All of the above",
       ],
     ),
     OnboardingQuestion(
       number: 7,
-      question: "Do you eat when you are not physically hungry?",
+      question: "What are your top 1–2 goals related to your eating habits?",
       options: [
-        "I'm usually physically hungry when I eat.",
-        "Occasionally, I eat on impulse when I'm not hungry.",
-        "I regularly eat foods I may not enjoy, just to satisfy a hungry feeling even when I don't need it.",
-        "I get \"mouth hunger\" when not physically hungry and eat foods to fill it. Sometimes I spit the food out afterward.",
+        "Reduce frequency of binges",
+        "Develop healthier coping mechanisms",
+        "Improve relationship with food",
+        "Build consistent eating patterns",
       ],
     ),
     OnboardingQuestion(
       number: 8,
-      question: "How do you feel after overeating?",
+      question: "What would success look like for you in the next 30 days?",
       options: [
-        "I don't feel any guilt or self-hate after I overeat.",
-        "Occasionally, I feel guilt or self-hate after overeating.",
-        "Almost always, I feel strong guilt or self-hate after overeating.",
+        "Fewer binge episodes",
+        "Better emotional regulation",
+        "More mindful eating",
+        "Increased self-compassion",
       ],
     ),
     OnboardingQuestion(
       number: 9,
-      question: "How do you react when dieting and overeating occurs?",
+      question: "On a scale of 1–10, how motivated do you feel to make changes right now?",
       options: [
-        "I don't lose control when dieting even after overeating.",
-        "Sometimes, after eating a \"forbidden food,\" I feel I blew it and eat more.",
-        "Frequently, I say \"I've blown it, might as well go all the way\" and binge.",
-        "I often start strict diets but break them with binges. My life feels like \"feast or famine.\"",
+        "1-3 (Low motivation)",
+        "4-6 (Moderate motivation)",
+        "7-8 (High motivation)",
+        "9-10 (Very high motivation)",
       ],
     ),
     OnboardingQuestion(
       number: 10,
-      question: "How does your calorie intake fluctuate?",
+      question: "What's your daily goal for time spent on your recovery with the app?",
       options: [
-        "My calorie intake doesn't fluctuate much.",
-        "Sometimes after overeating, I cut intake to almost nothing.",
-        "I regularly overeat at night but skip mornings.",
-        "I've had week-long periods of near starvation after overeating (\"feast or famine\").",
-      ],
-    ),
-    OnboardingQuestion(
-      number: 11,
-      question: "How well can you stop eating once you've started?",
-      options: [
-        "I usually stop when I've had enough.",
-        "Sometimes I feel a compulsion to keep eating.",
-        "Frequently I can't control urges, though sometimes I can.",
-        "I feel incapable of stopping once I start and fear losing control.",
-      ],
-    ),
-    OnboardingQuestion(
-      number: 12,
-      question: "Do you stop eating when full?",
-      options: [
-        "I stop eating when full.",
-        "Usually I stop, but occasionally overeat.",
-        "Often I cannot stop and feel stuffed.",
-        "Sometimes I must induce vomiting after overeating.",
-      ],
-    ),
-    OnboardingQuestion(
-      number: 13,
-      question: "How do you eat when with others compared to being alone?",
-      options: [
-        "I eat the same with others as when alone.",
-        "Sometimes I eat less with others because I feel self-conscious.",
-        "Frequently, I eat only small amounts with others because I'm embarrassed.",
-        "I secretly overeat when no one can see (\"closet eating\").",
-      ],
-    ),
-    OnboardingQuestion(
-      number: 14,
-      question: "What is your eating pattern during the day?",
-      options: [
-        "I eat 3 meals a day with only occasional snacks.",
-        "I eat 3 meals plus regular snacks.",
-        "When snacking heavily, I sometimes skip meals.",
-        "There are times I continuously snack without planned meals.",
-      ],
-    ),
-    OnboardingQuestion(
-      number: 15,
-      question: "How preoccupied are you with controlling your eating?",
-      options: [
-        "I don't think much about controlling eating.",
-        "Sometimes I think about controlling urges.",
-        "Frequently, I spend much time thinking about food or not eating.",
-        "Most of the day I feel consumed by thoughts of food and the struggle not to eat.",
-      ],
-    ),
-    OnboardingQuestion(
-      number: 16,
-      question: "How much do you think about food in general?",
-      options: [
-        "I don't think about food much.",
-        "I have strong cravings but they're brief.",
-        "I have days when I can't think about anything but food.",
-        "Most days, I feel like I live to eat.",
+        "5 minutes per day",
+        "10 minutes per day",
+        "15 minutes per day",
+        "20 minutes per day",
       ],
     ),
   ];
@@ -187,6 +131,21 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Show setup routine screen before question 10
+    if (_showSetupRoutineScreen) {
+      return _buildSetupRoutineScreen();
+    }
+
+    // Show progress screen right after question 10
+    if (_showProgressScreen) {
+      return _buildProgressScreen();
+    }
+
+    // Show start journey screen after progress celebration
+    if (_showStartJourneyScreen) {
+      return _buildStartJourneyScreen();
+    }
+
     final currentQuestion = _questions[_currentQuestionIndex];
     final progress = (_currentQuestionIndex + 1) / _questions.length;
 
@@ -352,46 +311,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       
                     const SizedBox(height: 24),
                     
-                    // Navigation buttons
-                    if (_currentQuestionIndex >= 4) ...[
-                      // Two buttons for question 5+ (index 4+)
-                      Container(
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: Colors.blue[50],
-                          borderRadius: BorderRadius.circular(12.0),
-                          border: Border.all(
-                            color: Colors.blue[200]!,
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.lightbulb_outline,
-                              color: Colors.blue[700],
-                              size: 20,
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                'Complete all questions for personalized insights',
-                                style: TextStyle(
-                                  color: Colors.blue[900],
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      // Continue button
+                    // Navigation buttons - all questions are required, no skip option
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: _selectedOption != null && !_isLoading
-                              ? _continueSurvey
+                            ? (_currentQuestionIndex == 8 
+                                ? _showSetupRoutine
+                                : _currentQuestionIndex == _questions.length - 1 
+                                    ? _handleLastQuestion 
+                                    : _nextQuestion)
                               : null,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF6366F1),
@@ -415,8 +344,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                 )
                               : Text(
                                   _currentQuestionIndex == _questions.length - 1
-                                      ? 'Complete Survey'
-                                      : 'Continue',
+                                    ? 'Continue'
+                                    : 'Next',
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
@@ -424,38 +353,329 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                 ),
                         ),
                       ),
-                      const SizedBox(height: 10),
-                      // Skip button
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _getQuestionLabel(int questionNumber) {
+    switch (questionNumber) {
+      case 1:
+        return 'Binge frequency';
+      case 2:
+        return 'Binge intensity';
+      case 3:
+        return 'Binge history';
+      case 4:
+        return 'Coping with urges';
+      case 5:
+        return 'Emotions involved';
+      case 6:
+        return 'Motivation for change';
+      case 7:
+        return 'Personal goals';
+      case 8:
+        return 'Success vision';
+      case 9:
+        return 'Motivation level';
+      case 10:
+        return 'Daily goal';
+      default:
+        return 'Question';
+    }
+  }
+
+  Widget _buildSetupRoutineScreen() {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Icon
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6366F1).withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.event_repeat,
+                  size: 50,
+                  color: Color(0xFF6366F1),
+                ),
+              ),
+              
+              const SizedBox(height: 32),
+              
+              // Main message
+              Text(
+                "Let's set up a Daily Routine!",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.grey[900],
+                  fontSize: 32,
+                  fontWeight: FontWeight.w700,
+                  height: 1.3,
+                ),
+              ),
+              
+              const SizedBox(height: 16),
+              
+              Text(
+                "Building a consistent daily practice is key to your recovery success.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 16,
+                  height: 1.5,
+                ),
+              ),
+              
+              const Spacer(),
+              
+              // Continue button
                       SizedBox(
                         width: double.infinity,
-                        child: TextButton(
-                          onPressed: !_isLoading ? _skipToApp : null,
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                          ),
-                          child: Text(
-                            'Skip to App',
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _continueToQuestion10,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6366F1),
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: Colors.grey[300],
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'Continue',
                             style: TextStyle(
-                              fontSize: 14,
+                      fontSize: 16,
                               fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStartJourneyScreen() {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Icon
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6366F1).withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.rocket_launch,
+                  size: 50,
+                  color: Color(0xFF6366F1),
+                ),
+              ),
+              
+              const SizedBox(height: 32),
+              
+              // Main message
+              Text(
+                "Let's start your recovery journey, shall we?",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.grey[900],
+                  fontSize: 32,
+                  fontWeight: FontWeight.w700,
+                  height: 1.3,
+                ),
+              ),
+              
+              const SizedBox(height: 16),
+              
+              Text(
+                "You've taken an important step by committing to your recovery. We're here to support you every step of the way.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
                               color: Colors.grey[600],
-                            ),
+                  fontSize: 16,
+                  height: 1.5,
+                ),
+              ),
+              
+              const Spacer(),
+              
+              // Continue button
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _completeOnboarding,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6366F1),
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: Colors.grey[300],
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : const Text(
+                          'Start Your Journey',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProgressScreen() {
+    // Calculate progress percentage based on daily goal
+    final progressPercentage = _getProgressPercentage(_dailyGoalMinutes);
+    
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Celebration icon
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6366F1).withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.celebration,
+                  size: 50,
+                  color: Color(0xFF6366F1),
+                ),
+              ),
+              
+              const SizedBox(height: 32),
+              
+              // Progress message
+              Text(
+                "That's $progressPercentage% progress in your first month!",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.grey[900],
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
+                  height: 1.3,
+                ),
+              ),
+              
+              const SizedBox(height: 16),
+              
+              Text(
+                "With $_dailyGoalMinutes minutes a day, you're making a real commitment to your recovery.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 16,
+                  height: 1.5,
+                ),
+              ),
+              
+              const SizedBox(height: 48),
+              
+              // Visual progress indicator
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6366F1).withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: const Color(0xFF6366F1).withOpacity(0.2),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.timer_outlined,
+                          color: const Color(0xFF6366F1),
+                          size: 24,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '$_dailyGoalMinutes min/day',
+                          style: TextStyle(
+                            color: const Color(0xFF6366F1),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: LinearProgressIndicator(
+                        value: progressPercentage / 100,
+                        minHeight: 12,
+                        backgroundColor: Colors.grey[200],
+                        valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF6366F1)),
                       ),
-                    ] else ...[
-                      // Single button for first 4 questions
+                    ),
+                  ],
+                ),
+              ),
+              
+              const Spacer(),
+              
+              // Continue button
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: _selectedOption != null && !_isLoading
-                              ? _nextQuestion
-                              : null,
+                  onPressed: _isLoading ? null : _showProgressCelebration,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF6366F1),
                             foregroundColor: Colors.white,
                             disabledBackgroundColor: Colors.grey[300],
-                            disabledForegroundColor: Colors.grey[500],
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12.0),
@@ -472,7 +692,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                   ),
                                 )
                               : const Text(
-                                  'Next',
+                          'Continue',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
@@ -480,53 +700,25 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                 ),
                         ),
                       ),
-                    ],
                   ],
                 ),
-              ),
-            ),
-          ],
         ),
       ),
     );
   }
 
-  String _getQuestionLabel(int questionNumber) {
-    switch (questionNumber) {
-      case 1:
-        return 'Self-consciousness';
-      case 2:
-        return 'Eating speed';
-      case 3:
-        return 'Control over eating';
-      case 4:
-        return 'Boredom eating';
+  double _getProgressPercentage(int minutes) {
+    switch (minutes) {
       case 5:
-        return 'Physical hunger';
-      case 6:
-        return 'Post-overeating feelings';
-      case 7:
-        return 'Dieting reactions';
-      case 8:
-        return 'Overeating frequency';
-      case 9:
-        return 'Calorie fluctuation';
+        return 7.5;
       case 10:
-        return 'Stopping ability';
-      case 11:
-        return 'Fullness recognition';
-      case 12:
-        return 'Social eating';
-      case 13:
-        return 'Eating patterns';
-      case 14:
-        return 'Eating preoccupation';
+        return 15;
       case 15:
-        return 'Food thoughts';
-      case 16:
-        return 'Hunger recognition';
+        return 22.5;
+      case 20:
+        return 30;
       default:
-        return 'Question';
+        return 0;
     }
   }
 
@@ -555,7 +747,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         await _onboardingService.saveAnswer(user.id, answer);
       }
 
-      // Move to next question (for first 4 questions only)
+      // Move to next question
       setState(() {
         _currentQuestionIndex++;
         _selectedOption = null;
@@ -577,16 +769,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
-  void _previousQuestion() {
-    if (_currentQuestionIndex > 0) {
-      setState(() {
-        _currentQuestionIndex--;
-        _selectedOption = null;
-      });
-    }
-  }
-
-  void _continueSurvey() async {
+  void _showSetupRoutine() async {
     if (_selectedOption == null) return;
 
     setState(() {
@@ -594,7 +777,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     });
 
     try {
-      // Save current answer
+      // Save question 9 answer
       final answer = OnboardingAnswer(
         questionNumber: _questions[_currentQuestionIndex].number,
         question: _questions[_currentQuestionIndex].question,
@@ -611,17 +794,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         await _onboardingService.saveAnswer(user.id, answer);
       }
 
-      if (_currentQuestionIndex == _questions.length - 1) {
-        // Complete onboarding
-        await _completeOnboarding();
-      } else {
-        // Move to next question
+      // Show setup routine screen
         setState(() {
-          _currentQuestionIndex++;
-          _selectedOption = null;
+        _showSetupRoutineScreen = true;
           _isLoading = false;
         });
-      }
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -638,14 +815,23 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
-  void _skipToApp() async {
+  void _continueToQuestion10() {
+    setState(() {
+      _showSetupRoutineScreen = false;
+      _currentQuestionIndex = 9; // Question 10
+      _selectedOption = null;
+    });
+  }
+
+  void _handleLastQuestion() async {
+    if (_selectedOption == null) return;
+
     setState(() {
       _isLoading = true;
     });
 
     try {
-      // Save current answer only if an option was selected
-      if (_selectedOption != null) {
+      // Save the daily goal answer (question 10)
         final answer = OnboardingAnswer(
           questionNumber: _questions[_currentQuestionIndex].number,
           question: _questions[_currentQuestionIndex].question,
@@ -660,11 +846,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         final user = ref.read(authNotifierProvider).value;
         if (user != null) {
           await _onboardingService.saveAnswer(user.id, answer);
-        }
       }
 
-      // Complete partial onboarding and skip to app
-      await _completePartialOnboarding();
+      // Extract the minutes from the selected option
+      // Options are: "5 minutes per day", "10 minutes per day", etc.
+      final minutes = [5, 10, 15, 20][_selectedOption!];
+      _dailyGoalMinutes = minutes;
+      
+      // Show progress celebration screen
+      setState(() {
+        _showProgressScreen = true;
+        _isLoading = false;
+      });
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -673,11 +866,27 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error saving progress: $e'),
+            content: Text('Error saving answer: $e'),
             backgroundColor: Colors.red,
           ),
         );
       }
+    }
+  }
+
+  void _showProgressCelebration() {
+    setState(() {
+      _showProgressScreen = false;
+      _showStartJourneyScreen = true;
+    });
+  }
+
+  void _previousQuestion() {
+    if (_currentQuestionIndex > 0) {
+      setState(() {
+        _currentQuestionIndex--;
+        _selectedOption = null;
+      });
     }
   }
 
@@ -724,55 +933,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
-  Future<void> _completePartialOnboarding() async {
-    try {
-      final user = ref.read(authNotifierProvider).value;
-      if (user == null) return;
-
-      // Calculate total score from first 4 questions
-      final totalScore = _answers.fold(0, (total, answer) => total + answer.selectedOption);
-
-      // Create partial onboarding data
-      final onboardingData = OnboardingData(
-        userId: user.id,
-        answers: _answers,
-        completedAt: DateTime.now(),
-        totalScore: totalScore,
-      );
-
-      // Save partial onboarding data
-      await _onboardingService.saveOnboardingData(onboardingData);
-      
-      // AI-based recommendations removed
-
-      // Update user's partial onboarding status to allow app access
-      await _updateUserPartialOnboardingStatus(user.id);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Welcome! You can always complete the remaining questions later from your profile.'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        context.go('/');
-      }
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error saving progress: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
-
   Future<void> _updateUserOnboardingStatus(String userId) async {
     try {
       // Update user's onboarding status via auth provider to refresh local state
@@ -781,17 +941,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           .updateOnboardingStatus(onboardingCompleted: true);
     } catch (e) {
       throw 'Failed to update user onboarding status: $e';
-    }
-  }
-
-  Future<void> _updateUserPartialOnboardingStatus(String userId) async {
-    try {
-      // Update user's partial onboarding status via auth provider to refresh local state
-      await ref
-          .read(authNotifierProvider.notifier)
-          .updateOnboardingStatus(onboardingPartiallyCompleted: true);
-    } catch (e) {
-      throw 'Failed to update user partial onboarding status: $e';
     }
   }
 
@@ -810,7 +959,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           ),
         ),
         content: Text(
-          'Your progress will be saved. You can return anytime to complete the survey.',
+          'You need to complete the survey to continue. Your progress will be saved.',
           style: TextStyle(
             color: Colors.grey[700],
             fontSize: 15,
@@ -821,7 +970,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: Text(
-              'Continue',
+              'Continue Survey',
               style: TextStyle(
                 color: const Color(0xFF6366F1),
                 fontWeight: FontWeight.w600,
@@ -831,10 +980,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              _completePartialOnboarding();
+              context.go('/login');
             },
             child: Text(
-              'Exit',
+              'Exit to Login',
               style: TextStyle(
                 color: Colors.grey[600],
                 fontWeight: FontWeight.w600,

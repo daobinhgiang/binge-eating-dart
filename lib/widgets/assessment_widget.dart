@@ -662,7 +662,7 @@ class _AssessmentWidgetState extends ConsumerState<AssessmentWidget> {
 
           // Check if user leveled up
           if (newLevel > oldLevel) {
-            await Future.delayed(const Duration(milliseconds: 500));
+            await Future.delayed(const Duration(milliseconds: 0));
             
             if (mounted) {
               final result = await showDialog(

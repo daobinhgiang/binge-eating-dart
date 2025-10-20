@@ -21,164 +21,104 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
   List<OnboardingAnswer> _answers = [];
 
   final List<OnboardingQuestion> _questions = [
-    // First 4 questions (required) - reordered to 1, 4, 8, 16
     OnboardingQuestion(
       number: 1,
-      question: "How self-conscious do you feel about your weight or body size around others?",
+      question: "How often do you binge?",
       options: [
-        "I don't feel self-conscious about my weight or body size when I'm with others.",
-        "I feel concerned about how I look to others, but it normally does not make me feel disappointed with myself.",
-        "I do get self-conscious about my appearance and weight which makes me feel disappointed in myself.",
-        "I feel very self-conscious about my weight and frequently feel intense shame and disgust for myself. I try to avoid social contact because of this.",
+        "Rarely or never",
+        "Once or twice a month",
+        "Several times a week",
+        "Daily or multiple times a day",
       ],
     ),
     OnboardingQuestion(
       number: 2,
-      question: "How often do you eat when you are bored?",
+      question: "Have the binges gotten more intense?",
       options: [
-        "I don't have the habit of eating when I'm bored.",
-        "I sometimes eat when I'm bored, but can usually distract myself.",
-        "I regularly eat when I'm bored, though occasionally I can resist.",
-        "I strongly eat when I'm bored, and nothing seems to break the habit.",
+        "No, they've stayed the same",
+        "Slightly more intense",
+        "Moderately more intense",
+        "Much more intense",
       ],
     ),
     OnboardingQuestion(
       number: 3,
-      question: "How often do you eat until uncomfortably stuffed?",
+      question: "When did you start binging?",
       options: [
-        "Rarely.",
-        "About once a month.",
-        "Regularly, either at meals or snacks.",
-        "Very often, leaving me uncomfortable or even nauseous.",
+        "Within the past few months",
+        "Within the past year",
+        "1-5 years ago",
+        "More than 5 years ago",
       ],
     ),
     OnboardingQuestion(
       number: 4,
-      question: "How certain are you about recognizing physical hunger?",
+      question: "Do you find it difficult to cope with urges to binge?",
       options: [
-        "I usually know when I'm physically hungry and eat the right portion.",
-        "Occasionally I'm uncertain and don't know how much food I need.",
-        "Even if I know the calories, I don't know what's a \"normal\" amount for me.",
+        "I can usually cope with the urges",
+        "Sometimes I struggle but can manage",
+        "I find it very difficult most of the time",
+        "I feel completely overwhelmed by the urges",
       ],
     ),
-    // Remaining questions (optional) - 2, 3, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15
     OnboardingQuestion(
       number: 5,
-      question: "How would you describe your eating speed and fullness?",
+      question: "When you binge, what emotions are involved?",
       options: [
-        "I don't have any difficulty eating slowly in the proper manner.",
-        "Although I seem to \"gobble down\" foods, I don't end up feeling stuffed.",
-        "At times, I tend to eat quickly and then feel uncomfortably full afterwards.",
-        "I bolt down food without really chewing, and usually feel stuffed afterwards.",
+        "Primarily emotional pain",
+        "Physical discomfort",
+        "Stress",
+        "Boredom or a mix of several emotions",
       ],
     ),
     OnboardingQuestion(
       number: 6,
-      question: "How capable do you feel in controlling your eating urges?",
+      question: "Why do you want to overcome binge eating?",
       options: [
-        "I feel capable of controlling my eating urges when I want to.",
-        "I feel like I have failed to control my eating more than the average person.",
-        "I feel utterly helpless when it comes to controlling my eating urges.",
-        "I feel so helpless about controlling eating that I have become desperate about it.",
+        "To improve my physical health",
+        "To improve my mental well-being",
+        "To feel more in control of my life",
+        "All of the above",
       ],
     ),
     OnboardingQuestion(
       number: 7,
-      question: "Do you eat when you are not physically hungry?",
+      question: "What are your top 1–2 goals related to your eating habits?",
       options: [
-        "I'm usually physically hungry when I eat.",
-        "Occasionally, I eat on impulse when I'm not hungry.",
-        "I regularly eat foods I may not enjoy, just to satisfy a hungry feeling even when I don't need it.",
-        "I get \"mouth hunger\" when not physically hungry and eat foods to fill it. Sometimes I spit the food out afterward.",
+        "Reduce frequency of binges",
+        "Develop healthier coping mechanisms",
+        "Improve relationship with food",
+        "Build consistent eating patterns",
       ],
     ),
     OnboardingQuestion(
       number: 8,
-      question: "How do you feel after overeating?",
+      question: "What would success look like for you in the next 30 days?",
       options: [
-        "I don't feel any guilt or self-hate after I overeat.",
-        "Occasionally, I feel guilt or self-hate after overeating.",
-        "Almost always, I feel strong guilt or self-hate after overeating.",
+        "Fewer binge episodes",
+        "Better emotional regulation",
+        "More mindful eating",
+        "Increased self-compassion",
       ],
     ),
     OnboardingQuestion(
       number: 9,
-      question: "How do you react when dieting and overeating occurs?",
+      question: "On a scale of 1–10, how motivated do you feel to make changes right now?",
       options: [
-        "I don't lose control when dieting even after overeating.",
-        "Sometimes, after eating a \"forbidden food,\" I feel I blew it and eat more.",
-        "Frequently, I say \"I've blown it, might as well go all the way\" and binge.",
-        "I often start strict diets but break them with binges. My life feels like \"feast or famine.\"",
+        "1-3 (Low motivation)",
+        "4-6 (Moderate motivation)",
+        "7-8 (High motivation)",
+        "9-10 (Very high motivation)",
       ],
     ),
     OnboardingQuestion(
       number: 10,
-      question: "How does your calorie intake fluctuate?",
+      question: "What's your daily goal for time spent on your recovery with the app?",
       options: [
-        "My calorie intake doesn't fluctuate much.",
-        "Sometimes after overeating, I cut intake to almost nothing.",
-        "I regularly overeat at night but skip mornings.",
-        "I've had week-long periods of near starvation after overeating (\"feast or famine\").",
-      ],
-    ),
-    OnboardingQuestion(
-      number: 11,
-      question: "How well can you stop eating once you've started?",
-      options: [
-        "I usually stop when I've had enough.",
-        "Sometimes I feel a compulsion to keep eating.",
-        "Frequently I can't control urges, though sometimes I can.",
-        "I feel incapable of stopping once I start and fear losing control.",
-      ],
-    ),
-    OnboardingQuestion(
-      number: 12,
-      question: "Do you stop eating when full?",
-      options: [
-        "I stop eating when full.",
-        "Usually I stop, but occasionally overeat.",
-        "Often I cannot stop and feel stuffed.",
-        "Sometimes I must induce vomiting after overeating.",
-      ],
-    ),
-    OnboardingQuestion(
-      number: 13,
-      question: "How do you eat when with others compared to being alone?",
-      options: [
-        "I eat the same with others as when alone.",
-        "Sometimes I eat less with others because I feel self-conscious.",
-        "Frequently, I eat only small amounts with others because I'm embarrassed.",
-        "I secretly overeat when no one can see (\"closet eating\").",
-      ],
-    ),
-    OnboardingQuestion(
-      number: 14,
-      question: "What is your eating pattern during the day?",
-      options: [
-        "I eat 3 meals a day with only occasional snacks.",
-        "I eat 3 meals plus regular snacks.",
-        "When snacking heavily, I sometimes skip meals.",
-        "There are times I continuously snack without planned meals.",
-      ],
-    ),
-    OnboardingQuestion(
-      number: 15,
-      question: "How preoccupied are you with controlling your eating?",
-      options: [
-        "I don't think much about controlling eating.",
-        "Sometimes I think about controlling urges.",
-        "Frequently, I spend much time thinking about food or not eating.",
-        "Most of the day I feel consumed by thoughts of food and the struggle not to eat.",
-      ],
-    ),
-    OnboardingQuestion(
-      number: 16,
-      question: "How much do you think about food in general?",
-      options: [
-        "I don't think about food much.",
-        "I have strong cravings but they're brief.",
-        "I have days when I can't think about anything but food.",
-        "Most days, I feel like I live to eat.",
+        "5 minutes per day",
+        "10 minutes per day",
+        "15 minutes per day",
+        "20 minutes per day",
       ],
     ),
   ];
@@ -453,37 +393,25 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
   String _getQuestionLabel(int questionNumber) {
     switch (questionNumber) {
       case 1:
-        return 'Self-consciousness';
+        return 'Binge frequency';
       case 2:
-        return 'Eating speed';
+        return 'Binge intensity';
       case 3:
-        return 'Control over eating';
+        return 'Binge history';
       case 4:
-        return 'Boredom eating';
+        return 'Coping with urges';
       case 5:
-        return 'Physical hunger';
+        return 'Emotions involved';
       case 6:
-        return 'Post-overeating feelings';
+        return 'Motivation for change';
       case 7:
-        return 'Dieting reactions';
+        return 'Personal goals';
       case 8:
-        return 'Overeating frequency';
+        return 'Success vision';
       case 9:
-        return 'Calorie fluctuation';
+        return 'Motivation level';
       case 10:
-        return 'Stopping ability';
-      case 11:
-        return 'Fullness recognition';
-      case 12:
-        return 'Social eating';
-      case 13:
-        return 'Eating patterns';
-      case 14:
-        return 'Eating preoccupation';
-      case 15:
-        return 'Food thoughts';
-      case 16:
-        return 'Hunger recognition';
+        return 'Daily goal';
       default:
         return 'Question';
     }
