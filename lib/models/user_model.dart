@@ -37,6 +37,7 @@ class UserModel {
   final bool hasSeenJournalTutorial;
   final bool hasLoggedWeightDuringTutorial;
   final bool hasSeenWeightDiaryTutorial;
+  final bool hasVisitedWeightDiary;
   final bool hasSeenPlantGrowthTutorial;
   final int level;
   final int exp;
@@ -67,6 +68,7 @@ class UserModel {
     this.hasSeenJournalTutorial = false,
     this.hasLoggedWeightDuringTutorial = false,
     this.hasSeenWeightDiaryTutorial = false,
+    this.hasVisitedWeightDiary = false,
     this.hasSeenPlantGrowthTutorial = false,
     this.level = 1,
     this.exp = 0,
@@ -110,6 +112,7 @@ class UserModel {
       hasSeenJournalTutorial: data['hasSeenJournalTutorial'] ?? false,
       hasLoggedWeightDuringTutorial: data['hasLoggedWeightDuringTutorial'] ?? false,
       hasSeenWeightDiaryTutorial: data['hasSeenWeightDiaryTutorial'] ?? false,
+      hasVisitedWeightDiary: data['hasVisitedWeightDiary'] ?? false,
       hasSeenPlantGrowthTutorial: data['hasSeenPlantGrowthTutorial'] ?? false,
       level: data['level'] ?? 1,
       exp: data['exp'] ?? 0,
@@ -146,6 +149,7 @@ class UserModel {
       'hasSeenJournalTutorial': hasSeenJournalTutorial,
       'hasLoggedWeightDuringTutorial': hasLoggedWeightDuringTutorial,
       'hasSeenWeightDiaryTutorial': hasSeenWeightDiaryTutorial,
+      'hasVisitedWeightDiary': hasVisitedWeightDiary,
       'hasSeenPlantGrowthTutorial': hasSeenPlantGrowthTutorial,
       'level': level,
       'exp': exp,
@@ -178,6 +182,7 @@ class UserModel {
     bool? hasSeenJournalTutorial,
     bool? hasLoggedWeightDuringTutorial,
     bool? hasSeenWeightDiaryTutorial,
+    bool? hasVisitedWeightDiary,
     bool? hasSeenPlantGrowthTutorial,
     int? level,
     int? exp,
@@ -208,6 +213,7 @@ class UserModel {
       hasSeenJournalTutorial: hasSeenJournalTutorial ?? this.hasSeenJournalTutorial,
       hasLoggedWeightDuringTutorial: hasLoggedWeightDuringTutorial ?? this.hasLoggedWeightDuringTutorial,
       hasSeenWeightDiaryTutorial: hasSeenWeightDiaryTutorial ?? this.hasSeenWeightDiaryTutorial,
+      hasVisitedWeightDiary: hasVisitedWeightDiary ?? this.hasVisitedWeightDiary,
       hasSeenPlantGrowthTutorial: hasSeenPlantGrowthTutorial ?? this.hasSeenPlantGrowthTutorial,
       level: level ?? this.level,
       exp: exp ?? this.exp,

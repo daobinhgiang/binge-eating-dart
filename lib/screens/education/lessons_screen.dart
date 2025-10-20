@@ -266,7 +266,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
     switch (lessonId) {
       // Stage 1 lessons
       case 'lesson_1_1':
-        return const Lesson11Screen();
+        return Lesson11Screen();
       case 'lesson_1_2':
         return const Lesson12Screen();
       case 'lesson_1_2_1':

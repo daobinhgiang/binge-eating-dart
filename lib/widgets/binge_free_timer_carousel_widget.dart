@@ -545,44 +545,47 @@ class BingeFreeTimerCarouselWidgetState
     try {
       final isFirstTime = _lastResetTime == null;
 
-      // Show confirmation dialog
-      final confirmed = await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Row(
-            children: [
-              Icon(
-                isFirstTime ? Icons.play_arrow : Icons.refresh,
-                color: isFirstTime ? const Color(0xFF4CAF50) : Colors.orange,
+      // For first time, start immediately without confirmation
+      // For reset, show confirmation dialog
+      bool confirmed = true;
+      
+      if (!isFirstTime) {
+        // Show confirmation dialog only for reset
+        confirmed = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Row(
+              children: [
+                Icon(
+                  Icons.refresh,
+                  color: Colors.orange,
+                ),
+                const SizedBox(width: 8),
+                Text('Reset Timer'),
+              ],
+            ),
+            content: Text(
+              'Are you sure you want to reset your timer? This will log a new reset time.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Cancel'),
               ),
-              const SizedBox(width: 8),
-              Text(isFirstTime ? 'Start Timer' : 'Reset Timer'),
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
+                ),
+                child: Text('Reset'),
+              ),
             ],
           ),
-          content: Text(
-            isFirstTime
-                ? 'Ready to start tracking your binge-free progress?'
-                : 'Are you sure you want to reset your timer? This will log a new reset time.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    isFirstTime ? const Color(0xFF4CAF50) : Colors.orange,
-                foregroundColor: Colors.white,
-              ),
-              child: Text(isFirstTime ? 'Start' : 'Reset'),
-            ),
-          ],
-        ),
-      );
+        ) ?? false;
+      }
 
-      if (confirmed == true) {
+      if (confirmed) {
         // Show loading indicator
         if (mounted) {
           showDialog(

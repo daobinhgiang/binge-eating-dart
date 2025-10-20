@@ -458,7 +458,7 @@ final _router = GoRouter(
     // Lesson routes - Stage 1
     GoRoute(
       path: '/lesson/1_1',
-      builder: (context, state) => const AuthGuard(child: Lesson11Screen()),
+      builder: (context, state) => AuthGuard(child: Lesson11Screen()),
     ),
     GoRoute(
       path: '/lesson/1_2',

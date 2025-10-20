@@ -55,26 +55,12 @@ class AppTutorialService {
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      "Let's start your journey by learning about your treatment path. Tap the Lessons tab to begin your first lesson.",
+                      "Tap here to begin your first lesson!",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16.0,
                       ),
                       textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        controller.next();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF66BB6A),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      ),
-                      child: const Text(
-                        "Got it!",
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
                     ),
                   ],
                 ),
@@ -149,26 +135,12 @@ class AppTutorialService {
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      "This is your first lesson: \"Your Path to Change\". Tap on it to learn about your treatment journey and what to expect. It will take just a few minutes!",
+                      "Tap here learn about your treatment journey and what to expect.",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16.0,
                       ),
                       textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        controller.next();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF66BB6A),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      ),
-                      child: const Text(
-                        "Start Learning!",
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
                     ),
                   ],
                 ),
@@ -242,26 +214,12 @@ class AppTutorialService {
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      "You've completed your first lesson! Now let's explore the Exercises tab where you'll find practical exercises to support your recovery journey.",
+                      "Here are the exercises to support your recovery journey.",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16.0,
                       ),
                       textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        controller.next();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF66BB6A),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      ),
-                      child: const Text(
-                        "Explore Exercises!",
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
                     ),
                   ],
                 ),
@@ -335,26 +293,12 @@ class AppTutorialService {
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      "Now let's explore the Journal tab where you can track your daily progress, mood, and eating patterns. This is a key part of your recovery journey.",
+                      "Here is the Journal tab where you can track your eating patterns, weight, spendings, and more. This is key to your recovery journey!",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16.0,
                       ),
                       textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        controller.next();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF66BB6A),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      ),
-                      child: const Text(
-                        "Explore Journal!",
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
                     ),
                   ],
                 ),
@@ -419,7 +363,7 @@ class AppTutorialService {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Text(
-                      "Track Your Weight 📊",
+                      "Weight Diary 📊",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -429,26 +373,12 @@ class AppTutorialService {
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      "This is your Weight Diary! Tap here to log your current weight. Tracking your weight helps you monitor your progress over time.",
+                      "Tap here to log your current weight. This helps you monitor your progress over time!",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16.0,
                       ),
                       textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        controller.next();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF66BB6A),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      ),
-                      child: const Text(
-                        "Log Weight!",
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
                     ),
                   ],
                 ),
@@ -523,27 +453,12 @@ class AppTutorialService {
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      "This is your personal plant that grows as you progress! Each time you complete activities, your plant will grow and evolve. Swipe left to see your binge-free timer.",
+                      "This seed will grow as you make progress, every time you complete a lesson, activity, and journal entry!",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16.0,
                       ),
                       textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        controller.next();
-                        onNext();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF66BB6A),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      ),
-                      child: const Text(
-                        "Next",
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
                     ),
                   ],
                 ),
@@ -560,6 +475,15 @@ class AppTutorialService {
       paddingFocus: 10,
       opacityShadow: 0.8,
       hideSkip: true,
+      onClickTarget: (target) {
+        // Allow clicking on the highlighted plant/tree graphic
+        if (target.identify == "plant_growth") {
+          print('🌱 Plant graphic clicked in tutorial');
+          onNext();
+          _tutorialCoachMark?.finish();
+          onFinish();
+        }
+      },
       onFinish: onFinish,
       onSkip: () {
         onFinish();
@@ -609,29 +533,12 @@ class AppTutorialService {
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      "This is your binge-free timer! Tap 'Start Timer' to begin tracking your recovery journey. You can reset it anytime if needed.",
+                      "Tap 'Start Timer' to track how long you've been binge-free. You can reset it anytime if needed!",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16.0,
                       ),
                       textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        controller.next();
-                        onButtonClick();
-                        _tutorialCoachMark?.finish();
-                        onFinish();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF66BB6A),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      ),
-                      child: const Text(
-                        "Got it!",
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
                     ),
                   ],
                 ),

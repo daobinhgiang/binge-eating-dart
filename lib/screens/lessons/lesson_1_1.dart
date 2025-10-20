@@ -143,6 +143,7 @@ class _Lesson11ScreenState extends ConsumerState<Lesson11Screen> {
       onNext: isLastSlide ? null : _goToNextSlide,
       onFinish: isLastSlide ? _finishLesson : null,
       totalSlides: _lesson!.slides.length,
+      showBackButton: false, // Hide back button for lesson 1.1
     );
   }
 }

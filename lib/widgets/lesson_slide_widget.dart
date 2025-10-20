@@ -350,6 +350,7 @@ class LessonSlideWidget extends StatelessWidget {
   final VoidCallback? onNext;
   final VoidCallback? onFinish;
   final int totalSlides;
+  final bool showBackButton;
 
   const LessonSlideWidget({
     super.key,
@@ -361,6 +362,7 @@ class LessonSlideWidget extends StatelessWidget {
     this.onNext,
     this.onFinish,
     this.totalSlides = 10,
+    this.showBackButton = true,
   });
 
   final ScrollController scrollController;
@@ -422,34 +424,36 @@ class LessonSlideWidget extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
             child: Row(
               children: [
-                // Minimalistic back button
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(12.0),
-                    border: Border.all(
-                      color: const Color(0xFF66BB6A).withOpacity(0.15),
-                      width: 1,
-                    ),
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () => Navigator.of(context).pop(),
+                // Minimalistic back button - only show if showBackButton is true
+                if (showBackButton) ...[
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
                       borderRadius: BorderRadius.circular(12.0),
-                      splashColor: const Color(0xFF66BB6A).withOpacity(0.1),
-                      highlightColor: const Color(0xFF66BB6A).withOpacity(0.05),
-                      child: Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        color: const Color(0xFF66BB6A).withOpacity(0.8),
-                        size: 18,
+                      border: Border.all(
+                        color: const Color(0xFF66BB6A).withOpacity(0.15),
+                        width: 1,
+                      ),
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () => Navigator.of(context).pop(),
+                        borderRadius: BorderRadius.circular(12.0),
+                        splashColor: const Color(0xFF66BB6A).withOpacity(0.1),
+                        highlightColor: const Color(0xFF66BB6A).withOpacity(0.05),
+                        child: Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          color: const Color(0xFF66BB6A).withOpacity(0.8),
+                          size: 18,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 16),
+                  const SizedBox(width: 16),
+                ],
                 
                 // Lesson title with stunning typography
                 Expanded(
