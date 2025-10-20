@@ -607,32 +607,32 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
     
     switch (normalizedName) {
       case 'problem solving':
-        context.push('/tools/problem-solving');
+        context.push('/exercises/problem-solving');
         break;
       case 'meal planning':
-        context.push('/tools/meal-planning');
+        context.push('/exercises/meal-planning');
         break;
       case 'urge surfing activities':
-        context.push('/tools/urge-surfing');
+        context.push('/exercises/urge-surfing');
         break;
       case 'addressing overconcern':
-        context.push('/tools/addressing-overconcern');
+        context.push('/exercises/addressing-overconcern');
         break;
       case 'addressing setbacks':
-        context.push('/tools/addressing-setbacks');
+        context.push('/exercises/addressing-setbacks');
         break;
       default:
         // Try to match partial names for better compatibility
         if (normalizedName.contains('problem') && normalizedName.contains('solving')) {
-          context.push('/tools/problem-solving');
+          context.push('/exercises/problem-solving');
         } else if (normalizedName.contains('meal') && normalizedName.contains('planning')) {
-          context.push('/tools/meal-planning');
+          context.push('/exercises/meal-planning');
         } else if (normalizedName.contains('urge') && (normalizedName.contains('surfing') || normalizedName.contains('activities'))) {
-          context.push('/tools/urge-surfing');
+          context.push('/exercises/urge-surfing');
         } else if (normalizedName.contains('overconcern')) {
-          context.push('/tools/addressing-overconcern');
+          context.push('/exercises/addressing-overconcern');
         } else if (normalizedName.contains('setbacks')) {
-          context.push('/tools/addressing-setbacks');
+          context.push('/exercises/addressing-setbacks');
         } else {
           _showInsightToolNotAvailable(toolName);
         }

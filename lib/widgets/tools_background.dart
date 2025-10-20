@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
-class ToolsBackground extends StatefulWidget {
+class ExercisesBackground extends StatefulWidget {
   final Widget child;
 
-  const ToolsBackground({
+  const ExercisesBackground({
     super.key,
     required this.child,
   });
 
   @override
-  State<ToolsBackground> createState() => _ToolsBackgroundState();
+  State<ExercisesBackground> createState() => _ExercisesBackgroundState();
 }
 
-class _ToolsBackgroundState extends State<ToolsBackground>
+class _ExercisesBackgroundState extends State<ExercisesBackground>
     with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
@@ -62,12 +62,12 @@ class _ToolsBackgroundState extends State<ToolsBackground>
           ),
         ),
         
-        // Animated tools-themed shapes
+        // Animated exercises-themed shapes
         AnimatedBuilder(
           animation: _animation,
           builder: (context, child) {
             return CustomPaint(
-              painter: ToolsShapesPainter(_animation.value),
+              painter: ExercisesShapesPainter(_animation.value),
               size: Size.infinite,
             );
           },
@@ -80,10 +80,10 @@ class _ToolsBackgroundState extends State<ToolsBackground>
   }
 }
 
-class ToolsShapesPainter extends CustomPainter {
+class ExercisesShapesPainter extends CustomPainter {
   final double animationValue;
 
-  ToolsShapesPainter(this.animationValue);
+  ExercisesShapesPainter(this.animationValue);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -91,8 +91,8 @@ class ToolsShapesPainter extends CustomPainter {
       ..style = PaintingStyle.fill
       ..isAntiAlias = true;
 
-    // Tools and activity themed shapes
-    // Floating gear/cog shapes representing tools
+    // Exercises and activity themed shapes
+    // Floating gear/cog shapes representing exercises
     for (int i = 0; i < 4; i++) {
       final angle = animationValue + (i * math.pi / 2);
       final centerX = size.width * (0.2 + i * 0.2) + math.sin(angle * 0.2) * 30;

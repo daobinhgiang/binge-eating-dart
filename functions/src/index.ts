@@ -18,6 +18,12 @@ function getOpenAI(): OpenAI {
 // Import and export quiz validation function
 export { validateQuiz } from './validateQuiz';
 
+// Import and export journal entry EXP function
+export { awardJournalEntryExp } from './awardJournalEntryExp';
+
+// Import and export exercise EXP functions
+export { awardExerciseExp, awardMealPlanUpdateExp } from './awardExerciseExp';
+
 // Helper function to format time as HH:mm in Central Time
 function formatTime(date: Date): string {
   // Convert to Central Time (handles both CST and CDT automatically)

@@ -4,7 +4,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../models/user_model.dart';
-import 'auto_todo_service.dart';
 import 'fcm_token_service.dart';
 
 class AuthService {
@@ -14,7 +13,6 @@ class AuthService {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final AutoTodoService _autoTodoService = AutoTodoService();
   final FCMTokenService _fcmTokenService = FCMTokenService();
   
   // Configure GoogleSignIn with platform-specific client IDs
@@ -110,9 +108,6 @@ class AuthService {
             .collection('users')
             .doc(credential.user!.uid)
             .set(userModel.toFirestore());
-            
-        // Initialize todos for the new user
-        await _autoTodoService.initializeUserTodos(credential.user!.uid);
         
         // Initialize FCM token for the new user
         await _fcmTokenService.initializeForUser(credential.user!.uid);
@@ -223,10 +218,6 @@ class AuthService {
               .doc(userCredential.user!.uid)
               .set(userModel.toFirestore());
           print('User saved to Firestore successfully');
-          
-          // Initialize todos for the new user
-          await _autoTodoService.initializeUserTodos(userCredential.user!.uid);
-          print('Auto todos initialized for new user');
           
           // Initialize FCM token for the new user
           await _fcmTokenService.initializeForUser(userCredential.user!.uid);
@@ -346,10 +337,6 @@ class AuthService {
               .set(userModel.toFirestore());
           print('User saved to Firestore successfully');
           
-          // Initialize todos for the new user
-          await _autoTodoService.initializeUserTodos(userCredential.user!.uid);
-          print('Auto todos initialized for new user');
-          
           // Initialize FCM token for the new user
           await _fcmTokenService.initializeForUser(userCredential.user!.uid);
           print('FCM token initialized for new user');
@@ -456,7 +443,7 @@ class AuthService {
   Future<void> updateTutorialStatus({
     bool? hasSeenAppTutorial,
     bool? hasCompletedFirstLesson,
-    bool? hasSeenToolsTutorial,
+    bool? hasSeenExercisesTutorial,
     bool? hasSeenJournalTutorial,
     bool? hasLoggedWeightDuringTutorial,
     bool? hasSeenWeightDiaryTutorial,
@@ -471,7 +458,7 @@ class AuthService {
 
       if (hasSeenAppTutorial != null) updateData['hasSeenAppTutorial'] = hasSeenAppTutorial;
       if (hasCompletedFirstLesson != null) updateData['hasCompletedFirstLesson'] = hasCompletedFirstLesson;
-      if (hasSeenToolsTutorial != null) updateData['hasSeenToolsTutorial'] = hasSeenToolsTutorial;
+      if (hasSeenExercisesTutorial != null) updateData['hasSeenExercisesTutorial'] = hasSeenExercisesTutorial;
       if (hasSeenJournalTutorial != null) updateData['hasSeenJournalTutorial'] = hasSeenJournalTutorial;
       if (hasLoggedWeightDuringTutorial != null) updateData['hasLoggedWeightDuringTutorial'] = hasLoggedWeightDuringTutorial;
       if (hasSeenWeightDiaryTutorial != null) updateData['hasSeenWeightDiaryTutorial'] = hasSeenWeightDiaryTutorial;

@@ -50,11 +50,11 @@ class Stage1Data {
                 LessonSlide(
                   id: 'slide_1_1_3',
                   title: 'Using Nurtra for Success',
-                  content: 'Nurtra is designed to support you through every stage of your treatment. The three main sections—Lessons, Tools, and your Journal—are the core components of your therapy.',
+                  content: 'Nurtra is designed to support you through every stage of your treatment. The three main sections—Lessons, Exercises, and your Journal—are the core components of your therapy.',
                   slideNumber: 3,
                   bulletPoints: [
                     'Lessons (You are here!): These will provide you with crucial information and psychoeducation, guiding you through the treatment process one step at a time.',
-                    'Tools (Exercises): In the "Tools" tab, you\'ll find practical exercises and strategies. These are your "homework" tasks—what you do between sessions is essential for making progress.',
+                    'Exercises: In the "Exercises" tab, you\'ll find practical exercises and strategies. These are your "homework" tasks—what you do between sessions is essential for making progress.',
                     'Journal (Monitoring): Your Journal is one of the most powerful tools for change. Recording your food, drinks, context, and feelings as they happen helps you become more aware of your patterns and gives you back a sense of control.',
                   ],
                 ),

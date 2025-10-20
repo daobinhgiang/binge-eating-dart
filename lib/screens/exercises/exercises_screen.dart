@@ -23,8 +23,8 @@ class ExerciseItem {
   });
 }
 
-class ToolsScreen extends ConsumerWidget {
-  const ToolsScreen({super.key});
+class ExercisesScreen extends ConsumerWidget {
+  const ExercisesScreen({super.key});
 
   // Custom color for Problem Solving
   static const MaterialColor _problemSolvingColor = MaterialColor(
@@ -304,23 +304,4 @@ class ToolsScreen extends ConsumerWidget {
     return 'assets/exercises/problem_solving2.png';
   }
 
-  int _getActivityCount(String title) {
-    final key = title.toLowerCase();
-    if (key.contains('problem') && key.contains('solving')) {
-      return 5; // Problem solving steps
-    }
-    if (key.contains('meal') && key.contains('planning')) {
-      return 4; // Meal planning activities
-    }
-    if (key.contains('urge') && (key.contains('surfing') || key.contains('activities'))) {
-      return 6; // Urge surfing techniques
-    }
-    if (key.contains('overconcern')) {
-      return 3; // Overconcern exercises
-    }
-    if (key.contains('setbacks')) {
-      return 4; // Setback recovery steps
-    }
-    return 3; // Default count
-  }
 }

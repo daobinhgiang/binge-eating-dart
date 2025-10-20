@@ -33,7 +33,7 @@ class UserModel {
   final bool hasSeenIntro;
   final bool hasSeenAppTutorial;
   final bool hasCompletedFirstLesson;
-  final bool hasSeenToolsTutorial;
+  final bool hasSeenExercisesTutorial;
   final bool hasSeenJournalTutorial;
   final bool hasLoggedWeightDuringTutorial;
   final bool hasSeenWeightDiaryTutorial;
@@ -58,7 +58,7 @@ class UserModel {
     this.hasSeenIntro = false,
     this.hasSeenAppTutorial = false,
     this.hasCompletedFirstLesson = false,
-    this.hasSeenToolsTutorial = false,
+    this.hasSeenExercisesTutorial = false,
     this.hasSeenJournalTutorial = false,
     this.hasLoggedWeightDuringTutorial = false,
     this.hasSeenWeightDiaryTutorial = false,
@@ -96,7 +96,7 @@ class UserModel {
       hasSeenIntro: data['hasSeenIntro'] ?? false,
       hasSeenAppTutorial: data['hasSeenAppTutorial'] ?? false,
       hasCompletedFirstLesson: data['hasCompletedFirstLesson'] ?? false,
-      hasSeenToolsTutorial: data['hasSeenToolsTutorial'] ?? false,
+      hasSeenExercisesTutorial: data['hasSeenExercisesTutorial'] ?? false,
       hasSeenJournalTutorial: data['hasSeenJournalTutorial'] ?? false,
       hasLoggedWeightDuringTutorial: data['hasLoggedWeightDuringTutorial'] ?? false,
       hasSeenWeightDiaryTutorial: data['hasSeenWeightDiaryTutorial'] ?? false,
@@ -123,7 +123,7 @@ class UserModel {
       'hasSeenIntro': hasSeenIntro,
       'hasSeenAppTutorial': hasSeenAppTutorial,
       'hasCompletedFirstLesson': hasCompletedFirstLesson,
-      'hasSeenToolsTutorial': hasSeenToolsTutorial,
+      'hasSeenExercisesTutorial': hasSeenExercisesTutorial,
       'hasSeenJournalTutorial': hasSeenJournalTutorial,
       'hasLoggedWeightDuringTutorial': hasLoggedWeightDuringTutorial,
       'hasSeenWeightDiaryTutorial': hasSeenWeightDiaryTutorial,
@@ -150,7 +150,7 @@ class UserModel {
     bool? hasSeenIntro,
     bool? hasSeenAppTutorial,
     bool? hasCompletedFirstLesson,
-    bool? hasSeenToolsTutorial,
+    bool? hasSeenExercisesTutorial,
     bool? hasSeenJournalTutorial,
     bool? hasLoggedWeightDuringTutorial,
     bool? hasSeenWeightDiaryTutorial,
@@ -175,7 +175,7 @@ class UserModel {
       hasSeenIntro: hasSeenIntro ?? this.hasSeenIntro,
       hasSeenAppTutorial: hasSeenAppTutorial ?? this.hasSeenAppTutorial,
       hasCompletedFirstLesson: hasCompletedFirstLesson ?? this.hasCompletedFirstLesson,
-      hasSeenToolsTutorial: hasSeenToolsTutorial ?? this.hasSeenToolsTutorial,
+      hasSeenExercisesTutorial: hasSeenExercisesTutorial ?? this.hasSeenExercisesTutorial,
       hasSeenJournalTutorial: hasSeenJournalTutorial ?? this.hasSeenJournalTutorial,
       hasLoggedWeightDuringTutorial: hasLoggedWeightDuringTutorial ?? this.hasLoggedWeightDuringTutorial,
       hasSeenWeightDiaryTutorial: hasSeenWeightDiaryTutorial ?? this.hasSeenWeightDiaryTutorial,

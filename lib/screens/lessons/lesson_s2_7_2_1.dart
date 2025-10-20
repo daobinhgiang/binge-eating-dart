@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/stage_2_data.dart';
 import '../../models/lesson.dart';
-import '../../screens/tools/addressing_overconcern_screen.dart';
+import '../../screens/exercises/addressing_overconcern_screen.dart';
 import '../../core/services/lesson_service.dart';
 
 class LessonS2721Screen extends ConsumerStatefulWidget {

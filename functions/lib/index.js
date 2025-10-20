@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.migrateQuizCompletions = exports.sendDailyAccountabilityReminder = exports.sendDailyEducationProgress = exports.sendDailyProgressReview = exports.sendDailyMotivationalNotification = exports.sendDailyNotification = exports.validateQuiz = void 0;
+exports.sendDailyAccountabilityReminder = exports.sendDailyEducationProgress = exports.sendDailyProgressReview = exports.sendDailyMotivationalNotification = exports.sendDailyNotification = exports.awardUrgeSurfingActivityExp = exports.awardMealPlanUpdateExp = exports.awardExerciseExp = exports.awardJournalEntryExp = exports.validateQuiz = void 0;
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const openai_1 = require("openai");
@@ -19,6 +19,16 @@ function getOpenAI() {
 // Import and export quiz validation function
 var validateQuiz_1 = require("./validateQuiz");
 Object.defineProperty(exports, "validateQuiz", { enumerable: true, get: function () { return validateQuiz_1.validateQuiz; } });
+// Import and export journal entry EXP function
+var awardJournalEntryExp_1 = require("./awardJournalEntryExp");
+Object.defineProperty(exports, "awardJournalEntryExp", { enumerable: true, get: function () { return awardJournalEntryExp_1.awardJournalEntryExp; } });
+// Import and export exercise EXP functions
+var awardExerciseExp_1 = require("./awardExerciseExp");
+Object.defineProperty(exports, "awardExerciseExp", { enumerable: true, get: function () { return awardExerciseExp_1.awardExerciseExp; } });
+Object.defineProperty(exports, "awardMealPlanUpdateExp", { enumerable: true, get: function () { return awardExerciseExp_1.awardMealPlanUpdateExp; } });
+// Import and export urge surfing activity EXP function
+var awardUrgeSurfingActivityExp_1 = require("./awardUrgeSurfingActivityExp");
+Object.defineProperty(exports, "awardUrgeSurfingActivityExp", { enumerable: true, get: function () { return awardUrgeSurfingActivityExp_1.awardUrgeSurfingActivityExp; } });
 // Helper function to format time as HH:mm in Central Time
 function formatTime(date) {
     // Convert to Central Time (handles both CST and CDT automatically)
@@ -1531,88 +1541,6 @@ exports.sendDailyAccountabilityReminder = functions.pubsub
             timeOfDay: timeOfDay
         }, { merge: true });
         throw error;
-    }
-});
-/**
- * Migration Function: Backfill Quiz Completions
- *
- * Migrates quiz completions from exp_ledger to completed_lessons.
- * This is needed because the validateQuiz function was updated to store
- * quiz completions in completed_lessons, but older completions only exist
- * in exp_ledger.
- *
- * Call this once manually via Firebase Console or CLI:
- * firebase functions:call migrateQuizCompletions
- */
-exports.migrateQuizCompletions = functions.https.onCall(async (data, context) => {
-    try {
-        console.log('Starting quiz completions migration...');
-        // Get all quiz completions from exp_ledger
-        const ledgerSnapshot = await admin.firestore()
-            .collection('exp_ledger')
-            .where('quizId', '>=', 'quiz_')
-            .orderBy('quizId')
-            .get();
-        console.log(`Found ${ledgerSnapshot.docs.length} quiz ledger entries`);
-        let migratedCount = 0;
-        let skippedCount = 0;
-        let errorCount = 0;
-        // Process each quiz completion
-        for (const ledgerDoc of ledgerSnapshot.docs) {
-            const ledgerData = ledgerDoc.data();
-            const { userId, quizId, createdAt } = ledgerData;
-            // Validate required fields
-            if (!userId || !quizId || !quizId.startsWith('quiz_')) {
-                console.log(`Skipping invalid ledger entry: ${ledgerDoc.id}`);
-                skippedCount++;
-                continue;
-            }
-            try {
-                // Check if already exists in completed_lessons
-                const completedLessonRef = admin.firestore()
-                    .collection('user_progress')
-                    .doc(userId)
-                    .collection('completed_lessons')
-                    .doc(quizId);
-                const existingDoc = await completedLessonRef.get();
-                if (existingDoc.exists) {
-                    console.log(`Quiz ${quizId} already in completed_lessons for user ${userId}`);
-                    skippedCount++;
-                    continue;
-                }
-                // Migrate to completed_lessons
-                await completedLessonRef.set({
-                    lessonId: quizId,
-                    completedAt: createdAt || admin.firestore.FieldValue.serverTimestamp(),
-                    userId: userId,
-                    migratedFrom: 'exp_ledger',
-                    migratedAt: admin.firestore.FieldValue.serverTimestamp(),
-                });
-                console.log(`✓ Migrated quiz ${quizId} for user ${userId}`);
-                migratedCount++;
-            }
-            catch (error) {
-                console.error(`Error migrating quiz ${quizId} for user ${userId}:`, error);
-                errorCount++;
-            }
-        }
-        const result = {
-            success: true,
-            totalProcessed: ledgerSnapshot.docs.length,
-            migratedCount,
-            skippedCount,
-            errorCount,
-            message: `Migration complete: ${migratedCount} migrated, ${skippedCount} skipped, ${errorCount} errors`,
-        };
-        console.log('Migration complete:', result);
-        return result;
-    }
-    catch (error) {
-        console.error('Migration failed:', error);
-        return {
-            success: false,
-            error: error instanceof Error ? error.message : 'Unknown error',
-        };
     }
 });
 //# sourceMappingURL=index.js.map

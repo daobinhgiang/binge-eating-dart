@@ -4,7 +4,7 @@ import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 enum TutorialStep {
   educationTab,
   firstLesson,
-  toolsTab,
+  exercisesTab,
   journalTab,
   weightDiary,
   plantGrowth,
@@ -204,19 +204,19 @@ class AppTutorialService {
     });
   }
 
-  // Show tutorial for tools tab
-  void showToolsTabTutorial({
+  // Show tutorial for exercises tab
+  void showExercisesTabTutorial({
     required BuildContext context,
-    required GlobalKey toolsTabKey,
+    required GlobalKey exercisesTabKey,
     required VoidCallback onFinish,
     required VoidCallback onTabClick,
   }) {
-    _currentStep = TutorialStep.toolsTab;
+    _currentStep = TutorialStep.exercisesTab;
     
     final targets = [
       TargetFocus(
-        identify: "tools_tab",
-        keyTarget: toolsTabKey,
+        identify: "exercises_tab",
+        keyTarget: exercisesTabKey,
         alignSkip: Alignment.topRight,
         shape: ShapeLightFocus.Circle,
         contents: [
@@ -240,7 +240,7 @@ class AppTutorialService {
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      "You've completed your first lesson! Now let's explore the Tools tab where you'll find practical exercises to support your recovery journey.",
+                      "You've completed your first lesson! Now let's explore the Exercises tab where you'll find practical exercises to support your recovery journey.",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16.0,
@@ -257,7 +257,7 @@ class AppTutorialService {
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                       ),
                       child: const Text(
-                        "Explore Tools!",
+                        "Explore Exercises!",
                         style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
                     ),
@@ -276,8 +276,8 @@ class AppTutorialService {
       paddingFocus: 10,
       opacityShadow: 0.8,
       onClickTarget: (target) {
-        // Allow clicking on the highlighted tools tab
-        if (target.identify == "tools_tab") {
+        // Allow clicking on the highlighted exercises tab
+        if (target.identify == "exercises_tab") {
           // Navigate and finish immediately - the tutorial will handle the transition
           onTabClick();
           _tutorialCoachMark?.finish();
