@@ -90,7 +90,7 @@ class _LessonS2421ScreenState extends ConsumerState<LessonS2421Screen> {
     
     // Navigate to the Problem Solving tool
     if (mounted) {
-      context.go('/tools/problem-solving');
+      context.go('/exercises/problem-solving');
     }
   }
 

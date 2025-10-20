@@ -42,10 +42,10 @@ class _IntroScreenState extends ConsumerState<IntroScreen> {
                 decoration: _getPageDecoration(),
               ),
               
-              // Page 3: Journal & Tools
+              // Page 3: Journal & Exercises
               PageViewModel(
                 title: "Your Personal Journey Partner",
-                body: "Nurtra isn't just an app—it's a friend, a partner that stands by you throughout your journey. Track your progress with our journal, and use our practical tools to support you in real-time whenever you need it.",
+                body: "Nurtra isn't just an app—it's a friend, a partner that stands by you throughout your journey. Track your progress with our journal, and use our practical exercises to support you in real-time whenever you need it.",
                 image: _buildImage('assets/journal/food_diary.png'),
                 decoration: _getPageDecoration(),
               ),

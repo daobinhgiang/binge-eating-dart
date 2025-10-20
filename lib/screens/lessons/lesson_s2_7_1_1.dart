@@ -90,7 +90,7 @@ class _LessonS2711ScreenState extends ConsumerState<LessonS2711Screen> {
     
     // Navigate to the Addressing Overconcern tool
     if (mounted) {
-      context.go('/tools/addressing-overconcern');
+      context.go('/exercises/addressing-overconcern');
     }
   }
 

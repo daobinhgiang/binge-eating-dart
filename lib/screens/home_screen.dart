@@ -18,6 +18,7 @@ import '../models/todo_item.dart';
 import '../core/services/user_learning_service.dart';
 import '../widgets/level_badge.dart';
 import '../widgets/tree_growth_widget.dart';
+import '../widgets/binge_free_timer_carousel_widget.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -256,7 +257,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               sliver: SliverToBoxAdapter(
                   child: Column(
                     children: [
-                        // Recovery Tools section with header inside container
+                        // Recovery Exercises section with header inside container
                         Container(
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -273,11 +274,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Recovery Tools header
+                              // Recovery Exercises header
                         Padding(
                                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
                               child: Text(
-                                  'Recovery Tools',
+                                  'Recovery Exercises',
                                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black87,
@@ -285,10 +286,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 ),
                               ),
                             ),
-                              // Recovery Tools list
+                              // Recovery Exercises list
                               Column(
                             children: [
-                                  _buildToolItem(
+                                  _buildExerciseItem(
                                     icon: Icons.psychology_outlined,
                                     title: 'Recovery Guide',
                                     description: 'Your personalized guide',
@@ -297,7 +298,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     iconBgColor: const Color(0xFFE8F5E8),
                                   ),
                                   _buildDivider(),
-                                  _buildToolItem(
+                                  _buildExerciseItem(
                                     icon: Icons.edit_note_outlined,
                                     title: 'Journaling Partner',
                                     description: 'Track your progress',
@@ -306,7 +307,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     iconBgColor: const Color(0xFFE8F5E8),
                                   ),
                                   _buildDivider(),
-                                  _buildToolItem(
+                                  _buildExerciseItem(
                                     icon: Icons.people_outline,
                                     title: 'Accountability Partner',
                                     description: 'Connect with support',
@@ -315,7 +316,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     iconBgColor: const Color(0xFFE8F5E8),
                                   ),
                                   _buildDivider(),
-                                  _buildToolItem(
+                                  _buildExerciseItem(
                                     icon: Icons.insights_outlined,
                                     title: 'Insights',
                                     description: 'Understand your patterns',
@@ -406,8 +407,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Placeholder for Binge-Free Timer (now in Journal tab)
-          _buildTimerPlaceholder(),
+          // Carousel with tree and binge-free timer
+          const BingeFreeTimerCarouselWidget(),
           
           const SizedBox(height: 16),
           
@@ -843,7 +844,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                   child: Text(
-                    'See all tasks',
+                    'See All',
                     style: TextStyle(
                       color: const Color(0xFF4CAF50),
                       fontSize: 14,
@@ -953,7 +954,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         break;
       case TodoType.tool:
         if (todo.activityId.isNotEmpty) {
-          _navigateToToolById(todo.activityId);
+          _navigateToExerciseById(todo.activityId);
         }
         break;
     }
@@ -1004,9 +1005,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
-  void _navigateToToolById(String toolName) {
-    final normalized = toolName.toLowerCase().replaceAll(' ', '-');
-    context.push('/tools/$normalized');
+  void _navigateToExerciseById(String exerciseName) {
+    final normalized = exerciseName.toLowerCase().replaceAll(' ', '-');
+    context.push('/exercises/$normalized');
   }
 
 
@@ -1137,7 +1138,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Take control with these tools',
+                            'Take control with these exercises',
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: Colors.grey[600],
                             ),
@@ -1309,10 +1310,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     // Track urge surfing navigation from help dialog
     final trackDialog = ref.read(urgeHelpDialogTrackingProvider);
     trackDialog('urge_surfing_navigation');
-    context.push('/tools/urge-surfing');
+    context.push('/exercises/urge-surfing');
   }
   
-  Widget _buildToolItem({
+  Widget _buildExerciseItem({
     required IconData icon,
     required String title,
     required String description,
@@ -1499,27 +1500,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  // Placeholder widget for timer (timer moved to Journal tab)
-  Widget _buildTimerPlaceholder() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(40.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 1,
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: const TreeGrowthWidget(),
     );
   }
 }

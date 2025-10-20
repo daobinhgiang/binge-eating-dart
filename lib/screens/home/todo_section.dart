@@ -280,7 +280,7 @@ class TodoSection extends ConsumerWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              'Add lessons, tools, or journal activities',
+              'Add lessons, exercises, or journal activities',
               style: TextStyle(
                 color: Colors.grey[500],
                 fontSize: 10,

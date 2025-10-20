@@ -1045,19 +1045,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   void _navigateToTool(String toolName) {
     switch (toolName.toLowerCase()) {
       case 'problem solving':
-        context.push('/tools/problem-solving');
+        context.push('/exercises/problem-solving');
         break;
       case 'meal planning':
-        context.push('/tools/meal-planning');
+        context.push('/exercises/meal-planning');
         break;
       case 'urge surfing activities':
-        context.push('/tools/urge-surfing');
+        context.push('/exercises/urge-surfing');
         break;
       case 'addressing overconcern':
-        context.push('/tools/addressing-overconcern');
+        context.push('/exercises/addressing-overconcern');
         break;
       case 'addressing setbacks':
-        context.push('/tools/addressing-setbacks');
+        context.push('/exercises/addressing-setbacks');
         break;
       default:
         _showToolNotAvailable(toolName);

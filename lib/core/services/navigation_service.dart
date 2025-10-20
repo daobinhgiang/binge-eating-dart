@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../models/todo_item.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/todo_provider.dart';
-import '../../providers/auto_todo_provider.dart';
 import '../../screens/lessons/lesson_1_1.dart';
 import '../../screens/lessons/lesson_1_2.dart';
 import '../../screens/lessons/lesson_1_3.dart';
@@ -70,12 +69,6 @@ class NavigationService {
         // Mark todo as completed in the background
         ref.read(userTodosProvider(user.id).notifier)
             .markCompletedByActivity(todo.activityId, todo.type);
-            
-        // If this is a lesson, also mark it in the auto todo system
-        if (todo.type == TodoType.lesson) {
-          ref.read(autoTodoInitializationProvider(user.id).notifier)
-              .markLessonCompleted(todo.activityId);
-        }
       }
     } catch (e) {
       // Silently fail - this is a background operation
@@ -83,7 +76,7 @@ class NavigationService {
     }
   }
 
-  // Public method to mark any activity as completed (for direct navigation to lessons/tools)
+  // Public method to mark any activity as completed (for direct navigation to lessons/exercises)
   static void markActivityCompleted(WidgetRef ref, String activityId, TodoType type) {
     try {
       final user = ref.read(currentUserDataProvider);
@@ -91,12 +84,6 @@ class NavigationService {
         // Mark any matching pending todo as completed in the background
         ref.read(userTodosProvider(user.id).notifier)
             .markCompletedByActivity(activityId, type);
-            
-        // If this is a lesson, also mark it in the auto todo system
-        if (type == TodoType.lesson) {
-          ref.read(autoTodoInitializationProvider(user.id).notifier)
-              .markLessonCompleted(activityId);
-        }
       }
     } catch (e) {
       // Silently fail - this is a background operation
@@ -177,19 +164,19 @@ class NavigationService {
     // Map activity IDs to tool routes
     switch (todo.activityId) {
       case 'problem_solving':
-        route = '/tools/problem-solving';
+        route = '/exercises/problem-solving';
         break;
       case 'meal_planning':
-        route = '/tools/meal-planning';
+        route = '/exercises/meal-planning';
         break;
       case 'urge_surfing':
-        route = '/tools/urge-surfing';
+        route = '/exercises/urge-surfing';
         break;
       case 'addressing_overconcern':
-        route = '/tools/addressing-overconcern';
+        route = '/exercises/addressing-overconcern';
         break;
       case 'addressing_setbacks':
-        route = '/tools/addressing-setbacks';
+        route = '/exercises/addressing-setbacks';
         break;
     }
     

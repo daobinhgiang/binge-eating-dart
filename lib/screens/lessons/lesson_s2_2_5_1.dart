@@ -90,7 +90,7 @@ class _LessonS2251ScreenState extends ConsumerState<LessonS2251Screen> {
     
     // Navigate to the Meal Planning tool
     if (mounted) {
-      context.go('/tools/meal-planning');
+      context.go('/exercises/meal-planning');
     }
   }
 

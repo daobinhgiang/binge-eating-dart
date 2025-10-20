@@ -37,7 +37,7 @@ class Stage3Data {
                 ),
                 LessonSlide(
                   id: 'slide_s3_0_1_2',
-                  title: 'Module 2: Your Most Important Long-Term Tools',
+                  title: 'Module 2: Your Most Important Long-Term Exercises',
                   content: 'While not everything from the program needs to be done forever, a few key skills are especially powerful for long-term success and staying well.',
                   slideNumber: 2,
                   bulletPoints: [

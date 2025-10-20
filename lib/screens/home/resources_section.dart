@@ -569,7 +569,7 @@ class _ResourcesSectionState extends ConsumerState<ResourcesSection> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Take control with these tools',
+                            'Take control with these exercises',
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: Colors.grey[600],
                             ),
@@ -602,7 +602,7 @@ class _ResourcesSectionState extends ConsumerState<ResourcesSection> {
                       const Color(0xFFE57373),
                       () {
                         Navigator.of(context).pop();
-                        context.push('/tools/urge-surfing');
+                        context.push('/exercises/urge-surfing');
                       },
                     ),
                   ],

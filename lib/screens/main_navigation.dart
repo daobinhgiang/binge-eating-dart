@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'home_screen.dart';
 import 'education/lessons_screen.dart';
-import 'tools/tools_screen.dart';
+import 'exercises/exercises_screen.dart';
 import 'journal/journal_screen.dart';
 import 'profile/profile_screen.dart';
 import '../core/services/app_tutorial_service.dart';
@@ -21,12 +21,12 @@ class MainNavigation extends ConsumerStatefulWidget {
 class _MainNavigationState extends ConsumerState<MainNavigation> {
   int _currentIndex = 0;
   bool _hasShownEducationTutorial = false;
-  bool _hasShownToolsTutorial = false;
+  bool _hasShownExercisesTutorial = false;
   bool _hasShownJournalTutorial = false;
 
   // Global keys for tutorial targets
   final GlobalKey _educationTabKey = GlobalKey();
-  final GlobalKey _toolsTabKey = GlobalKey();
+  final GlobalKey _exercisesTabKey = GlobalKey();
   final GlobalKey _journalTabKey = GlobalKey();
   final GlobalKey _completionKey = GlobalKey();
 
@@ -46,8 +46,8 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
     NavigationItem(
       icon: Icons.psychology_outlined,
       activeIcon: Icons.psychology_rounded,
-      label: 'Tools',
-      route: '/tools',
+      label: 'Exercises',
+      route: '/exercises',
     ),
     NavigationItem(
       icon: Icons.auto_stories_outlined,
@@ -104,45 +104,45 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
         },
       );
     }
-    // Show tools tutorial if user has completed first lesson
+    // Show exercises tutorial if user has completed first lesson
     else if (user.hasCompletedFirstLesson && 
              user.hasSeenAppTutorial && 
-             !user.hasSeenToolsTutorial &&
-             !_hasShownToolsTutorial) {
-      _showToolsTutorial();
+             !user.hasSeenExercisesTutorial &&
+             !_hasShownExercisesTutorial) {
+      _showExercisesTutorial();
     }
-    // Show journal tutorial if user has completed tools tutorial
-    else if (user.hasSeenToolsTutorial && 
+    // Show journal tutorial if user has completed exercises tutorial
+    else if (user.hasSeenExercisesTutorial && 
              !user.hasSeenJournalTutorial &&
              !_hasShownJournalTutorial) {
       _showJournalTutorial();
     }
   }
 
-  void _showToolsTutorial() {
-    if (_hasShownToolsTutorial || !mounted) return;
+  void _showExercisesTutorial() {
+    if (_hasShownExercisesTutorial || !mounted) return;
     
-    _hasShownToolsTutorial = true;
+    _hasShownExercisesTutorial = true;
     
-    AppTutorialService().showToolsTabTutorial(
+    AppTutorialService().showExercisesTabTutorial(
       context: context,
-      toolsTabKey: _toolsTabKey,
+      exercisesTabKey: _exercisesTabKey,
       onFinish: () async {
-        // Mark that user has seen the tools tutorial
+        // Mark that user has seen the exercises tutorial
         await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
-          hasSeenToolsTutorial: true,
+          hasSeenExercisesTutorial: true,
         );
       },
       onTabClick: () async {
         // Update the status BEFORE navigating to prevent tutorial from showing again
         await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
-          hasSeenToolsTutorial: true,
+          hasSeenExercisesTutorial: true,
         );
         // Small delay to ensure state update propagates
         await Future.delayed(const Duration(milliseconds: 100));
-        // Navigate to tools tab when user clicks the highlighted tab
+        // Navigate to exercises tab when user clicks the highlighted tab
         if (mounted) {
-          context.go('/tools');
+          context.go('/exercises');
         }
       },
     );
@@ -216,7 +216,7 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
       case '/education':
         _currentIndex = 1;
         break;
-      case '/tools':
+      case '/exercises':
         _currentIndex = 2;
         break;
       case '/journal':
@@ -232,24 +232,24 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     // Listen to auth state changes and check for tutorial
-    // This ensures the tools tutorial shows immediately after completing the first lesson
+    // This ensures the exercises tutorial shows immediately after completing the first lesson
     ref.listen<AsyncValue<UserModel?>>(authNotifierProvider, (previous, next) {
       next.whenData((user) {
         if (user != null && mounted) {
-          // Check if we should show tools tutorial
+          // Check if we should show exercises tutorial
           if (user.hasCompletedFirstLesson && 
               user.hasSeenAppTutorial && 
-              !user.hasSeenToolsTutorial &&
-              !_hasShownToolsTutorial) {
+              !user.hasSeenExercisesTutorial &&
+              !_hasShownExercisesTutorial) {
             // Small delay to ensure the navigation animation completes
             Future.delayed(const Duration(milliseconds: 500), () {
               if (mounted) {
-                _showToolsTutorial();
+                _showExercisesTutorial();
               }
             });
           }
           // Check if we should show journal tutorial
-          else if (user.hasSeenToolsTutorial && 
+          else if (user.hasSeenExercisesTutorial && 
                    !user.hasSeenJournalTutorial &&
                    !_hasShownJournalTutorial) {
             // Small delay to ensure the navigation animation completes
@@ -275,7 +275,7 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
         children: const [
           HomeScreen(),
           LessonsScreen(),
-          ToolsScreen(),
+          ExercisesScreen(),
           JournalScreen(),
           ProfileScreen(),
         ],
@@ -301,12 +301,12 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
                 final item = entry.value;
                 final isSelected = _currentIndex == index;
                 
-                // Add keys to education, tools, and journal tabs for tutorial
+                // Add keys to education, exercises, and journal tabs for tutorial
                 GlobalKey? tabKey;
                 if (index == 1) { // Education tab
                   tabKey = _educationTabKey;
-                } else if (index == 2) { // Tools tab
-                  tabKey = _toolsTabKey;
+                } else if (index == 2) { // Exercises tab
+                  tabKey = _exercisesTabKey;
                 } else if (index == 3) { // Journal tab
                   tabKey = _journalTabKey;
                 }

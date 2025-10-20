@@ -870,7 +870,7 @@ class Stage2Data {
                 LessonSlide(
                   id: 'slide_s2_2_5_1_1',
                   title: 'Ready to Practice Meal Planning?',
-                  content: 'This lesson will take you directly to the Meal Planning Exercise in the Tools section. Here you can practice your meal planning skills with structured exercises and real-world scenarios.',
+                  content: 'This lesson will take you directly to the Meal Planning Exercise in the Exercises section. Here you can practice your meal planning skills with structured exercises and real-world scenarios.',
                   slideNumber: 1,
                   bulletPoints: [
                     'The Meal Planning Exercise provides hands-on practice with real meal scenarios',
@@ -1087,7 +1087,7 @@ class Stage2Data {
                 LessonSlide(
                   id: 'slide_s2_3_2_1_1',
                   title: 'Ready to Practice Urge Surfing?',
-                  content: 'This lesson will take you directly to the Urge Surfing Exercise in the Tools section. Here you can practice your urge surfing skills with structured exercises and real-world scenarios.',
+                  content: 'This lesson will take you directly to the Urge Surfing Exercise in the Exercises section. Here you can practice your urge surfing skills with structured exercises and real-world scenarios.',
                   slideNumber: 1,
                   bulletPoints: [
                     'The Urge Surfing Exercise provides hands-on practice with real urge scenarios',
@@ -1406,7 +1406,7 @@ class Stage2Data {
                 LessonSlide(
                   id: 'slide_s2_4_2_1_1',
                   title: 'Ready to Practice Problem Solving?',
-                  content: 'This lesson will take you directly to the Problem Solving Exercise in the Tools section. Here you can practice your problem-solving skills with structured exercises and real-world scenarios.',
+                  content: 'This lesson will take you directly to the Problem Solving Exercise in the Exercises section. Here you can practice your problem-solving skills with structured exercises and real-world scenarios.',
                   slideNumber: 1,
                 bulletPoints: [
                     'The Problem Solving Exercise provides hands-on practice with real scenarios',
@@ -1912,7 +1912,7 @@ class Stage2Data {
                 LessonSlide(
                   id: 'slide_s2_7_1_1_1',
                   title: 'Ready to Practice Addressing Overconcern?',
-                  content: 'This lesson will take you directly to the Addressing Overconcern Exercise in the Tools section. Here you can practice your skills for addressing overconcern about shape and weight with structured exercises.',
+                  content: 'This lesson will take you directly to the Addressing Overconcern Exercise in the Exercises section. Here you can practice your skills for addressing overconcern about shape and weight with structured exercises.',
                   slideNumber: 1,
                   bulletPoints: [
                     'The Addressing Overconcern Exercise provides hands-on practice with real scenarios',
@@ -2030,7 +2030,7 @@ class Stage2Data {
                 LessonSlide(
                   id: 'slide_s2_7_2_1_1',
                   title: 'Ready to Practice Addressing Overconcern?',
-                  content: 'This lesson will take you directly to the Addressing Overconcern Exercise in the Tools section. Here you can practice your skills for addressing overconcern about shape and weight with structured exercises.',
+                  content: 'This lesson will take you directly to the Addressing Overconcern Exercise in the Exercises section. Here you can practice your skills for addressing overconcern about shape and weight with structured exercises.',
                   slideNumber: 1,
                   bulletPoints: [
                     'The Addressing Overconcern Exercise provides hands-on practice with real scenarios',

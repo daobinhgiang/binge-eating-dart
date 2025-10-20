@@ -75,7 +75,7 @@ class _LessonS3021ScreenState extends ConsumerState<LessonS3021Screen> {
 
   void _navigateToAddressingSetbacksTool() {
     // Navigate to the Addressing Setbacks tool using route
-    context.go('/tools/addressing-setbacks');
+    context.go('/exercises/addressing-setbacks');
   }
 
   Future<void> _startAddressingSetbacksExercise() async {

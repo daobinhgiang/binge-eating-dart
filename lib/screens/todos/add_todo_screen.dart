@@ -6,7 +6,7 @@ import '../../providers/todo_provider.dart';
 import '../../models/todo_item.dart';
 import '../../models/lesson.dart';
 import '../../data/stage_1_data.dart';
-import '../../screens/tools/tools_screen.dart';
+import '../../screens/exercises/exercises_screen.dart';
 
 class AddTodoScreen extends ConsumerStatefulWidget {
   const AddTodoScreen({super.key});
@@ -223,9 +223,9 @@ class _AddTodoScreenState extends ConsumerState<AddTodoScreen> with TickerProvid
   Widget _buildToolsTab() {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: ToolsScreen.exercises.length,
+      itemCount: ExercisesScreen.exercises.length,
       itemBuilder: (context, index) {
-        final exercise = ToolsScreen.exercises[index];
+        final exercise = ExercisesScreen.exercises[index];
         final isSelected = _selectedActivityId == exercise.title;
         
         return Card(

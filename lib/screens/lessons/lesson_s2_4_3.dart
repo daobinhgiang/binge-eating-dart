@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/stage_2_data.dart';
 import '../../models/lesson.dart';
-import '../../screens/tools/problem_solving_main_screen.dart';
+import '../../screens/exercises/problem_solving_main_screen.dart';
 import '../../core/services/lesson_service.dart';
 import '../../widgets/exercise_prep_slide_widget.dart';
 

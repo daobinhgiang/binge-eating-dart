@@ -90,7 +90,7 @@ class _LessonS2321ScreenState extends ConsumerState<LessonS2321Screen> {
     
     // Navigate to the Urge Surfing tool
     if (mounted) {
-      context.go('/tools/urge-surfing');
+      context.go('/exercises/urge-surfing');
     }
   }
 

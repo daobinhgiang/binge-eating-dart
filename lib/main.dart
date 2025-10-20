@@ -16,11 +16,11 @@ import 'screens/admin/admin_screen.dart';
 import 'screens/onboarding/intro_screen.dart';
 import 'screens/onboarding/onboarding_screen.dart';
 import 'screens/onboarding/onboarding_review_screen.dart';
-import 'screens/tools/problem_solving_main_screen.dart';
-import 'screens/tools/meal_planning_screen.dart';
-import 'screens/tools/urge_surfing_screen.dart';
-import 'screens/tools/addressing_overconcern_screen.dart';
-import 'screens/tools/addressing_setbacks_screen.dart';
+import 'screens/exercises/problem_solving_main_screen.dart';
+import 'screens/exercises/meal_planning_screen.dart';
+import 'screens/exercises/urge_surfing_screen.dart';
+import 'screens/exercises/addressing_overconcern_screen.dart';
+import 'screens/exercises/addressing_setbacks_screen.dart';
 import 'screens/todos/todos_screen.dart';
 import 'screens/todos/add_todo_screen.dart';
 import 'screens/profile/regular_eating_screen.dart';
@@ -321,7 +321,7 @@ final _router = GoRouter(
           ),
         ),
         GoRoute(
-          path: 'tools',
+          path: 'exercises',
           pageBuilder: (context, state) => NoTransitionPage(
             key: state.pageKey,
             child: const AuthGuard(child: MainNavigation()),
@@ -382,23 +382,23 @@ final _router = GoRouter(
       ),
     ),
     GoRoute(
-      path: '/tools/problem-solving',
+      path: '/exercises/problem-solving',
       builder: (context, state) => const AuthGuard(child: ProblemSolvingMainScreen()),
     ),
     GoRoute(
-      path: '/tools/meal-planning',
+      path: '/exercises/meal-planning',
       builder: (context, state) => const AuthGuard(child: MealPlanningScreen()),
     ),
     GoRoute(
-      path: '/tools/urge-surfing',
+      path: '/exercises/urge-surfing',
       builder: (context, state) => const AuthGuard(child: UrgeSurfingScreen()),
     ),
     GoRoute(
-      path: '/tools/addressing-overconcern',
+      path: '/exercises/addressing-overconcern',
       builder: (context, state) => const AuthGuard(child: AddressingOverconcernScreen()),
     ),
     GoRoute(
-      path: '/tools/addressing-setbacks',
+      path: '/exercises/addressing-setbacks',
       builder: (context, state) => const AuthGuard(child: AddressingSetbacksScreen()),
     ),
     GoRoute(

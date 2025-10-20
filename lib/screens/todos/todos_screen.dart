@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/todo_provider.dart';
-import '../../providers/auto_todo_provider.dart';
 import '../../models/todo_item.dart';
 import '../../core/services/navigation_service.dart';
 
@@ -69,7 +68,6 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
     }
 
     final userTodosAsync = ref.watch(userTodosProvider(user.id));
-    final autoTodoState = ref.watch(autoTodoInitializationProvider(user.id));
 
     return Scaffold(
       body: Container(
@@ -105,15 +103,8 @@ class _TodosScreenState extends ConsumerState<TodosScreen> with TickerProviderSt
                   IconButton(
                     onPressed: () async {
                       await ref.read(userTodosProvider(user.id).notifier).refreshTodos();
-                      await ref.read(autoTodoInitializationProvider(user.id).notifier).refreshTodos();
                     },
-                    icon: autoTodoState.isLoading 
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.refresh, color: Colors.black),
+                    icon: const Icon(Icons.refresh, color: Colors.black),
                   ),
                 ],
               ),

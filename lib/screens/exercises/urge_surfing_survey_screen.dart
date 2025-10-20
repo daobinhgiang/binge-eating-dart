@@ -424,6 +424,10 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
           ),
         ),
       ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -861,10 +865,6 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
             ),
           ),
         ),
-      ),
-          ),
-        ],
-      ),
       ),
     );
   }

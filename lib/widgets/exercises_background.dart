@@ -45,7 +45,7 @@ class _ExercisesBackgroundState extends State<ExercisesBackground>
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Main background with a more practical/tools-focused gradient
+        // Main background with a more practical/exercises-focused gradient
         Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
