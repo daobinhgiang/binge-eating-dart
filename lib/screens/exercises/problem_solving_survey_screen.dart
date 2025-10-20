@@ -288,7 +288,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
               textAlignVertical: TextAlignVertical.top,
               style: const TextStyle(fontSize: 16, height: 1.5),
               decoration: InputDecoration(
-                hintText: 'Describe the problem or situation you\'re facing...\n\nFor example: "I\'m struggling with time management at work. I often feel overwhelmed by my workload and find myself procrastinating on important tasks."',
+                hintText: 'Describe the problem or situation you\'re facing...\n\nFor example: "I\'m struggling with time management at work. I often feel overwhelmed by my workload and find myself procrastinating on important activities."',
                 hintStyle: TextStyle(color: Colors.grey[400], fontSize: 15),
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.all(20),

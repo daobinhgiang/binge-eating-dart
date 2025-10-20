@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/todo_item.dart';
+import '../../models/task_template.dart';
 
 class TodoService {
   static final TodoService _instance = TodoService._internal();
@@ -429,6 +430,102 @@ class TodoService {
         return null;
       }
       throw 'Failed to mark todo as completed by activity: $e';
+    }
+  }
+
+  // Tier-based query methods
+  
+  /// Get todos by tier
+  Future<List<TodoItem>> getTodosByTier(String userId, TaskTier tier) async {
+    try {
+      final allTodos = await getUserTodos(userId);
+      return allTodos.where((todo) => todo.tier == tier).toList();
+    } catch (e) {
+      throw 'Failed to fetch todos by tier: $e';
+    }
+  }
+
+  /// Get Seeds (daily tasks)
+  Future<List<TodoItem>> getSeeds(String userId) async {
+    try {
+      final allTodos = await getUserTodos(userId);
+      return allTodos.where((todo) => todo.tier == TaskTier.seeds).toList();
+    } catch (e) {
+      throw 'Failed to fetch seeds: $e';
+    }
+  }
+
+  /// Get Growth Tasks (weekly tasks)
+  Future<List<TodoItem>> getGrowthTasks(String userId) async {
+    try {
+      final allTodos = await getUserTodos(userId);
+      return allTodos.where((todo) => todo.tier == TaskTier.growthTasks).toList();
+    } catch (e) {
+      throw 'Failed to fetch growth tasks: $e';
+    }
+  }
+
+  /// Get Mastery Quests (persistent tasks)
+  Future<List<TodoItem>> getMasteryQuests(String userId) async {
+    try {
+      final allTodos = await getUserTodos(userId);
+      return allTodos.where((todo) => todo.tier == TaskTier.masteryQuests).toList();
+    } catch (e) {
+      throw 'Failed to fetch mastery quests: $e';
+    }
+  }
+
+  /// Get tasks grouped by tier
+  Future<Map<String, List<TodoItem>>> getTodosGroupedByTier(String userId) async {
+    try {
+      final allTodos = await getUserTodos(userId);
+      
+      return {
+        'seeds': allTodos.where((todo) => todo.tier == TaskTier.seeds).toList(),
+        'growthTasks': allTodos.where((todo) => todo.tier == TaskTier.growthTasks).toList(),
+        'masteryQuests': allTodos.where((todo) => todo.tier == TaskTier.masteryQuests).toList(),
+        'other': allTodos.where((todo) => todo.tier == null).toList(),
+      };
+    } catch (e) {
+      throw 'Failed to group todos by tier: $e';
+    }
+  }
+
+  /// Get tier statistics
+  Future<Map<String, Map<String, int>>> getTierStats(String userId) async {
+    try {
+      final allTodos = await getUserTodos(userId);
+      
+      final stats = <String, Map<String, int>>{
+        'seeds': {'total': 0, 'completed': 0, 'pending': 0},
+        'growthTasks': {'total': 0, 'completed': 0, 'pending': 0},
+        'masteryQuests': {'total': 0, 'completed': 0, 'pending': 0},
+        'other': {'total': 0, 'completed': 0, 'pending': 0},
+      };
+      
+      for (final todo in allTodos) {
+        String tierKey;
+        if (todo.tier == TaskTier.seeds) {
+          tierKey = 'seeds';
+        } else if (todo.tier == TaskTier.growthTasks) {
+          tierKey = 'growthTasks';
+        } else if (todo.tier == TaskTier.masteryQuests) {
+          tierKey = 'masteryQuests';
+        } else {
+          tierKey = 'other';
+        }
+        
+        stats[tierKey]!['total'] = (stats[tierKey]!['total'] ?? 0) + 1;
+        if (todo.isCompleted) {
+          stats[tierKey]!['completed'] = (stats[tierKey]!['completed'] ?? 0) + 1;
+        } else {
+          stats[tierKey]!['pending'] = (stats[tierKey]!['pending'] ?? 0) + 1;
+        }
+      }
+      
+      return stats;
+    } catch (e) {
+      throw 'Failed to get tier stats: $e';
     }
   }
 }

@@ -25,7 +25,7 @@ class TodoSection extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Your To-Do List',
+                  'Your Quest List',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -205,7 +205,7 @@ class TodoSection extends ConsumerWidget {
             const SizedBox(height: 8),
             if (totalTasks > 0)
               Text(
-                '$completedTasks/$totalTasks Tasks Done',
+                '$completedTasks/$totalTasks Quests Done',
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w500,
@@ -225,7 +225,7 @@ class TodoSection extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'To-Do List',
+          'Quest List',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: Colors.black,
@@ -249,7 +249,7 @@ class TodoSection extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'To-Do List',
+          'Quest List',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: Colors.black,
@@ -270,7 +270,7 @@ class TodoSection extends ConsumerWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              'No tasks for today',
+              'No quests for today',
               style: TextStyle(
                 color: Colors.grey[600],
                 fontSize: 12,
@@ -299,7 +299,7 @@ class TodoSection extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Text(
-        'No tasks scheduled for today',
+        'No quests scheduled for today',
         style: TextStyle(
           color: Colors.grey[600],
           fontStyle: FontStyle.italic,
@@ -396,7 +396,7 @@ class TodoSection extends ConsumerWidget {
             const CircularProgressIndicator(),
             const SizedBox(width: 16),
             Text(
-              'Loading your tasks...',
+              'Loading your quests...',
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ],
@@ -409,7 +409,7 @@ class TodoSection extends ConsumerWidget {
     return Card(
       child: ListTile(
         leading: const Icon(Icons.error_outline, color: Colors.orange),
-        title: const Text('Unable to load tasks'),
+        title: const Text('Unable to load quests'),
         subtitle: const Text('Tap to try again'),
         trailing: const Icon(Icons.arrow_forward_ios),
         onTap: () => context.go('/todos'),

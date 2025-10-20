@@ -357,7 +357,7 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
         children: [
           HomeScreen(treeWidgetKey: _treeWidgetKey),
           const LessonsScreen(),
-          const ToolsScreen(),
+          const ExercisesScreen(),
           JournalScreen(weightDiaryKey: _weightDiaryKey),
           const ProfileScreen(),
         ],

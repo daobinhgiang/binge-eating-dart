@@ -617,7 +617,7 @@ RESPONSE GUIDELINES:
           'messages': [
             {
               'role': 'system',
-              'content': 'You are a food recognition assistant. Your ONLY task is to identify and list foods and drinks visible in the image. Do not provide any commentary, analysis, or additional information. List ONLY the foods and drinks you can see, separated by commas. Be specific about what you observe but keep descriptions concise.'
+              'content': 'You are a food recognition assistant. Your ONLY quest is to identify and list foods and drinks visible in the image. Do not provide any commentary, analysis, or additional information. List ONLY the foods and drinks you can see, separated by commas. Be specific about what you observe but keep descriptions concise.'
             },
             {
               'role': 'user',

@@ -54,7 +54,7 @@ class Stage1Data {
                   slideNumber: 3,
                   bulletPoints: [
                     'Lessons (You are here!): These will provide you with crucial information and psychoeducation, guiding you through the treatment process one step at a time.',
-                    'Exercises: In the "Exercises" tab, you\'ll find practical exercises and strategies. These are your "homework" tasks—what you do between sessions is essential for making progress.',
+                    'Exercises: In the "Exercises" tab, you\'ll find practical exercises and strategies. These are your "homework" quests—what you do between sessions is essential for making progress.',
                     'Journal (Monitoring): Your Journal is one of the most powerful tools for change. Recording your food, drinks, context, and feelings as they happen helps you become more aware of your patterns and gives you back a sense of control.',
                   ],
                 ),
@@ -125,12 +125,12 @@ class Stage1Data {
                 LessonSlide(
                   id: 'slide_1_2_4',
                   title: 'Module 4: Your First Assignment: Let\'s Begin!',
-                  content: 'You\'re all set! Your first task is to start using the Journal tab today. Don\'t worry about getting it perfect right away. The simple act of starting is a huge step forward.',
+                  content: 'You\'re all set! Your first quest is to start using the Journal tab today. Don\'t worry about getting it perfect right away. The simple act of starting is a huge step forward.',
                   slideNumber: 4,
                   bulletPoints: [
                     'Your Goal: Start monitoring everything in your Food, Weight, and Body Image diaries as it happens.',
                     'Carry it With You: Keep your phone handy so you can record things in real-time.',
-                    'Be Curious: Approach this task with a sense of curiosity. You are a detective learning about yourself. Every entry, good or bad, is just a clue that will help you solve the puzzle. You\'ve got this!'
+                    'Be Curious: Approach this quest with a sense of curiosity. You are a detective learning about yourself. Every entry, good or bad, is just a clue that will help you solve the puzzle. You\'ve got this!'
                   ],
                 ),
               ],
@@ -818,7 +818,7 @@ class Stage1Data {
                   slideNumber: 2,
                   bulletPoints: [
                     'A major psychological effect of dieting is becoming preoccupied with thoughts about food and eating.',
-                    'This preoccupation can make it hard to concentrate on everyday tasks, as thoughts about food constantly intrude into your mind and even your dreams.',
+                    'This preoccupation can make it hard to concentrate on everyday activities, as thoughts about food constantly intrude into your mind and even your dreams.',
                     'Your thinking can become inflexible, making it hard to switch between topics, and your decision-making can be impaired, often leading to procrastination.',
                     'In one famous study, healthy men put on a restricted diet became irritable, lost interest in socializing, and focused their lives around food, much like what is seen in anorexia nervosa.'
                   ],
@@ -1066,7 +1066,7 @@ class Stage1Data {
                   content: 'Shifting the focus from the unchangeable past to the changeable present is incredibly hopeful and empowering. You can\'t go back and erase the life events or risk factors that made you vulnerable, but you have complete power to start changing the patterns you\'re living out today.',
                   slideNumber: 3,
                   bulletPoints: [
-                    'For successful treatment, the main task is to identify the processes that are keeping the problem going right now.',
+                    'For successful treatment, the main quest is to identify the processes that are keeping the problem going right now.',
                     'This means you don\'t have to be "stuck" because of your history; recovery is an active process of learning new skills to manage your life in the present.',
                     'The desire to change is a key factor; by deciding to make a fresh start, many people are able to overcome the problem.'
                   ],

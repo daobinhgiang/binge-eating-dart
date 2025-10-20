@@ -299,7 +299,7 @@ class AssessmentData {
         ),
         AssessmentQuestion(
           id: 'gpf_5',
-          questionText: 'Over the past 28 days, how often have you felt overwhelmed by daily tasks?',
+          questionText: 'Over the past 28 days, how often have you felt overwhelmed by daily activities?',
           questionType: 'scale',
           minValue: 0,
           maxValue: 4,
