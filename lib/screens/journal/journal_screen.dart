@@ -13,7 +13,9 @@ import 'weight_diary_survey_screen.dart';
 import 'money_diary_main_screen.dart';
 
 class JournalScreen extends ConsumerStatefulWidget {
-  const JournalScreen({super.key});
+  final GlobalKey? weightDiaryKey;
+  
+  const JournalScreen({super.key, this.weightDiaryKey});
 
   @override
   ConsumerState<JournalScreen> createState() => _JournalScreenState();
@@ -178,6 +180,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
       children: [
         // Weight Graph Widget
         SizedBox(
+          key: widget.weightDiaryKey,
           width: buttonSize,
           height: buttonSize,
           child: WeightGraphWidget(
@@ -309,7 +312,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                         vertical: textContainerHeight * 0.12,
                       ),
                       child: Align(
-                        alignment: Alignment.centerLeft,
+                        alignment: Alignment.center,
                         child: FittedBox(
                           fit: BoxFit.scaleDown,
                           child: Text(
@@ -454,7 +457,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                         vertical: textContainerHeight * 0.12,
                       ),
                       child: Align(
-                        alignment: Alignment.centerLeft,
+                        alignment: Alignment.center,
                         child: FittedBox(
                           fit: BoxFit.scaleDown,
                           child: Text(

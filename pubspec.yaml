@@ -105,6 +105,7 @@ flutter:
     - assets/journal/
     - assets/audio_lessons/
     - assets/trees/
+    - assets/onboarding/
     - assets/lessons/stages/stage_1.png
     - assets/lessons/stages/stage_2.png
     - assets/lessons/stages/stage_3.png

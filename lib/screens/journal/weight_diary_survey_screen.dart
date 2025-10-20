@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../models/weight_diary.dart';
 import '../../providers/weight_diary_provider.dart';
@@ -500,9 +501,30 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Weight saved successfully!'), backgroundColor: Colors.green),
         );
-        // Clear the form after successful submission
-        _weightController.clear();
-        // Don't navigate away - let user stay on the weight diary page
+        
+        // Check if user is in tutorial and hasn't logged weight yet
+        if (user.hasSeenJournalTutorial && !user.hasLoggedWeightDuringTutorial) {
+          // Mark that user has logged weight during tutorial
+          await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
+            hasLoggedWeightDuringTutorial: true,
+          );
+          
+          // Navigate to home tab after a short delay
+          await Future.delayed(const Duration(milliseconds: 100));
+          if (mounted) {
+            Navigator.of(context).pop();
+            // Then navigate to home tab with a longer delay to ensure smooth transition
+            await Future.delayed(const Duration(milliseconds: 100));
+            if (mounted) {
+              context.go('/');
+              // Plant growth tutorial will automatically trigger when home tab is shown
+            }
+          }
+        } else {
+          // Clear the form after successful submission
+          _weightController.clear();
+          // Don't navigate away - let user stay on the weight diary page
+        }
       }
     } catch (e) {
       if (mounted) {

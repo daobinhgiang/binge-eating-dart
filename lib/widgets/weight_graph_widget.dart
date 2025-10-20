@@ -46,8 +46,7 @@ class WeightGraphWidget extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (showTitle) ...[
-                  Padding(
-                    padding: const EdgeInsets.only(left: 4),
+                  Center(
                     child: Text(
                       'Weight',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(

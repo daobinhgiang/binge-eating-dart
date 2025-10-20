@@ -8,9 +8,10 @@ import 'auth_provider.dart';
 // EXP service provider
 final expServiceProvider = Provider<ExpService>((ref) => ExpService());
 
-// Current user's EXP and level provider (from auth stream)
+// Current user's EXP and level provider (from auth notifier)
 final userExpProvider = Provider<({int exp, int level})?>((ref) {
-  final userAsync = ref.watch(currentUserProvider);
+  // Use authNotifierProvider instead of currentUserProvider for immediate data availability
+  final userAsync = ref.watch(authNotifierProvider);
   return userAsync.when(
     data: (user) {
       if (user == null) return null;

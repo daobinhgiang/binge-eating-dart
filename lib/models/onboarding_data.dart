@@ -67,8 +67,8 @@ class OnboardingData {
     return answers.fold(0, (sum, answer) => sum + answer.selectedOption);
   }
 
-  // Check if all 16 questions are answered
-  bool get isComplete => answers.length == 16;
+  // Check if all 10 questions are answered
+  bool get isComplete => answers.length == 10;
 
   @override
   bool operator ==(Object other) {

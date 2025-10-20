@@ -20,7 +20,9 @@ import '../widgets/level_badge.dart';
 import '../widgets/tree_growth_widget.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
+  final GlobalKey? treeWidgetKey;
+  
+  const HomeScreen({super.key, this.treeWidgetKey});
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -1505,6 +1507,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   // Placeholder widget for timer (timer moved to Journal tab)
   Widget _buildTimerPlaceholder() {
     return Container(
+      key: widget.treeWidgetKey,
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
