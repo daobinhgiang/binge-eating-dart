@@ -1057,6 +1057,7 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
         userId: user.id,
         activityId: 'meal_planning',
         type: TodoType.tool,
+        ref: ref,
       );
       
       if (result.questCompleted && mounted) {

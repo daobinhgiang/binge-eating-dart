@@ -884,6 +884,7 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
         userId: user.id,
         activityId: 'urge_surfing',
         type: TodoType.tool,
+        ref: ref,
       );
       
       if (result.questCompleted && mounted) {

@@ -1396,6 +1396,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
         userId: user.id,
         activityId: 'problem_solving',
         type: TodoType.tool,
+        ref: ref,
       );
       
       if (result.questCompleted && mounted) {

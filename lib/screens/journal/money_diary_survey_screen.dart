@@ -484,6 +484,7 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
         userId: user.id,
         activityId: 'money_diary',
         type: TodoType.journal,
+        ref: ref,
       );
       
       if (result.questCompleted && mounted) {

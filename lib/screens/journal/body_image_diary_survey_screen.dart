@@ -509,6 +509,7 @@ class _BodyImageDiarySurveyScreenState extends ConsumerState<BodyImageDiarySurve
         userId: user.id,
         activityId: 'body_image_diary',
         type: TodoType.journal,
+        ref: ref,
       );
       
       if (result.questCompleted && mounted) {

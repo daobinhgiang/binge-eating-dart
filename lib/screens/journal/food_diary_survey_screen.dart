@@ -1233,6 +1233,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
         userId: user.id,
         activityId: 'food_diary',
         type: TodoType.journal,
+        ref: ref,
       );
       
       if (result.questCompleted && mounted) {

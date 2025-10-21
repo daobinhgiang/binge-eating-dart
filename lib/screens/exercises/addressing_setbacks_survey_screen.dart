@@ -581,6 +581,7 @@ class _AddressingSetbacksSurveyScreenState extends ConsumerState<AddressingSetba
         userId: user.id,
         activityId: 'addressing_setbacks',
         type: TodoType.tool,
+        ref: ref,
       );
       
       if (result.questCompleted && mounted) {

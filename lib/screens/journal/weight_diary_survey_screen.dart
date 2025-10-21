@@ -506,6 +506,7 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
         userId: user.id,
         activityId: 'weight_diary',
         type: TodoType.journal,
+        ref: ref,
       );
       
       if (result.questCompleted && mounted) {
