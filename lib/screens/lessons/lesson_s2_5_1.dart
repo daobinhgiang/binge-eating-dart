@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/services/lesson_service.dart';
 import '../../models/lesson.dart';
 import '../../widgets/lesson_slide_widget.dart';
 import '../../data/stage_2_data.dart';
+import '../../core/services/quest_completion_service.dart';
+import '../../widgets/quest_completion_dialog.dart';
+import '../../providers/todo_provider.dart';
+import '../../providers/auth_provider.dart';
 
-class LessonS251Screen extends StatefulWidget {
+class LessonS251Screen extends ConsumerStatefulWidget {
   const LessonS251Screen({super.key});
 
   @override
-  State<LessonS251Screen> createState() => _LessonS251ScreenState();
+  ConsumerState<LessonS251Screen> createState() => _LessonS251ScreenState();
 }
 
-class _LessonS251ScreenState extends State<LessonS251Screen> {
+class _LessonS251ScreenState extends ConsumerState<LessonS251Screen> {
   final LessonService _lessonService = LessonService();
   final ScrollController _scrollController = ScrollController();
   Lesson? _lesson;
@@ -76,9 +81,38 @@ class _LessonS251ScreenState extends State<LessonS251Screen> {
     }
   }
 
+  /// Handle lesson completion with quest tracking
+  Future<void> _handleLessonCompletion() async {
+    try {
+      print('\n📚 [LessonS251Screen] Calling quest completion handler...');
+      final user = ref.read(currentUserDataProvider);
+      if (user == null) {
+        print('❌ [LessonS251Screen] User not found');
+        return;
+      }
+      
+      final questCompletionService = ref.read(questCompletionServiceProvider);
+      final result = await questCompletionService.handleLessonCompletion(
+        userId: user.id,
+        lessonId: 'lesson_s2_5_1',
+      );
+      
+      if (result.questCompleted && mounted) {
+        print('🎉 [LessonS251Screen] Quest completed! Showing dialog...');
+        showQuestCompletionDialog(context, result);
+      } else {
+        print('ℹ️  [LessonS251Screen] No quest completed yet');
+      }
+    } catch (e) {
+      print('❌ [LessonS251Screen] Error in quest completion: $e');
+    }
+  }
+
+
   void _finishLesson() async {
     if (_lesson != null) {
       await _lessonService.markLessonCompleted(_lesson!.id);
+      await _handleLessonCompletion();
     }
     Navigator.of(context).pop();
   }

@@ -4,6 +4,9 @@ import '../../data/stage_2_data.dart';
 import '../../models/lesson.dart';
 import '../../screens/exercises/addressing_overconcern_screen.dart';
 import '../../core/services/lesson_service.dart';
+import '../../core/services/quest_completion_service.dart';
+import '../../widgets/quest_completion_dialog.dart';
+import '../../providers/todo_provider.dart';
 
 class LessonS2721Screen extends ConsumerStatefulWidget {
   const LessonS2721Screen({super.key});

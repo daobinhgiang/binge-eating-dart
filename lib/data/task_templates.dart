@@ -86,6 +86,25 @@ class TaskTemplatesData {
           'priority': 2,
         },
       ),
+      
+      // Lesson Seed - Daily quest
+      TaskTemplate(
+        id: 'seed_lesson_complete',
+        category: 'lessons',
+        tier: TaskTier.seeds,
+        title: 'Complete 3 Lessons',
+        description: 'Finish 3 lessons today to master your recovery',
+        activityId: 'complete_lessons',
+        expReward: 150,
+        createdAt: now,
+        updatedAt: now,
+        metadata: {
+          'requiredCount': 3,
+          'currentCount': 0, // Initialize progress at 0
+          'trackBy': 'daily',
+          'priority': 0,
+        },
+      ),
     ];
   }
 
@@ -102,7 +121,7 @@ class TaskTemplatesData {
         title: 'Complete This Week\'s Lesson',
         description: 'Work through your current lesson section',
         activityId: '', // Will be dynamically set based on user progress
-        expReward: 200,
+        expReward: 20,
         createdAt: now,
         updatedAt: now,
         metadata: {
@@ -448,10 +467,27 @@ class TaskTemplatesData {
   }
 
   /// Get a random selection of seed templates
+  /// Ensures important quests like 'Complete 3 Lessons' are always included
   static List<TaskTemplate> getRandomSeeds({int count = 3}) {
     final seeds = getDefaultSeeds();
+    
+    // Find the "Complete 3 Lessons" seed - this should always be included
+    final lessonSeed = seeds.firstWhere(
+      (s) => s.id == 'seed_lesson_complete',
+      orElse: () => seeds.first,
+    );
+    
+    // Remove it from the list so we don't duplicate it
+    seeds.removeWhere((s) => s.id == 'seed_lesson_complete');
+    
+    // Shuffle the remaining seeds and take (count - 1) to make room for the lesson seed
     seeds.shuffle();
-    return seeds.take(count).toList();
+    final selected = seeds.take(count - 1).toList();
+    
+    // Always add the lesson seed as one of the selections
+    selected.add(lessonSeed);
+    
+    return selected;
   }
 
   /// Get a random selection of growth task templates

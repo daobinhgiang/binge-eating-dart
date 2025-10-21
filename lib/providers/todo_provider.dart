@@ -2,12 +2,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/todo_item.dart';
 import '../models/task_template.dart';
 import '../core/services/todo_service.dart';
-import '../core/services/firebase_analytics_service.dart';
 import '../core/services/task_regeneration_service.dart';
+import '../core/services/quest_completion_service.dart';
+import '../core/services/lesson_progress_service.dart';
+
+/// Data class to hold todo info with additional progress context
+class TodoWithProgressInfo {
+  final TodoItem todo;
+  final int? currentLessonCount;  // For "Complete N Lessons" quests
+  
+  TodoWithProgressInfo({
+    required this.todo,
+    this.currentLessonCount,
+  });
+}
 
 // Services providers
 final todoServiceProvider = Provider<TodoService>((ref) => TodoService());
 final taskRegenerationServiceProvider = Provider<TaskRegenerationService>((ref) => TaskRegenerationService());
+final questCompletionServiceProvider = Provider<QuestCompletionService>((ref) => QuestCompletionService());
+final lessonProgressServiceProvider = Provider<LessonProgressService>((ref) => LessonProgressService());
 
 // All user todos provider
 final userTodosProvider = StateNotifierProvider.family<TodoNotifier, AsyncValue<List<TodoItem>>, String>((ref, userId) {
@@ -48,6 +62,12 @@ final todoCountProvider = FutureProvider.family<Map<String, int>, String>((ref, 
 final todoByIdProvider = FutureProvider.family<TodoItem?, ({String userId, String todoId})>((ref, params) async {
   final service = ref.read(todoServiceProvider);
   return await service.getTodoByIdForUser(params.userId, params.todoId);
+});
+
+// Lesson progress provider
+final lessonProgressProvider = FutureProvider.family<Map<String, int>, String>((ref, userId) async {
+  final service = ref.read(lessonProgressServiceProvider);
+  return await service.getLessonProgress(userId);
 });
 
 // Check if activity has todo provider
@@ -171,7 +191,6 @@ final tierStatsProvider = FutureProvider.family<Map<String, Map<String, int>>, S
 class TodoNotifier extends StateNotifier<AsyncValue<List<TodoItem>>> {
   final TodoService _todoService;
   final String _userId;
-  final FirebaseAnalyticsService _analytics = FirebaseAnalyticsService();
 
   TodoNotifier(this._todoService, this._userId) : super(const AsyncValue.loading()) {
     loadTodos();
@@ -184,35 +203,6 @@ class TodoNotifier extends StateNotifier<AsyncValue<List<TodoItem>>> {
       state = AsyncValue.data(todos);
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
-    }
-  }
-
-  Future<TodoItem?> createTodo({
-    required String title,
-    required String description,
-    required TodoType type,
-    required String activityId,
-    Map<String, dynamic>? activityData,
-    required DateTime dueDate,
-  }) async {
-    try {
-      final todo = await _todoService.createTodo(
-        userId: _userId,
-        title: title,
-        description: description,
-        type: type,
-        activityId: activityId,
-        activityData: activityData,
-        dueDate: dueDate,
-      );
-
-      // Refresh current state
-      await loadTodos();
-      
-      return todo;
-    } catch (e) {
-      state = AsyncValue.error(e, StackTrace.current);
-      return null;
     }
   }
 
@@ -230,70 +220,10 @@ class TodoNotifier extends StateNotifier<AsyncValue<List<TodoItem>>> {
     }
   }
 
-  Future<bool> markCompleted(String todoId) async {
-    try {
-      await _todoService.markTodoCompletedForUser(_userId, todoId);
-      
-      // Track todo completion
-      await _analytics.trackTodoCompletion();
-      
-      // Refresh current state
-      await loadTodos();
-      
-      return true;
-    } catch (e) {
-      state = AsyncValue.error(e, StackTrace.current);
-      return false;
-    }
-  }
 
-  Future<bool> markIncomplete(String todoId) async {
-    try {
-      await _todoService.markTodoIncompleteForUser(_userId, todoId);
-      
-      // Refresh current state
-      await loadTodos();
-      
-      return true;
-    } catch (e) {
-      state = AsyncValue.error(e, StackTrace.current);
-      return false;
-    }
-  }
-
-  Future<bool> deleteTodo(String todoId) async {
-    try {
-      await _todoService.deleteTodoForUser(_userId, todoId);
-      
-      // Refresh current state
-      await loadTodos();
-      
-      return true;
-    } catch (e) {
-      state = AsyncValue.error(e, StackTrace.current);
-      return false;
-    }
-  }
 
   Future<void> refreshTodos() async {
     await loadTodos();
-  }
-
-  // Toggle completion status
-  Future<bool> toggleCompletion(String todoId) async {
-    try {
-      final currentTodos = state.value ?? [];
-      final todo = currentTodos.firstWhere((t) => t.id == todoId);
-      
-      if (todo.isCompleted) {
-        return await markIncomplete(todoId);
-      } else {
-        return await markCompleted(todoId);
-      }
-    } catch (e) {
-      state = AsyncValue.error(e, StackTrace.current);
-      return false;
-    }
   }
 
   // Check if user has todo for specific activity

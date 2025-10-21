@@ -43,8 +43,8 @@ class NavigationService {
 
   // Navigate to the appropriate screen based on todo item
   void navigateToTodoActivity(BuildContext context, TodoItem todo, [WidgetRef? ref]) {
-    // Automatically mark the todo as completed when user accesses it
-    _markTodoCompleted(todo, ref);
+    // Quest completion is now handled by the activity screens themselves
+    // via the QuestCompletionService when the activity is actually completed
     
     switch (todo.type) {
       case TodoType.lesson:
@@ -56,23 +56,6 @@ class NavigationService {
       case TodoType.journal:
         _navigateToJournal(context, todo);
         break;
-    }
-  }
-
-  // Helper method to mark todo as completed in the background
-  void _markTodoCompleted(TodoItem todo, WidgetRef? ref) {
-    if (ref == null) return;
-    
-    try {
-      final user = ref.read(currentUserDataProvider);
-      if (user != null && !todo.isCompleted) {
-        // Mark todo as completed in the background
-        ref.read(userTodosProvider(user.id).notifier)
-            .markCompletedByActivity(todo.activityId, todo.type);
-      }
-    } catch (e) {
-      // Silently fail - this is a background operation
-      // We don't want to disrupt the user experience if this fails
     }
   }
 
@@ -95,6 +78,13 @@ class NavigationService {
   void _navigateToLesson(BuildContext context, TodoItem todo) {
     Widget? lessonScreen;
     
+    // Special handling for "complete_lessons" quest - navigate to education tab
+    if (todo.activityId == 'complete_lessons') {
+      print('📚 [NavigationService] "Complete Lessons" quest clicked - navigating to education tab');
+      context.go('/education');
+      return;
+    }
+    
     // Try to get lesson from activity data first (from manually created todos)
     final activityData = todo.activityData;
     if (activityData != null && 
@@ -105,7 +95,7 @@ class NavigationService {
       lessonScreen = _getLessonScreenByChapterAndNumber(chapterNumber, lessonNumber);
     }
     
-    // If no activity data, try to parse from activity ID (from AI recommendations)
+    // If no activity data, try to parse from activity ID
     lessonScreen ??= _getLessonScreenByActivityId(todo.activityId);
     
     if (lessonScreen != null) {

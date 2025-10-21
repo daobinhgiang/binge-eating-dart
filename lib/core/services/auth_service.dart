@@ -500,7 +500,9 @@ class AuthService {
         return UserModel.fromFirestore(doc);
       }
       return null;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('ERROR in _getUserFromFirebaseUser: $e');
+      print('Stack trace: $stackTrace');
       return null;
     }
   }
@@ -536,7 +538,7 @@ class AuthService {
       case 'operation-not-allowed':
         return 'This sign-in method is not enabled. Please contact support.';
       case 'invalid-credential':
-        return 'Invalid credentials. Please check your email and password.';
+        return 'Invalid credentials. This may be due to SHA-1 fingerprint mismatch.';
       case 'account-exists-with-different-credential':
         return 'An account already exists with a different sign-in method.';
       case 'credential-already-in-use':
@@ -547,10 +549,6 @@ class AuthService {
         return 'Invalid verification ID. Please try again.';
       case 'network-request-failed':
         return 'Network error. Please check your connection and try again.';
-      case 'invalid-credential':
-        return 'Invalid credentials. This may be due to SHA-1 fingerprint mismatch.';
-      case 'operation-not-allowed':
-        return 'Google Sign-In is not enabled. Please contact support.';
       default:
         return 'Authentication failed. Please try again.';
     }

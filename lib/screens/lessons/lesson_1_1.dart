@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/services/lesson_service.dart';
-import '../../core/services/navigation_service.dart';
-import '../../models/lesson.dart';
-import '../../models/todo_item.dart';
-import '../../widgets/lesson_slide_widget.dart';
 import '../../data/stage_1_data.dart';
+import '../../models/lesson.dart';
+import '../../core/services/lesson_service.dart';
+import '../../core/services/quest_completion_service.dart';
+import '../../widgets/quest_completion_dialog.dart';
+import '../../widgets/lesson_slide_widget.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/todo_provider.dart';
 
 class Lesson11Screen extends ConsumerStatefulWidget {
   const Lesson11Screen({super.key});
@@ -17,31 +18,35 @@ class Lesson11Screen extends ConsumerStatefulWidget {
 
 class _Lesson11ScreenState extends ConsumerState<Lesson11Screen> {
   final LessonService _lessonService = LessonService();
-  final ScrollController _scrollController = ScrollController();
   Lesson? _lesson;
   int _currentSlideIndex = 0;
   bool _isLoading = true;
 
+  late ScrollController _scrollController;
+
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
     _loadLesson();
-    
-    // Mark any pending todo for this lesson as completed
-    // This handles cases where users navigate directly to lessons
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      NavigationService.markActivityCompleted(ref, 'lesson_1_1', TodoType.lesson);
-    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadLesson() async {
     try {
-      // Load from the new Stage 1 data structure
       final stage1 = Stage1Data.getStage1();
-      final lesson11 = stage1.chapters.first.lessons.first;
+      final lesson = stage1.chapters
+          .firstWhere((chapter) => chapter.chapterNumber == 1)
+          .lessons
+          .firstWhere((lesson) => lesson.id == 'lesson_1_1');
       
       setState(() {
-        _lesson = lesson11;
+        _lesson = lesson;
         _isLoading = false;
       });
     } catch (e) {
@@ -50,10 +55,7 @@ class _Lesson11ScreenState extends ConsumerState<Lesson11Screen> {
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error loading lesson: $e'),
-            duration: const Duration(seconds: 5),
-          ),
+          SnackBar(content: Text('Error loading lesson: $e')),
         );
       }
     }
@@ -87,10 +89,38 @@ class _Lesson11ScreenState extends ConsumerState<Lesson11Screen> {
     }
   }
 
+  /// Handle lesson completion with quest tracking
+  Future<void> _handleLessonCompletion() async {
+    try {
+      print('\n📚 [Lesson 1.1] Calling quest completion handler...');
+      final user = ref.read(currentUserDataProvider);
+      if (user == null) {
+        print('❌ [Lesson 1.1] User not found');
+        return;
+      }
+      
+      final questCompletionService = ref.read(questCompletionServiceProvider);
+      final result = await questCompletionService.handleLessonCompletion(
+        userId: user.id,
+        lessonId: 'lesson_1_1',
+      );
+      
+      if (result.questCompleted && mounted) {
+        print('🎉 [Lesson 1.1] Quest completed! Showing dialog...');
+        showQuestCompletionDialog(context, result);
+      } else {
+        print('ℹ️  [Lesson 1.1] No quest completed yet');
+      }
+    } catch (e) {
+      print('❌ [Lesson 1.1] Error in quest completion: $e');
+    }
+  }
+
   void _finishLesson() async {
     // Mark lesson as completed
     if (_lesson != null) {
-      _lessonService.markLessonCompleted(_lesson!.id);
+      await _lessonService.markLessonCompleted(_lesson!.id);
+      await _handleLessonCompletion();
     }
     
     // Mark user as having completed first lesson for tutorial tracking

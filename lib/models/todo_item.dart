@@ -252,4 +252,48 @@ class TodoItem {
         return 500;
     }
   }
+  
+  // Helper methods for progress-based quests (like "Complete 3 Lessons")
+  
+  /// Check if this quest tracks progress (has requiredCount)
+  bool get hasProgress {
+    return tierMetadata != null && 
+           tierMetadata!.containsKey('requiredCount');
+  }
+  
+  /// Get the current progress count (e.g., 2 lessons completed)
+  int get currentCount {
+    if (tierMetadata != null && tierMetadata!.containsKey('currentCount')) {
+      return tierMetadata!['currentCount'] as int? ?? 0;
+    }
+    return 0;
+  }
+  
+  /// Get the required count to complete (e.g., 3 lessons needed)
+  int get requiredCount {
+    if (tierMetadata != null && tierMetadata!.containsKey('requiredCount')) {
+      return tierMetadata!['requiredCount'] as int? ?? 1;
+    }
+    return 1;
+  }
+  
+  /// Get progress as a percentage (0.0 to 1.0)
+  double get progressPercentage {
+    if (!hasProgress) return 0.0;
+    if (requiredCount == 0) return 0.0;
+    final progress = currentCount / requiredCount;
+    return progress > 1.0 ? 1.0 : progress; // Cap at 100%
+  }
+  
+  /// Get progress as a string (e.g., "2/3")
+  String get progressString {
+    if (!hasProgress) return '';
+    return '$currentCount/$requiredCount';
+  }
+  
+  /// Check if this quest is about to be completed (one more action needed)
+  bool get isAlmostComplete {
+    if (!hasProgress || isCompleted) return false;
+    return currentCount >= requiredCount - 1;
+  }
 }

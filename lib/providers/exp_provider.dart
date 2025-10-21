@@ -1,12 +1,16 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/services/exp_service.dart';
+import '../core/services/streak_service.dart';
 import '../models/exp_ledger.dart';
 import '../models/quiz_submission.dart';
 import 'auth_provider.dart';
 
 // EXP service provider
 final expServiceProvider = Provider<ExpService>((ref) => ExpService());
+
+// Streak service provider
+final streakServiceProvider = Provider<StreakService>((ref) => StreakService());
 
 // Current user's EXP and level provider (from auth notifier)
 final userExpProvider = Provider<({int exp, int level})?>((ref) {
@@ -16,6 +20,19 @@ final userExpProvider = Provider<({int exp, int level})?>((ref) {
     data: (user) {
       if (user == null) return null;
       return (exp: user.exp, level: user.level);
+    },
+    loading: () => null,
+    error: (_, __) => null,
+  );
+});
+
+// Current user's streak provider
+final userStreakProvider = Provider<int?>((ref) {
+  final userAsync = ref.watch(authNotifierProvider);
+  return userAsync.when(
+    data: (user) {
+      if (user == null) return null;
+      return user.streak;
     },
     loading: () => null,
     error: (_, __) => null,

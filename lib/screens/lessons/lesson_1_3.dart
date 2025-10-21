@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/services/lesson_service.dart';
 import '../../models/lesson.dart';
 import '../../widgets/lesson_slide_widget.dart';
 import '../../data/stage_1_data.dart';
+import '../../core/services/quest_completion_service.dart';
+import '../../widgets/quest_completion_dialog.dart';
+import '../../providers/todo_provider.dart';
+import '../../providers/auth_provider.dart';
 
-class Lesson13Screen extends StatefulWidget {
+class Lesson13Screen extends ConsumerStatefulWidget {
   const Lesson13Screen({super.key});
 
   @override
-  State<Lesson13Screen> createState() => _Lesson13ScreenState();
+  ConsumerState<Lesson13Screen> createState() => _Lesson13ScreenState();
 }
 
-class _Lesson13ScreenState extends State<Lesson13Screen> {
+class _Lesson13ScreenState extends ConsumerState<Lesson13Screen> {
   final LessonService _lessonService = LessonService();
   final ScrollController _scrollController = ScrollController();
   Lesson? _lesson;
@@ -77,10 +82,39 @@ class _Lesson13ScreenState extends State<Lesson13Screen> {
     }
   }
 
+  /// Handle lesson completion with quest tracking
+  Future<void> _handleLessonCompletion() async {
+    try {
+      print('\n📚 [Lesson13Screen] Calling quest completion handler...');
+      final user = ref.read(currentUserDataProvider);
+      if (user == null) {
+        print('❌ [Lesson13Screen] User not found');
+        return;
+      }
+      
+      final questCompletionService = ref.read(questCompletionServiceProvider);
+      final result = await questCompletionService.handleLessonCompletion(
+        userId: user.id,
+        lessonId: 'lesson_1_3',
+      );
+      
+      if (result.questCompleted && mounted) {
+        print('🎉 [Lesson13Screen] Quest completed! Showing dialog...');
+        showQuestCompletionDialog(context, result);
+      } else {
+        print('ℹ️  [Lesson13Screen] No quest completed yet');
+      }
+    } catch (e) {
+      print('❌ [Lesson13Screen] Error in quest completion: $e');
+    }
+  }
+
+
   void _finishLesson() async {
     // Mark lesson as completed
     if (_lesson != null) {
       await _lessonService.markLessonCompleted(_lesson!.id);
+      await _handleLessonCompletion();
     }
     
     // Navigate back to education screen
