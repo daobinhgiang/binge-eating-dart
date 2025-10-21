@@ -28,102 +28,112 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final List<OnboardingQuestion> _questions = [
     OnboardingQuestion(
       number: 1,
-      question: "How often do you binge?",
+      question: "🌀 How often do you find yourself spiraling into a binge?",
+      description: "Be honest — your future self depends on it.",
       options: [
-        "Daily or multiple times a day",
-        "Several times a week",
-        "Once or twice a month",
-        "Rarely or never",
+        "😩 Daily or multiple times a day",
+        "😣 Several times a week",
+        "😕 Once or twice a month",
+        "😇 Rarely or never",
       ],
     ),
     OnboardingQuestion(
       number: 2,
-      question: "Have the binges gotten more intense?",
+      question: "🔥 Have your binges become more intense over time?",
+      description: "Pain doesn't just go away... it grows if ignored.",
       options: [
-        "Much more intense",
-        "Moderately more intense",
-        "Slightly more intense",
-        "No, they've stayed the same",
+        "🚨 Much more intense",
+        "⚠️ Moderately more intense",
+        "📈 Slightly more intense",
+        "🛑 No, they've stayed about the same",
       ],
     ),
     OnboardingQuestion(
       number: 3,
-      question: "When did you start binging?",
+      question: "⏳ When did this pattern begin for you?",
+      description: "Knowing when the pain started is the first step toward healing.",
       options: [
-        "More than 5 years ago",
-        "1-5 years ago",
-        "Within the past year",
-        "Within the past few months",
+        "🌳 More than 5 years ago",
+        "🌿 1–5 years ago",
+        "🌱 Within the past year",
+        "🐣 Within the past few months",
       ],
     ),
     OnboardingQuestion(
       number: 4,
-      question: "Do you find it difficult to cope with urges to binge?",
+      question: "😣 How hard is it for you to resist the urge to binge?",
+      description: "Every moment you fight is a battle for your peace.",
       options: [
-        "I feel completely overwhelmed by the urges",
-        "I find it very difficult most of the time",
-        "Sometimes I struggle but can manage",
-        "I can usually cope with the urges",
+        "😖 I feel completely overwhelmed",
+        "🥵 Most of the time, it's really difficult",
+        "🤹 Sometimes I struggle, but I get by",
+        "💪 I can usually manage the urges",
       ],
     ),
     OnboardingQuestion(
       number: 5,
-      question: "When you binge, what emotions are involved?",
+      question: "💔 What emotions fuel your binges the most?",
+      description: "Your emotions are valid — but they don't have to control you.",
       options: [
-        "Primarily emotional pain",
-        "Physical discomfort",
-        "Stress",
-        "Boredom or a mix of several emotions",
+        "😢 Deep emotional pain",
+        "🤢 Physical discomfort",
+        "😤 High stress or anxiety",
+        "😶‍🌫️ Boredom or a mix of heavy feelings",
       ],
     ),
     OnboardingQuestion(
       number: 6,
-      question: "Why do you want to overcome binge eating?",
+      question: "🌈 Why is it important for you to stop binge eating?",
+      description: "You deserve more than shame and guilt after every meal.",
       options: [
-        "To improve my physical health",
-        "To improve my mental well-being",
-        "To feel more in control of my life",
-        "All of the above",
+        "❤️ To feel healthier physically",
+        "🧠 To feel better mentally",
+        "🕊️ To take back control of my life",
+        "💫 All of the above — I want real change",
       ],
     ),
     OnboardingQuestion(
       number: 7,
-      question: "What are your top 1–2 goals related to your eating habits?",
+      question: "🎯 What are the 1–2 goals that matter most to you right now?",
+      description: "If not now... then when?",
       options: [
-        "Reduce frequency of binges",
-        "Develop healthier coping mechanisms",
-        "Improve relationship with food",
-        "Build consistent eating patterns",
+        "🚫 Reduce how often I binge",
+        "🧘 Learn better coping tools",
+        "🥗 Make peace with food",
+        "🧩 Build a consistent, balanced routine",
       ],
     ),
     OnboardingQuestion(
       number: 8,
-      question: "What would success look like for you in the next 30 days?",
+      question: "🔮 If the next 30 days were wildly successful, what would that look like?",
+      description: "You're closer to this version of yourself than you think.",
       options: [
-        "Fewer binge episodes",
-        "Better emotional regulation",
-        "More mindful eating",
-        "Increased self-compassion",
+        "📉 Fewer binge episodes",
+        "🧘‍♀️ More emotional control",
+        "🥄 Mindful, conscious eating",
+        "💞 Greater self-compassion",
       ],
     ),
     OnboardingQuestion(
       number: 9,
-      question: "On a scale of 1–10, how motivated do you feel to make changes right now?",
+      question: "🔥 Right now, how motivated are you to take control back? (Scale of 1–10)",
+      description: "No one else can do this for you.",
       options: [
-        "1-3 (Low motivation)",
-        "4-6 (Moderate motivation)",
-        "7-8 (High motivation)",
-        "9-10 (Very high motivation)",
+        "💤 1–3 (Barely motivated)",
+        "⚙️ 4–6 (Warming up)",
+        "⚡ 7–8 (Pretty motivated)",
+        "🚀 9–10 (I'm ready for real change!)",
       ],
     ),
     OnboardingQuestion(
       number: 10,
-      question: "What's your daily goal for time spent on your recovery with the app?",
+      question: "⏱️ How much time can you truly commit daily to your recovery journey?",
+      description: "Even 5 minutes is better than nothing — but be real with yourself.",
       options: [
-        "20 minutes per day",
-        "15 minutes per day",
-        "10 minutes per day",
-        "5 minutes per day",
+        "🧭 20 minutes — I'm all in",
+        "⏱️ 15 minutes — I'm invested",
+        "🕰️ 10 minutes — I owe myself that",
+        "⏳ Just 5 minutes a day",
       ],
     ),
   ];
@@ -152,7 +162,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     print('Haptic feedback triggered: Question $questionNumber, Option $optionIndex');
     
     switch (questionNumber) {
-      case 1: // "How often do you binge?"
+      case 1: // "How often do you find yourself spiraling into a binge?"
         // Most severe (daily) = strongest haptic, least severe (rarely) = lightest
         switch (optionIndex) {
           case 0: 
@@ -174,7 +184,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         }
         break;
         
-      case 2: // "Have the binges gotten more intense?"
+      case 2: // "Have your binges become more intense over time?"
         // Most severe (much more intense) = strongest haptic
         switch (optionIndex) {
           case 0: 
@@ -190,13 +200,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             HapticFeedback.mediumImpact();
             break;
           case 3: 
-            // Stayed the same - Very light impact
+            // No, they've stayed about the same - Very light impact
             HapticFeedback.selectionClick();
             break;
         }
         break;
         
-      case 3: // "When did you start binging?"
+      case 3: // "When did this pattern begin for you?"
         // Most severe (longer struggle) = stronger haptic
         switch (optionIndex) {
           case 0: 
@@ -218,33 +228,33 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         }
         break;
         
-      case 4: // "Do you find it difficult to cope with urges?"
+      case 4: // "How hard is it for you to resist the urge to binge?"
         // Most severe (completely overwhelmed) = strongest haptic
         switch (optionIndex) {
           case 0: 
-            // Completely overwhelmed - MAXIMUM intensity
+            // I feel completely overwhelmed - MAXIMUM intensity
             _triggerMaximumHapticFeedback();
             break;
           case 1: 
-            // Very difficult most of the time - Strong impact
+            // Most of the time, it's really difficult - Strong impact
             HapticFeedback.heavyImpact();
             break;
           case 2: 
-            // Sometimes struggle but can manage - Medium impact
+            // Sometimes I struggle, but I get by - Medium impact
             HapticFeedback.mediumImpact();
             break;
           case 3: 
-            // Can usually cope - Very light impact
+            // I can usually manage the urges - Very light impact
             HapticFeedback.selectionClick();
             break;
         }
         break;
         
-      case 5: // "When you binge, what emotions are involved?"
+      case 5: // "What emotions fuel your binges the most?"
         // Most severe (emotional pain) = strongest haptic
         switch (optionIndex) {
           case 0: 
-            // Primarily emotional pain - MAXIMUM intensity
+            // Deep emotional pain - MAXIMUM intensity
             _triggerMaximumHapticFeedback();
             break;
           case 1: 
@@ -252,55 +262,55 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             HapticFeedback.heavyImpact();
             break;
           case 2: 
-            // Stress - Medium impact
+            // High stress or anxiety - Medium impact
             HapticFeedback.mediumImpact();
             break;
           case 3: 
-            // Boredom or mix - Very light impact
+            // Boredom or a mix of heavy feelings - Very light impact
             HapticFeedback.selectionClick();
             break;
         }
         break;
         
-      case 9: // "How motivated do you feel?"
+      case 9: // "Right now, how motivated are you to take control back?"
         // Most severe (low motivation) = stronger haptic
         switch (optionIndex) {
           case 0: 
-            // 1-3 (Low motivation) - MAXIMUM intensity
+            // 1-3 (Barely motivated) - MAXIMUM intensity
             _triggerMaximumHapticFeedback();
             break;
           case 1: 
-            // 4-6 (Moderate motivation) - Strong impact
+            // 4-6 (Warming up) - Strong impact
             HapticFeedback.heavyImpact();
             break;
           case 2: 
-            // 7-8 (High motivation) - Medium impact
+            // 7-8 (Pretty motivated) - Medium impact
             HapticFeedback.mediumImpact();
             break;
           case 3: 
-            // 9-10 (Very high motivation) - Very light impact
+            // 9-10 (I'm ready for real change!) - Very light impact
             HapticFeedback.selectionClick();
             break;
         }
         break;
         
-      case 10: // "Daily goal for recovery time"
+      case 10: // "How much time can you truly commit daily to your recovery journey?"
         // Higher commitment (more time) = stronger haptic
         switch (optionIndex) {
           case 0: 
-            // 20 minutes per day - MAXIMUM intensity
+            // 20 minutes — I'm all in - MAXIMUM intensity
             _triggerMaximumHapticFeedback();
             break;
           case 1: 
-            // 15 minutes per day - Strong impact
+            // 15 minutes — I'm invested - Strong impact
             HapticFeedback.heavyImpact();
             break;
           case 2: 
-            // 10 minutes per day - Medium impact
+            // 10 minutes — I owe myself that - Medium impact
             HapticFeedback.mediumImpact();
             break;
           case 3: 
-            // 5 minutes per day - Very light impact
+            // Just 5 minutes a day - Very light impact
             HapticFeedback.selectionClick();
             break;
         }
@@ -395,6 +405,19 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         fontSize: 22,
                         fontWeight: FontWeight.w600,
                         height: 1.4,
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 8),
+                    
+                    // Description text
+                    Text(
+                      currentQuestion.description,
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        height: 1.3,
                       ),
                     ),
                     
@@ -914,7 +937,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       }
 
       // Extract the minutes from the selected option
-      // Options are now: "20 minutes per day", "15 minutes per day", "10 minutes per day", "5 minutes per day"
+      // Options are now: "20 minutes — I'm all in", "15 minutes — I'm invested", "10 minutes — I owe myself that", "Just 5 minutes a day"
       final minutes = [20, 15, 10, 5][_selectedOption!];
       _dailyGoalMinutes = minutes;
       
@@ -1064,11 +1087,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 class OnboardingQuestion {
   final int number;
   final String question;
+  final String description;
   final List<String> options;
 
   OnboardingQuestion({
     required this.number,
     required this.question,
+    required this.description,
     required this.options,
   });
 }
