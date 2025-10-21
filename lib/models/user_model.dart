@@ -84,53 +84,85 @@ class UserModel {
   String get fullName => '$firstName $lastName';
   String get displayName => fullName;
 
+  /// Helper method to safely convert Firestore values to DateTime
+  static DateTime? _parseDateTime(dynamic value) {
+    if (value == null) return null;
+    
+    try {
+      // Handle Firestore Timestamp objects (native Firebase timestamp type)
+      if (value is Timestamp) {
+        return value.toDate();
+      }
+      // Handle milliseconds since epoch as int
+      if (value is int) {
+        return DateTime.fromMillisecondsSinceEpoch(value);
+      }
+      // Handle double (rare but possible)
+      if (value is double) {
+        return DateTime.fromMillisecondsSinceEpoch(value.toInt());
+      }
+      print('WARNING: Unexpected DateTime type: ${value.runtimeType}. Value: $value');
+      return null;
+    } catch (e) {
+      print('ERROR parsing DateTime value: $e');
+      return null;
+    }
+  }
+
   factory UserModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
-    return UserModel(
-      id: doc.id,
-      email: data['email'] ?? '',
-      firstName: data['firstName'] ?? '',
-      lastName: data['lastName'] ?? '',
-      role: UserRole.values.firstWhere(
-        (role) => role.name == data['role'],
-        orElse: () => UserRole.patient,
-      ),
-      createdAt: DateTime.fromMillisecondsSinceEpoch(data['createdAt'] ?? 0),
-      lastLoginAt: data['lastLoginAt'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(data['lastLoginAt'])
-          : null,
-      photoUrl: data['photoUrl'],
-      fcmToken: data['fcmToken'],
-      fcmTokenUpdatedAt: data['fcmTokenUpdatedAt'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(data['fcmTokenUpdatedAt'])
-          : null,
-      preferences: Map<String, dynamic>.from(data['preferences'] ?? {}),
-      onboardingCompleted: data['onboardingCompleted'] ?? false,
-      onboardingPartiallyCompleted: data['onboardingPartiallyCompleted'] ?? false,
-      hasSeenIntro: data['hasSeenIntro'] ?? false,
-      hasSeenAppTutorial: data['hasSeenAppTutorial'] ?? false,
-      hasCompletedFirstLesson: data['hasCompletedFirstLesson'] ?? false,
-      hasSeenExercisesTutorial: data['hasSeenExercisesTutorial'] ?? false,
-      hasSeenJournalTutorial: data['hasSeenJournalTutorial'] ?? false,
-      hasLoggedWeightDuringTutorial: data['hasLoggedWeightDuringTutorial'] ?? false,
-      hasSeenWeightDiaryTutorial: data['hasSeenWeightDiaryTutorial'] ?? false,
-      hasSeenPlantGrowthTutorial: data['hasSeenPlantGrowthTutorial'] ?? false,
-      level: data['level'] ?? 1,
-      exp: data['exp'] ?? 0,
-      lastSeedsGeneratedDate: data['lastSeedsGeneratedDate'],
-      lastGrowthWeek: data['lastGrowthWeek'],
-      lastGrowthYear: data['lastGrowthYear'],
-      lastSeedsGeneratedAt: data['lastSeedsGeneratedAt'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(data['lastSeedsGeneratedAt'])
-          : null,
-      lastGrowthTasksGeneratedAt: data['lastGrowthTasksGeneratedAt'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(data['lastGrowthTasksGeneratedAt'])
-          : null,
-      streak: data['streak'] ?? 0,
-      lastStreakDate: data['lastStreakDate'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(data['lastStreakDate'])
-          : null,
-    );
+    try {
+      // Parse createdAt - should be milliseconds since epoch or Firestore Timestamp
+      DateTime parsedCreatedAt = _parseDateTime(data['createdAt']) ?? DateTime.now();
+
+      // Parse lastLoginAt
+      DateTime? parsedLastLoginAt = _parseDateTime(data['lastLoginAt']);
+
+      // Parse other DateTime fields
+      DateTime? parsedFcmTokenUpdatedAt = _parseDateTime(data['fcmTokenUpdatedAt']);
+      DateTime? parsedLastSeedsGeneratedAt = _parseDateTime(data['lastSeedsGeneratedAt']);
+      DateTime? parsedLastGrowthTasksGeneratedAt = _parseDateTime(data['lastGrowthTasksGeneratedAt']);
+      DateTime? parsedLastStreakDate = _parseDateTime(data['lastStreakDate']);
+
+      return UserModel(
+        id: doc.id,
+        email: data['email'] ?? '',
+        firstName: data['firstName'] ?? '',
+        lastName: data['lastName'] ?? '',
+        role: UserRole.values.firstWhere(
+          (role) => role.name == data['role'],
+          orElse: () => UserRole.patient,
+        ),
+        createdAt: parsedCreatedAt,
+        lastLoginAt: parsedLastLoginAt,
+        photoUrl: data['photoUrl'],
+        fcmToken: data['fcmToken'],
+        fcmTokenUpdatedAt: parsedFcmTokenUpdatedAt,
+        preferences: Map<String, dynamic>.from(data['preferences'] ?? {}),
+        onboardingCompleted: data['onboardingCompleted'] ?? false,
+        onboardingPartiallyCompleted: data['onboardingPartiallyCompleted'] ?? false,
+        hasSeenIntro: data['hasSeenIntro'] ?? false,
+        hasSeenAppTutorial: data['hasSeenAppTutorial'] ?? false,
+        hasCompletedFirstLesson: data['hasCompletedFirstLesson'] ?? false,
+        hasSeenExercisesTutorial: data['hasSeenExercisesTutorial'] ?? false,
+        hasSeenJournalTutorial: data['hasSeenJournalTutorial'] ?? false,
+        hasLoggedWeightDuringTutorial: data['hasLoggedWeightDuringTutorial'] ?? false,
+        hasSeenWeightDiaryTutorial: data['hasSeenWeightDiaryTutorial'] ?? false,
+        hasSeenPlantGrowthTutorial: data['hasSeenPlantGrowthTutorial'] ?? false,
+        level: data['level'] ?? 1,
+        exp: data['exp'] ?? 0,
+        lastSeedsGeneratedDate: data['lastSeedsGeneratedDate'],
+        lastGrowthWeek: data['lastGrowthWeek'],
+        lastGrowthYear: data['lastGrowthYear'],
+        lastSeedsGeneratedAt: parsedLastSeedsGeneratedAt,
+        lastGrowthTasksGeneratedAt: parsedLastGrowthTasksGeneratedAt,
+        streak: data['streak'] ?? 0,
+        lastStreakDate: parsedLastStreakDate,
+      );
+    } catch (e) {
+      print('CRITICAL ERROR in UserModel.fromFirestore: $e');
+      rethrow;
+    }
   }
 
   Map<String, dynamic> toFirestore() {

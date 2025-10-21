@@ -84,7 +84,7 @@ class StreakService {
           .collection('todos');
 
       final querySnapshot = await todosCollection
-          .where('type', isEqualTo: 'seed')
+          .where('tier', isEqualTo: 'seeds')
           .where('dueDate', isGreaterThanOrEqualTo: Timestamp.fromDate(todayDate))
           .where('dueDate',
               isLessThan: Timestamp.fromDate(
@@ -156,7 +156,7 @@ class StreakService {
           .collection('users')
           .doc(userId)
           .collection('todos')
-          .where('type', isEqualTo: 'seed')
+          .where('tier', isEqualTo: 'seeds')
           .where('dueDate',
               isGreaterThanOrEqualTo: Timestamp.fromDate(yesterday))
           .where('dueDate',

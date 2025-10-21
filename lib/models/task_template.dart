@@ -105,6 +105,16 @@ class TaskTemplate {
         todoType = TodoType.lesson;
     }
 
+    // Build tierMetadata with both template metadata and expReward
+    final tierMetadata = <String, dynamic>{
+      'expReward': expReward,
+    };
+    
+    // Merge in all metadata from the template
+    if (metadata != null) {
+      tierMetadata.addAll(metadata!);
+    }
+
     return TodoItem(
       id: docId,
       userId: userId,
@@ -122,9 +132,7 @@ class TaskTemplate {
       templateId: id,
       regenerationBatchId: regenerationBatchId,
       autoDeleteDate: _calculateAutoDeleteDate(tier, dueDate),
-      tierMetadata: {
-        'expReward': expReward,
-      },
+      tierMetadata: tierMetadata,
     );
   }
 

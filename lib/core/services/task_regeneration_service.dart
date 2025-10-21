@@ -4,6 +4,7 @@ import '../../models/regeneration_log.dart';
 import '../../data/task_templates.dart';
 import 'todo_service.dart';
 import 'streak_service.dart';
+import 'quest_completion_service.dart';
 
 class TaskRegenerationService {
   static final TaskRegenerationService _instance = TaskRegenerationService._internal();
@@ -96,6 +97,13 @@ class TaskRegenerationService {
       // Clean up expired tasks
       print('\n🧹 CLEANING UP EXPIRED TASKS...');
       await cleanupExpiredTasks(userId);
+
+      // 🆕 Sync lesson quest progress after generating seeds
+      if (newTasks.any((task) => task.isSeed && task.activityId == 'complete_lessons')) {
+        print('\n🔄 SYNCING LESSON QUEST PROGRESS...');
+        final questCompletionService = QuestCompletionService();
+        await questCompletionService.syncLessonQuestProgress(userId);
+      }
 
       print('\n📊 REGENERATION COMPLETE:');
       print('   - Total new tasks generated: ${newTasks.length}');

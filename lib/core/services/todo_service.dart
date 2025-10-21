@@ -60,6 +60,12 @@ class TodoService {
     _cacheTimestamps.remove(userId);
   }
 
+  /// Public method to clear cache for a user
+  /// Call this when you need fresh data from Firestore
+  void clearUserCache(String userId) {
+    _clearCache(userId);
+  }
+
   // Get todos for a specific user with real-time updates
   Stream<List<TodoItem>> getUserTodosStream(String userId) {
     return _getTodosCollection(userId)
@@ -215,6 +221,11 @@ class TodoService {
     } catch (e) {
       throw 'Failed to mark todo as completed: $e';
     }
+  }
+
+  // Public method for external services to mark todo as completed
+  Future<void> markTodoCompleted(String userId, String todoId) async {
+    await _markTodoCompletedForUser(userId, todoId);
   }
   // Delete a todo item
 

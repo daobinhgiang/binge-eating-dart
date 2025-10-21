@@ -4,11 +4,24 @@ import '../models/task_template.dart';
 import '../core/services/todo_service.dart';
 import '../core/services/task_regeneration_service.dart';
 import '../core/services/quest_completion_service.dart';
+import '../core/services/lesson_progress_service.dart';
+
+/// Data class to hold todo info with additional progress context
+class TodoWithProgressInfo {
+  final TodoItem todo;
+  final int? currentLessonCount;  // For "Complete N Lessons" quests
+  
+  TodoWithProgressInfo({
+    required this.todo,
+    this.currentLessonCount,
+  });
+}
 
 // Services providers
 final todoServiceProvider = Provider<TodoService>((ref) => TodoService());
 final taskRegenerationServiceProvider = Provider<TaskRegenerationService>((ref) => TaskRegenerationService());
 final questCompletionServiceProvider = Provider<QuestCompletionService>((ref) => QuestCompletionService());
+final lessonProgressServiceProvider = Provider<LessonProgressService>((ref) => LessonProgressService());
 
 // All user todos provider
 final userTodosProvider = StateNotifierProvider.family<TodoNotifier, AsyncValue<List<TodoItem>>, String>((ref, userId) {
@@ -49,6 +62,12 @@ final todoCountProvider = FutureProvider.family<Map<String, int>, String>((ref, 
 final todoByIdProvider = FutureProvider.family<TodoItem?, ({String userId, String todoId})>((ref, params) async {
   final service = ref.read(todoServiceProvider);
   return await service.getTodoByIdForUser(params.userId, params.todoId);
+});
+
+// Lesson progress provider
+final lessonProgressProvider = FutureProvider.family<Map<String, int>, String>((ref, userId) async {
+  final service = ref.read(lessonProgressServiceProvider);
+  return await service.getLessonProgress(userId);
 });
 
 // Check if activity has todo provider

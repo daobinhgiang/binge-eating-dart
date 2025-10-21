@@ -12,7 +12,6 @@ import '../../data/stage_3_data.dart';
 import '../../models/stage.dart';
 import '../../models/lesson.dart';
 import '../providers/firebase_analytics_provider.dart';
-import '../providers/lesson_progress_provider.dart';
 import '../core/services/exp_service.dart';
 import '../models/todo_item.dart';
 import '../core/services/user_learning_service.dart';
@@ -1121,6 +1120,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         type: ProgressType.percentage,
       );
     }
+
+    // Use the new progress tracking methods from TodoItem
+    // This data is automatically synchronized when lessons are completed
+    if (todo.hasProgress) {
+      final trackBy = todo.tierMetadata?['trackBy'] as String? ?? 'daily';
+      final timeframe = trackBy == 'weekly' ? 'weekly' : 'today';
+      
+      return QuestProgressInfo(
+        progress: todo.progressPercentage,
+        displayText: '${todo.progressString} $timeframe',
+        description: 'Complete ${todo.requiredCount} lessons to earn rewards',
+        type: ProgressType.counter,
+      );
+    }
+
 
     // Parse activity data for progress information
     final activityData = todo.activityData ?? {};

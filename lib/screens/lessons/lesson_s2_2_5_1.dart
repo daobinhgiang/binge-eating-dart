@@ -5,6 +5,9 @@ import '../../core/services/lesson_service.dart';
 import '../../models/lesson.dart';
 import '../../data/stage_2_data.dart';
 import '../../widgets/exercise_prep_slide_widget.dart';
+import '../../core/services/quest_completion_service.dart';
+import '../../widgets/quest_completion_dialog.dart';
+import '../../providers/todo_provider.dart';
 
 class LessonS2251Screen extends ConsumerStatefulWidget {
   const LessonS2251Screen({super.key});

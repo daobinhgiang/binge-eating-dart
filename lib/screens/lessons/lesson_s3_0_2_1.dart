@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 import '../../data/stage_3_data.dart';
 import '../../models/lesson.dart';
 import '../../core/services/lesson_service.dart';
+import '../../core/services/quest_completion_service.dart';
+import '../../widgets/quest_completion_dialog.dart';
+import '../../providers/todo_provider.dart';
 
 class LessonS3021Screen extends ConsumerStatefulWidget {
   const LessonS3021Screen({super.key});
