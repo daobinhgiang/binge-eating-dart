@@ -617,7 +617,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
                         children: [
                           // EXP text
                           Text(
-                            '${userExp.exp} EXP',
+                            '💎 ${userExp.exp}',
                             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.w900,
                               color: textColor,
