@@ -8,86 +8,58 @@ class TaskTemplatesData {
     final now = DateTime.now();
     
     return [
-      // Journal Seeds
-      TaskTemplate(
-        id: 'seed_journal_food_diary',
-        category: 'journaling',
-        tier: TaskTier.seeds,
-        title: 'Complete Today\'s Food Diary',
-        description: 'Record your meals and reflections for today',
-        activityId: 'food_diary',
-        expReward: 50,
-        createdAt: now,
-        updatedAt: now,
-        metadata: {
-          'type': 'food_diary',
-          'priority': 1,
-        },
-      ),
-      TaskTemplate(
-        id: 'seed_journal_body_image',
-        category: 'journaling',
-        tier: TaskTier.seeds,
-        title: 'Reflect on Body Image',
-        description: 'Take a moment to journal about your body image today',
-        activityId: 'body_image_diary',
-        expReward: 50,
-        createdAt: now,
-        updatedAt: now,
-        metadata: {
-          'type': 'body_image_diary',
-          'priority': 2,
-        },
-      ),
-      TaskTemplate(
-        id: 'seed_journal_weight',
-        category: 'journaling',
-        tier: TaskTier.seeds,
-        title: 'Log Your Weight',
-        description: 'Record your weight if you feel comfortable',
-        activityId: 'weight_diary',
-        expReward: 30,
-        createdAt: now,
-        updatedAt: now,
-        metadata: {
-          'type': 'weight_diary',
-          'priority': 3,
-        },
-      ),
-      
-      // Exercise/Tool Seeds
-      TaskTemplate(
-        id: 'seed_tool_coping',
-        category: 'exercises',
-        tier: TaskTier.seeds,
-        title: 'Practice a Coping Strategy',
-        description: 'Use one of your recovery tools today',
-        activityId: 'coping_strategies',
-        expReward: 60,
-        createdAt: now,
-        updatedAt: now,
-        metadata: {
-          'toolType': 'coping',
-          'priority': 1,
-        },
-      ),
-      
       // Lesson Seed - Daily quest
       TaskTemplate(
         id: 'seed_lesson_complete',
         category: 'lessons',
         tier: TaskTier.seeds,
-        title: 'Complete 3 Lessons',
-        description: 'Finish 3 lessons today to master your recovery',
+        title: 'Nourish Your Mind',
+        description: 'Complete at least one lesson today to grow your knowledge',
         activityId: 'complete_lessons',
-        expReward: 150,
+        expReward: 50,
         createdAt: now,
         updatedAt: now,
         metadata: {
-          'requiredCount': 3,
+          'requiredCount': 1,
           'currentCount': 0, // Initialize progress at 0
           'trackBy': 'daily',
           'priority': 0,
+        },
+      ),
+      
+      // Journal Seed - Any journal activity
+      TaskTemplate(
+        id: 'seed_daily_reflection',
+        category: 'journaling',
+        tier: TaskTier.seeds,
+        title: 'Daily Reflection',
+        description: 'Take a moment to reflect through journaling or tracking',
+        activityId: 'daily_journal',
+        expReward: 50,
+        createdAt: now,
+        updatedAt: now,
+        metadata: {
+          'acceptsAny': true, // Accepts any journal activity
+          'validActivities': ['food_diary', 'body_image_diary', 'weight_diary', 'money_diary'],
+          'priority': 1,
+        },
+      ),
+      
+      // Exercise/Tool Seed - Any exercise
+      TaskTemplate(
+        id: 'seed_stay_healthy',
+        category: 'exercises',
+        tier: TaskTier.seeds,
+        title: 'Stay Healthy',
+        description: 'Practice one recovery exercise to build resilience',
+        activityId: 'daily_exercise',
+        expReward: 60,
+        createdAt: now,
+        updatedAt: now,
+        metadata: {
+          'acceptsAny': true, // Accepts any exercise activity
+          'validActivities': ['problem_solving', 'meal_planning', 'urge_surfing', 'addressing_setbacks', 'addressing_overconcern'],
+          'priority': 2,
         },
       ),
     ];

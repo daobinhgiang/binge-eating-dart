@@ -64,9 +64,6 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
   }
 
   Widget _buildHeader(BuildContext context) {
-    final user = ref.watch(currentUserDataProvider);
-    final showBackButton = user?.hasVisitedWeightDiary ?? false;
-    
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
@@ -82,20 +79,17 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
       ),
       child: Row(
         children: [
-          if (showBackButton) ...[
-            IconButton(
-              onPressed: () => Navigator.of(context).pop(),
-              icon: const Icon(
-                Icons.arrow_back_ios,
-                color: Colors.black87,
-                size: 20,
-              ),
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
+          IconButton(
+            onPressed: () => Navigator.of(context).pop(),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black87,
+              size: 20,
             ),
-            const SizedBox(width: 16),
-          ] else
-            const SizedBox(width: 20), // Spacer for first-time users
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+          ),
+          const SizedBox(width: 16),
           Expanded(
             child: FittedBox(
               fit: BoxFit.scaleDown,
@@ -111,12 +105,7 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
               ),
             ),
           ),
-          const SizedBox(width: 16),
-          // Invisible spacer to balance the back button on the left
-          SizedBox(
-            width: 20, // Match the icon size
-            height: 20,
-          ),
+          const SizedBox(width: 48), // Balance the back button width
         ],
       ),
     );

@@ -168,6 +168,10 @@ class NavigationService {
       case 'addressing_setbacks':
         route = '/exercises/addressing-setbacks';
         break;
+      case 'daily_exercise':
+        // Generic "Stay Healthy" quest - navigate to exercises main screen
+        context.go('/exercises');
+        return;
     }
     
     if (route != null) {
@@ -186,6 +190,13 @@ class NavigationService {
   void _navigateToJournal(BuildContext context, TodoItem todo) {
     // Extract journal type from activity data
     final journalType = todo.activityData?['journalType'] as String?;
+    
+    // If no journal type in activity data, check if this is a generic daily_journal quest
+    if (journalType == null && todo.activityId == 'daily_journal') {
+      // Generic "Daily Reflection" quest - navigate to main journal screen
+      context.go('/journal');
+      return;
+    }
     
     if (journalType == null) {
       // Fallback to main journal screen if no journal type
