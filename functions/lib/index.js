@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendDailyAccountabilityReminder = exports.sendDailyEducationProgress = exports.sendDailyProgressReview = exports.sendDailyMotivationalNotification = exports.sendDailyNotification = exports.awardUrgeSurfingActivityExp = exports.awardMealPlanUpdateExp = exports.awardExerciseExp = exports.awardJournalEntryExp = exports.validateQuiz = void 0;
+exports.sendDailyAccountabilityReminder = exports.sendDailyEducationProgress = exports.sendDailyProgressReview = exports.sendDailyMotivationalNotification = exports.sendDailyNotification = exports.awardLessonExp = exports.awardMealPlanUpdateExp = exports.awardExerciseExp = exports.awardJournalEntryExp = exports.validateQuiz = void 0;
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const openai_1 = require("openai");
@@ -26,9 +26,9 @@ Object.defineProperty(exports, "awardJournalEntryExp", { enumerable: true, get: 
 var awardExerciseExp_1 = require("./awardExerciseExp");
 Object.defineProperty(exports, "awardExerciseExp", { enumerable: true, get: function () { return awardExerciseExp_1.awardExerciseExp; } });
 Object.defineProperty(exports, "awardMealPlanUpdateExp", { enumerable: true, get: function () { return awardExerciseExp_1.awardMealPlanUpdateExp; } });
-// Import and export urge surfing activity EXP function
-var awardUrgeSurfingActivityExp_1 = require("./awardUrgeSurfingActivityExp");
-Object.defineProperty(exports, "awardUrgeSurfingActivityExp", { enumerable: true, get: function () { return awardUrgeSurfingActivityExp_1.awardUrgeSurfingActivityExp; } });
+// Import and export lesson completion EXP function
+var awardLessonExp_1 = require("./awardLessonExp");
+Object.defineProperty(exports, "awardLessonExp", { enumerable: true, get: function () { return awardLessonExp_1.awardLessonExp; } });
 // Helper function to format time as HH:mm in Central Time
 function formatTime(date) {
     // Convert to Central Time (handles both CST and CDT automatically)

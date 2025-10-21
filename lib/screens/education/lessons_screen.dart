@@ -103,6 +103,9 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
   final Map<String, GlobalKey> _sectionKeys = {};
   final GlobalKey _firstLessonKey = GlobalKey();
   bool _hasShownTutorial = false;
+  String? _selectedLessonId; // Track which lesson popup is showing
+  GlobalKey? _selectedLessonKey; // Track the selected lesson button's key
+  Offset? _selectedLessonOffset; // Track button position
 
   @override
   void initState() {
@@ -187,7 +190,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
 
   void _updateCurrentSection() {
     // Calculate the threshold position (Sticky header)
-    const double headerHeight = 180.0; // Sticky header height (increased to accommodate level/EXP display)
+    const double headerHeight = 220.0; // Sticky header height (increased to fully cover stage chapter header)
     
     for (var stage in _stages) {
       for (var chapter in stage.chapters) {
@@ -436,40 +439,60 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
     }
 
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/background.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: SafeArea(
-          child: CustomScrollView(
-            controller: _scrollController,
-            slivers: [
-              // Sticky header showing current stage and chapter
-              if (_currentStage != null && _currentChapter != null)
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: _StickyHeaderDelegate(
-                    child: _buildStickyHeader(_currentStage!, _currentChapter!),
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/background.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: GestureDetector(
+              onTap: () {
+                if (_selectedLessonId != null) {
+                  setState(() {
+                    _selectedLessonId = null;
+                    _selectedLessonKey = null;
+                    _selectedLessonOffset = null;
+                  });
+                }
+              },
+              behavior: HitTestBehavior.translucent,
+              child: SafeArea(
+                child: CustomScrollView(
+                  controller: _scrollController,
+                  slivers: [
+                  // Sticky header showing current stage and chapter
+                  if (_currentStage != null && _currentChapter != null)
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: _StickyHeaderDelegate(
+                        child: _buildStickyHeader(_currentStage!, _currentChapter!),
+                      ),
+                    ),
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate(
+                        _buildStorylinePath(),
+                      ),
+                    ),
                   ),
-                ),
-              SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                sliver: SliverList(
-                  delegate: SliverChildListDelegate(
-                    _buildStorylinePath(),
+                  // Add some bottom padding
+                  const               SliverToBoxAdapter(
+                    child: SizedBox(height: 50),
                   ),
+                ],
                 ),
               ),
-              // Add some bottom padding
-              const               SliverToBoxAdapter(
-                child: SizedBox(height: 50),
-              ),
-            ],
+            ),
           ),
-        ),
+          
+          // Popup overlay - positioned above everything
+          if (_selectedLessonId != null && _selectedLessonOffset != null)
+            _buildPopupOverlay(),
+        ],
       ),
     );
   }
@@ -478,7 +501,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
   // Build sticky header for current section with chapter tile only
   Widget _buildStickyHeader(Stage stage, Chapter chapter) {
     return Container(
-      height: 180.0, // Fixed height to match delegate
+      height: 220.0, // Increased height to fully cover content
       decoration: BoxDecoration(
         color: const Color(0xFFFAFAFA), // Light background color to prevent transparency
         boxShadow: [
@@ -520,45 +543,79 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
                 final subtextColor = Colors.grey[700]!;  // Slightly darker grey for better contrast
                 
                 return Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    // Vertical progress bar (only show if not max level)
-                    if (!isMaxLevel) ...[
-                      Container(
-                        width: 4,
-                        height: 24, // Height to match the text
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(2),
-                          color: Colors.grey[200], // Light grey background
-                        ),
-                        child: FractionallySizedBox(
-                          alignment: Alignment.bottomCenter,
-                          heightFactor: progress,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(2),
-                              color: const Color(0xFF4CAF50), // Green progress
-                            ),
+                    // Level text in white container with progress bar
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
                           ),
-                        ),
+                        ],
                       ),
-                      const SizedBox(width: 12),
-                    ],
-                    // Level text
-                    Text(
-                      'Level ${userExp.level}',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w900,
-                        color: textColor,
-                        fontSize: 20,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    // EXP text
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          // Vertical progress bar (only show if not max level)
+                          if (!isMaxLevel) ...[
+                            Container(
+                              width: 4,
+                              height: 24, // Height to match the text
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(2),
+                                color: Colors.grey[200], // Light grey background
+                              ),
+                              child: FractionallySizedBox(
+                                alignment: Alignment.bottomCenter,
+                                heightFactor: progress,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(2),
+                                    color: const Color(0xFF4CAF50), // Green progress
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                          ],
+                          // Level text
+                          Text(
+                            'Level ${userExp.level}',
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w900,
+                              color: textColor,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    // EXP info in white container
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // EXP text
                           Text(
                             '${userExp.exp} EXP',
                             style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -671,9 +728,10 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
             children: [
               // Add spacing before divider (except for first chapter)
               if (i > 0 || stage.stageNumber > 1)
-                const SizedBox(height: 100),
-              // Section divider line to mark the start of each section (hidden)
-              const SizedBox(height: 100),
+                const SizedBox(height: 60),
+              // Visible divider line with chapter name
+              if (i > 0 || stage.stageNumber > 1)
+                _buildChapterDivider(chapter, stage),
               // Add lessons in the chapter with Duolingo-style layout
               _buildChapterLessons(chapter, stage, lessonIndex),
             ],
@@ -743,13 +801,35 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
   // Get lesson position in the path (uses fractional values for ultra-smooth S-curve)
   // Returns position as fraction: -1.0 = most left, 0 = center, 1.0 = most right
   double _getLessonPosition(int index) {
-    // Create an ultra-smooth S-curve pattern with gradual transitions
-    // This creates a flowing wave that moves smoothly through multiple positions
-    final pattern = [0.0, -0.75, -1.0, -0.75, 0.0, 0.75, 1.0, 0.75];
+    // Create a more centered pattern with closer horizontal spacing
+    // This creates a flowing wave that stays closer to center
+    final pattern = [0.0, -0.4, -0.6, -0.4, 0.0, 0.4, 0.6, 0.4];
     return pattern[index % pattern.length];
   }
 
-  // Build a single Duolingo-style lesson button with lesson number
+  // Get emoji for lesson based on lesson type
+  String _getLessonEmoji(Lesson lesson) {
+    // Assessment lessons (lesson_2_1, lesson_2_2, lesson_2_3, lesson_s3_0_3, lesson_s3_0_4)
+    if (lesson.id.startsWith('lesson_2_') || lesson.id == 'lesson_s3_0_3' || lesson.id == 'lesson_s3_0_4') {
+      const assessmentEmojis = ['📋', '📊', '📈', '🔍', '📝'];
+      final index = lesson.lessonNumber - 1;
+      return assessmentEmojis[index % assessmentEmojis.length];
+    }
+    
+    // Quiz lessons (quiz_*)
+    if (lesson.id.startsWith('quiz_')) {
+      const quizEmojis = ['🧠', '❓', '💡', '🎯', '📚', '🔬', '⚡', '🌟'];
+      final index = lesson.lessonNumber - 1;
+      return quizEmojis[index % quizEmojis.length];
+    }
+    
+    // Regular lessons
+    const lessonEmojis = ['📖', '🎓', '💭', '🌱', '🔑', '💡', '🌟', '🚀', '🎯', '💪', '🌈', '🦋', '🌺', '⭐', '🎨', '🔮', '🌙', '☀️', '🌊', '🏔️'];
+    final index = lesson.lessonNumber - 1;
+    return lessonEmojis[index % lessonEmojis.length];
+  }
+
+  // Build a single Duolingo-style lesson button with emoji
   Widget _buildDuolingoLessonButton({
     required Lesson lesson,
     required int lessonNumber,
@@ -763,7 +843,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
         ? stageColor
         : isLocked 
             ? Colors.grey.shade400
-            : Colors.grey.shade500; // Grey for uncompleted lessons
+            : Colors.white; // White for uncompleted lessons
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -771,12 +851,12 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
         final buttonRadius = 35.0; // Half of button width (70/2)
         
         // Calculate positions based on fractional position value
-        // position = -1.0 (most left): 55 from left edge
+        // position = -1.0 (most left): 80 from left edge (closer to center)
         // position = 0.0 (center): width/2
-        // position = 1.0 (most right): width - 55 from left edge
+        // position = 1.0 (most right): width - 80 from left edge (closer to center)
         
-        final mostLeftPos = 55.0;
-        final mostRightPos = screenWidth - 55.0;
+        final mostLeftPos = 80.0; // Moved closer to center
+        final mostRightPos = screenWidth - 80.0; // Moved closer to center
         final centerPos = screenWidth / 2;
         
         // Calculate the actual X position by interpolating based on the position value
@@ -811,68 +891,300 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
           alignment = Alignment.center;
         }
 
-    return Align(
-      alignment: alignment,
-      child: Padding(
-        padding: EdgeInsets.only(
-          left: leftPadding,
-          right: rightPadding,
-        ),
-        child: GestureDetector(
-          key: lessonKey,
-          onTap: isLocked ? null : () => _navigateToLesson(lesson),
-          child: Container(
-            width: 70,
-            height: 70,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: buttonColor,
-              boxShadow: [
-                BoxShadow(
-                  color: buttonColor.withOpacity(0.4),
-                  blurRadius: 12,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-              border: Border.all(
-                color: Colors.white,
-                width: 3,
-              ),
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        // Existing Align widget with the button
+        Align(
+          alignment: alignment,
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: leftPadding,
+              right: rightPadding,
             ),
-            child: Center(
-              child: isCompleted
-                  ? const Icon(
-                      Icons.star,
-                      color: Colors.white,
-                      size: 32,
-                    )
-                  : isLocked
+            child: GestureDetector(
+              key: lessonKey,
+              onTap: isLocked ? null : () {
+                setState(() {
+                  if (_selectedLessonId == lesson.id) {
+                    _selectedLessonId = null;
+                    _selectedLessonKey = null;
+                    _selectedLessonOffset = null;
+                  } else {
+                    _selectedLessonId = lesson.id;
+                    _selectedLessonKey = lessonKey;
+                    // Get button position
+                    final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
+                    if (renderBox != null) {
+                      _selectedLessonOffset = renderBox.localToGlobal(Offset.zero);
+                    }
+                  }
+                });
+              },
+              child: Container(
+                width: 70,
+                height: 70,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isCompleted 
+                      ? buttonColor.withOpacity(0.7) // Add transparency for completed lessons
+                      : buttonColor,
+                  boxShadow: isCompleted
+                      ? [
+                          // Enhanced shadows for completed lessons
+                          BoxShadow(
+                            color: buttonColor.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                          BoxShadow(
+                            color: buttonColor.withOpacity(0.2),
+                            blurRadius: 16,
+                            offset: const Offset(0, 8),
+                          ),
+                          BoxShadow(
+                            color: buttonColor.withOpacity(0.1),
+                            blurRadius: 24,
+                            offset: const Offset(0, 12),
+                          ),
+                        ]
+                      : isLocked
+                          ? [
+                              // Shadow for locked lessons
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ]
+                          : [
+                              // Shadows for uncompleted lessons
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.2),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.1),
+                                blurRadius: 16,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                  border: null, // Remove border for all lessons
+                ),
+                child: Center(
+                  child: isLocked
                       ? const Icon(
                           Icons.lock,
                           color: Colors.white,
                           size: 28,
                         )
                       : Text(
-                          '$lessonNumber',
+                          _getLessonEmoji(lesson),
                           style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 22,
+                            fontSize: 28,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                ),
+              ),
             ),
           ),
         ),
-      ),
+        
+      ],
     );
       },
+    );
+  }
+
+
+  // Build popup overlay that appears above all elements
+  Widget _buildPopupOverlay() {
+    // Find the selected lesson details
+    Lesson? selectedLesson;
+    int? lessonNumber;
+    bool isCompleted = false;
+    Color stageColor = const Color(0xFF66BB6A);
+    
+    for (var stage in _stages) {
+      for (var chapter in stage.chapters) {
+        for (var i = 0; i < chapter.lessons.length; i++) {
+          final lesson = chapter.lessons[i];
+          if (lesson.id == _selectedLessonId) {
+            selectedLesson = lesson;
+            lessonNumber = i + 1;
+            stageColor = _getStageColor(stage.stageNumber);
+            break;
+          }
+        }
+        if (selectedLesson != null) break;
+      }
+      if (selectedLesson != null) break;
+    }
+    
+    if (selectedLesson == null || _selectedLessonOffset == null) {
+      return const SizedBox.shrink();
+    }
+    
+    return Consumer(
+      builder: (context, ref, child) {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user == null) return const SizedBox.shrink();
+        
+        final completedLessonsAsync = ref.watch(completedLessonsStreamProvider(user.uid));
+        
+        return completedLessonsAsync.when(
+          data: (completedLessons) {
+            isCompleted = completedLessons.contains(selectedLesson!.id);
+            
+            final screenWidth = MediaQuery.of(context).size.width;
+            const buttonHeight = 70.0;
+            final popupWidth = screenWidth * 0.8; // 80% of screen width
+            
+            // Position popup below the button
+            final popupTop = _selectedLessonOffset!.dy + buttonHeight + 15;
+            
+            // Center popup horizontally on the screen
+            final popupLeft = (screenWidth - popupWidth) / 2;
+            
+            return Positioned(
+              top: popupTop,
+              left: popupLeft,
+              child: Material(
+                elevation: 8,
+                borderRadius: BorderRadius.circular(16),
+                color: stageColor,
+                child: Container(
+                  width: popupWidth,
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _getLessonEmoji(selectedLesson!),
+                        style: const TextStyle(fontSize: 36),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        selectedLesson.title,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 20),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _selectedLessonId = null;
+                            _selectedLessonKey = null;
+                            _selectedLessonOffset = null;
+                          });
+                          _navigateToLesson(selectedLesson!);
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            isCompleted ? 'REVIEW +10 XP' : 'START +10 XP',
+                            style: TextStyle(
+                              color: stageColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+          loading: () => const SizedBox.shrink(),
+          error: (error, stack) => const SizedBox.shrink(),
+        );
+      },
+    );
+  }
+
+  // Build chapter divider with chapter name
+  Widget _buildChapterDivider(Chapter chapter, Stage stage) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 20),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Divider line
+          Container(
+            height: 2,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.transparent,
+                  _getStageColor(stage.stageNumber).withOpacity(0.3),
+                  _getStageColor(stage.stageNumber).withOpacity(0.6),
+                  _getStageColor(stage.stageNumber).withOpacity(0.3),
+                  Colors.transparent,
+                ],
+                stops: const [0.0, 0.2, 0.5, 0.8, 1.0],
+              ),
+            ),
+          ),
+          // Chapter name on top of the line
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white, // White background to cover the line
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: _getStageColor(stage.stageNumber).withOpacity(0.3),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Text(
+              chapter.title,
+              style: TextStyle(
+                color: _getStageColor(stage.stageNumber),
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.5,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   // Build connecting path between lessons
   Widget _buildConnectingPath(double fromPosition, double toPosition) {
     return CustomPaint(
-      size: const Size(double.infinity, 50),
+      size: const Size(double.infinity, 50), // Reduced height for closer vertical spacing
       painter: PathPainter(
         fromPosition: fromPosition,
         toPosition: toPosition,
@@ -917,10 +1229,10 @@ class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
   _StickyHeaderDelegate({required this.child});
 
   @override
-  double get minExtent => 180.0; // Increased to accommodate level/EXP display
+  double get minExtent => 220.0; // Increased to fully cover stage chapter header
 
   @override
-  double get maxExtent => 180.0; // Increased to accommodate level/EXP display
+  double get maxExtent => 220.0; // Increased to fully cover stage chapter header
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
@@ -957,8 +1269,8 @@ class PathPainter extends CustomPainter {
     final path = Path();
 
     // Calculate positions using same interpolation logic as button positioning
-    final mostLeftPos = 55.0;
-    final mostRightPos = size.width - 55.0;
+    final mostLeftPos = 80.0; // Moved closer to center
+    final mostRightPos = size.width - 80.0; // Moved closer to center
     final centerPos = size.width / 2;
 
     // Calculate start X position by interpolating based on fromPosition value

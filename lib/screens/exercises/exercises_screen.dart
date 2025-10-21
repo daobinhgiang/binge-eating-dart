@@ -224,16 +224,6 @@ class ExercisesScreen extends ConsumerWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text(
-                                    exercise.title,
-                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Theme.of(context).colorScheme.onSurface,
-                                        ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 12),
                                   Center(
                                     child: Container(
                                       width: double.infinity,
@@ -256,7 +246,7 @@ class ExercisesScreen extends ConsumerWidget {
                                           onTap: () => exercise.onTap(context),
                                           child: Center(
                                             child: Text(
-                                              'Start Exercise',
+                                              exercise.title,
                                               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                                     color: Colors.white,
                                                     fontWeight: FontWeight.w600,
