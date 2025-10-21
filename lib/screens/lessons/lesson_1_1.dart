@@ -103,6 +103,7 @@ class _Lesson11ScreenState extends ConsumerState<Lesson11Screen> {
       final result = await questCompletionService.handleLessonCompletion(
         userId: user.id,
         lessonId: 'lesson_1_1',
+        ref: ref,
       );
       
       if (result.questCompleted && mounted) {

@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/todo_provider.dart';
 import '../../models/weight_diary.dart';
+import '../../models/todo_item.dart';
 import '../../providers/weight_diary_provider.dart';
 import '../../widgets/weight_graph_widget.dart';
+import '../../widgets/quest_completion_dialog.dart';
 
 class WeightDiarySurveyScreen extends ConsumerStatefulWidget {
   const WeightDiarySurveyScreen({super.key});
@@ -62,9 +65,6 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
   }
 
   Widget _buildHeader(BuildContext context) {
-    final user = ref.watch(currentUserDataProvider);
-    final showBackButton = user?.hasVisitedWeightDiary ?? false;
-    
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
@@ -80,20 +80,17 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
       ),
       child: Row(
         children: [
-          if (showBackButton) ...[
-            IconButton(
-              onPressed: () => Navigator.of(context).pop(),
-              icon: const Icon(
-                Icons.arrow_back_ios,
-                color: Colors.black87,
-                size: 20,
-              ),
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
+          IconButton(
+            onPressed: () => Navigator.of(context).pop(),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black87,
+              size: 20,
             ),
-            const SizedBox(width: 16),
-          ] else
-            const SizedBox(width: 20), // Spacer for first-time users
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+          ),
+          const SizedBox(width: 16),
           Expanded(
             child: FittedBox(
               fit: BoxFit.scaleDown,
@@ -109,12 +106,7 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
               ),
             ),
           ),
-          const SizedBox(width: 16),
-          // Invisible spacer to balance the back button on the left
-          SizedBox(
-            width: 20, // Match the icon size
-            height: 20,
-          ),
+          const SizedBox(width: 48), // Balance the back button width
         ],
       ),
     );
@@ -320,6 +312,28 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
     );
   }
 
+  /// Handle quest completion for weight diary activity
+  Future<void> _handleActivityCompletion() async {
+    try {
+      final user = ref.read(currentUserDataProvider);
+      if (user == null) return;
+      
+      final questCompletionService = ref.read(questCompletionServiceProvider);
+      final result = await questCompletionService.handleActivityCompletion(
+        userId: user.id,
+        activityId: 'weight_diary',
+        type: TodoType.journal,
+        ref: ref,
+      );
+      
+      if (result.questCompleted && mounted) {
+        showQuestCompletionDialog(context, result);
+      }
+    } catch (e) {
+      print('Error checking quest completion: $e');
+    }
+  }
+
   Future<void> _submit() async {
     if (!_validate()) return;
     setState(() => _isSubmitting = true);
@@ -336,6 +350,9 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
       );
 
       if (entry != null && mounted) {
+        // Check for quest completion
+        await _handleActivityCompletion();
+        
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Weight saved successfully!'), backgroundColor: Colors.green),
         );

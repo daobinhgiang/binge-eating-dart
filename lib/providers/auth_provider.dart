@@ -313,6 +313,16 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
     }
   }
 
+  // Refresh user data from Firebase
+  Future<void> refreshUserData() async {
+    try {
+      final user = await _authService.currentUser;
+      state = AsyncValue.data(user);
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
+    }
+  }
+
   // Clear error state
   void clearError() {
     if (state.hasError) {

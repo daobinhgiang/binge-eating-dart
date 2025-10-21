@@ -342,7 +342,7 @@ String? _getAudioPathForSlide(String slideId) {
   return audioMap[slideId];
 }
 
-class LessonSlideWidget extends StatelessWidget {
+class LessonSlideWidget extends StatefulWidget {
   final LessonSlide slide;
   final bool isFirstSlide;
   final bool isLastSlide;
@@ -350,6 +350,7 @@ class LessonSlideWidget extends StatelessWidget {
   final VoidCallback? onNext;
   final VoidCallback? onFinish;
   final int totalSlides;
+  final ScrollController scrollController;
   final bool showBackButton;
 
   const LessonSlideWidget({
@@ -365,7 +366,32 @@ class LessonSlideWidget extends StatelessWidget {
     this.showBackButton = true,
   });
 
-  final ScrollController scrollController;
+  @override
+  State<LessonSlideWidget> createState() => _LessonSlideWidgetState();
+}
+
+class _LessonSlideWidgetState extends State<LessonSlideWidget> {
+  bool _isSubmitting = false;
+
+  Future<void> _handleFinish() async {
+    // Prevent double-tap submission
+    if (_isSubmitting) return;
+    
+    setState(() {
+      _isSubmitting = true;
+    });
+    
+    try {
+      widget.onFinish?.call();
+    } finally {
+      // Only reset if still mounted and screen wasn't popped
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -425,7 +451,7 @@ class LessonSlideWidget extends StatelessWidget {
             child: Row(
               children: [
                 // Minimalistic back button - only show if showBackButton is true
-                if (showBackButton) ...[
+                if (widget.showBackButton) ...[
                   Container(
                     width: 36,
                     height: 36,
@@ -458,7 +484,7 @@ class LessonSlideWidget extends StatelessWidget {
                 // Lesson title with stunning typography
                 Expanded(
                   child: Text(
-                    slide.title,
+                    widget.slide.title,
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w800,
@@ -470,11 +496,11 @@ class LessonSlideWidget extends StatelessWidget {
                 ),
                 
                 // Audio button
-                if (_getAudioPathForSlide(slide.id) != null) ...[
+                if (_getAudioPathForSlide(widget.slide.id) != null) ...[
                   const SizedBox(width: 16),
                   AudioButtonWidget(
-                    audioPath: _getAudioPathForSlide(slide.id)!,
-                    slideId: slide.id,
+                    audioPath: _getAudioPathForSlide(widget.slide.id)!,
+                    slideId: widget.slide.id,
                   ),
                 ],
               ],
@@ -496,7 +522,7 @@ class LessonSlideWidget extends StatelessWidget {
                 ),
                 // Progress fill with shimmer effect
                 FractionallySizedBox(
-                  widthFactor: slide.slideNumber / totalSlides,
+                  widthFactor: widget.slide.slideNumber / widget.totalSlides,
                   child: Container(
                     height: 8,
                     decoration: BoxDecoration(
@@ -531,7 +557,7 @@ class LessonSlideWidget extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 8, 20, 16),
       child: SingleChildScrollView(
-        controller: scrollController,
+        controller: widget.scrollController,
         physics: const BouncingScrollPhysics(),
         child: Container(
           padding: const EdgeInsets.all(32),
@@ -552,7 +578,7 @@ class LessonSlideWidget extends StatelessWidget {
             children: [
               // Main content with beautiful typography
               Text(
-                slide.content,
+                widget.slide.content,
                 style: const TextStyle(
                   fontSize: 18,
                   height: 1.8,
@@ -562,12 +588,12 @@ class LessonSlideWidget extends StatelessWidget {
                 ),
               ),
               
-              if (slide.bulletPoints.isNotEmpty || slide.additionalInfo != null || slide.imageUrl != null)
+              if (widget.slide.bulletPoints.isNotEmpty || widget.slide.additionalInfo != null || widget.slide.imageUrl != null)
                 const SizedBox(height: 32),
               
               // Stunning bullet points design
-              if (slide.bulletPoints.isNotEmpty) ...[
-                ...slide.bulletPoints.asMap().entries.map((entry) {
+              if (widget.slide.bulletPoints.isNotEmpty) ...[
+                ...widget.slide.bulletPoints.asMap().entries.map((entry) {
                   return _BulletPoint(
                     text: entry.value,
                     index: entry.key,
@@ -577,7 +603,7 @@ class LessonSlideWidget extends StatelessWidget {
               ],
               
               // Premium additional info box
-              if (slide.additionalInfo != null) ...[
+              if (widget.slide.additionalInfo != null) ...[
                 Container(
                   margin: const EdgeInsets.only(top: 16),
                   padding: const EdgeInsets.all(24),
@@ -642,7 +668,7 @@ class LessonSlideWidget extends StatelessWidget {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              slide.additionalInfo!,
+                              widget.slide.additionalInfo!,
                               style: const TextStyle(
                                 fontSize: 16,
                                 height: 1.7,
@@ -660,7 +686,7 @@ class LessonSlideWidget extends StatelessWidget {
               ],
               
               // Premium image display with caption style
-              if (slide.imageUrl != null) ...[
+              if (widget.slide.imageUrl != null) ...[
                 Container(
                   margin: const EdgeInsets.only(top: 8),
                   decoration: BoxDecoration(
@@ -676,7 +702,7 @@ class LessonSlideWidget extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12.0),
                     child: Image.network(
-                      slide.imageUrl!,
+                      widget.slide.imageUrl!,
                       width: double.infinity,
                       height: 240,
                       fit: BoxFit.cover,
@@ -711,7 +737,7 @@ class LessonSlideWidget extends StatelessWidget {
         child: Row(
           children: [
             // Previous button - sleek minimal design
-            if (!isFirstSlide)
+            if (!widget.isFirstSlide)
               Expanded(
                 child: Container(
                   height: 56,
@@ -722,7 +748,7 @@ class LessonSlideWidget extends StatelessWidget {
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      onTap: onPrevious,
+                      onTap: widget.onPrevious,
                       borderRadius: BorderRadius.circular(12.0),
                       child: Center(
                         child: Row(
@@ -734,9 +760,9 @@ class LessonSlideWidget extends StatelessWidget {
                               color: const Color(0xFF66BB6A),
                             ),
                             const SizedBox(width: 8),
-                            Text(
+                            const Text(
                               'Back',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Color(0xFF66BB6A),
                                 fontWeight: FontWeight.w700,
                                 fontSize: 17,
@@ -751,7 +777,7 @@ class LessonSlideWidget extends StatelessWidget {
                 ),
               ),
             
-            if (!isFirstSlide) const SizedBox(width: 14),
+            if (!widget.isFirstSlide) const SizedBox(width: 14),
             
             // Next/Finish button - premium gradient with hover effect
             Expanded(
@@ -778,29 +804,40 @@ class LessonSlideWidget extends StatelessWidget {
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
-                    onTap: isLastSlide ? onFinish : onNext,
+                    onTap: _isSubmitting ? null : (widget.isLastSlide ? _handleFinish : widget.onNext),
                     borderRadius: BorderRadius.circular(12.0),
                     child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            isLastSlide ? '✨ Complete' : 'Continue',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w800,
-                              fontSize: 17,
-                              letterSpacing: 0.3,
+                      child: _isSubmitting && widget.isLastSlide
+                          ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white.withOpacity(0.9),
+                                ),
+                              ),
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  widget.isLastSlide ? '✨ Complete' : 'Continue',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 17,
+                                    letterSpacing: 0.3,
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Icon(
+                                  widget.isLastSlide ? Icons.check_circle_rounded : Icons.arrow_forward_rounded,
+                                  size: 22,
+                                  color: Colors.white,
+                                ),
+                              ],
                             ),
-                          ),
-                          const SizedBox(width: 10),
-                          Icon(
-                            isLastSlide ? Icons.check_circle_rounded : Icons.arrow_forward_rounded,
-                            size: 22,
-                            color: Colors.white,
-                          ),
-                        ],
-                      ),
                     ),
                   ),
                 ),

@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/todo_item.dart';
+import '../../providers/auth_provider.dart';
 import 'todo_service.dart';
 import 'streak_service.dart';
 import 'lesson_progress_service.dart';
@@ -41,6 +43,7 @@ class QuestCompletionService {
     required String userId,
     required String activityId,
     required TodoType type,
+    WidgetRef? ref,
   }) async {
     try {
       print('\n🎯 QUEST COMPLETION HANDLER TRIGGERED');
@@ -78,6 +81,13 @@ class QuestCompletionService {
           streakUpdated = true;
           if (currentStreak > 0) {
             print('   ✅ Streak updated to: $currentStreak days');
+            
+            // Refresh auth provider to update UI immediately
+            if (ref != null) {
+              print('   🔄 Refreshing auth provider to update UI...');
+              await ref.read(authNotifierProvider.notifier).refreshUserData();
+              print('   ✅ Auth provider refreshed');
+            }
           }
         } else {
           print('   ℹ️  Not all daily tasks completed yet, streak not updated');
@@ -152,6 +162,7 @@ class QuestCompletionService {
   Future<QuestCompletionResult> handleLessonCompletion({
     required String userId,
     required String lessonId,
+    WidgetRef? ref,
   }) async {
     try {
       print('\n═══════════════════════════════════════════════════════════');
@@ -263,6 +274,13 @@ class QuestCompletionService {
           print('\n💰 Step 3: Awarding quest rewards...');
           final expAwarded = await _awardQuestEXP(userId, quest);
           print('   ✅ Awarded $expAwarded EXP');
+          
+          // Refresh auth provider to update UI immediately
+          if (ref != null) {
+            print('   🔄 Refreshing auth provider to update UI...');
+            await ref.read(authNotifierProvider.notifier).refreshUserData();
+            print('   ✅ Auth provider refreshed');
+          }
           
           print('\n📝 Step 4: Marking quest as completed...');
           // Mark quest as completed

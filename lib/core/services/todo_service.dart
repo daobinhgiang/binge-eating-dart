@@ -326,10 +326,25 @@ class TodoService {
       final allTodos = await getUserTodos(userId);
       
       // Find the first pending todo with matching activityId and type
+      // This now supports both exact matches and "acceptsAny" quests
       final matchingTodo = allTodos.firstWhere(
-        (todo) => todo.activityId == activityId && 
-                  todo.type == type && 
-                  !todo.isCompleted,
+        (todo) {
+          if (todo.isCompleted || todo.type != type) return false;
+          
+          // Check for exact activityId match
+          if (todo.activityId == activityId) return true;
+          
+          // Check if this is an "acceptsAny" quest that includes this activity
+          final metadata = todo.tierMetadata;
+          if (metadata != null && metadata['acceptsAny'] == true) {
+            final validActivities = metadata['validActivities'];
+            if (validActivities is List && validActivities.contains(activityId)) {
+              return true;
+            }
+          }
+          
+          return false;
+        },
         orElse: () => throw 'No matching pending todo found',
       );
       

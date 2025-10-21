@@ -222,7 +222,7 @@ class _AssessmentWidgetState extends ConsumerState<AssessmentWidget> {
           // Next/Submit button
           Expanded(
             child: ElevatedButton(
-              onPressed: _canProceed() ? _goToNextQuestion : null,
+              onPressed: (_canProceed() && !_isSubmitting) ? _goToNextQuestion : null,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 backgroundColor: Theme.of(context).primaryColor,
@@ -232,13 +232,22 @@ class _AssessmentWidgetState extends ConsumerState<AssessmentWidget> {
                 ),
                 elevation: 0,
               ),
-              child: Text(
-                isLastQuestion ? 'Submit Assessment' : 'Next',
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
-              ),
+              child: _isSubmitting && isLastQuestion
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                  : Text(
+                      isLastQuestion ? 'Submit Assessment' : 'Next',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
             ),
           ),
         ],
@@ -645,6 +654,9 @@ class _AssessmentWidgetState extends ConsumerState<AssessmentWidget> {
         if (submission.status == SubmissionStatus.validated && mounted) {
           // Close loading dialog
           Navigator.of(context).pop();
+
+          // Mark quiz as completed in user_progress (same as regular lessons)
+          await _lessonService.markLessonCompleted(widget.assessment.lessonId);
 
           // Get updated user data
           final userExpAfter = ref.read(userExpProvider);

@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/todo_provider.dart';
 import '../../models/money_diary.dart';
+import '../../models/todo_item.dart';
 import '../../providers/money_diary_provider.dart';
+import '../../widgets/quest_completion_dialog.dart';
 
 class MoneyDiarySurveyScreen extends ConsumerStatefulWidget {
   const MoneyDiarySurveyScreen({super.key});
@@ -470,6 +473,28 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
            double.parse(_amountController.text) > 0;
   }
 
+  /// Handle quest completion for money diary activity
+  Future<void> _handleActivityCompletion() async {
+    try {
+      final user = ref.read(currentUserDataProvider);
+      if (user == null) return;
+      
+      final questCompletionService = ref.read(questCompletionServiceProvider);
+      final result = await questCompletionService.handleActivityCompletion(
+        userId: user.id,
+        activityId: 'money_diary',
+        type: TodoType.journal,
+        ref: ref,
+      );
+      
+      if (result.questCompleted && mounted) {
+        showQuestCompletionDialog(context, result);
+      }
+    } catch (e) {
+      print('Error checking quest completion: $e');
+    }
+  }
+
   Future<void> _submitEntry() async {
     if (!_canSubmit() || _isSubmitting) return;
 
@@ -494,6 +519,9 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
         spentAt: _spentAt,
         notes: notes,
       );
+
+      // Check for quest completion
+      await _handleActivityCompletion();
 
       // No need to invalidate - real-time streams will auto-update!
 

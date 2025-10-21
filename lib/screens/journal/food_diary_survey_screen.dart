@@ -5,8 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/food_diary_provider.dart';
+import '../../providers/todo_provider.dart';
 import '../../models/food_diary.dart';
+import '../../models/todo_item.dart';
 import '../../core/services/openai_service.dart';
+import '../../widgets/quest_completion_dialog.dart';
 import '../../data/food_database.dart';
 
 class FoodDiarySurveyScreen extends ConsumerStatefulWidget {
@@ -1219,6 +1222,28 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
     );
   }
 
+  /// Handle quest completion for food diary activity
+  Future<void> _handleActivityCompletion() async {
+    try {
+      final user = ref.read(currentUserDataProvider);
+      if (user == null) return;
+      
+      final questCompletionService = ref.read(questCompletionServiceProvider);
+      final result = await questCompletionService.handleActivityCompletion(
+        userId: user.id,
+        activityId: 'food_diary',
+        type: TodoType.journal,
+        ref: ref,
+      );
+      
+      if (result.questCompleted && mounted) {
+        showQuestCompletionDialog(context, result);
+      }
+    } catch (e) {
+      print('Error checking quest completion: $e');
+    }
+  }
+
   Future<void> _submitSurvey() async {
     if (!_validateCurrentPage()) return;
 
@@ -1243,6 +1268,9 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
       );
 
       if (entry != null && mounted) {
+        // Check for quest completion
+        await _handleActivityCompletion();
+        
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Food diary entry saved successfully!'),

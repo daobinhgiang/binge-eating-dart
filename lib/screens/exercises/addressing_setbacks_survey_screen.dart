@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/addressing_setbacks_provider.dart';
+import '../../providers/todo_provider.dart';
 import '../../models/addressing_setbacks.dart';
+import '../../models/todo_item.dart';
+import '../../widgets/quest_completion_dialog.dart';
 
 class AddressingSetbacksSurveyScreen extends ConsumerStatefulWidget {
   final AddressingSetbacks? existingExercise;
@@ -567,6 +570,28 @@ class _AddressingSetbacksSurveyScreenState extends ConsumerState<AddressingSetba
     }
   }
 
+  /// Handle quest completion for addressing setbacks exercise
+  Future<void> _handleActivityCompletion() async {
+    try {
+      final user = ref.read(currentUserDataProvider);
+      if (user == null) return;
+      
+      final questCompletionService = ref.read(questCompletionServiceProvider);
+      final result = await questCompletionService.handleActivityCompletion(
+        userId: user.id,
+        activityId: 'addressing_setbacks',
+        type: TodoType.tool,
+        ref: ref,
+      );
+      
+      if (result.questCompleted && mounted) {
+        showQuestCompletionDialog(context, result);
+      }
+    } catch (e) {
+      print('Error checking quest completion: $e');
+    }
+  }
+
   Future<void> _submitSurvey() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -581,6 +606,8 @@ class _AddressingSetbacksSurveyScreenState extends ConsumerState<AddressingSetba
       if (user == null) {
         throw 'User not found';
       }
+
+      final isNewExercise = widget.existingExercise == null;
 
       if (widget.existingExercise != null) {
         // Update existing exercise
@@ -602,6 +629,11 @@ class _AddressingSetbacksSurveyScreenState extends ConsumerState<AddressingSetba
       }
 
       if (mounted) {
+        // Check for quest completion only for new exercises
+        if (isNewExercise) {
+          await _handleActivityCompletion();
+        }
+        
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Setback log ${widget.existingExercise != null ? 'updated' : 'created'} successfully!'),
