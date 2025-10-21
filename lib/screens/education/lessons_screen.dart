@@ -9,7 +9,9 @@ import '../../models/chapter.dart';
 import '../../models/lesson.dart';
 import '../../providers/lesson_progress_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/exp_provider.dart';
 import '../../core/services/app_tutorial_service.dart';
+import '../../core/services/exp_service.dart';
 import '../lessons/lesson_1_1.dart';
 import '../lessons/lesson_1_2.dart';
 import '../lessons/lesson_1_2_1.dart';
@@ -185,7 +187,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
 
   void _updateCurrentSection() {
     // Calculate the threshold position (Sticky header)
-    const double headerHeight = 129.0; // Sticky header height (enlarged by 1.5x)
+    const double headerHeight = 180.0; // Sticky header height (increased to accommodate level/EXP display)
     
     for (var stage in _stages) {
       for (var chapter in stage.chapters) {
@@ -266,7 +268,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
     switch (lessonId) {
       // Stage 1 lessons
       case 'lesson_1_1':
-        return const Lesson11Screen();
+        return Lesson11Screen();
       case 'lesson_1_2':
         return const Lesson12Screen();
       case 'lesson_1_2_1':
@@ -476,17 +478,121 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
   // Build sticky header for current section with chapter tile only
   Widget _buildStickyHeader(Stage stage, Chapter chapter) {
     return Container(
-      color: Colors.transparent,
+      height: 180.0, // Fixed height to match delegate
+      decoration: BoxDecoration(
+        color: const Color(0xFFFAFAFA), // Light background color to prevent transparency
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          // Level and EXP display
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+            padding: const EdgeInsets.fromLTRB(24, 18, 24, 12),
+            child: Consumer(
+              builder: (context, ref, child) {
+                final authState = ref.watch(authNotifierProvider);
+                final user = authState.valueOrNull;
+                
+                if (user == null) {
+                  // Return empty container with fixed height to maintain layout
+                  return const SizedBox(height: 24);
+                }
+                
+                final userExp = ref.watch(userExpProvider);
+                if (userExp == null) {
+                  // Return empty container with fixed height to maintain layout
+                  return const SizedBox(height: 24);
+                }
+                
+                final service = ExpService();
+                final progress = service.getCurrentLevelProgress(userExp.exp, userExp.level);
+                final isMaxLevel = userExp.level >= 5;
+                
+                final textColor = Colors.black87;  // Always use dark text for better visibility
+                final subtextColor = Colors.grey[700]!;  // Slightly darker grey for better contrast
+                
+                return Row(
+                  children: [
+                    // Vertical progress bar (only show if not max level)
+                    if (!isMaxLevel) ...[
+                      Container(
+                        width: 4,
+                        height: 24, // Height to match the text
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(2),
+                          color: Colors.grey[200], // Light grey background
+                        ),
+                        child: FractionallySizedBox(
+                          alignment: Alignment.bottomCenter,
+                          heightFactor: progress,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(2),
+                              color: const Color(0xFF4CAF50), // Green progress
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                    ],
+                    // Level text
+                    Text(
+                      'Level ${userExp.level}',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w900,
+                        color: textColor,
+                        fontSize: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    // EXP text
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '${userExp.exp} EXP',
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w900,
+                              color: textColor,
+                              fontSize: 20,
+                            ),
+                          ),
+                          if (isMaxLevel) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              'Max Level!',
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: subtextColor,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
             decoration: BoxDecoration(
               color: _getStageColor(stage.stageNumber),
-              borderRadius: BorderRadius.circular(18.0),
+              borderRadius: BorderRadius.circular(30.0),
               boxShadow: [
                 BoxShadow(
                   color: _getStageColor(stage.stageNumber).withOpacity(0.3),
@@ -505,7 +611,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
                       Text(
                         'STAGE ${stage.stageNumber}, CHAPTER ${chapter.chapterNumber}',
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: Color(0xFFE0E0E0), // Slightly more grey than white
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.2,
@@ -639,7 +745,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
   double _getLessonPosition(int index) {
     // Create an ultra-smooth S-curve pattern with gradual transitions
     // This creates a flowing wave that moves smoothly through multiple positions
-    final pattern = [0.0, -0.66, -1.0, -0.66, 0.0, 0.66, 1.0, 0.66];
+    final pattern = [0.0, -0.75, -1.0, -0.75, 0.0, 0.75, 1.0, 0.75];
     return pattern[index % pattern.length];
   }
 
@@ -811,10 +917,10 @@ class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
   _StickyHeaderDelegate({required this.child});
 
   @override
-  double get minExtent => 129.0; // Enlarged by 1.5x for larger padding and font sizes
+  double get minExtent => 180.0; // Increased to accommodate level/EXP display
 
   @override
-  double get maxExtent => 129.0; // Enlarged by 1.5x for larger padding and font sizes
+  double get maxExtent => 180.0; // Increased to accommodate level/EXP display
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {

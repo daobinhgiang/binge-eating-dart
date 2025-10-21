@@ -6,7 +6,9 @@ import '../providers/tree_animation_provider.dart';
 import '../core/services/tree_service.dart';
 
 class TreeGrowthWidget extends ConsumerStatefulWidget {
-  const TreeGrowthWidget({super.key});
+  final GlobalKey? treeImageKey;
+  
+  const TreeGrowthWidget({super.key, this.treeImageKey});
 
   @override
   ConsumerState<TreeGrowthWidget> createState() => _TreeGrowthWidgetState();
@@ -215,28 +217,30 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Tree display with animation
-        // Use growth animation if animating, otherwise use simple scale animation
-        _isAnimating
-            ? ScaleTransition(
-                scale: _growthScaleAnimation,
-                child: _buildTreeImageWithCrossFade(currentTreeData),
-              )
-            : ScaleTransition(
-                scale: _scaleAnimation,
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: _buildTreeImage(currentTreeData),
+        // Tree display with animation - apply the key here to avoid duplicate key errors
+        Container(
+          key: widget.treeImageKey, // Apply the GlobalKey once at this level
+          child: _isAnimating
+              ? ScaleTransition(
+                  scale: _growthScaleAnimation,
+                  child: _buildTreeImageWithCrossFade(currentTreeData),
+                )
+              : ScaleTransition(
+                  scale: _scaleAnimation,
+                  child: FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: _buildTreeImage(currentTreeData),
+                  ),
                 ),
-              ),
+        ),
         const SizedBox(height: 20),
         // Current level display
         Text(
           'Level ${userExpData.level}: ${currentTreeData.displayName}',
-          style: GoogleFonts.fredoka(
+          style: GoogleFonts.quicksand(
             color: Colors.black87,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
+            fontSize: 30,
+            fontWeight: FontWeight.w700,
           ),
           textAlign: TextAlign.center,
         ),
@@ -244,10 +248,10 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
         // Description
         Text(
           currentTreeData.description,
-          style: GoogleFonts.fredoka(
+          style: GoogleFonts.quicksand(
             color: Colors.grey[600],
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
           ),
           textAlign: TextAlign.center,
         ),
@@ -256,21 +260,20 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
         if (isMaxLevel)
           Text(
             'You\'ve reached the maximum level!',
-            style: GoogleFonts.fredoka(
+            style: GoogleFonts.quicksand(
               color: const Color(0xFF4CAF50),
-              fontSize: 13,
+              fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
             textAlign: TextAlign.center,
           )
         else if (nextTreeName != null)
           Text(
-            'Next: $nextTreeName',
-            style: GoogleFonts.fredoka(
+            'Next Level: $nextTreeName',
+            style: GoogleFonts.quicksand(
               color: Colors.grey[500],
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              fontStyle: FontStyle.italic,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
             ),
             textAlign: TextAlign.center,
           ),
@@ -303,7 +306,7 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
                   const SizedBox(height: 8),
                   Text(
                     'Tree image not found',
-                    style: GoogleFonts.fredoka(
+                    style: GoogleFonts.quicksand(
                       color: Colors.grey[600],
                       fontSize: 12,
                     ),
@@ -344,7 +347,7 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
                     const SizedBox(height: 8),
                     Text(
                       'Tree image not found',
-                      style: GoogleFonts.fredoka(
+                      style: GoogleFonts.quicksand(
                         color: Colors.grey[600],
                         fontSize: 12,
                       ),
@@ -377,7 +380,7 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
         const SizedBox(height: 20),
         Text(
           'Loading your tree...',
-          style: GoogleFonts.fredoka(
+          style: GoogleFonts.quicksand(
             color: Colors.grey[600],
             fontSize: 14,
           ),

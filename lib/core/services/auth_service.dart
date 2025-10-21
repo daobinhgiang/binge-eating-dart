@@ -447,6 +447,7 @@ class AuthService {
     bool? hasSeenJournalTutorial,
     bool? hasLoggedWeightDuringTutorial,
     bool? hasSeenWeightDiaryTutorial,
+    bool? hasVisitedWeightDiary,
     bool? hasSeenPlantGrowthTutorial,
   }) async {
     try {
@@ -462,6 +463,7 @@ class AuthService {
       if (hasSeenJournalTutorial != null) updateData['hasSeenJournalTutorial'] = hasSeenJournalTutorial;
       if (hasLoggedWeightDuringTutorial != null) updateData['hasLoggedWeightDuringTutorial'] = hasLoggedWeightDuringTutorial;
       if (hasSeenWeightDiaryTutorial != null) updateData['hasSeenWeightDiaryTutorial'] = hasSeenWeightDiaryTutorial;
+      if (hasVisitedWeightDiary != null) updateData['hasVisitedWeightDiary'] = hasVisitedWeightDiary;
       if (hasSeenPlantGrowthTutorial != null) updateData['hasSeenPlantGrowthTutorial'] = hasSeenPlantGrowthTutorial;
 
       if (updateData.isNotEmpty) {

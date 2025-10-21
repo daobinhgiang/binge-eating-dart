@@ -202,7 +202,7 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
                   fit: BoxFit.scaleDown,
                   child: Text(
                     'Problem Solving',
-                    style: GoogleFonts.fredoka(
+                    style: GoogleFonts.quicksand(
                       fontSize: 28,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,

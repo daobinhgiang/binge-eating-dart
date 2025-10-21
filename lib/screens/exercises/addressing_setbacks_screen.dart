@@ -59,7 +59,7 @@ class AddressingSetbacksScreen extends ConsumerWidget {
                         fit: BoxFit.scaleDown,
                         child: Text(
                           'Addressing Setbacks',
-                          style: GoogleFonts.fredoka(
+                          style: GoogleFonts.quicksand(
                             fontSize: 28,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,

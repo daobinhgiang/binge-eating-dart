@@ -254,7 +254,7 @@ class NavigationService {
     switch (chapterNumber) {
       case 1:
         switch (lessonNumber) {
-          case 1: return const Lesson11Screen();
+          case 1: return Lesson11Screen();
           case 2: return const Lesson12Screen();
           case 21: return const Lesson121Screen(); // 2.1 exercise
           case 3: return const Lesson13Screen();

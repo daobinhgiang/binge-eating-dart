@@ -64,7 +64,7 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen> {
                         fit: BoxFit.scaleDown,
                         child: Text(
                           'Urge Surfing',
-                          style: GoogleFonts.fredoka(
+                          style: GoogleFonts.quicksand(
                             fontSize: 28,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,

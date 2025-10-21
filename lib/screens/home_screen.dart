@@ -39,8 +39,13 @@ class QuestProgressInfo {
 
 class HomeScreen extends ConsumerStatefulWidget {
   final GlobalKey? treeWidgetKey;
+  final GlobalKey<BingeFreeTimerCarouselWidgetState>? carouselKey;
   
-  const HomeScreen({super.key, this.treeWidgetKey});
+  const HomeScreen({
+    super.key, 
+    this.treeWidgetKey,
+    this.carouselKey,
+  });
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -188,17 +193,42 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         
         return Row(
           children: [
-            // Level badge
-            LevelBadge(
-              level: userExp.level,
-              size: 56,
-              showLabel: true,
+            // Vertical progress bar (only show if not max level)
+            if (!isMaxLevel) ...[
+              Container(
+                width: 4,
+                height: 24, // Height to match the text
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(2),
+                  color: Colors.grey[200], // Light grey background
+                ),
+                child: FractionallySizedBox(
+                  alignment: Alignment.bottomCenter,
+                  heightFactor: progress,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(2),
+                      color: const Color(0xFF4CAF50), // Green progress
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+            ],
+            // Level text
+            Text(
+              'Level ${userExp.level}',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w900,
+                color: textColor,
+                fontSize: 20,
+              ),
             ),
             const SizedBox(width: 12),
             // EXP info - More Compact
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // EXP text with subtle animation
@@ -262,6 +292,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                       ),
                     ),
+                  ],
                 ],
               ),
             ),
@@ -292,119 +323,131 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
 
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/background.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: CustomScrollView(
-          controller: _scrollController,
-          physics: const ClampingScrollPhysics(),
-          clipBehavior: Clip.none,
-          slivers: [
-            // Combined header and Continue Learning Section with green background
-            SliverToBoxAdapter(
-              child: _buildCombinedHeaderAndLearningSection(authState),
-            ),
-            
-            // Content
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-              sliver: SliverToBoxAdapter(
-                  child: Column(
-                    children: [
-                        // Recovery Exercises section with header inside container
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(40.0),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.2),
-                                spreadRadius: 1,
-                                blurRadius: 16,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Recovery Exercises header
-                        Padding(
-                                padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-                              child: Text(
-                                  'Recovery Exercises',
-                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                  fontSize: 24,
-                                ),
-                              ),
-                            ),
-                              // Recovery Exercises list
-                              Column(
-                            children: [
-                                  _buildExerciseItem(
-                                    icon: Icons.psychology_outlined,
-                                    title: 'Recovery Guide',
-                                    description: 'Your personalized guide',
-                                    onTap: () => context.push('/chat'),
-                                    iconColor: const Color(0xFF4CAF50),
-                                    iconBgColor: const Color(0xFFE8F5E8),
-                                  ),
-                                  _buildDivider(),
-                                  _buildExerciseItem(
-                                    icon: Icons.edit_note_outlined,
-                                    title: 'Journaling Partner',
-                                    description: 'Track your progress',
-                                    onTap: () => context.push('/realtime-journaling'),
-                                    iconColor: const Color(0xFF4CAF50),
-                                    iconBgColor: const Color(0xFFE8F5E8),
-                                  ),
-                                  _buildDivider(),
-                                  _buildExerciseItem(
-                                    icon: Icons.people_outline,
-                                    title: 'Accountability Partner',
-                                    description: 'Connect with support',
-                                    onTap: () => context.push('/accountability-partner'),
-                                    iconColor: const Color(0xFF4CAF50),
-                                    iconBgColor: const Color(0xFFE8F5E8),
-                                  ),
-                                  _buildDivider(),
-                                  _buildExerciseItem(
-                                    icon: Icons.insights_outlined,
-                                    title: 'Insights',
-                                    description: 'Understand your patterns',
-                                    onTap: () => context.push('/insights'),
-                                    iconColor: const Color(0xFF4CAF50),
-                                    iconBgColor: const Color(0xFFE8F5E8),
-                                  ),
-                                ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              
-                  
-                          const SizedBox(height: 24),
-                  
-                  // Next Lesson Recommendation
-                  authState.when(
-                    data: (user) => user != null 
-                        ? _buildAuthenticatedContent()
-                        : _buildGuestContentSection(),
-                    loading: () => const SizedBox.shrink(),
-                    error: (_, __) => _buildGuestContentSection(),
-                  ),
-                    ],
-                ),
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/background.png'),
+                fit: BoxFit.cover,
               ),
             ),
-          ],
-        ),
+            child: CustomScrollView(
+              controller: _scrollController,
+              physics: const ClampingScrollPhysics(),
+              clipBehavior: Clip.none,
+              slivers: [
+                // Combined header and Continue Learning Section with green background
+                SliverToBoxAdapter(
+                  child: _buildCombinedHeaderAndLearningSection(authState),
+                ),
+                
+                // Content
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  sliver: SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                            // Recovery Exercises section with header inside container
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(40.0),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.2),
+                                    spreadRadius: 1,
+                                    blurRadius: 16,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Recovery Exercises header
+                            Padding(
+                                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+                                  child: Text(
+                                      'Recovery Exercises',
+                                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                      fontSize: 24,
+                                    ),
+                                  ),
+                                ),
+                                  // Recovery Exercises list
+                                  Column(
+                                children: [
+                                      _buildExerciseItem(
+                                        icon: Icons.psychology_outlined,
+                                        title: 'Recovery Guide',
+                                        description: 'Your personalized guide',
+                                        onTap: () => context.push('/chat'),
+                                        iconColor: const Color(0xFF4CAF50),
+                                        iconBgColor: const Color(0xFFE8F5E8),
+                                      ),
+                                      _buildDivider(),
+                                      _buildExerciseItem(
+                                        icon: Icons.edit_note_outlined,
+                                        title: 'Journaling Partner',
+                                        description: 'Track your progress',
+                                        onTap: () => context.push('/realtime-journaling'),
+                                        iconColor: const Color(0xFF4CAF50),
+                                        iconBgColor: const Color(0xFFE8F5E8),
+                                      ),
+                                      _buildDivider(),
+                                      _buildExerciseItem(
+                                        icon: Icons.people_outline,
+                                        title: 'Accountability Partner',
+                                        description: 'Connect with support',
+                                        onTap: () => context.push('/accountability-partner'),
+                                        iconColor: const Color(0xFF4CAF50),
+                                        iconBgColor: const Color(0xFFE8F5E8),
+                                      ),
+                                      _buildDivider(),
+                                      _buildExerciseItem(
+                                        icon: Icons.insights_outlined,
+                                        title: 'Insights',
+                                        description: 'Understand your patterns',
+                                        onTap: () => context.push('/insights'),
+                                        iconColor: const Color(0xFF4CAF50),
+                                        iconBgColor: const Color(0xFFE8F5E8),
+                                      ),
+                                    ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  
+                      
+                            const SizedBox(height: 24),
+                      
+                    // Next Lesson Recommendation
+                    authState.when(
+                      data: (user) => user != null 
+                          ? _buildAuthenticatedContent()
+                          : _buildGuestContentSection(),
+                      loading: () => const SizedBox.shrink(),
+                      error: (_, __) => _buildGuestContentSection(),
+                    ),
+                        ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Floating Urge Help Button - positioned above bottom navigation
+          Positioned(
+            left: 20,
+            right: 20,
+            bottom: 20, // Position above the bottom navigation bar
+            child: _buildUrgeHelpButton(),
+          ),
+        ],
       ),
     );
   }
@@ -476,31 +519,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     
     if (user == null) return const SizedBox.shrink();
     
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Carousel with tree and binge-free timer
-          const BingeFreeTimerCarouselWidget(),
-          
-          const SizedBox(height: 16),
-          
-          // Urge Help and Motivation buttons in same row
-          Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        // Carousel with tree and binge-free timer - full width, no horizontal padding
+        BingeFreeTimerCarouselWidget(
+          key: widget.carouselKey,
+          treeWidgetKey: widget.treeWidgetKey,
+          carouselKey: widget.carouselKey,
+        ),
+        
+        // Add padding for the rest of the content
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          child: Column(
             children: [
-              Expanded(
-                child: _buildUrgeHelpButton(),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildMotivationButton(),
-              ),
+              // Content can be added here if needed in the future
             ],
           ),
-          
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -1666,18 +1704,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFFE53E3E), // Bright red background
         borderRadius: BorderRadius.circular(40.0),
-        border: Border.all(
-          color: const Color(0xFFE57373).withOpacity(0.4),
-          width: 1.5,
-        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 1,
-            blurRadius: 16,
+            color: const Color(0xFFE53E3E).withOpacity(0.6), // Red glow effect
+            spreadRadius: 2,
+            blurRadius: 20,
             offset: const Offset(0, 4),
+          ),
+          BoxShadow(
+            color: const Color(0xFFE53E3E).withOpacity(0.3), // Additional glow layer
+            spreadRadius: 4,
+            blurRadius: 30,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -1697,8 +1737,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Icon(
-                  Icons.psychology,
-                  color: Colors.black,
+                  Icons.warning, // Alert/warning icon
+                  color: Colors.white,
                   size: 18,
                 ),
                 const SizedBox(width: 6),
@@ -1706,7 +1746,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   child: Text(
                     'Urge Help',
                     style: const TextStyle(
-                      color: Colors.black,
+                      color: Colors.white, // White text
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
@@ -1721,58 +1761,5 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildMotivationButton() {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(40.0),
-        border: Border.all(
-          color: const Color(0xFF9C27B0).withOpacity(0.4),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 1,
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => context.go('/motivation'),
-          borderRadius: BorderRadius.circular(40.0),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.favorite,
-                  color: Colors.black,
-                  size: 18,
-                ),
-                const SizedBox(width: 6),
-                Flexible(
-                  child: Text(
-                    'Motivation',
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
