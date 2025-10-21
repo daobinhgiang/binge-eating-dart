@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../providers/exp_provider.dart';
 import '../providers/tree_animation_provider.dart';
 import '../core/services/tree_service.dart';
+import 'mound_painter_widget.dart';
 
 class TreeGrowthWidget extends ConsumerStatefulWidget {
   final GlobalKey? treeImageKey;
@@ -282,6 +283,14 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
   }
 
   Widget _buildTreeImage(TreeData treeData) {
+    // Use custom mound painter for Level 1 (Seed)
+    if (treeData.displayName == 'Seed') {
+      return const MoundPainterWidget(
+        width: 200,
+        height: 200,
+      );
+    }
+    
     return SizedBox(
       height: 200,
       width: 200,
@@ -321,6 +330,17 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
   }
 
   Widget _buildTreeImageWithCrossFade(TreeData treeData) {
+    // Use custom mound painter for Level 1 (Seed)
+    if (treeData.displayName == 'Seed') {
+      return FadeTransition(
+        opacity: _crossFadeAnimation,
+        child: const MoundPainterWidget(
+          width: 200,
+          height: 200,
+        ),
+      );
+    }
+    
     return SizedBox(
       height: 200,
       width: 200,

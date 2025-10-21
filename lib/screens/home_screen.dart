@@ -306,7 +306,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       color: textColor,
                       fontSize: 20,
                     ) ?? const TextStyle(),
-                    child: Text('${userExp.exp} EXP'),
+                    child: Text('💎 ${userExp.exp}'),
                   ),
                   if (!isMaxLevel) ...[
                     // Removed "X more to level Y" text and progress bar
