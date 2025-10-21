@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/services/auth_service.dart';
 import '../core/services/firebase_analytics_service.dart';
@@ -20,19 +21,30 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
   final AuthService _authService;
   final FirebaseAnalyticsService _analytics = FirebaseAnalyticsService();
   bool _hasInitialized = false;
+  StreamSubscription<UserModel?>? _userStreamSubscription;
 
-  // Initialize auth state
+  // Initialize auth state with real-time streaming
   Future<void> initialize() async {
     if (_hasInitialized) return;
     _hasInitialized = true;
     
     state = const AsyncValue.loading();
-    try {
-      final user = await _authService.currentUser;
-      state = AsyncValue.data(user);
-    } catch (e, stackTrace) {
-      state = AsyncValue.error(e, stackTrace);
-    }
+    
+    // Listen to real-time user data changes
+    _userStreamSubscription = _authService.currentUserStream.listen(
+      (user) {
+        state = AsyncValue.data(user);
+      },
+      onError: (error, stackTrace) {
+        state = AsyncValue.error(error, stackTrace);
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _userStreamSubscription?.cancel();
+    super.dispose();
   }
 
   // Sign in with email and password
@@ -46,7 +58,6 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         email: email,
         password: password,
       );
-      state = AsyncValue.data(user);
       
       // Track login event
       await _analytics.trackUserLogin('email_password');
@@ -62,6 +73,8 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
           print('Error during daily quest check on login: $e');
         }
       }
+      
+      // The stream will automatically update the state when user data changes
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
@@ -84,7 +97,6 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         lastName: lastName,
         role: role,
       );
-      state = AsyncValue.data(user);
       
       // Track registration event
       await _analytics.trackUserRegistration('email_password');
@@ -100,6 +112,8 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
           print('Error during daily quest check on sign up: $e');
         }
       }
+      
+      // The stream will automatically update the state when user data changes
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
@@ -117,8 +131,6 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         return;
       }
       
-      state = AsyncValue.data(user);
-      
       // Track login event
       await _analytics.trackUserLogin('google');
       await _analytics.setUserProperties(
@@ -131,6 +143,8 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
       } catch (e) {
         print('Error during daily quest check on Google login: $e');
       }
+      
+      // The stream will automatically update the state when user data changes
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
@@ -148,8 +162,6 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         return;
       }
       
-      state = AsyncValue.data(user);
-      
       // Track login event
       await _analytics.trackUserLogin('apple');
       await _analytics.setUserProperties(
@@ -162,6 +174,8 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
       } catch (e) {
         print('Error during daily quest check on Apple login: $e');
       }
+      
+      // The stream will automatically update the state when user data changes
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }

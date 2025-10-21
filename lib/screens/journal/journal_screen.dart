@@ -3,11 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/money_diary_provider.dart';
+import '../../providers/thought_dump_provider.dart';
 import '../../widgets/weight_graph_widget.dart';
 import 'food_diary_main_screen.dart';
 import 'body_image_diary_main_screen.dart';
 import 'weight_diary_survey_screen.dart';
 import 'money_diary_main_screen.dart';
+import 'thought_dump_main_screen.dart';
 
 class JournalScreen extends ConsumerStatefulWidget {
   final GlobalKey? weightDiaryKey;
@@ -72,6 +74,11 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                       // Diary Access Cards
                       _buildDiaryAccessCards(context),
 
+                      const SizedBox(height: 24),
+
+                      // Latest Thought Dumps Section
+                      _buildLatestThoughtDumps(context, user.id),
+
                       const SizedBox(height: 100), // Extra space for floating action button
                     ]),
                   ),
@@ -97,6 +104,149 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
     );
   }
 
+  Widget _buildLatestThoughtDumps(BuildContext context, String userId) {
+    final latestThoughtDumps = ref.watch(currentWeekThoughtDumpsProvider(userId));
+    
+    return latestThoughtDumps.when(
+      data: (thoughtDumps) {
+        // Show only the latest 5 entries
+        final latestEntries = thoughtDumps.take(5).toList();
+        
+        if (latestEntries.isEmpty) {
+          return const SizedBox.shrink(); // Don't show section if no entries
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Latest Thoughts',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[800],
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.purple[50],
+                    borderRadius: BorderRadius.circular(40.0),
+                    border: Border.all(
+                      color: Colors.purple[200]!,
+                      width: 1,
+                    ),
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => _navigateToThoughtDumpMain(context),
+                      borderRadius: BorderRadius.circular(40.0),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'View All',
+                              style: TextStyle(
+                                color: Colors.purple[600],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              size: 12,
+                              color: Colors.purple[600],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            ...latestEntries.map((entry) => Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              child: _buildThoughtDumpPreviewCard(context, entry),
+            )),
+          ],
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (error, _) => const SizedBox.shrink(),
+    );
+  }
+
+  Widget _buildThoughtDumpPreviewCard(BuildContext context, thoughtDump) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.15),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.08),
+            spreadRadius: 0,
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _navigateToThoughtDumpMain(context),
+          borderRadius: BorderRadius.circular(20.0),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    thoughtDump.content,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey[700],
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  _formatRelativeTime(thoughtDump.createdAt),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.grey[500],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _formatRelativeTime(DateTime timestamp) {
+    final diff = DateTime.now().difference(timestamp);
+    if (diff.inMinutes < 1) return 'Just now';
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    if (diff.inDays < 7) return '${diff.inDays}d ago';
+    return '${timestamp.month}/${timestamp.day}';
+  }
+
   Widget _buildTopRowCards(BuildContext context, String userId) {
     // Calculate the available width and create square buttons
     final screenWidth = MediaQuery.of(context).size.width;
@@ -120,6 +270,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
             height: buttonSize,
             showTitle: true,
             showAxisLabels: false,
+            showTimeFrameSelector: false,
           ),
         ),
         // Spending Diary Card
@@ -239,24 +390,36 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                         ],
                       ),
                       padding: EdgeInsets.symmetric(
-                        horizontal: textContainerHeight * 0.15,
+                        horizontal: textContainerHeight * 0.4,
                         vertical: textContainerHeight * 0.12,
                       ),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(
-                            title,
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontSize: fontSize,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey[800],
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  title,
+                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontSize: fontSize,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey[800],
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            color: Colors.grey[600],
+                            size: fontSize * 0.6,
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -384,24 +547,36 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                         ],
                       ),
                       padding: EdgeInsets.symmetric(
-                        horizontal: textContainerHeight * 0.15,
+                        horizontal: textContainerHeight * 0.4,
                         vertical: textContainerHeight * 0.12,
                       ),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(
-                            'Spending Diary',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontSize: fontSize,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey[800],
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  'Spending Diary',
+                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontSize: fontSize,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey[800],
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            color: Colors.grey[600],
+                            size: fontSize * 0.6,
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -488,6 +663,15 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                       Icons.account_balance_wallet,
                       Colors.amber[600]!,
                       () => _navigateToMoneyDiary(context),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildAddOption(
+                      context,
+                      'Thought Dumps',
+                      'Quick capture of thoughts',
+                      Icons.lightbulb_outline,
+                      Colors.purple[600]!,
+                      () => _navigateToThoughtDumpMain(context),
                     ),
                   ],
                 ),
@@ -591,6 +775,14 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => const MoneyDiaryMainScreen(),
+      ),
+    );
+  }
+
+  void _navigateToThoughtDumpMain(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const ThoughtDumpMainScreen(),
       ),
     );
   }

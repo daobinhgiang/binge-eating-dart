@@ -488,9 +488,9 @@ class BingeFreeTimerCarouselWidgetState
         Text(
           "You've been binge-free for:",
           style: GoogleFonts.quicksand(
-            color: Colors.black87,
+            color: Colors.grey,
             fontSize: 18,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
           ),
           textAlign: TextAlign.center,
         ),
@@ -524,7 +524,7 @@ class BingeFreeTimerCarouselWidgetState
                       text: unit['value'] as String,
                       style: GoogleFonts.quicksand(
                         fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w900,
                         color: unitColor,
                       ),
                     ),
@@ -535,7 +535,7 @@ class BingeFreeTimerCarouselWidgetState
                       text: unit['label'] as String,
                       style: GoogleFonts.quicksand(
                         fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w900,
                         color: unitColor,
                       ),
                     ),

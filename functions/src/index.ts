@@ -24,6 +24,9 @@ export { awardJournalEntryExp } from './awardJournalEntryExp';
 // Import and export exercise EXP functions
 export { awardExerciseExp, awardMealPlanUpdateExp } from './awardExerciseExp';
 
+// Import and export lesson completion EXP function
+export { awardLessonExp } from './awardLessonExp';
+
 // Helper function to format time as HH:mm in Central Time
 function formatTime(date: Date): string {
   // Convert to Central Time (handles both CST and CDT automatically)

@@ -2,12 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/weight_diary_provider.dart';
 
-class WeightGraphWidget extends ConsumerWidget {
+enum WeightGraphTimeFrame {
+  day,
+  week,
+  month,
+  allTime,
+}
+
+extension WeightGraphTimeFrameExtension on WeightGraphTimeFrame {
+  String get displayName {
+    switch (this) {
+      case WeightGraphTimeFrame.day:
+        return 'Day';
+      case WeightGraphTimeFrame.week:
+        return 'Week';
+      case WeightGraphTimeFrame.month:
+        return 'Month';
+      case WeightGraphTimeFrame.allTime:
+        return 'All Time';
+    }
+  }
+}
+
+class WeightGraphWidget extends ConsumerStatefulWidget {
   final String userId;
   final VoidCallback? onTap;
   final double height;
   final bool showTitle;
   final bool showAxisLabels;
+  final bool showTimeFrameSelector;
 
   const WeightGraphWidget({
     super.key,
@@ -16,11 +39,20 @@ class WeightGraphWidget extends ConsumerWidget {
     this.height = 200,
     this.showTitle = true,
     this.showAxisLabels = true,
+    this.showTimeFrameSelector = true,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final weightDiaries = ref.watch(allWeightEntriesStreamProvider(userId));
+  ConsumerState<WeightGraphWidget> createState() => _WeightGraphWidgetState();
+}
+
+class _WeightGraphWidgetState extends ConsumerState<WeightGraphWidget> {
+  WeightGraphTimeFrame _selectedTimeFrame = WeightGraphTimeFrame.allTime;
+  DateTime _selectedDate = DateTime.now();
+
+  @override
+  Widget build(BuildContext context) {
+    final weightDiaries = ref.watch(allWeightEntriesStreamProvider(widget.userId));
 
     return Container(
       decoration: BoxDecoration(
@@ -38,14 +70,14 @@ class WeightGraphWidget extends ConsumerWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: onTap,
+          onTap: widget.onTap,
           borderRadius: BorderRadius.circular(40.0),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (showTitle) ...[
+                if (widget.showTitle) ...[
                   Center(
                     child: Text(
                       'Weight',
@@ -57,170 +89,15 @@ class WeightGraphWidget extends ConsumerWidget {
                   ),
                   const SizedBox(height: 12),
                 ],
+                if (widget.showTimeFrameSelector) ...[
+                  _buildTimeFrameSelector(),
+                  const SizedBox(height: 12),
+                ],
                 Expanded(
                   child: weightDiaries.when(
-                    data: (entries) {
-                      if (entries.isEmpty) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: Colors.orange[50],
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Icons.monitor_weight_outlined,
-                                  size: 32,
-                                  color: Colors.orange[400],
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                'No weight entries yet',
-                                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                  color: Colors.grey[800],
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Tap to add your first entry',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-
-                      // Normalize to kg for plotting
-                      final normalized = entries
-                          .map((e) => (
-                                time: e.createdAt,
-                                valueKg: e.convertWeight('kg'),
-                                originalWeight: e.weight,
-                                originalUnit: e.unit,
-                              ))
-                          .toList()
-                        ..sort((a, b) => a.time.compareTo(b.time));
-
-                      final from = normalized.first.time;
-                      final now = normalized.last.time;
-
-                      return Column(
-                        children: [
-                          Expanded(
-                            child: _WeightChart(
-                              from: from,
-                              to: now,
-                              points: normalized,
-                              color: Colors.orange[600]!,
-                              originalUnit: entries.isNotEmpty ? entries.first.unit : 'kg',
-                              showAxisLabels: showAxisLabels,
-                            ),
-                          ),
-                          if (showAxisLabels) ...[
-                            const SizedBox(height: 12),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[100],
-                                    borderRadius: BorderRadius.circular(40.0),
-                                  ),
-                                  child: Text(
-                                    _formatTick(from),
-                                    style: TextStyle(
-                                      color: Colors.grey[700], 
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[100],
-                                    borderRadius: BorderRadius.circular(40.0),
-                                  ),
-                                  child: Text(
-                                    _formatTick(now),
-                                    style: TextStyle(
-                                      color: Colors.grey[700], 
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ],
-                      );
-                    },
-                    loading: () => Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.orange[600]!),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Loading weight data...',
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 11,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    error: (error, _) => Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.red[50],
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.error_outline,
-                              size: 28,
-                              color: Colors.red[400],
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Failed to load graph',
-                            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              color: Colors.red[600],
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'Please try again',
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 11,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    data: (entries) => _buildGraphContent(entries),
+                    loading: () => _buildLoadingState(),
+                    error: (error, _) => _buildErrorState(error),
                   ),
                 ),
               ],
@@ -231,13 +108,372 @@ class WeightGraphWidget extends ConsumerWidget {
     );
   }
 
-  String _formatTick(DateTime dt) {
-    final d = '${dt.month}/${dt.day}';
-    final h = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
-    final m = dt.minute.toString().padLeft(2, '0');
-    final ap = dt.hour < 12 ? 'AM' : 'PM';
-    return '$d $h:$m $ap';
+  Widget _buildTimeFrameSelector() {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(40.0),
+      ),
+      child: Row(
+        children: WeightGraphTimeFrame.values.map((timeFrame) {
+          final isSelected = _selectedTimeFrame == timeFrame;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _selectedTimeFrame = timeFrame;
+                  if (timeFrame == WeightGraphTimeFrame.day) {
+                    _selectedDate = DateTime.now();
+                  }
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                decoration: BoxDecoration(
+                  color: isSelected ? Colors.white : Colors.transparent,
+                  borderRadius: BorderRadius.circular(36.0),
+                  boxShadow: isSelected ? [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ] : null,
+                ),
+                child: Text(
+                  timeFrame.displayName,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                    color: isSelected ? Colors.orange[600] : Colors.grey[600],
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
   }
+
+  Widget _buildDayNavigation() {
+    if (_selectedTimeFrame != WeightGraphTimeFrame.day) return const SizedBox.shrink();
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _selectedDate = _selectedDate.subtract(const Duration(days: 1));
+              });
+            },
+            icon: Icon(Icons.chevron_left, color: Colors.orange[600]),
+            style: IconButton.styleFrom(
+              backgroundColor: Colors.orange[50],
+              shape: const CircleBorder(),
+            ),
+          ),
+          Text(
+            _formatDate(_selectedDate),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[800],
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _selectedDate = _selectedDate.add(const Duration(days: 1));
+              });
+            },
+            icon: Icon(Icons.chevron_right, color: Colors.orange[600]),
+            style: IconButton.styleFrom(
+              backgroundColor: Colors.orange[50],
+              shape: const CircleBorder(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGraphContent(List<dynamic> entries) {
+    if (entries.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.orange[50],
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.monitor_weight_outlined,
+                size: 32,
+                color: Colors.orange[400],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'No weight entries yet',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                color: Colors.grey[800],
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Tap to add your first entry',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Colors.grey[600],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Filter entries based on selected time frame
+    final filteredEntries = _filterEntriesByTimeFrame(entries);
+    
+    if (filteredEntries.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.timeline,
+                size: 32,
+                color: Colors.grey[400],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'No entries in this time frame',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                color: Colors.grey[800],
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Try a different time frame',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Colors.grey[600],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Normalize to kg for plotting
+    final normalized = filteredEntries
+        .map<({DateTime time, double valueKg, double originalWeight, String originalUnit})>((e) => (
+              time: e.createdAt,
+              valueKg: e.convertWeight('kg'),
+              originalWeight: e.weight,
+              originalUnit: e.unit,
+            ))
+        .toList()
+      ..sort((a, b) => a.time.compareTo(b.time));
+
+    final from = normalized.first.time;
+    final to = normalized.last.time;
+
+    return Column(
+      children: [
+        _buildDayNavigation(),
+        Expanded(
+          child: _WeightChart(
+            from: from,
+            to: to,
+            points: normalized,
+            color: Colors.orange[600]!,
+            originalUnit: filteredEntries.isNotEmpty ? filteredEntries.first.unit : 'kg',
+            showAxisLabels: widget.showAxisLabels,
+            timeFrame: _selectedTimeFrame,
+          ),
+        ),
+        if (widget.showAxisLabels) ...[
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(40.0),
+                ),
+                child: Text(
+                  _formatTick(from, _selectedTimeFrame),
+                  style: TextStyle(
+                    color: Colors.grey[700], 
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(40.0),
+                ),
+                child: Text(
+                  _formatTick(to, _selectedTimeFrame),
+                  style: TextStyle(
+                    color: Colors.grey[700], 
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircularProgressIndicator(
+            strokeWidth: 2,
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.orange[600]!),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Loading weight data...',
+            style: TextStyle(
+              color: Colors.grey[600],
+              fontSize: 11,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(Object error) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.red[50],
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.error_outline,
+              size: 28,
+              color: Colors.red[400],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Failed to load graph',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: Colors.red[600],
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            'Please try again',
+            style: TextStyle(
+              color: Colors.grey[600],
+              fontSize: 11,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<dynamic> _filterEntriesByTimeFrame(List<dynamic> entries) {
+    final now = DateTime.now();
+    
+    switch (_selectedTimeFrame) {
+      case WeightGraphTimeFrame.day:
+        final startOfDay = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day);
+        final endOfDay = startOfDay.add(const Duration(days: 1));
+        return entries.where((entry) {
+          final entryTime = entry.createdAt;
+          return entryTime.isAfter(startOfDay) && entryTime.isBefore(endOfDay);
+        }).toList();
+        
+      case WeightGraphTimeFrame.week:
+        final startOfWeek = _selectedDate.subtract(Duration(days: _selectedDate.weekday - 1));
+        final endOfWeek = startOfWeek.add(const Duration(days: 7));
+        return entries.where((entry) {
+          final entryTime = entry.createdAt;
+          return entryTime.isAfter(startOfWeek) && entryTime.isBefore(endOfWeek);
+        }).toList();
+        
+      case WeightGraphTimeFrame.month:
+        final startOfMonth = DateTime(_selectedDate.year, _selectedDate.month, 1);
+        final endOfMonth = DateTime(_selectedDate.year, _selectedDate.month + 1, 1);
+        return entries.where((entry) {
+          final entryTime = entry.createdAt;
+          return entryTime.isAfter(startOfMonth) && entryTime.isBefore(endOfMonth);
+        }).toList();
+        
+      case WeightGraphTimeFrame.allTime:
+        return entries;
+    }
+  }
+
+  String _formatDate(DateTime date) {
+    final months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    return '${months[date.month - 1]} ${date.day}';
+  }
+
+  String _formatTick(DateTime dt, WeightGraphTimeFrame timeFrame) {
+    switch (timeFrame) {
+      case WeightGraphTimeFrame.day:
+        final h = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
+        final m = dt.minute.toString().padLeft(2, '0');
+        final ap = dt.hour < 12 ? 'AM' : 'PM';
+        return '$h:$m $ap';
+      case WeightGraphTimeFrame.week:
+      case WeightGraphTimeFrame.month:
+        final d = '${dt.month}/${dt.day}';
+        return d;
+      case WeightGraphTimeFrame.allTime:
+        final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return '${months[dt.month - 1]} ${dt.year}';
+    }
+  }
+
 }
 
 class _WeightChart extends StatelessWidget {
@@ -247,6 +483,7 @@ class _WeightChart extends StatelessWidget {
   final Color color;
   final String originalUnit;
   final bool showAxisLabels;
+  final WeightGraphTimeFrame timeFrame;
 
   const _WeightChart({
     required this.from,
@@ -255,6 +492,7 @@ class _WeightChart extends StatelessWidget {
     required this.color,
     required this.originalUnit,
     required this.showAxisLabels,
+    required this.timeFrame,
   });
 
   @override
@@ -267,6 +505,7 @@ class _WeightChart extends StatelessWidget {
         color: color,
         originalUnit: originalUnit,
         showAxisLabels: showAxisLabels,
+        timeFrame: timeFrame,
       ),
       child: Container(),
     );
@@ -280,6 +519,7 @@ class _WeightChartPainter extends CustomPainter {
   final Color color;
   final String originalUnit;
   final bool showAxisLabels;
+  final WeightGraphTimeFrame timeFrame;
 
   _WeightChartPainter({
     required this.from,
@@ -288,6 +528,7 @@ class _WeightChartPainter extends CustomPainter {
     required this.color,
     required this.originalUnit,
     required this.showAxisLabels,
+    required this.timeFrame,
   });
 
   @override
@@ -500,6 +741,7 @@ class _WeightChartPainter extends CustomPainter {
            oldDelegate.from != from || 
            oldDelegate.to != to ||
            oldDelegate.originalUnit != originalUnit ||
-           oldDelegate.showAxisLabels != showAxisLabels;
+           oldDelegate.showAxisLabels != showAxisLabels ||
+           oldDelegate.timeFrame != timeFrame;
   }
 }
