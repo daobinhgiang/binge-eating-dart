@@ -22,6 +22,34 @@ class BingeFreeTimerCarouselWidget extends ConsumerStatefulWidget {
       BingeFreeTimerCarouselWidgetState();
 }
 
+// Separate stateless widget for tree container to prevent rebuilds
+class _TreeContainerWidget extends StatelessWidget {
+  final GlobalKey? treeWidgetKey;
+  
+  const _TreeContainerWidget({this.treeWidgetKey});
+  
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(40.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 2,
+            blurRadius: 20,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: TreeGrowthWidget(treeImageKey: treeWidgetKey),
+    );
+  }
+}
+
 class BingeFreeTimerCarouselWidgetState
     extends ConsumerState<BingeFreeTimerCarouselWidget> {
   late PageController _pageController;
@@ -66,7 +94,8 @@ class BingeFreeTimerCarouselWidgetState
 
   void _startTimer() {
     _updateTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (mounted) {
+      if (mounted && _lastResetTime != null && _currentPage == 1) {
+        // Only trigger rebuild when timer is active AND we're on the timer page
         setState(() {
           // Trigger rebuild every second to update the timer display
         });
@@ -149,16 +178,8 @@ class BingeFreeTimerCarouselWidgetState
 
   @override
   Widget build(BuildContext context) {
-    // Register this widget instance with the key for external access
-    if (widget.carouselKey != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (widget.carouselKey!.currentState == null) {
-          print('⚠️  Carousel key currentState is null');
-        } else {
-          print('✅ Carousel key currentState is available');
-        }
-      });
-    }
+    // Note: Removed PostFrameCallback that was running on every build
+    // The carousel key is now accessible directly when needed
     
     return Column(
       children: [
@@ -222,6 +243,11 @@ class BingeFreeTimerCarouselWidgetState
                 },
                 itemCount: 2,
                 itemBuilder: (context, index) {
+                  // Cache the child widget - tree page never changes unless provider data changes
+                  final childWidget = index == 0
+                      ? _TreeContainerWidget(treeWidgetKey: widget.treeWidgetKey)
+                      : _buildBingeFreeTimer();
+                  
                   return AnimatedBuilder(
                     animation: _pageController,
                     builder: (context, child) {
@@ -243,9 +269,7 @@ class BingeFreeTimerCarouselWidgetState
                         ),
                       );
                     },
-                    child: index == 0
-                        ? _buildTreeContainer()
-                        : _buildBingeFreeTimer(),
+                    child: childWidget,
                   );
                 },
               ),
@@ -283,25 +307,6 @@ class BingeFreeTimerCarouselWidgetState
     );
   }
 
-  Widget _buildTreeContainer() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(40.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 2,
-            blurRadius: 20,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: TreeGrowthWidget(treeImageKey: widget.treeWidgetKey),
-    );
-  }
 
   Widget _buildBingeFreeTimer() {
     if (_lastResetTime == null) {

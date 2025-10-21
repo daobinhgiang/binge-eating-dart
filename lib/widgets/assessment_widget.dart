@@ -655,6 +655,9 @@ class _AssessmentWidgetState extends ConsumerState<AssessmentWidget> {
           // Close loading dialog
           Navigator.of(context).pop();
 
+          // Mark quiz as completed in user_progress (same as regular lessons)
+          await _lessonService.markLessonCompleted(widget.assessment.lessonId);
+
           // Get updated user data
           final userExpAfter = ref.read(userExpProvider);
           final newLevel = userExpAfter?.level ?? oldLevel;
