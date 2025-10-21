@@ -50,12 +50,315 @@ class _TreeContainerWidget extends StatelessWidget {
   }
 }
 
+// Separate timer display widget that handles its own rebuilds
+class _TimerDisplayWidget extends StatefulWidget {
+  final DateTime? lastResetTime;
+  final GlobalKey timerButtonKey;
+  final VoidCallback onResetPressed;
+  
+  const _TimerDisplayWidget({
+    required this.lastResetTime,
+    required this.timerButtonKey,
+    required this.onResetPressed,
+  });
+  
+  @override
+  State<_TimerDisplayWidget> createState() => _TimerDisplayWidgetState();
+}
+
+class _TimerDisplayWidgetState extends State<_TimerDisplayWidget> {
+  Timer? _timer;
+  
+  @override
+  void initState() {
+    super.initState();
+    // Start timer only if there's a reset time
+    if (widget.lastResetTime != null) {
+      _startTimer();
+    }
+  }
+  
+  @override
+  void didUpdateWidget(_TimerDisplayWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Handle timer state changes
+    if (widget.lastResetTime != null && oldWidget.lastResetTime == null) {
+      _startTimer();
+    } else if (widget.lastResetTime == null && oldWidget.lastResetTime != null) {
+      _stopTimer();
+    }
+  }
+  
+  void _startTimer() {
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (mounted) {
+        setState(() {
+          // Only rebuilds this widget, not the parent carousel
+        });
+      }
+    });
+  }
+  
+  void _stopTimer() {
+    _timer?.cancel();
+    _timer = null;
+  }
+  
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    if (widget.lastResetTime == null) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(12),
+        constraints: const BoxConstraints(minHeight: 360),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(40.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Start tracking your binge-free progress',
+              style: GoogleFonts.quicksand(
+                color: Colors.black87,
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              key: widget.timerButtonKey,
+              onPressed: widget.onResetPressed,
+              icon: const Icon(Icons.play_arrow, size: 20),
+              label: Text(
+                'Start Timer',
+                style: GoogleFonts.quicksand(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF4CAF50),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(40.0),
+                ),
+                elevation: 2,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final duration = DateTime.now().difference(widget.lastResetTime!);
+
+    // Calculate time units
+    final days = duration.inDays;
+    final hours = duration.inHours % 24;
+    final minutes = duration.inMinutes % 60;
+    final seconds = duration.inSeconds % 60;
+
+    // Build list of all non-zero time units to display
+    List<Map<String, dynamic>> timeUnits = [];
+
+    // Determine font size based on how many units we'll show
+    double fontSize;
+    if (days > 0) {
+      fontSize = 36.0; // 4 units: days, hours, minutes, seconds
+    } else if (hours > 0) {
+      fontSize = 42.0; // 3 units: hours, minutes, seconds
+    } else if (minutes > 0) {
+      fontSize = 48.0; // 2 units: minutes, seconds
+    } else {
+      fontSize = 72.0; // 1 unit: seconds only
+    }
+
+    if (days > 0) {
+      timeUnits.add({
+        'value': days.toString().padLeft(2, '0'),
+        'label': days == 1 ? 'day' : 'days',
+        'size': fontSize,
+      });
+    }
+    if (hours > 0 || days > 0) {
+      timeUnits.add({
+        'value': hours.toString().padLeft(2, '0'),
+        'label': 'hrs',
+        'size': fontSize,
+      });
+    }
+    if (minutes > 0 || hours > 0 || days > 0) {
+      timeUnits.add({
+        'value': minutes.toString().padLeft(2, '0'),
+        'label': 'min',
+        'size': fontSize,
+      });
+    }
+    // Always show seconds
+    timeUnits.add({
+      'value': seconds.toString().padLeft(2, '0'),
+      'label': 'sec',
+      'size': fontSize,
+    });
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(40.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 2,
+            blurRadius: 20,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Circular progress indicator
+          _buildIOSTimerLayout(timeUnits, days, hours, minutes, seconds),
+          const SizedBox(height: 16),
+          // Reset Timer button
+          ElevatedButton.icon(
+            key: widget.timerButtonKey,
+            onPressed: widget.onResetPressed,
+            icon: const Icon(Icons.refresh, size: 20),
+            label: Text(
+              'Reset',
+              style: GoogleFonts.quicksand(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF4CAF50),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(40.0),
+              ),
+              elevation: 2,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildIOSTimerLayout(List<Map<String, dynamic>> timeUnits, int days,
+      int hours, int minutes, int seconds) {
+    return Column(
+      children: [
+        // Circular progress rings - larger size
+        SizedBox(
+          width: 240,
+          height: 240,
+          child: CustomPaint(
+            size: const Size(240, 240),
+            painter: CircularTimerPainter(
+              days: days,
+              hours: hours,
+              minutes: minutes,
+              seconds: seconds,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        // Text above the time units
+        Text(
+          "You've been binge-free for:",
+          style: GoogleFonts.quicksand(
+            color: Colors.black87,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 2),
+        // Time units displayed in a row below the circle with minimal gap
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: timeUnits.map((unit) {
+            final fontSize = 28.0;
+
+            // Determine color based on the time unit type - matching the bright progress ring colors
+            Color unitColor;
+            final label = unit['label'] as String;
+            if (label.contains('day')) {
+              unitColor = const Color(0xFF00FF88); // Electric lime green for days
+            } else if (label.contains('hrs')) {
+              unitColor = const Color(0xFFFF1744); // Electric pink/red for hours
+            } else if (label.contains('min')) {
+              unitColor = const Color(0xFFFFAB00); // Electric amber for minutes
+            } else {
+              unitColor = const Color(0xFF00E5FF); // Electric cyan for seconds
+            }
+
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 5), // Added space between time units
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    // Time value
+                    TextSpan(
+                      text: unit['value'] as String,
+                      style: GoogleFonts.quicksand(
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.bold,
+                        color: unitColor,
+                      ),
+                    ),
+                    // Very small space between value and unit
+                    const TextSpan(text: ' '),
+                    // Time unit
+                    TextSpan(
+                      text: unit['label'] as String,
+                      style: GoogleFonts.quicksand(
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.bold,
+                        color: unitColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+}
+
 class BingeFreeTimerCarouselWidgetState
     extends ConsumerState<BingeFreeTimerCarouselWidget> {
   late PageController _pageController;
   int _currentPage = 0;
   DateTime? _lastResetTime;
-  Timer? _updateTimer;
   final GlobalKey _timerButtonKey = GlobalKey();
 
   @override
@@ -66,14 +369,12 @@ class BingeFreeTimerCarouselWidgetState
       initialPage: 0, // Always start on the plant page (index 0)
     );
     _loadLastResetTime();
-    _startTimer();
     print('🎯 Carousel: Widget initialized');
   }
 
   @override
   void dispose() {
     print('🎯 Carousel: DISPOSING');
-    _updateTimer?.cancel();
     _pageController.dispose();
     super.dispose();
   }
@@ -90,17 +391,6 @@ class BingeFreeTimerCarouselWidgetState
         }
       });
     }
-  }
-
-  void _startTimer() {
-    _updateTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (mounted && _lastResetTime != null && _currentPage == 1) {
-        // Only trigger rebuild when timer is active AND we're on the timer page
-        setState(() {
-          // Trigger rebuild every second to update the timer display
-        });
-      }
-    });
   }
 
   // Public method to navigate to a specific page (for tutorial use)
@@ -309,243 +599,11 @@ class BingeFreeTimerCarouselWidgetState
 
 
   Widget _buildBingeFreeTimer() {
-    if (_lastResetTime == null) {
-      return Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(12),
-        constraints: const BoxConstraints(minHeight: 360),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(40.0),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 16,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Start tracking your binge-free progress',
-              style: GoogleFonts.quicksand(
-                color: Colors.black87,
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
-              key: _timerButtonKey,
-              onPressed: _handleResetButton,
-              icon: const Icon(Icons.play_arrow, size: 20),
-              label: Text(
-                'Start Timer',
-                style: GoogleFonts.quicksand(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF4CAF50),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(40.0),
-                ),
-                elevation: 2,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    final duration = DateTime.now().difference(_lastResetTime!);
-
-    // Calculate time units
-    final days = duration.inDays;
-    final hours = duration.inHours % 24;
-    final minutes = duration.inMinutes % 60;
-    final seconds = duration.inSeconds % 60;
-
-    // Build list of all non-zero time units to display
-    List<Map<String, dynamic>> timeUnits = [];
-
-    // Determine font size based on how many units we'll show
-    double fontSize;
-    if (days > 0) {
-      fontSize = 36.0; // 4 units: days, hours, minutes, seconds
-    } else if (hours > 0) {
-      fontSize = 42.0; // 3 units: hours, minutes, seconds
-    } else if (minutes > 0) {
-      fontSize = 48.0; // 2 units: minutes, seconds
-    } else {
-      fontSize = 72.0; // 1 unit: seconds only
-    }
-
-    if (days > 0) {
-      timeUnits.add({
-        'value': days.toString().padLeft(2, '0'),
-        'label': days == 1 ? 'day' : 'days',
-        'size': fontSize,
-      });
-    }
-    if (hours > 0 || days > 0) {
-      timeUnits.add({
-        'value': hours.toString().padLeft(2, '0'),
-        'label': 'hrs',
-        'size': fontSize,
-      });
-    }
-    if (minutes > 0 || hours > 0 || days > 0) {
-      timeUnits.add({
-        'value': minutes.toString().padLeft(2, '0'),
-        'label': 'min',
-        'size': fontSize,
-      });
-    }
-    // Always show seconds
-    timeUnits.add({
-      'value': seconds.toString().padLeft(2, '0'),
-      'label': 'sec',
-      'size': fontSize,
-    });
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(40.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 2,
-            blurRadius: 20,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          // Circular progress indicator
-          _buildIOSTimerLayout(timeUnits, days, hours, minutes, seconds),
-          const SizedBox(height: 16),
-          // Reset Timer button
-          ElevatedButton.icon(
-            key: _timerButtonKey,
-            onPressed: _handleResetButton,
-            icon: const Icon(Icons.refresh, size: 20),
-              label: Text(
-                'Reset',
-                style: GoogleFonts.quicksand(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF4CAF50),
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(40.0),
-              ),
-              elevation: 2,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildIOSTimerLayout(List<Map<String, dynamic>> timeUnits, int days,
-      int hours, int minutes, int seconds) {
-    return Column(
-      children: [
-          // Circular progress rings - larger size
-          SizedBox(
-            width: 240,
-            height: 240,
-            child: CustomPaint(
-              size: const Size(240, 240),
-            painter: CircularTimerPainter(
-              days: days,
-              hours: hours,
-              minutes: minutes,
-              seconds: seconds,
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        // Text above the time units
-        Text(
-          "You've been binge-free for:",
-          style: GoogleFonts.quicksand(
-            color: Colors.black87,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 2),
-        // Time units displayed in a row below the circle with minimal gap
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: timeUnits.map((unit) {
-            final fontSize = 28.0;
-
-            // Determine color based on the time unit type - matching the bright progress ring colors
-            Color unitColor;
-            final label = unit['label'] as String;
-            if (label.contains('day')) {
-              unitColor = const Color(0xFF00FF88); // Electric lime green for days
-            } else if (label.contains('hrs')) {
-              unitColor = const Color(0xFFFF1744); // Electric pink/red for hours
-            } else if (label.contains('min')) {
-              unitColor = const Color(0xFFFFAB00); // Electric amber for minutes
-            } else {
-              unitColor = const Color(0xFF00E5FF); // Electric cyan for seconds
-            }
-
-            return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 5), // Added space between time units
-              child: RichText(
-                text: TextSpan(
-                  children: [
-                    // Time value
-                    TextSpan(
-                      text: unit['value'] as String,
-                      style: GoogleFonts.quicksand(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                        color: unitColor,
-                      ),
-                    ),
-                    // Very small space between value and unit
-                    const TextSpan(text: ' '),
-                    // Time unit
-                    TextSpan(
-                      text: unit['label'] as String,
-                      style: GoogleFonts.quicksand(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                        color: unitColor,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
+    // Use the new isolated timer widget that handles its own rebuilds
+    return _TimerDisplayWidget(
+      lastResetTime: _lastResetTime,
+      timerButtonKey: _timerButtonKey,
+      onResetPressed: _handleResetButton,
     );
   }
 
