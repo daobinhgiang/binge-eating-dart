@@ -71,21 +71,6 @@ class TaskTemplatesData {
           'priority': 1,
         },
       ),
-      TaskTemplate(
-        id: 'seed_tool_mindfulness',
-        category: 'exercises',
-        tier: TaskTier.seeds,
-        title: 'Mindfulness Exercise',
-        description: 'Take 5 minutes for mindful breathing or body scan',
-        activityId: 'mindfulness_exercise',
-        expReward: 50,
-        createdAt: now,
-        updatedAt: now,
-        metadata: {
-          'toolType': 'mindfulness',
-          'priority': 2,
-        },
-      ),
       
       // Lesson Seed - Daily quest
       TaskTemplate(

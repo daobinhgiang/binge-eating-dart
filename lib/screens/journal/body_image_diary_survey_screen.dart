@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/body_image_diary_provider.dart';
+import '../../providers/todo_provider.dart';
 import '../../models/body_image_diary.dart';
+import '../../models/todo_item.dart';
+import '../../widgets/quest_completion_dialog.dart';
 
 class BodyImageDiarySurveyScreen extends ConsumerStatefulWidget {
   const BodyImageDiarySurveyScreen({super.key});
@@ -495,6 +498,27 @@ class _BodyImageDiarySurveyScreenState extends ConsumerState<BodyImageDiarySurve
     return '$hour:$minute $period';
   }
 
+  /// Handle quest completion for body image diary activity
+  Future<void> _handleActivityCompletion() async {
+    try {
+      final user = ref.read(currentUserDataProvider);
+      if (user == null) return;
+      
+      final questCompletionService = ref.read(questCompletionServiceProvider);
+      final result = await questCompletionService.handleActivityCompletion(
+        userId: user.id,
+        activityId: 'body_image_diary',
+        type: TodoType.journal,
+      );
+      
+      if (result.questCompleted && mounted) {
+        showQuestCompletionDialog(context, result);
+      }
+    } catch (e) {
+      print('Error checking quest completion: $e');
+    }
+  }
+
   Future<void> _submitSurvey() async {
     if (!_validateCurrentPage()) return;
 
@@ -518,6 +542,9 @@ class _BodyImageDiarySurveyScreenState extends ConsumerState<BodyImageDiarySurve
       );
 
       if (entry != null && mounted) {
+        // Check for quest completion
+        await _handleActivityCompletion();
+        
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Body image diary entry saved successfully!'),

@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/todo_provider.dart';
 import '../../models/weight_diary.dart';
+import '../../models/todo_item.dart';
 import '../../providers/weight_diary_provider.dart';
+import '../../widgets/quest_completion_dialog.dart';
 
 class WeightDiarySurveyScreen extends ConsumerStatefulWidget {
   const WeightDiarySurveyScreen({super.key});
@@ -482,6 +485,27 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
     );
   }
 
+  /// Handle quest completion for weight diary activity
+  Future<void> _handleActivityCompletion() async {
+    try {
+      final user = ref.read(currentUserDataProvider);
+      if (user == null) return;
+      
+      final questCompletionService = ref.read(questCompletionServiceProvider);
+      final result = await questCompletionService.handleActivityCompletion(
+        userId: user.id,
+        activityId: 'weight_diary',
+        type: TodoType.journal,
+      );
+      
+      if (result.questCompleted && mounted) {
+        showQuestCompletionDialog(context, result);
+      }
+    } catch (e) {
+      print('Error checking quest completion: $e');
+    }
+  }
+
   Future<void> _submit() async {
     if (!_validate()) return;
     setState(() => _isSubmitting = true);
@@ -498,6 +522,9 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
       );
 
       if (entry != null && mounted) {
+        // Check for quest completion
+        await _handleActivityCompletion();
+        
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Weight saved successfully!'), backgroundColor: Colors.green),
         );
