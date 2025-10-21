@@ -23,102 +23,112 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
   final List<OnboardingQuestion> _questions = [
     OnboardingQuestion(
       number: 1,
-      question: "How often do you binge?",
+      question: "🌀 How often do you find yourself spiraling into a binge?",
+      description: "Be honest — your future self depends on it.",
       options: [
-        "Rarely or never",
-        "Once or twice a month",
-        "Several times a week",
-        "Daily or multiple times a day",
+        "😩 Daily or multiple times a day",
+        "😣 Several times a week",
+        "😕 Once or twice a month",
+        "😇 Rarely or never",
       ],
     ),
     OnboardingQuestion(
       number: 2,
-      question: "Have the binges gotten more intense?",
+      question: "🔥 Have your binges become more intense over time?",
+      description: "Pain doesn't just go away... it grows if ignored.",
       options: [
-        "No, they've stayed the same",
-        "Slightly more intense",
-        "Moderately more intense",
-        "Much more intense",
+        "🚨 Much more intense",
+        "⚠️ Moderately more intense",
+        "📈 Slightly more intense",
+        "🛑 No, they've stayed about the same",
       ],
     ),
     OnboardingQuestion(
       number: 3,
-      question: "When did you start binging?",
+      question: "⏳ When did this pattern begin for you?",
+      description: "Knowing when the pain started is the first step toward healing.",
       options: [
-        "Within the past few months",
-        "Within the past year",
-        "1-5 years ago",
-        "More than 5 years ago",
+        "🌳 More than 5 years ago",
+        "🌿 1–5 years ago",
+        "🌱 Within the past year",
+        "🐣 Within the past few months",
       ],
     ),
     OnboardingQuestion(
       number: 4,
-      question: "Do you find it difficult to cope with urges to binge?",
+      question: "😣 How hard is it for you to resist the urge to binge?",
+      description: "Every moment you fight is a battle for your peace.",
       options: [
-        "I can usually cope with the urges",
-        "Sometimes I struggle but can manage",
-        "I find it very difficult most of the time",
-        "I feel completely overwhelmed by the urges",
+        "😖 I feel completely overwhelmed",
+        "🥵 Most of the time, it's really difficult",
+        "🤹 Sometimes I struggle, but I get by",
+        "💪 I can usually manage the urges",
       ],
     ),
     OnboardingQuestion(
       number: 5,
-      question: "When you binge, what emotions are involved?",
+      question: "💔 What emotions fuel your binges the most?",
+      description: "Your emotions are valid — but they don't have to control you.",
       options: [
-        "Primarily emotional pain",
-        "Physical discomfort",
-        "Stress",
-        "Boredom or a mix of several emotions",
+        "😢 Deep emotional pain",
+        "🤢 Physical discomfort",
+        "😤 High stress or anxiety",
+        "😶‍🌫️ Boredom or a mix of heavy feelings",
       ],
     ),
     OnboardingQuestion(
       number: 6,
-      question: "Why do you want to overcome binge eating?",
+      question: "🌈 Why is it important for you to stop binge eating?",
+      description: "You deserve more than shame and guilt after every meal.",
       options: [
-        "To improve my physical health",
-        "To improve my mental well-being",
-        "To feel more in control of my life",
-        "All of the above",
+        "❤️ To feel healthier physically",
+        "🧠 To feel better mentally",
+        "🕊️ To take back control of my life",
+        "💫 All of the above — I want real change",
       ],
     ),
     OnboardingQuestion(
       number: 7,
-      question: "What are your top 1–2 goals related to your eating habits?",
+      question: "🎯 What are the 1–2 goals that matter most to you right now?",
+      description: "If not now... then when?",
       options: [
-        "Reduce frequency of binges",
-        "Develop healthier coping mechanisms",
-        "Improve relationship with food",
-        "Build consistent eating patterns",
+        "🚫 Reduce how often I binge",
+        "🧘 Learn better coping tools",
+        "🥗 Make peace with food",
+        "🧩 Build a consistent, balanced routine",
       ],
     ),
     OnboardingQuestion(
       number: 8,
-      question: "What would success look like for you in the next 30 days?",
+      question: "🔮 If the next 30 days were wildly successful, what would that look like?",
+      description: "You're closer to this version of yourself than you think.",
       options: [
-        "Fewer binge episodes",
-        "Better emotional regulation",
-        "More mindful eating",
-        "Increased self-compassion",
+        "📉 Fewer binge episodes",
+        "🧘‍♀️ More emotional control",
+        "🥄 Mindful, conscious eating",
+        "💞 Greater self-compassion",
       ],
     ),
     OnboardingQuestion(
       number: 9,
-      question: "On a scale of 1–10, how motivated do you feel to make changes right now?",
+      question: "🔥 Right now, how motivated are you to take control back? (Scale of 1–10)",
+      description: "No one else can do this for you.",
       options: [
-        "1-3 (Low motivation)",
-        "4-6 (Moderate motivation)",
-        "7-8 (High motivation)",
-        "9-10 (Very high motivation)",
+        "💤 1–3 (Barely motivated)",
+        "⚙️ 4–6 (Warming up)",
+        "⚡ 7–8 (Pretty motivated)",
+        "🚀 9–10 (I'm ready for real change!)",
       ],
     ),
     OnboardingQuestion(
       number: 10,
-      question: "What's your daily goal for time spent on your recovery with the app?",
+      question: "⏱️ How much time can you truly commit daily to your recovery journey?",
+      description: "Even 5 minutes is better than nothing — but be real with yourself.",
       options: [
-        "5 minutes per day",
-        "10 minutes per day",
-        "15 minutes per day",
-        "20 minutes per day",
+        "🧭 20 minutes — I'm all in",
+        "⏱️ 15 minutes — I'm invested",
+        "🕰️ 10 minutes — I owe myself that",
+        "⏳ Just 5 minutes a day",
       ],
     ),
   ];
@@ -250,6 +260,19 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
                           color: Color(0xFF1C1C1E),
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
+                          height: 1.3,
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 8),
+                      
+                      // Description text
+                      Text(
+                        currentQuestion.description,
+                        style: const TextStyle(
+                          color: Color(0xFF8E8E93),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
                           height: 1.3,
                         ),
                       ),
@@ -560,11 +583,13 @@ class _OnboardingReviewScreenState extends ConsumerState<OnboardingReviewScreen>
 class OnboardingQuestion {
   final int number;
   final String question;
+  final String description;
   final List<String> options;
 
   OnboardingQuestion({
     required this.number,
     required this.question,
+    required this.description,
     required this.options,
   });
 }

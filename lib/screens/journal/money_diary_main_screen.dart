@@ -100,7 +100,7 @@ class MoneyDiaryMainScreen extends ConsumerWidget {
                   fit: BoxFit.scaleDown,
                   child: Text(
                     'Spending Diary',
-                    style: GoogleFonts.fredoka(
+                    style: GoogleFonts.quicksand(
                       fontSize: 28,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
@@ -139,7 +139,7 @@ class MoneyDiaryMainScreen extends ConsumerWidget {
           const SizedBox(height: 12),
           Text(
             'Total Money Spent',
-            style: GoogleFonts.fredoka(
+            style: GoogleFonts.quicksand(
               fontSize: 16,
               color: Colors.amber[700],
               fontWeight: FontWeight.w500,
@@ -150,7 +150,7 @@ class MoneyDiaryMainScreen extends ConsumerWidget {
           totalSpent.when(
             data: (total) => Text(
               '\$${total.toStringAsFixed(2)}',
-              style: GoogleFonts.fredoka(
+              style: GoogleFonts.quicksand(
                 fontSize: 36,
                 color: Colors.amber[800],
                 fontWeight: FontWeight.w700,
@@ -169,7 +169,7 @@ class MoneyDiaryMainScreen extends ConsumerWidget {
             ),
             error: (error, _) => Text(
               'Error loading total',
-              style: GoogleFonts.fredoka(
+              style: GoogleFonts.quicksand(
                 fontSize: 16,
                 color: Colors.amber[700],
               ),
@@ -178,7 +178,7 @@ class MoneyDiaryMainScreen extends ConsumerWidget {
           const SizedBox(height: 12),
           Text(
             'Track your spending on binge eating to gain awareness',
-            style: GoogleFonts.fredoka(
+            style: GoogleFonts.quicksand(
               fontSize: 14,
               color: Colors.amber[600],
               fontWeight: FontWeight.w400,
@@ -222,7 +222,7 @@ class MoneyDiaryMainScreen extends ConsumerWidget {
               const SizedBox(width: 8),
               Text(
                 'Add New Entry',
-                style: GoogleFonts.fredoka(
+                style: GoogleFonts.quicksand(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Colors.white,

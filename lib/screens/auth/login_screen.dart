@@ -41,7 +41,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       children: [
                         // App Logo
                         Image.asset(
-                          'nurtra.png',
+                          'assets/nurtra.png',
                           height: 65,
                           fit: BoxFit.contain,
                         ),
@@ -51,10 +51,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         // Tagline with better spacing
                         Text(
                           'Take Control Over\nBinge Eating',
-                          style: GoogleFonts.fredoka(
+                          style: GoogleFonts.quicksand(
                             color: Colors.grey[700],
                             fontSize: 32,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w900,
                             height: 1.3,
                           ),
                           textAlign: TextAlign.center,

@@ -99,7 +99,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
                         fit: BoxFit.scaleDown,
                         child: Text(
                           'Addressing Overconcern',
-                          style: GoogleFonts.fredoka(
+                          style: GoogleFonts.quicksand(
                             fontSize: 28,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,

@@ -160,7 +160,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
                   alignment: Alignment.center,
                   child: Text(
                     'Body Image Diary',
-                    style: GoogleFonts.fredoka(
+                    style: GoogleFonts.quicksand(
                       fontSize: 28,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
@@ -199,7 +199,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
           const SizedBox(height: 12),
           Text(
             'Week $weekNumber',
-            style: GoogleFonts.fredoka(
+            style: GoogleFonts.quicksand(
               fontSize: 24,
               color: Colors.cyan[700],
               fontWeight: FontWeight.w600,
@@ -209,7 +209,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
           const SizedBox(height: 8),
           Text(
             'Track your body checking behaviors',
-            style: GoogleFonts.fredoka(
+            style: GoogleFonts.quicksand(
               fontSize: 14,
               color: Colors.cyan[600],
               fontWeight: FontWeight.w400,
@@ -253,7 +253,7 @@ class BodyImageDiaryMainScreen extends ConsumerWidget {
               const SizedBox(width: 8),
               Text(
                 'Add New Entry',
-                style: GoogleFonts.fredoka(
+                style: GoogleFonts.quicksand(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Colors.white,

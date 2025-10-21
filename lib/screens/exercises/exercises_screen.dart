@@ -113,9 +113,9 @@ class ExercisesScreen extends ConsumerWidget {
                 automaticallyImplyLeading: false,
                 title: Text(
                   'Exercises',
-                  style: GoogleFonts.fredoka(
+                  style: GoogleFonts.quicksand(
                     fontSize: 24,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w900,
                     color: Colors.black,
                   ),
                 ),

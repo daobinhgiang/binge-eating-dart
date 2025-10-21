@@ -21,9 +21,24 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
   bool _isSubmitting = false;
 
   @override
+  void initState() {
+    super.initState();
+    _markWeightDiaryVisit();
+  }
+
+  @override
   void dispose() {
     _weightController.dispose();
     super.dispose();
+  }
+
+  Future<void> _markWeightDiaryVisit() async {
+    final user = ref.read(currentUserDataProvider);
+    if (user != null && !user.hasVisitedWeightDiary) {
+      await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
+        hasVisitedWeightDiary: true,
+      );
+    }
   }
 
   @override
@@ -49,6 +64,9 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
   }
 
   Widget _buildHeader(BuildContext context) {
+    final user = ref.watch(currentUserDataProvider);
+    final showBackButton = user?.hasVisitedWeightDiary ?? false;
+    
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
@@ -64,17 +82,20 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
       ),
       child: Row(
         children: [
-          IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: const Icon(
-              Icons.arrow_back_ios,
-              color: Colors.black87,
-              size: 20,
+          if (showBackButton) ...[
+            IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black87,
+                size: 20,
+              ),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
             ),
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
-          ),
-          const SizedBox(width: 16),
+            const SizedBox(width: 16),
+          ] else
+            const SizedBox(width: 20), // Spacer for first-time users
           Expanded(
             child: FittedBox(
               fit: BoxFit.scaleDown,

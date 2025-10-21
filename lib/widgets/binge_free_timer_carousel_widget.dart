@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,32 +8,43 @@ import '../core/services/reset_timer_service.dart';
 import 'tree_growth_widget.dart';
 
 class BingeFreeTimerCarouselWidget extends ConsumerStatefulWidget {
-  const BingeFreeTimerCarouselWidget({super.key});
+  final GlobalKey? treeWidgetKey;
+  final GlobalKey<BingeFreeTimerCarouselWidgetState>? carouselKey;
+  
+  const BingeFreeTimerCarouselWidget({
+    super.key, 
+    this.treeWidgetKey,
+    this.carouselKey,
+  });
 
   @override
   ConsumerState<BingeFreeTimerCarouselWidget> createState() =>
-      _BingeFreeTimerCarouselWidgetState();
+      BingeFreeTimerCarouselWidgetState();
 }
 
-class _BingeFreeTimerCarouselWidgetState
+class BingeFreeTimerCarouselWidgetState
     extends ConsumerState<BingeFreeTimerCarouselWidget> {
   late PageController _pageController;
   int _currentPage = 0;
   DateTime? _lastResetTime;
   Timer? _updateTimer;
+  final GlobalKey _timerButtonKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(
       viewportFraction: 0.75, // Show more of adjacent pages
+      initialPage: 0, // Always start on the plant page (index 0)
     );
     _loadLastResetTime();
     _startTimer();
+    print('🎯 Carousel: Widget initialized');
   }
 
   @override
   void dispose() {
+    print('🎯 Carousel: DISPOSING');
     _updateTimer?.cancel();
     _pageController.dispose();
     super.dispose();
@@ -62,146 +74,232 @@ class _BingeFreeTimerCarouselWidgetState
     });
   }
 
+  // Public method to navigate to a specific page (for tutorial use)
+  void navigateToPage(int pageIndex) {
+    print('🎯 navigateToPage method called with index: $pageIndex');
+    print('🎯 Platform: ${kIsWeb ? "WEB" : "MOBILE"}');
+    print('🎯 Widget mounted: $mounted');
+    print('🎯 PageController hasClients: ${_pageController.hasClients}');
+    
+    if (!mounted) {
+      print('❌ Widget not mounted');
+      return;
+    }
+    
+    if (!_pageController.hasClients) {
+      print('❌ PageController has no clients, trying to attach...');
+      // Wait longer on web for the PageView to attach to the controller
+      final delay = kIsWeb ? const Duration(milliseconds: 300) : const Duration(milliseconds: 100);
+      Future.delayed(delay, () {
+        if (mounted && _pageController.hasClients) {
+          print('✅ PageController now has clients, retrying navigation');
+          navigateToPage(pageIndex);
+        } else {
+          print('❌ Still no clients after delay');
+        }
+      });
+      return;
+    }
+    
+    try {
+      print('🎯 Current page: ${_pageController.page}');
+      print('🎯 Position has dimensions: ${_pageController.position.haveDimensions}');
+      print('🎯 Animating to page $pageIndex');
+      
+      // On web, use jumpToPage first, then animate for smoother transition
+      if (kIsWeb) {
+        print('🌐 Using web-specific navigation');
+        // First jump to the page immediately
+        _pageController.jumpToPage(pageIndex);
+        setState(() {
+          _currentPage = pageIndex;
+        });
+        print('✅ Jumped to page $pageIndex');
+      } else {
+        // On mobile, use the normal animation
+        _pageController.animateToPage(
+          pageIndex,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        ).then((_) {
+          print('✅ Animation completed');
+          setState(() {
+            _currentPage = pageIndex;
+          });
+        }).catchError((error) {
+          print('❌ Animation error: $error');
+        });
+      }
+    } catch (e) {
+      print('❌ Exception during navigation: $e');
+    }
+  }
+
+  // Expose the timer button key for tutorials
+  GlobalKey get timerButtonKey => _timerButtonKey;
+
+  // Expose whether timer has been started
+  bool get hasStartedTimer => _lastResetTime != null;
+
+  // Public method to trigger timer button (for tutorial use)
+  void triggerTimerButton() {
+    print('🎯 triggerTimerButton called from tutorial');
+    _handleResetButton();
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Register this widget instance with the key for external access
+    if (widget.carouselKey != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (widget.carouselKey!.currentState == null) {
+          print('⚠️  Carousel key currentState is null');
+        } else {
+          print('✅ Carousel key currentState is available');
+        }
+      });
+    }
+    
     return Column(
       children: [
         // PageView carousel
         SizedBox(
-          height: 400,
-          child: PageView.builder(
-            controller: _pageController,
-            onPageChanged: (index) {
-              setState(() {
-                _currentPage = index;
-              });
-            },
-            itemCount: 2,
-            itemBuilder: (context, index) {
-              return AnimatedBuilder(
-                animation: _pageController,
-                builder: (context, child) {
-                  double value = 1.0;
-                  if (_pageController.position.haveDimensions) {
-                    value = _pageController.page! - index;
-                    value = (1 - (value.abs() * 0.3)).clamp(0.7, 1.0);
-                  }
-                  
-                  final scale = Curves.easeInOut.transform(value);
-                  
-                  return Center(
-                    child: ClipRect(
-                      child: Transform.scale(
-                        scale: scale,
-                        child: Opacity(
-                          opacity: value,
-                          child: child,
-                        ),
-                      ),
-                    ),
-                  );
-                },
-                child: index == 0
-                    ? const TreeGrowthWidget()
-                    : _buildBingeFreeTimer(),
-              );
-            },
-          ),
-        ),
-        const SizedBox(height: 16),
-        // Navigation buttons and dot indicators
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Left arrow
-            if (_currentPage > 0)
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-                  color: const Color(0xFF4CAF50),
-                  onPressed: () {
+          height: 480, // Increased height to accommodate shadows (400 + 80 for top/bottom shadows)
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 30), // Increased vertical padding for shadows
+            child: GestureDetector(
+              onPanUpdate: (details) {
+                // Handle mouse drag for web compatibility
+                if (details.delta.dx.abs() > details.delta.dy.abs()) {
+                  // Horizontal drag detected
+                  final sensitivity = 0.5;
+                  final offset = details.delta.dx * sensitivity;
+                  _pageController.position.moveTo(_pageController.position.pixels - offset);
+                }
+              },
+              onPanEnd: (details) {
+                // Snap to nearest page after drag ends
+                final velocity = details.velocity.pixelsPerSecond.dx;
+                if (velocity.abs() > 500) {
+                  // Fast swipe - go to next/previous page
+                  if (velocity > 0 && _currentPage > 0) {
                     _pageController.previousPage(
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
                     );
-                  },
-                ),
-              )
-            else
-              const SizedBox(width: 48), // Placeholder for alignment when arrow not visible
-            
-            const SizedBox(width: 16),
-            
-            // Dot indicators
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(2, (index) {
-                return GestureDetector(
-                  onTap: () {
-                    _pageController.animateToPage(
-                      index,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    );
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 6),
-                    width: _currentPage == index ? 10 : 8,
-                    height: _currentPage == index ? 10 : 8,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: _currentPage == index
-                          ? const Color(0xFF4CAF50)
-                          : Colors.grey[300],
-                    ),
-                  ),
-                );
-              }),
-            ),
-            
-            const SizedBox(width: 16),
-            
-            // Right arrow
-            if (_currentPage < 1)
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_forward_ios, size: 20),
-                  color: const Color(0xFF4CAF50),
-                  onPressed: () {
+                  } else if (velocity < 0 && _currentPage < 1) {
                     _pageController.nextPage(
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
                     );
-                  },
+                  } else {
+                    // Snap back to current page
+                    _pageController.animateToPage(
+                      _currentPage,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  }
+                } else {
+                  // Slow drag - snap to nearest page
+                  final currentOffset = _pageController.position.pixels;
+                  final pageWidth = _pageController.position.viewportDimension;
+                  final targetPage = (currentOffset / pageWidth).round();
+                  _pageController.animateToPage(
+                    targetPage.clamp(0, 1),
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                }
+              },
+              child: PageView.builder(
+                clipBehavior: Clip.none, // Prevent clipping of shadows
+                controller: _pageController,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                },
+                itemCount: 2,
+                itemBuilder: (context, index) {
+                  return AnimatedBuilder(
+                    animation: _pageController,
+                    builder: (context, child) {
+                      double value = 1.0;
+                      if (_pageController.position.haveDimensions) {
+                        value = _pageController.page! - index;
+                        value = (1 - (value.abs() * 0.3)).clamp(0.7, 1.0);
+                      }
+                      
+                      final scale = Curves.easeInOut.transform(value);
+                      
+                      return Center(
+                        child: Transform.scale(
+                          scale: scale,
+                          child: Opacity(
+                            opacity: value,
+                            child: child,
+                          ),
+                        ),
+                      );
+                    },
+                    child: index == 0
+                        ? _buildTreeContainer()
+                        : _buildBingeFreeTimer(),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        // Dot indicators only
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(2, (index) {
+            return GestureDetector(
+              onTap: () {
+                _pageController.animateToPage(
+                  index,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+              },
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 6),
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _currentPage == index
+                      ? const Color(0xFF4CAF50)
+                      : Colors.grey[300],
                 ),
-              )
-            else
-              const SizedBox(width: 48), // Placeholder for alignment when arrow not visible
-          ],
+              ),
+            );
+          }),
         ),
       ],
+    );
+  }
+
+  Widget _buildTreeContainer() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(40.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 2,
+            blurRadius: 20,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: TreeGrowthWidget(treeImageKey: widget.treeWidgetKey),
     );
   }
 
@@ -209,7 +307,9 @@ class _BingeFreeTimerCarouselWidgetState
     if (_lastResetTime == null) {
       return Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(12),
+        constraints: const BoxConstraints(minHeight: 360),
+        alignment: Alignment.center,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(40.0),
@@ -223,24 +323,27 @@ class _BingeFreeTimerCarouselWidgetState
           ],
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               'Start tracking your binge-free progress',
-              style: GoogleFonts.fredoka(
+              style: GoogleFonts.quicksand(
                 color: Colors.black87,
-                fontSize: 16,
+                fontSize: 18,
                 fontWeight: FontWeight.w500,
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
             ElevatedButton.icon(
+              key: _timerButtonKey,
               onPressed: _handleResetButton,
               icon: const Icon(Icons.play_arrow, size: 20),
               label: Text(
                 'Start Timer',
-                style: GoogleFonts.fredoka(
-                  fontSize: 16,
+                style: GoogleFonts.quicksand(
+                  fontSize: 18,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -318,10 +421,10 @@ class _BingeFreeTimerCarouselWidgetState
         borderRadius: BorderRadius.circular(40.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 1,
-            blurRadius: 16,
-            offset: const Offset(0, 4),
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 2,
+            blurRadius: 20,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -332,15 +435,16 @@ class _BingeFreeTimerCarouselWidgetState
           const SizedBox(height: 16),
           // Reset Timer button
           ElevatedButton.icon(
+            key: _timerButtonKey,
             onPressed: _handleResetButton,
             icon: const Icon(Icons.refresh, size: 20),
-            label: Text(
-              'Reset Timer',
-              style: GoogleFonts.fredoka(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+              label: Text(
+                'Reset',
+                style: GoogleFonts.quicksand(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
-            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF4CAF50),
               foregroundColor: Colors.white,
@@ -360,12 +464,12 @@ class _BingeFreeTimerCarouselWidgetState
       int hours, int minutes, int seconds) {
     return Column(
       children: [
-        // Circular progress rings - larger size
-        SizedBox(
-          width: 220,
-          height: 220,
-          child: CustomPaint(
-            size: const Size(220, 220),
+          // Circular progress rings - larger size
+          SizedBox(
+            width: 240,
+            height: 240,
+            child: CustomPaint(
+              size: const Size(240, 240),
             painter: CircularTimerPainter(
               days: days,
               hours: hours,
@@ -374,61 +478,64 @@ class _BingeFreeTimerCarouselWidgetState
             ),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         // Text above the time units
         Text(
           "You've been binge-free for:",
-          style: GoogleFonts.fredoka(
+          style: GoogleFonts.quicksand(
             color: Colors.black87,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
           ),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 8),
-        // Time units displayed in a row below the circle
+        const SizedBox(height: 2),
+        // Time units displayed in a row below the circle with minimal gap
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: timeUnits.map((unit) {
-            final fontSize = 18.0;
-            final labelSize = 10.0;
+            final fontSize = 28.0;
 
-            // Determine color based on the time unit type
+            // Determine color based on the time unit type - matching the bright progress ring colors
             Color unitColor;
             final label = unit['label'] as String;
             if (label.contains('day')) {
-              unitColor = const Color(0xFF4CAF50); // Green for days
+              unitColor = const Color(0xFF00FF88); // Electric lime green for days
             } else if (label.contains('hrs')) {
-              unitColor = const Color(0xFF9C27B0); // Purple for hours
+              unitColor = const Color(0xFFFF1744); // Electric pink/red for hours
             } else if (label.contains('min')) {
-              unitColor = const Color(0xFFFF9800); // Orange for minutes
+              unitColor = const Color(0xFFFFAB00); // Electric amber for minutes
             } else {
-              unitColor = const Color(0xFF2196F3); // Blue for seconds
+              unitColor = const Color(0xFF00E5FF); // Electric cyan for seconds
             }
 
             return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 2),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    unit['value'] as String,
-                    style: GoogleFonts.fredoka(
-                      fontSize: fontSize,
-                      fontWeight: FontWeight.bold,
-                      color: unitColor,
+              margin: const EdgeInsets.symmetric(horizontal: 5), // Added space between time units
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    // Time value
+                    TextSpan(
+                      text: unit['value'] as String,
+                      style: GoogleFonts.quicksand(
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.bold,
+                        color: unitColor,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 1),
-                  Text(
-                    unit['label'] as String,
-                    style: GoogleFonts.fredoka(
-                      fontSize: labelSize,
-                      color: unitColor,
-                      fontWeight: FontWeight.w500,
+                    // Very small space between value and unit
+                    const TextSpan(text: ' '),
+                    // Time unit
+                    TextSpan(
+                      text: unit['label'] as String,
+                      style: GoogleFonts.quicksand(
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.bold,
+                        color: unitColor,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           }).toList(),
@@ -441,44 +548,47 @@ class _BingeFreeTimerCarouselWidgetState
     try {
       final isFirstTime = _lastResetTime == null;
 
-      // Show confirmation dialog
-      final confirmed = await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Row(
-            children: [
-              Icon(
-                isFirstTime ? Icons.play_arrow : Icons.refresh,
-                color: isFirstTime ? const Color(0xFF4CAF50) : Colors.orange,
+      // For first time, start immediately without confirmation
+      // For reset, show confirmation dialog
+      bool confirmed = true;
+      
+      if (!isFirstTime) {
+        // Show confirmation dialog only for reset
+        confirmed = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Row(
+              children: [
+                Icon(
+                  Icons.refresh,
+                  color: Colors.orange,
+                ),
+                const SizedBox(width: 8),
+                Text('Reset Timer'),
+              ],
+            ),
+            content: Text(
+              'Are you sure you want to reset your timer? This will log a new reset time.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Cancel'),
               ),
-              const SizedBox(width: 8),
-              Text(isFirstTime ? 'Start Timer' : 'Reset Timer'),
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
+                ),
+                child: Text('Reset'),
+              ),
             ],
           ),
-          content: Text(
-            isFirstTime
-                ? 'Ready to start tracking your binge-free progress?'
-                : 'Are you sure you want to reset your timer? This will log a new reset time.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    isFirstTime ? const Color(0xFF4CAF50) : Colors.orange,
-                foregroundColor: Colors.white,
-              ),
-              child: Text(isFirstTime ? 'Start' : 'Reset'),
-            ),
-          ],
-        ),
-      );
+        ) ?? false;
+      }
 
-      if (confirmed == true) {
+      if (confirmed) {
         // Show loading indicator
         if (mounted) {
           showDialog(
@@ -572,11 +682,11 @@ class CircularTimerPainter extends CustomPainter {
     final minutesRadius = hoursRadius - strokeWidth - 8;
     final secondsRadius = minutesRadius - strokeWidth - 8;
 
-    // App-themed colors for better visual variety
-    final daysColor = const Color(0xFF4CAF50); // Light Green (matches app theme)
-    final hoursColor = const Color(0xFF9C27B0); // Purple
-    final minutesColor = const Color(0xFFFF9800); // Orange
-    final secondsColor = const Color(0xFF2196F3); // Blue
+    // Bright, youthful, energetic colors that match the app's theme
+    final daysColor = const Color(0xFF00FF88); // Electric lime green for days
+    final hoursColor = const Color(0xFFFF1744); // Electric pink/red for hours
+    final minutesColor = const Color(0xFFFFAB00); // Electric amber for minutes
+    final secondsColor = const Color(0xFF00E5FF); // Electric cyan for seconds
 
     // Background rings (light gray)
     _drawRing(canvas, center, daysRadius, strokeWidth, Colors.grey[200]!, 1.0,
@@ -605,49 +715,7 @@ class CircularTimerPainter extends CustomPainter {
     final sweepAngle = 2 * pi * progress;
     final rect = Rect.fromCircle(center: center, radius: radius);
 
-    // Draw effects for progress rings
-    if (addGlow && progress > 0) {
-      // Outer shadow (drop shadow)
-      final outerShadowPaint = Paint()
-        ..color = Colors.black.withOpacity(0.4)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = strokeWidth
-        ..strokeCap = StrokeCap.round
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
-
-      canvas.drawArc(rect, startAngle, sweepAngle, false, outerShadowPaint);
-
-      // Outer glow (reduced by 2/3)
-      final glowPaint1 = Paint()
-        ..color = color.withOpacity(0.13) // 0.4 * 1/3 ≈ 0.13
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = strokeWidth + 2 // 6 * 1/3 = 2
-        ..strokeCap = StrokeCap.round
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1.7); // 5 * 1/3 ≈ 1.7
-
-      canvas.drawArc(rect, startAngle, sweepAngle, false, glowPaint1);
-
-      // Inner glow (reduced by 2/3)
-      final glowPaint2 = Paint()
-        ..color = color.withOpacity(0.2) // 0.6 * 1/3 = 0.2
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = strokeWidth + 1 // 3 * 1/3 = 1
-        ..strokeCap = StrokeCap.round
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 0.7); // 2 * 1/3 ≈ 0.7
-
-      canvas.drawArc(rect, startAngle, sweepAngle, false, glowPaint2);
-
-      // Outer stroke (border)
-      final outerStrokePaint = Paint()
-        ..color = color.withOpacity(0.8)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = strokeWidth + 2
-        ..strokeCap = StrokeCap.round;
-
-      canvas.drawArc(rect, startAngle, sweepAngle, false, outerStrokePaint);
-    }
-
-    // Main ring
+    // Main ring only - no glow effects
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
