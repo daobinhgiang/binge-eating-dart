@@ -13,6 +13,7 @@ import '../../models/stage.dart';
 import '../../models/lesson.dart';
 import '../providers/firebase_analytics_provider.dart';
 import '../core/services/exp_service.dart';
+import '../core/services/navigation_service.dart';
 import '../models/todo_item.dart';
 import '../core/services/user_learning_service.dart';
 import '../widgets/level_badge.dart';
@@ -321,6 +322,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                       ),
                     ),
+                  ],
                 ],
               ),
             ),
@@ -1013,7 +1015,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: InkWell(
-        onTap: () => _navigateToTodoItem(todo),
+        // Only allow navigation if the quest is not completed
+        onTap: todo.isCompleted ? null : () => _navigateToTodoItem(todo),
         borderRadius: BorderRadius.circular(12),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -1280,76 +1283,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> _navigateToTodoItem(TodoItem todo) async {
-    // Navigate based on the todo type and activity ID
-    switch (todo.type) {
-      case TodoType.lesson:
-        if (todo.activityId.isNotEmpty) {
-          _navigateToLessonById(todo.activityId);
-        }
-        break;
-      case TodoType.journal:
-        if (todo.activityId.isNotEmpty) {
-          _navigateToJournalById(todo.activityId);
-        }
-        break;
-      case TodoType.tool:
-        if (todo.activityId.isNotEmpty) {
-          _navigateToExerciseById(todo.activityId);
-        }
-        break;
-    }
+    // Use NavigationService which correctly handles generic quest IDs
+    // like 'complete_lessons', 'daily_journal', and 'daily_exercise'
+    final navigationService = NavigationService();
+    navigationService.navigateToTodoActivity(context, todo, ref);
   }
-
-  void _navigateToLessonById(String lessonId) {
-    // Same logic as existing lesson navigation
-    if (lessonId.startsWith('lesson_1_') || lessonId.startsWith('lesson_2_') || lessonId.startsWith('lesson_3_')) {
-      context.push('/lesson/${lessonId.replaceFirst('lesson_', '')}');
-    } else if (lessonId.startsWith('lesson_s2_')) {
-      context.push('/lesson/${lessonId.replaceFirst('lesson_s2_', 's2_')}');
-    } else if (lessonId.startsWith('lesson_s3_')) {
-      context.push('/lesson/${lessonId.replaceFirst('lesson_s3_', 's3_')}');
-    } else {
-      context.push('/lesson/${lessonId.replaceFirst('lesson_', '')}');
-    }
-  }
-
-  void _navigateToJournalById(String journalType) {
-    // Normalize the journal type string
-    final normalized = journalType.toLowerCase().replaceAll(' ', '_').replaceAll('-', '_');
-    
-    switch (normalized) {
-      case 'food_diary':
-      case 'food':
-        context.push('/journal/food-diary');
-        break;
-      case 'weight_diary':
-      case 'weight':
-        context.push('/journal/weight-diary');
-        break;
-      case 'body_image_diary':
-      case 'body_image':
-        context.push('/journal/body-image-diary');
-        break;
-      default:
-        // Try to construct the route from the journalType
-        if (normalized.contains('food')) {
-          context.push('/journal/food-diary');
-        } else if (normalized.contains('weight')) {
-          context.push('/journal/weight-diary');
-        } else if (normalized.contains('body') || normalized.contains('image')) {
-          context.push('/journal/body-image-diary');
-        } else {
-          // Fallback to generic journal page if we can't determine the type
-          context.push('/journal');
-        }
-    }
-  }
-
-  void _navigateToExerciseById(String exerciseName) {
-    final normalized = exerciseName.toLowerCase().replaceAll(' ', '-');
-    context.push('/exercises/$normalized');
-  }
-
 
   String _getWeekdayName(int weekday) {
     const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
