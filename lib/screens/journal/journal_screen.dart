@@ -50,9 +50,9 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                 automaticallyImplyLeading: false,
                 title: Text(
                   'Journal',
-                  style: GoogleFonts.fredoka(
+                  style: GoogleFonts.quicksand(
                     fontSize: 24,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w900,
                     color: Colors.black,
                   ),
                 ),
@@ -335,7 +335,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                                 padding: EdgeInsets.symmetric(horizontal: buttonHeight * 0.08),
                                 child: Text(
                                   '\$${total.toStringAsFixed(2)}',
-                                  style: GoogleFonts.fredoka(
+                                  style: GoogleFonts.quicksand(
                                     fontSize: amountFontSize,
                                     color: Colors.amber[800],
                                     fontWeight: FontWeight.w700,
@@ -357,7 +357,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                                 padding: EdgeInsets.symmetric(horizontal: buttonHeight * 0.08),
                                 child: Text(
                                   '\$0.00',
-                                  style: GoogleFonts.fredoka(
+                                  style: GoogleFonts.quicksand(
                                     fontSize: amountFontSize,
                                     color: Colors.amber[800],
                                     fontWeight: FontWeight.w700,

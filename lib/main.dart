@@ -29,7 +29,6 @@ import 'screens/profile/web_blocker_screen.dart';
 import 'screens/chat/chat_screen.dart';
 import 'screens/chat/realtime_journaling_screen.dart';
 import 'screens/chat/accountability_partner_screen.dart';
-import 'screens/motivation/motivation_screen.dart';
 import 'screens/insights/insights_screen.dart';
 // Journal imports
 import 'screens/journal/food_diary_survey_screen.dart';
@@ -209,30 +208,30 @@ class _BEDAppState extends ConsumerState<BEDApp> {
           useMaterial3: true,
           // Font configuration
           textTheme: TextTheme(
-            // Headers and titles use Fredoka
-            displayLarge: GoogleFonts.fredoka(fontSize: 57, fontWeight: FontWeight.w400),
-            displayMedium: GoogleFonts.fredoka(fontSize: 45, fontWeight: FontWeight.w400),
-            displaySmall: GoogleFonts.fredoka(fontSize: 36, fontWeight: FontWeight.w400),
-            headlineLarge: GoogleFonts.fredoka(fontSize: 32, fontWeight: FontWeight.w400),
-            headlineMedium: GoogleFonts.fredoka(fontSize: 28, fontWeight: FontWeight.w400),
-            headlineSmall: GoogleFonts.fredoka(fontSize: 24, fontWeight: FontWeight.w400),
-            titleLarge: GoogleFonts.fredoka(fontSize: 22, fontWeight: FontWeight.w500),
-            titleMedium: GoogleFonts.fredoka(fontSize: 16, fontWeight: FontWeight.w500),
-            titleSmall: GoogleFonts.fredoka(fontSize: 14, fontWeight: FontWeight.w500),
-            // Body content uses Nunito
-            bodyLarge: GoogleFonts.nunito(fontSize: 16, fontWeight: FontWeight.w400),
-            bodyMedium: GoogleFonts.nunito(fontSize: 14, fontWeight: FontWeight.w400),
-            bodySmall: GoogleFonts.nunito(fontSize: 12, fontWeight: FontWeight.w400),
-            labelLarge: GoogleFonts.nunito(fontSize: 14, fontWeight: FontWeight.w500),
-            labelMedium: GoogleFonts.nunito(fontSize: 12, fontWeight: FontWeight.w500),
-            labelSmall: GoogleFonts.nunito(fontSize: 11, fontWeight: FontWeight.w500),
+            // Headers and titles use Quicksand with increased font weights
+            displayLarge: GoogleFonts.quicksand(fontSize: 57, fontWeight: FontWeight.w800),
+            displayMedium: GoogleFonts.quicksand(fontSize: 45, fontWeight: FontWeight.w700),
+            displaySmall: GoogleFonts.quicksand(fontSize: 36, fontWeight: FontWeight.w700),
+            headlineLarge: GoogleFonts.quicksand(fontSize: 32, fontWeight: FontWeight.w700),
+            headlineMedium: GoogleFonts.quicksand(fontSize: 28, fontWeight: FontWeight.w700),
+            headlineSmall: GoogleFonts.quicksand(fontSize: 24, fontWeight: FontWeight.w700),
+            titleLarge: GoogleFonts.quicksand(fontSize: 22, fontWeight: FontWeight.w700),
+            titleMedium: GoogleFonts.quicksand(fontSize: 16, fontWeight: FontWeight.w700),
+            titleSmall: GoogleFonts.quicksand(fontSize: 14, fontWeight: FontWeight.w700),
+            // Body content uses Inter
+            bodyLarge: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w400),
+            bodyMedium: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w400),
+            bodySmall: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w400),
+            labelLarge: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500),
+            labelMedium: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500),
+            labelSmall: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w500),
           ),
           appBarTheme: AppBarTheme(
             centerTitle: true,
             elevation: 0,
-            titleTextStyle: GoogleFonts.fredoka(
+            titleTextStyle: GoogleFonts.quicksand(
               fontSize: 20,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w800,
               color: Colors.black,
             ),
           ),
@@ -263,8 +262,8 @@ class _BEDAppState extends ConsumerState<BEDApp> {
               horizontal: 16,
               vertical: 16,
             ),
-            labelStyle: GoogleFonts.nunito(),
-            hintStyle: GoogleFonts.nunito(),
+            labelStyle: GoogleFonts.inter(),
+            hintStyle: GoogleFonts.inter(),
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
@@ -278,7 +277,7 @@ class _BEDAppState extends ConsumerState<BEDApp> {
                 horizontal: 24,
                 vertical: 16,
               ),
-              textStyle: GoogleFonts.nunito(
+              textStyle: GoogleFonts.inter(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
@@ -433,10 +432,6 @@ final _router = GoRouter(
     GoRoute(
       path: '/accountability-partner',
       builder: (context, state) => const AuthGuard(child: AccountabilityPartnerScreen()),
-    ),
-    GoRoute(
-      path: '/motivation',
-      builder: (context, state) => const AuthGuard(child: MotivationScreen()),
     ),
     GoRoute(
       path: '/insights',

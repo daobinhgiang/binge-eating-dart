@@ -195,7 +195,7 @@ class MealPlanningScreen extends ConsumerWidget {
                   fit: BoxFit.scaleDown,
                   child: Text(
                     'Meal Planning',
-                    style: GoogleFonts.fredoka(
+                    style: GoogleFonts.quicksand(
                       fontSize: 28,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
@@ -234,7 +234,7 @@ class MealPlanningScreen extends ConsumerWidget {
           const SizedBox(height: 12),
           Text(
             'Plan and organize your meals effectively',
-            style: GoogleFonts.fredoka(
+            style: GoogleFonts.quicksand(
               fontSize: 16,
               color: Colors.green[700],
               fontWeight: FontWeight.w500,

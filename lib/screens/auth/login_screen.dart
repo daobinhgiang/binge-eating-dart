@@ -51,7 +51,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         // Tagline with better spacing
                         Text(
                           'Take Control Over\nBinge Eating',
-                          style: GoogleFonts.fredoka(
+                          style: GoogleFonts.quicksand(
                             color: Colors.grey[700],
                             fontSize: 32,
                             fontWeight: FontWeight.w600,

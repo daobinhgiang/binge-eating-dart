@@ -328,7 +328,7 @@ class BingeFreeTimerCarouselWidgetState
           children: [
             Text(
               'Start tracking your binge-free progress',
-              style: GoogleFonts.fredoka(
+              style: GoogleFonts.quicksand(
                 color: Colors.black87,
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
@@ -342,7 +342,7 @@ class BingeFreeTimerCarouselWidgetState
               icon: const Icon(Icons.play_arrow, size: 20),
               label: Text(
                 'Start Timer',
-                style: GoogleFonts.fredoka(
+                style: GoogleFonts.quicksand(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                 ),
@@ -440,7 +440,7 @@ class BingeFreeTimerCarouselWidgetState
             icon: const Icon(Icons.refresh, size: 20),
             label: Text(
               'Reset Timer',
-              style: GoogleFonts.fredoka(
+              style: GoogleFonts.quicksand(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
@@ -482,7 +482,7 @@ class BingeFreeTimerCarouselWidgetState
         // Text above the time units
         Text(
           "You've been binge-free for:",
-          style: GoogleFonts.fredoka(
+          style: GoogleFonts.quicksand(
             color: Colors.black87,
             fontSize: 16,
             fontWeight: FontWeight.w500,
@@ -517,7 +517,7 @@ class BingeFreeTimerCarouselWidgetState
                 children: [
                   Text(
                     unit['value'] as String,
-                    style: GoogleFonts.fredoka(
+                    style: GoogleFonts.quicksand(
                       fontSize: fontSize,
                       fontWeight: FontWeight.bold,
                       color: unitColor,
@@ -526,7 +526,7 @@ class BingeFreeTimerCarouselWidgetState
                   const SizedBox(height: 1),
                   Text(
                     unit['label'] as String,
-                    style: GoogleFonts.fredoka(
+                    style: GoogleFonts.quicksand(
                       fontSize: labelSize,
                       color: unitColor,
                       fontWeight: FontWeight.w500,

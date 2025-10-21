@@ -157,7 +157,7 @@ class FoodDiaryMainScreen extends ConsumerWidget {
                   fit: BoxFit.scaleDown,
                   child: Text(
                     'Food Diary',
-                    style: GoogleFonts.fredoka(
+                    style: GoogleFonts.quicksand(
                       fontSize: 28,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
@@ -196,7 +196,7 @@ class FoodDiaryMainScreen extends ConsumerWidget {
           const SizedBox(height: 12),
           Text(
             'Week $weekNumber',
-            style: GoogleFonts.fredoka(
+            style: GoogleFonts.quicksand(
               fontSize: 24,
               color: Colors.green[700],
               fontWeight: FontWeight.w600,
@@ -206,7 +206,7 @@ class FoodDiaryMainScreen extends ConsumerWidget {
           const SizedBox(height: 8),
           Text(
             'Track your eating patterns and behaviors',
-            style: GoogleFonts.fredoka(
+            style: GoogleFonts.quicksand(
               fontSize: 14,
               color: Colors.green[600],
               fontWeight: FontWeight.w400,
@@ -250,7 +250,7 @@ class FoodDiaryMainScreen extends ConsumerWidget {
               const SizedBox(width: 8),
               Text(
                 'Add New Entry',
-                style: GoogleFonts.fredoka(
+                style: GoogleFonts.quicksand(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
