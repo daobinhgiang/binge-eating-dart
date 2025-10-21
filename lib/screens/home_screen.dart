@@ -192,49 +192,54 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         
         return Row(
           children: [
-            // Level badge
-            LevelBadge(
-              level: userExp.level,
-              size: 56,
-              showLabel: true,
+            // Vertical progress bar (only show if not max level)
+            if (!isMaxLevel) ...[
+              Container(
+                width: 4,
+                height: 24, // Height to match the text
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(2),
+                  color: Colors.grey[200], // Light grey background
+                ),
+                child: FractionallySizedBox(
+                  alignment: Alignment.bottomCenter,
+                  heightFactor: progress,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(2),
+                      color: const Color(0xFF4CAF50), // Green progress
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+            ],
+            // Level text
+            Text(
+              'Level ${userExp.level}',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w900,
+                color: textColor,
+                fontSize: 20,
+              ),
             ),
             const SizedBox(width: 16),
-            // EXP info
+            // EXP text
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     '${userExp.exp} EXP',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w900,
                       color: textColor,
                       fontSize: 20,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  if (!isMaxLevel) ...[
-                    Text(
-                      '$expRemaining to Level ${userExp.level + 1}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: subtextColor,
-                        fontSize: 12,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: LinearProgressIndicator(
-                        value: progress,
-                        minHeight: 6,
-                        backgroundColor: Colors.grey[200],  // Light grey background
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          const Color(0xFF4CAF50),  // Always use green for progress
-                        ),
-                      ),
-                    ),
-                  ] else
+                  if (isMaxLevel) ...[
+                    const SizedBox(height: 4),
                     Text(
                       'Max Level!',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -243,6 +248,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         fontSize: 12,
                       ),
                     ),
+                  ],
                 ],
               ),
             ),

@@ -252,7 +252,7 @@ class BingeFreeTimerCarouselWidgetState
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 8),
         // Dot indicators only
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -438,13 +438,13 @@ class BingeFreeTimerCarouselWidgetState
             key: _timerButtonKey,
             onPressed: _handleResetButton,
             icon: const Icon(Icons.refresh, size: 20),
-            label: Text(
-              'Reset Timer',
-              style: GoogleFonts.quicksand(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
+              label: Text(
+                'Reset',
+                style: GoogleFonts.quicksand(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
-            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF4CAF50),
               foregroundColor: Colors.white,
@@ -478,61 +478,64 @@ class BingeFreeTimerCarouselWidgetState
             ),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         // Text above the time units
         Text(
           "You've been binge-free for:",
           style: GoogleFonts.quicksand(
             color: Colors.black87,
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
           ),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 8),
-        // Time units displayed in a row below the circle
+        const SizedBox(height: 2),
+        // Time units displayed in a row below the circle with minimal gap
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-            children: timeUnits.map((unit) {
-              final fontSize = 20.0;
-              final labelSize = 11.0;
+          children: timeUnits.map((unit) {
+            final fontSize = 28.0;
 
-            // Determine color based on the time unit type
+            // Determine color based on the time unit type - matching the bright progress ring colors
             Color unitColor;
             final label = unit['label'] as String;
             if (label.contains('day')) {
-              unitColor = const Color(0xFF4CAF50); // Green for days
+              unitColor = const Color(0xFF00FF88); // Electric lime green for days
             } else if (label.contains('hrs')) {
-              unitColor = const Color(0xFF9C27B0); // Purple for hours
+              unitColor = const Color(0xFFFF1744); // Electric pink/red for hours
             } else if (label.contains('min')) {
-              unitColor = const Color(0xFFFF9800); // Orange for minutes
+              unitColor = const Color(0xFFFFAB00); // Electric amber for minutes
             } else {
-              unitColor = const Color(0xFF2196F3); // Blue for seconds
+              unitColor = const Color(0xFF00E5FF); // Electric cyan for seconds
             }
 
             return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 2),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    unit['value'] as String,
-                    style: GoogleFonts.quicksand(
-                      fontSize: fontSize,
-                      fontWeight: FontWeight.bold,
-                      color: unitColor,
+              margin: const EdgeInsets.symmetric(horizontal: 5), // Added space between time units
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    // Time value
+                    TextSpan(
+                      text: unit['value'] as String,
+                      style: GoogleFonts.quicksand(
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.bold,
+                        color: unitColor,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 1),
-                  Text(
-                    unit['label'] as String,
-                    style: GoogleFonts.quicksand(
-                      fontSize: labelSize,
-                      color: unitColor,
-                      fontWeight: FontWeight.w500,
+                    // Very small space between value and unit
+                    const TextSpan(text: ' '),
+                    // Time unit
+                    TextSpan(
+                      text: unit['label'] as String,
+                      style: GoogleFonts.quicksand(
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.bold,
+                        color: unitColor,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           }).toList(),
@@ -679,11 +682,11 @@ class CircularTimerPainter extends CustomPainter {
     final minutesRadius = hoursRadius - strokeWidth - 8;
     final secondsRadius = minutesRadius - strokeWidth - 8;
 
-    // App-themed colors for better visual variety
-    final daysColor = const Color(0xFF4CAF50); // Light Green (matches app theme)
-    final hoursColor = const Color(0xFF9C27B0); // Purple
-    final minutesColor = const Color(0xFFFF9800); // Orange
-    final secondsColor = const Color(0xFF2196F3); // Blue
+    // Bright, youthful, energetic colors that match the app's theme
+    final daysColor = const Color(0xFF00FF88); // Electric lime green for days
+    final hoursColor = const Color(0xFFFF1744); // Electric pink/red for hours
+    final minutesColor = const Color(0xFFFFAB00); // Electric amber for minutes
+    final secondsColor = const Color(0xFF00E5FF); // Electric cyan for seconds
 
     // Background rings (light gray)
     _drawRing(canvas, center, daysRadius, strokeWidth, Colors.grey[200]!, 1.0,
@@ -712,49 +715,7 @@ class CircularTimerPainter extends CustomPainter {
     final sweepAngle = 2 * pi * progress;
     final rect = Rect.fromCircle(center: center, radius: radius);
 
-    // Draw effects for progress rings
-    if (addGlow && progress > 0) {
-      // Outer shadow (drop shadow)
-      final outerShadowPaint = Paint()
-        ..color = Colors.black.withOpacity(0.4)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = strokeWidth
-        ..strokeCap = StrokeCap.round
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
-
-      canvas.drawArc(rect, startAngle, sweepAngle, false, outerShadowPaint);
-
-      // Outer glow (reduced by 2/3)
-      final glowPaint1 = Paint()
-        ..color = color.withOpacity(0.13) // 0.4 * 1/3 ≈ 0.13
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = strokeWidth + 2 // 6 * 1/3 = 2
-        ..strokeCap = StrokeCap.round
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1.7); // 5 * 1/3 ≈ 1.7
-
-      canvas.drawArc(rect, startAngle, sweepAngle, false, glowPaint1);
-
-      // Inner glow (reduced by 2/3)
-      final glowPaint2 = Paint()
-        ..color = color.withOpacity(0.2) // 0.6 * 1/3 = 0.2
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = strokeWidth + 1 // 3 * 1/3 = 1
-        ..strokeCap = StrokeCap.round
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 0.7); // 2 * 1/3 ≈ 0.7
-
-      canvas.drawArc(rect, startAngle, sweepAngle, false, glowPaint2);
-
-      // Outer stroke (border)
-      final outerStrokePaint = Paint()
-        ..color = color.withOpacity(0.8)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = strokeWidth + 2
-        ..strokeCap = StrokeCap.round;
-
-      canvas.drawArc(rect, startAngle, sweepAngle, false, outerStrokePaint);
-    }
-
-    // Main ring
+    // Main ring only - no glow effects
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke

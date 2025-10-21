@@ -239,7 +239,7 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
           'Level ${userExpData.level}: ${currentTreeData.displayName}',
           style: GoogleFonts.quicksand(
             color: Colors.black87,
-            fontSize: 42,
+            fontSize: 30,
             fontWeight: FontWeight.w700,
           ),
           textAlign: TextAlign.center,
@@ -250,7 +250,7 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
           currentTreeData.description,
           style: GoogleFonts.quicksand(
             color: Colors.grey[600],
-            fontSize: 18,
+            fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
           textAlign: TextAlign.center,
@@ -262,19 +262,18 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
             'You\'ve reached the maximum level!',
             style: GoogleFonts.quicksand(
               color: const Color(0xFF4CAF50),
-              fontSize: 13,
+              fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
             textAlign: TextAlign.center,
           )
         else if (nextTreeName != null)
           Text(
-            'Next: $nextTreeName',
+            'Next Level: $nextTreeName',
             style: GoogleFonts.quicksand(
               color: Colors.grey[500],
-              fontSize: 12,
+              fontSize: 11,
               fontWeight: FontWeight.w600,
-              fontStyle: FontStyle.italic,
             ),
             textAlign: TextAlign.center,
           ),

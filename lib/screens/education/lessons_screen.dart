@@ -486,7 +486,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
             decoration: BoxDecoration(
               color: _getStageColor(stage.stageNumber),
-              borderRadius: BorderRadius.circular(18.0),
+              borderRadius: BorderRadius.circular(30.0),
               boxShadow: [
                 BoxShadow(
                   color: _getStageColor(stage.stageNumber).withOpacity(0.3),
@@ -505,7 +505,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
                       Text(
                         'STAGE ${stage.stageNumber}, CHAPTER ${chapter.chapterNumber}',
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: Color(0xFFE0E0E0), // Slightly more grey than white
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.2,

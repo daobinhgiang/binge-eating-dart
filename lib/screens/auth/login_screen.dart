@@ -54,7 +54,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           style: GoogleFonts.quicksand(
                             color: Colors.grey[700],
                             fontSize: 32,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w900,
                             height: 1.3,
                           ),
                           textAlign: TextAlign.center,
