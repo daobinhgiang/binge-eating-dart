@@ -192,95 +192,124 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         final subtextColor = Colors.grey[700]!;
         
         return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Vertical progress bar (only show if not max level)
-            if (!isMaxLevel) ...[
-              Container(
-                width: 4,
-                height: 24, // Height to match the text
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(2),
-                  color: Colors.grey[200], // Light grey background
-                ),
-                child: FractionallySizedBox(
-                  alignment: Alignment.bottomCenter,
-                  heightFactor: progress,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(2),
-                      color: const Color(0xFF4CAF50), // Green progress
+            // Nurtra logo on the left
+            Container(
+              height: 40, // Same height as the white containers (8px padding * 2 + 24px text height)
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Image.asset(
+                'assets/nurtra.png',
+                height: 24, // Height to match the text in other containers
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  // Fallback to a simple icon if image fails to load
+                  return const Icon(
+                    Icons.psychology,
+                    color: Color(0xFF4CAF50),
+                    size: 24,
+                  );
+                },
+              ),
+            ),
+            // Level and EXP containers on the right
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Level text in white container with progress bar
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Vertical progress bar (only show if not max level)
+                  if (!isMaxLevel) ...[
+                    Container(
+                      width: 4,
+                      height: 24, // Height to match the text
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(2),
+                        color: Colors.grey[200], // Light grey background
+                      ),
+                      child: FractionallySizedBox(
+                        alignment: Alignment.bottomCenter,
+                        heightFactor: progress,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(2),
+                            color: const Color(0xFF4CAF50), // Green progress
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                  // Level text
+                  Text(
+                    'Level ${userExp.level}',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w900,
+                      color: textColor,
+                      fontSize: 20,
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(width: 12),
-            ],
-            // Level text
-            Text(
-              'Level ${userExp.level}',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w900,
-                color: textColor,
-                fontSize: 20,
+                ],
               ),
             ),
             const SizedBox(width: 12),
-            // EXP info - More Compact
-            Expanded(
+            // EXP info in white container
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // EXP text with subtle animation
                   AnimatedDefaultTextStyle(
                     duration: const Duration(milliseconds: 400),
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w900,
                       color: textColor,
-                      fontSize: 16,
+                      fontSize: 20,
                     ) ?? const TextStyle(),
                     child: Text('${userExp.exp} EXP'),
                   ),
                   if (!isMaxLevel) ...[
-                    const SizedBox(height: 2),
-                    // EXP remaining text - smaller and more compact
-                    Text(
-                      '$expRemaining more to Level ${userExp.level + 1}',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: subtextColor,
-                        fontSize: 11,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    // Compact animated progress bar
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(3),
-                      child: AnimatedBuilder(
-                        animation: AlwaysStoppedAnimation(progress),
-                        builder: (context, child) {
-                          return TweenAnimationBuilder<double>(
-                            tween: Tween<double>(begin: 0, end: progress),
-                            duration: const Duration(milliseconds: 600),
-                            curve: Curves.easeOutCubic,
-                            builder: (context, value, child) {
-                              return LinearProgressIndicator(
-                                value: value,
-                                minHeight: 4,
-                                backgroundColor: Colors.grey[200],
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Color.lerp(
-                                    Colors.amber[400],
-                                    const Color(0xFF4CAF50),
-                                    value,
-                                  )!,
-                                ),
-                              );
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                  ] else
+                    // Removed "X more to level Y" text and progress bar
+                  ] else ...[
                     Padding(
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
@@ -295,6 +324,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ],
                 ],
               ),
+            ),
+              ],
             ),
           ],
         );

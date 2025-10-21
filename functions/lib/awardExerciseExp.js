@@ -46,7 +46,7 @@ exports.awardExerciseExp = functions.firestore
         // Variable EXP amounts based on exercise type
         const expAmounts = {
             'problemSolving': 12,
-            'urgeSurfing': 5,
+            'urgeSurfing': 10,
             'addressingSetbacks': 12,
             'addressingOverconcern': 12,
             'mealPlan': 15, // First time creation
