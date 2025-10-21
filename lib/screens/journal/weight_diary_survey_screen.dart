@@ -313,7 +313,7 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
   }
 
   /// Handle quest completion for weight diary activity
-  Future<void> _handleActivityCompletion() async {
+  Future<void> _handleActivityCompletion({VoidCallback? onDismiss}) async {
     try {
       final user = ref.read(currentUserDataProvider);
       if (user == null) return;
@@ -327,10 +327,46 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
       );
       
       if (result.questCompleted && mounted) {
-        showQuestCompletionDialog(context, result);
+        showQuestCompletionDialog(
+          context, 
+          result,
+          onDismiss: onDismiss ?? () {},
+        );
+      } else if (onDismiss != null) {
+        // No quest completed, but we have a callback to execute
+        onDismiss();
       }
     } catch (e) {
       print('Error checking quest completion: $e');
+      // On error, still execute callback to continue tutorial flow
+      if (onDismiss != null) {
+        onDismiss();
+      }
+    }
+  }
+
+  /// Update tutorial status and navigate to home tab
+  Future<void> _updateTutorialStatusAndNavigate() async {
+    try {
+      // Mark that user has logged weight during tutorial
+      await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
+        hasLoggedWeightDuringTutorial: true,
+      );
+      
+      // Navigate to home tab after a short delay
+      await Future.delayed(const Duration(milliseconds: 100));
+      if (mounted) {
+        Navigator.of(context).pop();
+        // Then navigate to home tab with a longer delay to ensure smooth transition
+        await Future.delayed(const Duration(milliseconds: 100));
+        if (mounted) {
+          context.go('/');
+          // Plant growth tutorial will automatically trigger when home tab is shown
+        }
+      }
+    } catch (e) {
+      // Silently fail - this is not critical to weight logging
+      debugPrint('Error updating tutorial status: $e');
     }
   }
 
@@ -350,32 +386,22 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
       );
 
       if (entry != null && mounted) {
-        // Check for quest completion
-        await _handleActivityCompletion();
-        
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Weight saved successfully!'), backgroundColor: Colors.green),
         );
         
         // Check if user is in tutorial and hasn't logged weight yet
         if (user.hasSeenJournalTutorial && !user.hasLoggedWeightDuringTutorial) {
-          // Mark that user has logged weight during tutorial
-          await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
-            hasLoggedWeightDuringTutorial: true,
+          // Check for quest completion with callback for tutorial flow
+          await _handleActivityCompletion(
+            onDismiss: () async {
+              // Update tutorial status after quest dialog is dismissed (or immediately if no quest)
+              await _updateTutorialStatusAndNavigate();
+            },
           );
-          
-          // Navigate to home tab after a short delay
-          await Future.delayed(const Duration(milliseconds: 100));
-          if (mounted) {
-            Navigator.of(context).pop();
-            // Then navigate to home tab with a longer delay to ensure smooth transition
-            await Future.delayed(const Duration(milliseconds: 100));
-            if (mounted) {
-              context.go('/');
-              // Plant growth tutorial will automatically trigger when home tab is shown
-            }
-          }
         } else {
+          // Not in tutorial flow, just check for quest completion without navigation
+          await _handleActivityCompletion();
           // Clear the form after successful submission
           _weightController.clear();
           // Don't navigate away - let user stay on the weight diary page

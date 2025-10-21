@@ -17,43 +17,25 @@ class StreakDisplay extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 56,
-        height: 56,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.amber[50],
-          border: Border.all(
-            color: Colors.amber[400]!,
-            width: 2,
-          ),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.amber[200]!.withOpacity(0.5),
-              blurRadius: 8,
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 4,
               offset: const Offset(0, 2),
             ),
           ],
         ),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            // Sun icon
-            Icon(
-              Icons.wb_sunny_rounded,
-              size: 42,
-              color: Colors.amber[600],
-            ),
-            // Streak number centered on the sun
-            Text(
-              streak.toString(),
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.amber[900],
-                height: 1.0,
-              ),
-            ),
-          ],
+        child: Text(
+          '☀️ $streak',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w900,
+            color: Colors.black87,
+            fontSize: 20,
+          ),
         ),
       ),
     );

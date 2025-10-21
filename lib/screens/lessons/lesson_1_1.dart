@@ -108,22 +108,28 @@ class _Lesson11ScreenState extends ConsumerState<Lesson11Screen> {
       
       if (result.questCompleted && mounted) {
         print('🎉 [Lesson 1.1] Quest completed! Showing dialog...');
-        showQuestCompletionDialog(context, result);
+        showQuestCompletionDialog(
+          context, 
+          result,
+          onDismiss: () async {
+            // Update tutorial status after quest dialog is dismissed
+            await _updateTutorialStatusAndNavigate();
+          },
+        );
       } else {
         print('ℹ️  [Lesson 1.1] No quest completed yet');
+        // No quest completed, update status immediately
+        await _updateTutorialStatusAndNavigate();
       }
     } catch (e) {
       print('❌ [Lesson 1.1] Error in quest completion: $e');
+      // On error, still update status to continue tutorial flow
+      await _updateTutorialStatusAndNavigate();
     }
   }
 
-  void _finishLesson() async {
-    // Mark lesson as completed
-    if (_lesson != null) {
-      await _lessonService.markLessonCompleted(_lesson!.id);
-      await _handleLessonCompletion();
-    }
-    
+  /// Update tutorial status and navigate back
+  Future<void> _updateTutorialStatusAndNavigate() async {
     // Mark user as having completed first lesson for tutorial tracking
     try {
       await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
@@ -137,6 +143,14 @@ class _Lesson11ScreenState extends ConsumerState<Lesson11Screen> {
     // Navigate back to education screen
     if (mounted) {
       Navigator.of(context).pop();
+    }
+  }
+
+  void _finishLesson() async {
+    // Mark lesson as completed
+    if (_lesson != null) {
+      await _lessonService.markLessonCompleted(_lesson!.id);
+      await _handleLessonCompletion();
     }
   }
 
