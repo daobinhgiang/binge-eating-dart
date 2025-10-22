@@ -29,6 +29,7 @@ import 'screens/chat/chat_screen.dart';
 import 'screens/chat/realtime_journaling_screen.dart';
 import 'screens/chat/accountability_partner_screen.dart';
 import 'screens/insights/insights_screen.dart';
+import 'screens/recovery_exercises_screen.dart';
 // Journal imports
 import 'screens/journal/food_diary_survey_screen.dart';
 import 'screens/journal/weight_diary_survey_screen.dart';
@@ -431,6 +432,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/insights',
       builder: (context, state) => const AuthGuard(child: InsightsScreen()),
+    ),
+    GoRoute(
+      path: '/recovery-exercises',
+      builder: (context, state) => const AuthGuard(child: RecoveryExercisesScreen()),
     ),
     // Journal survey routes
     GoRoute(

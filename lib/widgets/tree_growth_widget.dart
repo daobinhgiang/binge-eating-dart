@@ -5,6 +5,7 @@ import '../providers/exp_provider.dart';
 import '../providers/tree_animation_provider.dart';
 import '../core/services/tree_service.dart';
 import 'mound_painter_widget.dart';
+import 'sprout_painter_widget.dart';
 
 class TreeGrowthWidget extends ConsumerStatefulWidget {
   final GlobalKey? treeImageKey;
@@ -291,6 +292,14 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
       );
     }
     
+    // Use custom sprout painter for Level 2 (Sprout)
+    if (treeData.displayName == 'Sprout') {
+      return const SproutPainterWidget(
+        width: 200,
+        height: 200,
+      );
+    }
+    
     return SizedBox(
       height: 200,
       width: 200,
@@ -335,6 +344,17 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
       return FadeTransition(
         opacity: _crossFadeAnimation,
         child: const MoundPainterWidget(
+          width: 200,
+          height: 200,
+        ),
+      );
+    }
+    
+    // Use custom sprout painter for Level 2 (Sprout)
+    if (treeData.displayName == 'Sprout') {
+      return FadeTransition(
+        opacity: _crossFadeAnimation,
+        child: const SproutPainterWidget(
           width: 200,
           height: 200,
         ),

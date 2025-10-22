@@ -380,78 +380,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   sliver: SliverToBoxAdapter(
                       child: Column(
                         children: [
-                            // Recovery Exercises section with header inside container
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(40.0),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.2),
-                                    spreadRadius: 1,
-                                    blurRadius: 16,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // Recovery Exercises header
-                            Padding(
-                                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-                                  child: Text(
-                                      'Recovery Exercises',
-                                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                      fontSize: 24,
-                                    ),
-                                  ),
-                                ),
-                                  // Recovery Exercises list
-                                  Column(
-                                children: [
-                                      _buildExerciseItem(
-                                        icon: Icons.psychology_outlined,
-                                        title: 'Recovery Guide',
-                                        description: 'Your personalized guide',
-                                        onTap: () => context.push('/chat'),
-                                        iconColor: const Color(0xFF4CAF50),
-                                        iconBgColor: const Color(0xFFE8F5E8),
-                                      ),
-                                      _buildDivider(),
-                                      _buildExerciseItem(
-                                        icon: Icons.edit_note_outlined,
-                                        title: 'Journaling Partner',
-                                        description: 'Track your progress',
-                                        onTap: () => context.push('/realtime-journaling'),
-                                        iconColor: const Color(0xFF4CAF50),
-                                        iconBgColor: const Color(0xFFE8F5E8),
-                                      ),
-                                      _buildDivider(),
-                                      _buildExerciseItem(
-                                        icon: Icons.people_outline,
-                                        title: 'Accountability Partner',
-                                        description: 'Connect with support',
-                                        onTap: () => context.push('/accountability-partner'),
-                                        iconColor: const Color(0xFF4CAF50),
-                                        iconBgColor: const Color(0xFFE8F5E8),
-                                      ),
-                                      _buildDivider(),
-                                      _buildExerciseItem(
-                                        icon: Icons.insights_outlined,
-                                        title: 'Insights',
-                                        description: 'Understand your patterns',
-                                        onTap: () => context.push('/insights'),
-                                        iconColor: const Color(0xFF4CAF50),
-                                        iconBgColor: const Color(0xFFE8F5E8),
-                                      ),
-                                    ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
                                   
                       
                             const SizedBox(height: 24),
@@ -1589,6 +1517,82 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final trackDialog = ref.read(urgeHelpDialogTrackingProvider);
     trackDialog('urge_surfing_navigation');
     context.push('/exercises/urge-surfing');
+  }
+
+  Widget _buildRecoveryExercisesButton(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(40.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 1,
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => context.push('/recovery-exercises'),
+          borderRadius: BorderRadius.circular(40.0),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                // Icon with circular background
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE8F5E8),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.psychology_outlined,
+                    color: Color(0xFF4CAF50),
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                // Title and description
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Recovery Exercises',
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                          fontSize: 20,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Access your recovery tools and support',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Arrow icon
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 16,
+                  color: Colors.grey[400],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
   
   Widget _buildExerciseItem({

@@ -7,10 +7,10 @@ final thoughtDumpServiceProvider = Provider<ThoughtDumpService>((ref) {
   return ThoughtDumpService();
 });
 
-// Current week thought dumps provider
-final currentWeekThoughtDumpsProvider = FutureProvider.family<List<ThoughtDump>, String>((ref, userId) async {
+// Current week thought dumps provider (real-time stream)
+final currentWeekThoughtDumpsProvider = StreamProvider.family<List<ThoughtDump>, String>((ref, userId) {
   final service = ref.read(thoughtDumpServiceProvider);
-  return service.getCurrentWeekThoughtDumps(userId);
+  return service.getCurrentWeekThoughtDumpsStream(userId);
 });
 
 // All thought dumps provider

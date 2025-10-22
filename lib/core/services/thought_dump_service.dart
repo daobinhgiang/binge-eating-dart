@@ -65,6 +65,28 @@ class ThoughtDumpService {
     return getThoughtDumpsForWeek(userId, weekNumber);
   }
 
+  // Stream thought dump entries for the current week (real-time updates)
+  Stream<List<ThoughtDump>> getCurrentWeekThoughtDumpsStream(String userId) async* {
+    try {
+      final weekNumber = await _foodDiaryService.getCurrentWeekNumber(userId);
+      
+      yield* _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('weeks')
+          .doc('week_$weekNumber')
+          .collection('thoughtDumps')
+          .orderBy('createdAt', descending: true)
+          .snapshots()
+          .map((snapshot) => snapshot.docs
+              .map((doc) => ThoughtDump.fromFirestore(doc))
+              .toList());
+    } catch (e) {
+      print('Error streaming thought dumps: $e');
+      yield [];
+    }
+  }
+
   // Get all thought dump entries for a user (across all weeks)
   Future<List<ThoughtDump>> getAllThoughtDumps(String userId) async {
     try {
