@@ -3,11 +3,8 @@ import 'dart:math';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../core/services/reset_timer_service.dart';
-import '../core/services/app_tutorial_service.dart';
-import '../providers/auth_provider.dart';
 import 'tree_growth_widget.dart';
 
 class BingeFreeTimerCarouselWidget extends ConsumerStatefulWidget {
@@ -695,24 +692,9 @@ class BingeFreeTimerCarouselWidgetState
             ),
           );
         }
-
-        // Check if we're in tutorial mode and should show closing slides
-        if (mounted && isFirstTime) {
-          final tutorialService = AppTutorialService();
-          final user = ref.read(authNotifierProvider).value;
-          
-          // Check if we're in the timer button tutorial and user hasn't seen closing slides
-          if (tutorialService.currentStep == TutorialStep.timerButton && 
-              user != null && 
-              !user.hasSeenTimerClosingSlides) {
-            // Navigate to closing slides after a short delay
-            Future.delayed(const Duration(milliseconds: 1500), () {
-              if (mounted) {
-                context.go('/tutorial-closing-slides');
-              }
-            });
-          }
-        }
+        
+        // Closing slides now appear after streak tutorial (not after timer button)
+        // The tutorial flow continues from timer button to education tab
       }
     } catch (e) {
       // Close loading dialog if it's open

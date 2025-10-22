@@ -83,8 +83,12 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
     final user = ref.read(authNotifierProvider).value;
     if (user == null || !mounted) return;
 
-    // Show education tutorial if user hasn't seen app tutorial
-    if (!user.hasSeenAppTutorial && !_hasShownEducationTutorial) {
+    // Show plant growth tutorial first (on home page, right after onboarding)
+    if (!user.hasSeenPlantGrowthTutorial && !_hasShownPlantGrowthTutorial) {
+      _showPlantGrowthTutorial();
+    }
+    // Show education tutorial if user has seen plant growth tutorial but not app tutorial
+    else if (user.hasSeenPlantGrowthTutorial && !user.hasSeenAppTutorial && !_hasShownEducationTutorial) {
       _hasShownEducationTutorial = true;
       AppTutorialService().showEducationTabTutorial(
         context: context,
@@ -307,8 +311,36 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
     AppTutorialService().showTimerButtonTutorial(
       context: context,
       timerButtonKey: carouselState.timerButtonKey,
-      onFinish: () {
+      onFinish: () async {
         print('✅ Timer button tutorial completed');
+        // After timer tutorial completes, trigger the education tab tutorial
+        // This connects the home tutorials to the rest of the tutorial flow
+        final user = ref.read(authNotifierProvider).value;
+        if (user != null && !user.hasSeenAppTutorial && !_hasShownEducationTutorial) {
+          // Small delay to ensure smooth transition
+          await Future.delayed(const Duration(milliseconds: 500));
+          if (mounted) {
+            _hasShownEducationTutorial = true;
+            AppTutorialService().showEducationTabTutorial(
+              context: context,
+              educationTabKey: _educationTabKey,
+              onFinish: () async {
+                await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
+                  hasSeenAppTutorial: true,
+                );
+              },
+              onTabClick: () async {
+                await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
+                  hasSeenAppTutorial: true,
+                );
+                await Future.delayed(const Duration(milliseconds: 100));
+                if (mounted) {
+                  context.go('/education');
+                }
+              },
+            );
+          }
+        }
       },
       onButtonClick: () {
         print('✅ User clicked timer button during tutorial');
@@ -375,7 +407,6 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
               }
             });
           }
-          // Plant growth tutorial is triggered separately when on home tab
         }
       });
     });
@@ -383,42 +414,6 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
     // Get current location and update index
     final location = GoRouterState.of(context).uri.path;
     _updateCurrentIndex(location);
-    
-    // Check if we should show plant growth tutorial (after weight logging and streak tutorial)
-    final user = ref.watch(authNotifierProvider).valueOrNull;
-    print('🔍 Checking tutorial conditions:');
-    print('   user != null: ${user != null}');
-    if (user != null) {
-      print('   hasSeenJournalTutorial: ${user.hasSeenJournalTutorial}');
-      print('   hasLoggedWeightDuringTutorial: ${user.hasLoggedWeightDuringTutorial}');
-      print('   hasSeenStreakTutorial: ${user.hasSeenStreakTutorial}');
-      print('   hasSeenPlantGrowthTutorial: ${user.hasSeenPlantGrowthTutorial}');
-      print('   _hasShownPlantGrowthTutorial: $_hasShownPlantGrowthTutorial');
-      print('   _currentIndex: $_currentIndex');
-    }
-    
-    // Show plant growth tutorial when user has completed streak tutorial and is on home screen
-    if (user != null &&
-        user.hasSeenStreakTutorial &&
-        user.hasLoggedWeightDuringTutorial &&
-        !user.hasSeenPlantGrowthTutorial &&
-        !_hasShownPlantGrowthTutorial &&
-        _currentIndex == 0) {  // Only trigger when on home screen
-      print('✅ All conditions met for plant growth tutorial, scheduling...');
-      // Trigger tutorial after frame is built
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Future.delayed(const Duration(milliseconds: 500), () {
-          if (mounted && _currentIndex == 0) {
-            print('✅ Calling _showPlantGrowthTutorial');
-            _showPlantGrowthTutorial();
-          } else {
-            print('❌ Not calling tutorial: mounted=$mounted, index=$_currentIndex');
-          }
-        });
-      });
-    } else {
-      print('❌ Plant growth tutorial conditions not met');
-    }
     
     return Scaffold(
       backgroundColor: Colors.white,

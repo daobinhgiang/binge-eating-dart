@@ -7,7 +7,6 @@ import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:superwallkit_flutter/superwallkit_flutter.dart';
-import 'dart:io';
 import 'firebase_options.dart';
 import 'screens/main_navigation.dart';
 import 'screens/education/article_detail_screen.dart';
@@ -155,8 +154,17 @@ void main() async {
   }
   
   // Initialize Superwall
-  String apiKey = Platform.isIOS ? "pk_d97c69e785c502e76d6d0d4180c53afd769f3449ed70236d" : "pk_d97c69e785c502e76d6d0d4180c53afd769f3449ed70236d";
-  Superwall.configure(apiKey);
+  if (!kIsWeb) {
+    String apiKey = "pk_d97c69e785c502e76d6d0d4180c53afd769f3449ed70236d";
+    try {
+      Superwall.configure(apiKey);
+      print('✅ Superwall initialized successfully');
+    } catch (e) {
+      print('⚠️ Superwall initialization error: $e');
+      // Continue running the app even if Superwall fails to initialize
+      // This prevents platform channel errors from crashing the app
+    }
+  }
   
   final localNotificationsService = LocalNotificationsService.instance();
   await localNotificationsService.init();

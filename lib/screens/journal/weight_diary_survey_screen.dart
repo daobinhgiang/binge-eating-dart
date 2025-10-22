@@ -350,7 +350,7 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
     }
   }
 
-  /// Update tutorial status and navigate to home tab
+  /// Update tutorial status and navigate to closing slides (after streak tutorial)
   Future<void> _updateTutorialStatusAndNavigate() async {
     try {
       // Mark that user has logged weight during tutorial
@@ -358,15 +358,14 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
         hasLoggedWeightDuringTutorial: true,
       );
       
-      // Navigate to home tab after a short delay
+      // Navigate to tutorial closing slides after a short delay
       await Future.delayed(const Duration(milliseconds: 100));
       if (mounted) {
         Navigator.of(context).pop();
-        // Then navigate to home tab with a longer delay to ensure smooth transition
+        // Navigate to closing slides to complete the tutorial
         await Future.delayed(const Duration(milliseconds: 100));
         if (mounted) {
-          context.go('/');
-          // Plant growth tutorial will automatically trigger when home tab is shown
+          context.go('/tutorial-closing-slides');
         }
       }
     } catch (e) {
