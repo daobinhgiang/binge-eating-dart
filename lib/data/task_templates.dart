@@ -16,7 +16,7 @@ class TaskTemplatesData {
         title: 'Nourish Your Mind',
         description: 'Complete at least one lesson today to grow your knowledge',
         activityId: 'complete_lessons',
-        expReward: 50,
+        expReward: 10,
         createdAt: now,
         updatedAt: now,
         metadata: {
@@ -35,7 +35,7 @@ class TaskTemplatesData {
         title: 'Daily Reflection',
         description: 'Take a moment to reflect through journaling or tracking',
         activityId: 'daily_journal',
-        expReward: 50,
+        expReward: 10,
         createdAt: now,
         updatedAt: now,
         metadata: {
@@ -53,7 +53,7 @@ class TaskTemplatesData {
         title: 'Stay Healthy',
         description: 'Practice one recovery exercise to build resilience',
         activityId: 'daily_exercise',
-        expReward: 60,
+        expReward: 15,
         createdAt: now,
         updatedAt: now,
         metadata: {
@@ -93,7 +93,7 @@ class TaskTemplatesData {
         title: 'Review Previous Lessons',
         description: 'Revisit key concepts from earlier chapters',
         activityId: '', // Dynamic
-        expReward: 150,
+        expReward: 30,
         createdAt: now,
         updatedAt: now,
         metadata: {
@@ -110,7 +110,7 @@ class TaskTemplatesData {
         title: 'Complete Assessment Quiz',
         description: 'Test your understanding with this week\'s quiz',
         activityId: '', // Dynamic based on current chapter
-        expReward: 250,
+        expReward: 50,
         createdAt: now,
         updatedAt: now,
         metadata: {
@@ -128,7 +128,7 @@ class TaskTemplatesData {
         title: 'Problem-Solving Exercise',
         description: 'Practice structured problem-solving techniques',
         activityId: 'problem_solving',
-        expReward: 200,
+        expReward: 40,
         createdAt: now,
         updatedAt: now,
         metadata: {
@@ -143,7 +143,7 @@ class TaskTemplatesData {
         title: 'Meal Planning Exercise',
         description: 'Create a structured meal plan for the week',
         activityId: 'meal_planning',
-        expReward: 200,
+        expReward: 40,
         createdAt: now,
         updatedAt: now,
         metadata: {
@@ -160,7 +160,7 @@ class TaskTemplatesData {
         title: 'Weekly Reflection',
         description: 'Reflect on your progress this week',
         activityId: 'weekly_reflection',
-        expReward: 150,
+        expReward: 30,
         createdAt: now,
         updatedAt: now,
         metadata: {
@@ -184,7 +184,7 @@ class TaskTemplatesData {
         title: 'Complete All Stage 1 Lessons',
         description: 'Finish every lesson in Stage 1',
         activityId: 'stage_1_completion',
-        expReward: 1000,
+        expReward: 200,
         createdAt: now,
         updatedAt: now,
         metadata: {
@@ -200,7 +200,7 @@ class TaskTemplatesData {
         title: 'Complete All Stage 2 Lessons',
         description: 'Finish every lesson in Stage 2',
         activityId: 'stage_2_completion',
-        expReward: 1500,
+        expReward: 300,
         createdAt: now,
         updatedAt: now,
         metadata: {
@@ -216,7 +216,7 @@ class TaskTemplatesData {
         title: 'Complete All Stage 3 Lessons',
         description: 'Finish every lesson in Stage 3',
         activityId: 'stage_3_completion',
-        expReward: 2000,
+        expReward: 400,
         createdAt: now,
         updatedAt: now,
         metadata: {
@@ -234,7 +234,7 @@ class TaskTemplatesData {
         title: 'Maintain 7-Day Journal Streak',
         description: 'Journal for 7 consecutive days',
         activityId: 'journal_streak_7',
-        expReward: 500,
+        expReward: 100,
         createdAt: now,
         updatedAt: now,
         metadata: {
@@ -251,7 +251,7 @@ class TaskTemplatesData {
         title: 'Maintain 30-Day Journal Streak',
         description: 'Journal for 30 consecutive days',
         activityId: 'journal_streak_30',
-        expReward: 1500,
+        expReward: 300,
         createdAt: now,
         updatedAt: now,
         metadata: {
@@ -270,7 +270,7 @@ class TaskTemplatesData {
         title: 'Earn 1,000 EXP',
         description: 'Reach 1,000 total experience points',
         activityId: 'exp_milestone_1000',
-        expReward: 500,
+        expReward: 100,
         createdAt: now,
         updatedAt: now,
         metadata: {
@@ -287,7 +287,7 @@ class TaskTemplatesData {
         title: 'Earn 5,000 EXP',
         description: 'Reach 5,000 total experience points',
         activityId: 'exp_milestone_5000',
-        expReward: 1000,
+        expReward: 200,
         createdAt: now,
         updatedAt: now,
         metadata: {
@@ -304,7 +304,7 @@ class TaskTemplatesData {
         title: 'Earn 10,000 EXP',
         description: 'Reach 10,000 total experience points',
         activityId: 'exp_milestone_10000',
-        expReward: 2000,
+        expReward: 400,
         createdAt: now,
         updatedAt: now,
         metadata: {
@@ -323,7 +323,7 @@ class TaskTemplatesData {
         title: 'Complete 10 Exercises',
         description: 'Finish 10 different recovery exercises',
         activityId: 'exercises_milestone_10',
-        expReward: 500,
+        expReward: 100,
         createdAt: now,
         updatedAt: now,
         metadata: {
@@ -340,7 +340,7 @@ class TaskTemplatesData {
         title: 'Complete 25 Exercises',
         description: 'Finish 25 different recovery exercises',
         activityId: 'exercises_milestone_25',
-        expReward: 1000,
+        expReward: 200,
         createdAt: now,
         updatedAt: now,
         metadata: {
