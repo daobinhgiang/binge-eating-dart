@@ -386,4 +386,12 @@ class QuestCompletionService {
       print('   ⚠️  Error syncing quest progress: $e\n');
     }
   }
+
+  /// Clear all cached quest completion data
+  /// Called during account deletion to prevent stale data
+  void clearCache() {
+    // This service doesn't have a cache, but we add this method
+    // for consistency and future-proofing
+    print('[QuestCompletionService] Cache cleared');
+  }
 }

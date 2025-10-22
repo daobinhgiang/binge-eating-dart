@@ -277,30 +277,44 @@ class _QuestCompletionDialogState extends ConsumerState<QuestCompletionDialog>
                         if (suppressionState.isSuppressed && 
                             suppressionState.oldStreak != null && 
                             suppressionState.newStreak != null) {
-                          print('   🔥 Showing streak animation after auth refresh');
-                          // Show streak animation in next frame after UI updates
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            if (mounted) {
-                              showStreakAnimation(
-                                context,
-                                oldStreak: suppressionState.oldStreak!,
-                                newStreak: suppressionState.newStreak!,
-                                isReset: suppressionState.isReset,
-                              );
-                              // Clear the suppression flag after showing animation
-                              ref.read(streakAnimationSuppressionProvider.notifier).clearSuppression();
-                              
-                              // Trigger callback after streak animation is shown (if provided)
-                              if (widget.onStreakAnimationShown != null) {
-                                // Wait for streak animation to complete before triggering callback
-                                Future.delayed(const Duration(milliseconds: 2000), () {
-                                  if (mounted) {
-                                    widget.onStreakAnimationShown!();
-                                  }
-                                });
-                              }
+                          
+                          // Check if we're in tutorial mode (user hasn't seen streak tutorial yet)
+                          final user = ref.read(authNotifierProvider).valueOrNull;
+                          final isInTutorialFlow = user != null && !user.hasSeenStreakTutorial;
+                          
+                          if (isInTutorialFlow) {
+                            print('   🎓 In tutorial mode - keeping streak animation suppressed for tutorial overlay');
+                            // DON'T clear suppression - let main_navigation show it with tutorial mode
+                            // Don't show the animation here, but trigger callback if provided
+                            if (widget.onStreakAnimationShown != null) {
+                              widget.onStreakAnimationShown!();
                             }
-                          });
+                          } else {
+                            print('   🔥 Showing streak animation after auth refresh');
+                            // Show streak animation in next frame after UI updates
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (mounted) {
+                                showStreakAnimation(
+                                  context,
+                                  oldStreak: suppressionState.oldStreak!,
+                                  newStreak: suppressionState.newStreak!,
+                                  isReset: suppressionState.isReset,
+                                );
+                                // Clear the suppression flag after showing animation
+                                ref.read(streakAnimationSuppressionProvider.notifier).clearSuppression();
+                                
+                                // Trigger callback after streak animation is shown (if provided)
+                                if (widget.onStreakAnimationShown != null) {
+                                  // Wait for streak animation to complete before triggering callback
+                                  Future.delayed(const Duration(milliseconds: 2000), () {
+                                    if (mounted) {
+                                      widget.onStreakAnimationShown!();
+                                    }
+                                  });
+                                }
+                              }
+                            });
+                          }
                         }
                       },
                       style: ElevatedButton.styleFrom(

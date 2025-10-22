@@ -13,7 +13,6 @@ import '../models/todo_item.dart';
 import '../models/task_template.dart';
 import '../widgets/level_badge.dart';
 import '../widgets/binge_free_timer_carousel_widget.dart';
-import '../widgets/streak_display.dart';
 import '../widgets/urge_help_dialog.dart';
 import '../widgets/streak_animation_popup.dart';
 

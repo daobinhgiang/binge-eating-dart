@@ -11,7 +11,7 @@ import '../../widgets/quest_completion_dialog.dart';
 import '../../core/services/app_tutorial_service.dart';
 
 class WeightDiarySurveyScreen extends ConsumerStatefulWidget {
-  const WeightDiarySurveyScreen({super.key});
+   const WeightDiarySurveyScreen({super.key});
 
   @override
   ConsumerState<WeightDiarySurveyScreen> createState() => _WeightDiarySurveyScreenState();
@@ -401,15 +401,28 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
           await _handleActivityCompletion(
             onDismiss: () async {
               // This callback is called when quest dialog dismisses
-              // If no streak animation shows, we need to proceed with tutorial flow
-              // Wait a bit to see if streak animation will trigger
-              await Future.delayed(const Duration(milliseconds: 500));
+              // If no streak animation shows (e.g., not all daily tasks complete yet),
+              // we still need to show streak tutorial and proceed with tutorial flow
               
-              // Check if we're still mounted and haven't navigated yet
               final currentUser = ref.read(currentUserDataProvider);
               if (mounted && currentUser != null && !currentUser.hasLoggedWeightDuringTutorial) {
-                // No streak animation showed, skip streak tutorial and proceed
-                await _updateTutorialStatusAndNavigate();
+                // Show streak explanation tutorial even if streak didn't increment
+                if (!currentUser.hasSeenStreakTutorial) {
+                  AppTutorialService().showStreakExplanationTutorial(
+                    context: context,
+                    onFinish: () async {
+                      // Mark that user has seen streak tutorial
+                      await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
+                        hasSeenStreakTutorial: true,
+                      );
+                      // Then proceed with navigation
+                      await _updateTutorialStatusAndNavigate();
+                    },
+                  );
+                } else {
+                  // Already saw streak tutorial, just navigate
+                  await _updateTutorialStatusAndNavigate();
+                }
               }
             },
             onStreakAnimationShown: () async {

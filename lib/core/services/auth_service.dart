@@ -104,10 +104,22 @@ class AuthService {
           lastLoginAt: DateTime.now(),
         );
 
+        // Convert to Firestore and add additional fields for quest/lesson tracking
+        final userData = userModel.toFirestore();
+        
+        // Explicitly initialize lesson progress fields to 0
+        // These fields are used by LessonProgressService for daily quest tracking
+        userData['lessonsCompletedToday'] = 0;
+        userData['lessonsCompletedThisWeek'] = 0;
+        userData['lastLessonCompletionDate'] = null;
+        userData['lastLessonCompletionWeek'] = null;
+
         await _firestore
             .collection('users')
             .doc(credential.user!.uid)
-            .set(userModel.toFirestore());
+            .set(userData);
+        
+        print('✅ User created with initialized lesson progress fields');
         
         // Initialize FCM token for the new user
         await _fcmTokenService.initializeForUser(credential.user!.uid);
@@ -213,11 +225,21 @@ class AuthService {
           );
 
           print('Saving user to Firestore...');
+          
+          // Convert to Firestore and add additional fields for quest/lesson tracking
+          final userData = userModel.toFirestore();
+          
+          // Explicitly initialize lesson progress fields to 0
+          userData['lessonsCompletedToday'] = 0;
+          userData['lessonsCompletedThisWeek'] = 0;
+          userData['lastLessonCompletionDate'] = null;
+          userData['lastLessonCompletionWeek'] = null;
+          
           await _firestore
               .collection('users')
               .doc(userCredential.user!.uid)
-              .set(userModel.toFirestore());
-          print('User saved to Firestore successfully');
+              .set(userData);
+          print('User saved to Firestore successfully with initialized lesson progress');
           
           // Initialize FCM token for the new user
           await _fcmTokenService.initializeForUser(userCredential.user!.uid);
@@ -331,11 +353,21 @@ class AuthService {
           );
 
           print('Saving user to Firestore...');
+          
+          // Convert to Firestore and add additional fields for quest/lesson tracking
+          final userData = userModel.toFirestore();
+          
+          // Explicitly initialize lesson progress fields to 0
+          userData['lessonsCompletedToday'] = 0;
+          userData['lessonsCompletedThisWeek'] = 0;
+          userData['lastLessonCompletionDate'] = null;
+          userData['lastLessonCompletionWeek'] = null;
+          
           await _firestore
               .collection('users')
               .doc(userCredential.user!.uid)
-              .set(userModel.toFirestore());
-          print('User saved to Firestore successfully');
+              .set(userData);
+          print('User saved to Firestore successfully with initialized lesson progress');
           
           // Initialize FCM token for the new user
           await _fcmTokenService.initializeForUser(userCredential.user!.uid);
@@ -499,19 +531,33 @@ class AuthService {
       await _deleteAllUserData(user.uid);
       print('All user data deleted from Firestore');
 
+      // Delete Firebase Auth user FIRST - while credentials are still valid
+      // This must happen before disconnecting from Google Sign-In
+      try {
+        await user.delete();
+        print('Firebase Auth user deleted');
+      } catch (e) {
+        print('Error deleting Firebase Auth user: $e');
+        // Try to disconnect from Google anyway
+        try {
+          await _googleSignIn.disconnect();
+          print('Google Sign-In disconnected');
+        } catch (disconnectError) {
+          print('Error disconnecting from Google after auth deletion failed: $disconnectError');
+        }
+        rethrow;
+      }
+
       // Disconnect from Google Sign-In to clear all cached credentials
-      // This ensures a fresh sign-in flow if the user signs up again with the same Google account
+      // This must happen AFTER deleting the Firebase Auth user
+      // Otherwise, the credentials won't be available for the deletion
       try {
         await _googleSignIn.disconnect();
         print('Google Sign-In disconnected');
       } catch (e) {
         print('Error disconnecting from Google during account deletion: $e');
-        // Continue with deletion even if Google disconnect fails
+        // Continue - Firebase user is already deleted
       }
-
-      // Delete Firebase Auth user
-      await user.delete();
-      print('Firebase Auth user deleted');
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
     } catch (e) {
@@ -565,7 +611,15 @@ class AuthService {
       }
 
       // Finally, delete the main user document
+      // This will delete ALL fields including:
+      // - User profile data (name, email, etc.)
+      // - Lesson progress (lessonsCompletedToday, lessonsCompletedThisWeek, etc.)
+      // - Quest regeneration tracking (lastSeedsGeneratedDate, lastGrowthWeek, etc.)
+      // - Streak data (streak, lastStreakDate)
+      // - Level and EXP data
+      print('Deleting main user document (includes all user fields)...');
       await userDocRef.delete();
+      print('✅ Main user document deleted with all fields');
     } catch (e) {
       print('Error deleting user data: $e');
       throw 'Failed to delete user data from database.';

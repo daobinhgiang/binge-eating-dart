@@ -189,4 +189,12 @@ class StreakService {
       return false;
     }
   }
+
+  /// Clear all cached streak data
+  /// Called during account deletion to prevent stale data
+  void clearCache() {
+    // This service doesn't have a cache, but we add this method
+    // for consistency and future-proofing
+    print('[StreakService] Cache cleared');
+  }
 }

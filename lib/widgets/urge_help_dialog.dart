@@ -24,7 +24,7 @@ class UrgeHelpDialog extends StatelessWidget {
 
     final colorScheme = Theme.of(context).colorScheme;
     final surface = Theme.of(context).colorScheme.surface;
-    final surfaceVariant = Theme.of(context).colorScheme.surfaceVariant;
+    final surfaceVariant = Theme.of(context).colorScheme.surfaceContainerHighest;
 
     return Dialog(
       backgroundColor: Colors.transparent,

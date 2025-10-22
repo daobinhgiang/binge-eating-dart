@@ -6,12 +6,18 @@ class StreakAnimationPopup extends StatefulWidget {
   final int oldStreak;
   final int newStreak;
   final bool isReset;
+  final bool pauseAutoDismiss; // DEPRECATED: Use isTutorialMode instead
+  final bool isTutorialMode; // If true, won't auto-dismiss and behaves for tutorial flow
+  final VoidCallback? onAnimationComplete; // Called when animation finishes
 
   const StreakAnimationPopup({
     super.key,
     required this.oldStreak,
     required this.newStreak,
     this.isReset = false,
+    @Deprecated('Use isTutorialMode instead') this.pauseAutoDismiss = false,
+    this.isTutorialMode = false,
+    this.onAnimationComplete,
   });
 
   @override
@@ -29,11 +35,18 @@ class _StreakAnimationPopupState extends State<StreakAnimationPopup>
   @override
   void initState() {
     super.initState();
+    
+    print('🔥 [StreakPopup] initState called');
+    print('   📊 Streak change: ${widget.oldStreak} → ${widget.newStreak}');
+    print('   🔄 Is reset: ${widget.isReset}');
+    print('   🎓 Tutorial mode: ${widget.isTutorialMode}');
+    print('   ⏸️  Pause auto-dismiss (deprecated): ${widget.pauseAutoDismiss}');
 
     _controller = AnimationController(
       duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
+    print('   ✅ Animation controller created (duration: 1200ms)');
 
     // Old streak: starts at center, slides down and fades out
     _slideOldAnimation = Tween<Offset>(
@@ -54,19 +67,43 @@ class _StreakAnimationPopupState extends State<StreakAnimationPopup>
     _fadeNewAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
     );
+    print('   ✅ Animations configured');
 
+    print('   ▶️  Starting animation controller');
     _controller.forward();
 
-    // Close dialog after animation completes
-    Future.delayed(const Duration(milliseconds: 2500), () {
-      if (mounted) {
-        Navigator.of(context).pop();
+    // Notify when animation completes
+    _controller.addStatusListener((status) {
+      print('   🎬 Animation status: $status');
+      if (status == AnimationStatus.completed) {
+        print('   ✅ Animation completed! Triggering onAnimationComplete callback');
+        widget.onAnimationComplete?.call();
+        print('   ✅ onAnimationComplete callback invoked');
       }
     });
+
+    // Close dialog after animation completes (only if not in tutorial mode)
+    // Support both new isTutorialMode and deprecated pauseAutoDismiss for backward compatibility
+    final shouldPauseAutoDismiss = widget.isTutorialMode || widget.pauseAutoDismiss;
+    if (!shouldPauseAutoDismiss) {
+      print('   ⏰ Scheduling auto-dismiss in 2500ms');
+      Future.delayed(const Duration(milliseconds: 2500), () {
+        if (mounted) {
+          print('   🚪 Auto-dismissing streak popup');
+          Navigator.of(context).pop();
+        } else {
+          print('   ⚠️  Auto-dismiss skipped - widget not mounted');
+        }
+      });
+    } else {
+      print('   🎓 Tutorial mode enabled - auto-dismiss DISABLED');
+      print('   ⏸️  Popup will stay visible until tutorial overlay dismisses it');
+    }
   }
 
   @override
   void dispose() {
+    print('🔥 [StreakPopup] dispose called - cleaning up animation controller');
     _controller.dispose();
     super.dispose();
   }
@@ -194,19 +231,40 @@ class _StreakAnimationPopupState extends State<StreakAnimationPopup>
 }
 
 /// Show streak animation popup
-void showStreakAnimation(
+/// Returns a GlobalKey that can be used to target the popup (useful for tutorials)
+GlobalKey showStreakAnimation(
   BuildContext context, {
   required int oldStreak,
   required int newStreak,
   bool isReset = false,
+  @Deprecated('Use isTutorialMode instead') bool pauseAutoDismiss = false,
+  bool isTutorialMode = false,
+  VoidCallback? onAnimationComplete,
 }) {
+  print('🔥 [showStreakAnimation] Function called');
+  print('   📊 Parameters: old=$oldStreak, new=$newStreak, isReset=$isReset');
+  print('   🎓 Tutorial mode: $isTutorialMode');
+  print('   📞 Has callback: ${onAnimationComplete != null}');
+  
+  final popupKey = GlobalKey();
+  print('   🔑 Created GlobalKey for popup targeting');
+  
+  print('   🎭 Showing dialog...');
   showDialog(
     context: context,
     barrierDismissible: false,
     builder: (context) => StreakAnimationPopup(
+      key: popupKey,
       oldStreak: oldStreak,
       newStreak: newStreak,
       isReset: isReset,
+      // Support both for backward compatibility
+      pauseAutoDismiss: pauseAutoDismiss,
+      isTutorialMode: isTutorialMode,
+      onAnimationComplete: onAnimationComplete,
     ),
   );
+  print('   ✅ Dialog shown, returning GlobalKey');
+  
+  return popupKey;
 }

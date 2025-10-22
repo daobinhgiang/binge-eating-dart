@@ -5,6 +5,9 @@ import '../core/services/firebase_analytics_service.dart';
 import '../core/services/app_initialization_service.dart';
 import '../core/services/task_regeneration_service.dart';
 import '../core/services/todo_service.dart';
+import '../core/services/lesson_progress_service.dart';
+import '../core/services/quest_completion_service.dart';
+import '../core/services/streak_service.dart';
 import '../models/user_model.dart';
 
 // Auth service provider
@@ -323,10 +326,20 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
       // Clear initialization state for current user before deleting account
       final currentUser = state.value;
       if (currentUser != null) {
+        print('🧹 Clearing all service caches before account deletion...');
+        
+        // Clear app initialization state
         AppInitializationService().clearUserInitialization(currentUser.id);
+        
         // Clear all service caches to prevent stale data after account deletion
+        // This ensures that if a new account is created, no old data persists
         TodoService().clearAllCaches();
         TaskRegenerationService().clearCache();
+        LessonProgressService().clearCache();
+        QuestCompletionService().clearCache();
+        StreakService().clearCache();
+        
+        print('✅ All service caches cleared');
       }
       
       await _authService.deleteAccount();
