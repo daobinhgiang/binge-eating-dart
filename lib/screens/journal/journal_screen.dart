@@ -435,7 +435,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
     } else if (title.toLowerCase().contains('spending') || title.toLowerCase().contains('money')) {
       return 'assets/journal/spending_diary2.png';
     } else if (title.toLowerCase().contains('recovery')) {
-      return 'assets/journal/food_diary.png'; // Placeholder - using food diary image for now
+      return 'assets/journal/recovery_exercises.png';
     }
     return 'assets/journal/food_diary.png'; // Default fallback
   }
@@ -801,7 +801,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
           height: buttonSize,
           child: _buildDiaryCard(
             context,
-            title: 'Recovery Exercises',
+            title: 'Recovery Partner',
             subtitle: 'Your recovery tools',
             icon: Icons.psychology_outlined,
             color: const Color(0xFF4CAF50),

@@ -20,6 +20,7 @@ import '../widgets/level_badge.dart';
 import '../widgets/tree_growth_widget.dart';
 import '../widgets/binge_free_timer_carousel_widget.dart';
 import '../widgets/streak_display.dart';
+import '../widgets/urge_help_dialog.dart';
 import '../widgets/streak_animation_popup.dart';
 
 enum ProgressType { percentage, counter }
@@ -61,6 +62,77 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _scrollController = ScrollController();
   }
 
+  // Unified header cell content builders
+  Widget _buildHeaderLogoContent() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Image.asset(
+          'assets/nurtra.png',
+          height: 24,
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) {
+            return const Icon(
+              Icons.psychology,
+              color: Color(0xFF4CAF50),
+              size: 24,
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeaderLevelContent(int level) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'Level $level',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w900,
+                color: Colors.black87,
+                fontSize: 20,
+              ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeaderXpContent(int exp) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          '💎 $exp',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w900,
+                color: Colors.black87,
+                fontSize: 20,
+              ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeaderStreakContent(int streak) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          '☀️ $streak',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w900,
+                color: Colors.black87,
+                fontSize: 20,
+              ),
+        ),
+      ],
+    );
+  }
+
+  
   @override
   void dispose() {
     _scrollController?.dispose();
@@ -192,143 +264,144 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         final textColor = Colors.black87;
         final subtextColor = Colors.grey[700]!;
         
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Nurtra logo on the left
-            Container(
-              height: 40, // Same height as the white containers (8px padding * 2 + 24px text height)
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Image.asset(
-                'assets/nurtra.png',
-                height: 24, // Height to match the text in other containers
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  // Fallback to a simple icon if image fails to load
-                  return const Icon(
-                    Icons.psychology,
-                    color: Color(0xFF4CAF50),
-                    size: 24,
-                  );
-                },
-              ),
-            ),
-            // Level and EXP containers on the right
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Level text in white container with progress bar
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            return FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
               child: Row(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Vertical progress bar (only show if not max level)
-                  if (!isMaxLevel) ...[
-                    Container(
-                      width: 4,
-                      height: 24, // Height to match the text
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(2),
-                        color: Colors.grey[200], // Light grey background
-                      ),
-                      child: FractionallySizedBox(
-                        alignment: Alignment.bottomCenter,
-                        heightFactor: progress,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(2),
-                            color: const Color(0xFF4CAF50), // Green progress
-                          ),
+                  // Nurtra logo on the left
+                  Container(
+                    height: 40,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Image.asset(
+                      'assets/nurtra.png',
+                      height: 24,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(
+                          Icons.psychology,
+                          color: Color(0xFF4CAF50),
+                          size: 24,
+                        );
+                      },
+                    ),
+                  ),
+                  // Level and EXP containers on the right
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (!isMaxLevel) ...[
+                              Container(
+                                width: 4,
+                                height: 24,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(2),
+                                  color: Colors.grey[200],
+                                ),
+                                child: FractionallySizedBox(
+                                  alignment: Alignment.bottomCenter,
+                                  heightFactor: progress,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(2),
+                                      color: const Color(0xFF4CAF50),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                            ],
+                            Text(
+                              'Level ${userExp.level}',
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w900,
+                                color: textColor,
+                                fontSize: 20,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                  ],
-                  // Level text
-                  Text(
-                    'Level ${userExp.level}',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w900,
-                      color: textColor,
-                      fontSize: 20,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-            // EXP info in white container
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // EXP text with subtle animation
-                  AnimatedDefaultTextStyle(
-                    duration: const Duration(milliseconds: 400),
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w900,
-                      color: textColor,
-                      fontSize: 20,
-                    ) ?? const TextStyle(),
-                    child: Text('💎 ${userExp.exp}'),
-                  ),
-                  if (!isMaxLevel) ...[
-                    // Removed "X more to level Y" text and progress bar
-                  ] else ...[
-                    Padding(
-                      padding: const EdgeInsets.only(top: 2),
-                      child: Text(
-                        'Max Level! 🎉',
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: const Color(0xFF4CAF50),
-                          fontWeight: FontWeight.w700,
-                          fontSize: 11,
+                      const SizedBox(width: 12),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            AnimatedDefaultTextStyle(
+                              duration: const Duration(milliseconds: 400),
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.w900,
+                                    color: textColor,
+                                    fontSize: 20,
+                                  ) ?? const TextStyle(),
+                              child: Text('💎 ${userExp.exp}'),
+                            ),
+                            if (!isMaxLevel) ...[
+                            ] else ...[
+                              Padding(
+                                padding: const EdgeInsets.only(top: 2),
+                                child: Text(
+                                  'Max Level! 🎉',
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                        color: const Color(0xFF4CAF50),
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 11,
+                                      ),
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ],
               ),
-            ),
-              ],
-            ),
-          ],
+            );
+          },
         );
       },
     );
@@ -427,6 +500,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       builder: (context, ref, child) {
         final user = authState.valueOrNull;
         final shouldShowLearningSection = user != null;
+        final userExp = ref.watch(userExpProvider);
+        final userStreak = ref.watch(userStreakProvider);
         
         return Container(
           margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
@@ -438,25 +513,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
                         child: Row(
                           children: [
-                            // Level and EXP display
                             Expanded(
-                              child: _buildLevelExpDisplay(shouldShowLearningSection),
+                              child: _HeaderCell(
+                                child: _buildHeaderLogoContent(),
+                              ),
                             ),
-                            const SizedBox(width: 16),
-                            // Streak display on the right
-                            Consumer(
-                              builder: (context, ref, child) {
-                                final userStreak = ref.watch(userStreakProvider);
-                                if (userStreak == null) {
-                                  return const SizedBox.shrink();
-                                }
-                                return StreakDisplay(
-                                  streak: userStreak,
-                                  onTap: () {
-                                    print('Streak tapped: $userStreak');
-                                  },
-                                );
-                              },
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: _HeaderCell(
+                                child: userExp == null
+                                    ? const SizedBox.shrink()
+                                    : _buildHeaderLevelContent(userExp.level),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: _HeaderCell(
+                                child: userExp == null
+                                    ? const SizedBox.shrink()
+                                    : _buildHeaderXpContent(userExp.exp),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: _HeaderCell(
+                                child: userStreak == null
+                                    ? const SizedBox.shrink()
+                                    : _buildHeaderStreakContent(userStreak),
+                              ),
                             ),
                           ],
                         ),
@@ -1264,157 +1348,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   
   void _showUrgeHelpDialog() {
-    // Track dialog opening
     final trackDialog = ref.read(urgeHelpDialogTrackingProvider);
-    trackDialog('dialog_opened');
-    
     showDialog(
       context: context,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(32),
-        ),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        child: Container(
-          constraints: const BoxConstraints(maxWidth: 400),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(32),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Header with gradient background
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      const Color(0xFFE57373).withOpacity(0.15),
-                      const Color(0xFFEF5350).withOpacity(0.10),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(32),
-                    topRight: Radius.circular(32),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFFE57373).withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.psychology,
-                        color: Color(0xFFE57373),
-                        size: 28,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                            'Coping with Urges',
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xFFE57373),
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Take control with these exercises',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Content
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'When you experience urges, these resources can help you stay on track:',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[700],
-                        height: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-              _buildHelpOptionCard(
-                context,
-                'Urge Surfing Activity',
-                'Practical exercises to manage urges as they arise',
-                Icons.waves,
-                      const Color(0xFFE57373),
-                () => _navigateToUrgeSurfing(),
-              ),
-            ],
-          ),
-        ),
-              // Actions
-              Padding(
-                padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-            onPressed: () {
-              // Track dialog close
-              final trackDialog = ref.read(urgeHelpDialogTrackingProvider);
-              trackDialog('dialog_closed');
-              Navigator.of(context).pop();
-            },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFE57373),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(40.0),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: const Text(
-                      'Got it',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+      barrierColor: Colors.black.withOpacity(0.4),
+      builder: (_) => UrgeHelpDialog(
+        onClose: () {
+          trackDialog('dialog_closed');
+          Navigator.of(context).pop();
+        },
+        onUrgeSurfing: () {
+          Navigator.of(context).pop();
+          trackDialog('urge_surfing_navigation');
+          _navigateToUrgeSurfing();
+        },
+        onLogUrge: null,
+        onChat: null,
+        track: (event) => trackDialog(event),
       ),
     );
   }
@@ -1733,5 +1683,35 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+}
+
+class _HeaderCell extends StatelessWidget {
+  final Widget child;
+  const _HeaderCell({required this.child});
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 40,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.center,
+          child: child,
+        ),
+      ),
+    );
+  }
 }
 
