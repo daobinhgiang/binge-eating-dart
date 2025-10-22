@@ -1071,6 +1071,9 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
 
   Future<void> _submitPlan() async {
     if (!_validateCurrentPage()) return;
+    
+    // Prevent duplicate submissions
+    if (_isSubmitting) return;
 
     setState(() {
       _isSubmitting = true;
@@ -1098,7 +1101,7 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
       );
 
       if (plan != null && mounted) {
-        // Check for quest completion
+        // Check for quest completion (always for new plans, this screen only creates new ones)
         await _handleActivityCompletion();
         
         ScaffoldMessenger.of(context).showSnackBar(

@@ -6,6 +6,7 @@ import '../providers/tree_animation_provider.dart';
 import '../core/services/tree_service.dart';
 import 'mound_painter_widget.dart';
 import 'sprout_painter_widget.dart';
+import 'youngtree.dart';
 
 class TreeGrowthWidget extends ConsumerStatefulWidget {
   final GlobalKey? treeImageKey;
@@ -300,6 +301,14 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
       );
     }
     
+    // Use custom young tree painter for Level 3 (Young Tree)
+    if (treeData.displayName == 'Young Tree') {
+      return const YoungTreePainterWidget(
+        width: 200,
+        height: 200,
+      );
+    }
+    
     return SizedBox(
       height: 200,
       width: 200,
@@ -355,6 +364,17 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
       return FadeTransition(
         opacity: _crossFadeAnimation,
         child: const SproutPainterWidget(
+          width: 200,
+          height: 200,
+        ),
+      );
+    }
+    
+    // Use custom young tree painter for Level 3 (Young Tree)
+    if (treeData.displayName == 'Young Tree') {
+      return FadeTransition(
+        opacity: _crossFadeAnimation,
+        child: const YoungTreePainterWidget(
           width: 200,
           height: 200,
         ),

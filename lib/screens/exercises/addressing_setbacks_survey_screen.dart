@@ -597,6 +597,9 @@ class _AddressingSetbacksSurveyScreenState extends ConsumerState<AddressingSetba
     if (!_formKey.currentState!.validate()) {
       return;
     }
+    
+    // Prevent duplicate submissions
+    if (_isSubmitting) return;
 
     setState(() {
       _isSubmitting = true;

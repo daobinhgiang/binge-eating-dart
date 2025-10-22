@@ -966,6 +966,11 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
             ),
           );
         }
+        
+        // Navigate back to exercises tab
+        if (context.mounted) {
+          Navigator.of(context).pop();
+        }
       }
     } catch (e) {
       if (mounted) {

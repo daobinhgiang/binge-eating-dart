@@ -917,6 +917,9 @@ class _UrgeSurfingSurveyScreenState extends ConsumerState<UrgeSurfingSurveyScree
       );
       return;
     }
+    
+    // Prevent duplicate submissions
+    if (_isSubmitting) return;
 
     setState(() {
       _isSubmitting = true;

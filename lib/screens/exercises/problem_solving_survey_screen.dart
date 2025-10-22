@@ -1410,6 +1410,9 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
 
   Future<void> _submitExercise() async {
     if (!_validateCurrentStep()) return;
+    
+    // Prevent duplicate submissions
+    if (_isSubmitting) return;
 
     setState(() {
       _isSubmitting = true;
@@ -1429,7 +1432,7 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
       );
 
       if (exercise != null && mounted) {
-        // Check for quest completion
+        // Check for quest completion (always for new exercises, this screen only creates new ones)
         await _handleActivityCompletion();
         
         ScaffoldMessenger.of(context).showSnackBar(
