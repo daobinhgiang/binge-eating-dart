@@ -40,6 +40,7 @@ class UserModel {
   final bool hasVisitedWeightDiary;
   final bool hasSeenStreakTutorial;
   final bool hasSeenPlantGrowthTutorial;
+  final bool hasSeenTimerClosingSlides;
   final int level;
   final int exp;
   final String? lastSeedsGeneratedDate; // YYYY-MM-DD format
@@ -74,6 +75,7 @@ class UserModel {
     this.hasVisitedWeightDiary = false,
     this.hasSeenStreakTutorial = false,
     this.hasSeenPlantGrowthTutorial = false,
+    this.hasSeenTimerClosingSlides = false,
     this.level = 1,
     this.exp = 0,
     this.lastSeedsGeneratedDate,
@@ -154,6 +156,7 @@ class UserModel {
         hasSeenWeightDiaryTutorial: data['hasSeenWeightDiaryTutorial'] ?? false,
         hasSeenStreakTutorial: data['hasSeenStreakTutorial'] ?? false,
         hasSeenPlantGrowthTutorial: data['hasSeenPlantGrowthTutorial'] ?? false,
+        hasSeenTimerClosingSlides: data['hasSeenTimerClosingSlides'] ?? false,
         level: data['level'] ?? 1,
         exp: data['exp'] ?? 0,
         lastSeedsGeneratedDate: data['lastSeedsGeneratedDate'],
@@ -194,6 +197,7 @@ class UserModel {
       'hasVisitedWeightDiary': hasVisitedWeightDiary,
       'hasSeenStreakTutorial': hasSeenStreakTutorial,
       'hasSeenPlantGrowthTutorial': hasSeenPlantGrowthTutorial,
+      'hasSeenTimerClosingSlides': hasSeenTimerClosingSlides,
       'level': level,
       'exp': exp,
       'lastSeedsGeneratedDate': lastSeedsGeneratedDate,
@@ -230,6 +234,7 @@ class UserModel {
     bool? hasVisitedWeightDiary,
     bool? hasSeenStreakTutorial,
     bool? hasSeenPlantGrowthTutorial,
+    bool? hasSeenTimerClosingSlides,
     int? level,
     int? exp,
     String? lastSeedsGeneratedDate,
@@ -264,6 +269,7 @@ class UserModel {
       hasVisitedWeightDiary: hasVisitedWeightDiary ?? this.hasVisitedWeightDiary,
       hasSeenStreakTutorial: hasSeenStreakTutorial ?? this.hasSeenStreakTutorial,
       hasSeenPlantGrowthTutorial: hasSeenPlantGrowthTutorial ?? this.hasSeenPlantGrowthTutorial,
+      hasSeenTimerClosingSlides: hasSeenTimerClosingSlides ?? this.hasSeenTimerClosingSlides,
       level: level ?? this.level,
       exp: exp ?? this.exp,
       lastSeedsGeneratedDate: lastSeedsGeneratedDate ?? this.lastSeedsGeneratedDate,

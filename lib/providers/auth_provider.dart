@@ -267,6 +267,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
     bool? hasVisitedWeightDiary,
     bool? hasSeenStreakTutorial,
     bool? hasSeenPlantGrowthTutorial,
+    bool? hasSeenTimerClosingSlides,
   }) async {
     try {
       await _authService.updateTutorialStatus(
@@ -279,6 +280,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         hasVisitedWeightDiary: hasVisitedWeightDiary,
         hasSeenStreakTutorial: hasSeenStreakTutorial,
         hasSeenPlantGrowthTutorial: hasSeenPlantGrowthTutorial,
+        hasSeenTimerClosingSlides: hasSeenTimerClosingSlides,
       );
       
       // Refresh current user state
