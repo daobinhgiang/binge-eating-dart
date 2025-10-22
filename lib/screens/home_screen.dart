@@ -56,25 +56,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   // Unified header cell content builders
-  Widget _buildHeaderLogoContent() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Image.asset(
-          'assets/nurtra.png',
-          height: 24,
-          fit: BoxFit.contain,
-          errorBuilder: (context, error, stackTrace) {
-            return const Icon(
-              Icons.psychology,
-              color: Color(0xFF4CAF50),
-              size: 24,
-            );
-          },
-        ),
-      ],
-    );
-  }
 
   Widget _buildHeaderLevelContent(int level) {
     return Row(
@@ -263,37 +244,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               fit: BoxFit.scaleDown,
               alignment: Alignment.centerLeft,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  // Nurtra logo on the left
-                  Container(
-                    height: 40,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Image.asset(
-                      'assets/nurtra.png',
-                      height: 24,
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(
-                          Icons.psychology,
-                          color: Color(0xFF4CAF50),
-                          size: 24,
-                        );
-                      },
-                    ),
-                  ),
-                  // Level and EXP containers on the right
+                  // Level and EXP containers
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -514,35 +467,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
                         child: Row(
                           children: [
-                            Expanded(
-                              child: _HeaderCell(
-                                child: _buildHeaderLogoContent(),
+                            // Level box on the left
+                            if (userExp != null) ...[
+                              _HeaderCell(
+                                child: _buildHeaderLevelContent(userExp.level),
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: _HeaderCell(
-                                child: userExp == null
-                                    ? const SizedBox.shrink()
-                                    : _buildHeaderLevelContent(userExp.level),
+                              const SizedBox(width: 8),
+                            ],
+                            // Spacer to push remaining content to the right
+                            const Spacer(),
+                            // XP and Streak on the right
+                            if (userExp != null) ...[
+                              _HeaderCell(
+                                child: _buildHeaderXpContent(userExp.exp),
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: _HeaderCell(
-                                child: userExp == null
-                                    ? const SizedBox.shrink()
-                                    : _buildHeaderXpContent(userExp.exp),
+                              const SizedBox(width: 8),
+                            ],
+                            if (userStreak != null) ...[
+                              _HeaderCell(
+                                child: _buildHeaderStreakContent(userStreak),
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: _HeaderCell(
-                                child: userStreak == null
-                                    ? const SizedBox.shrink()
-                                    : _buildHeaderStreakContent(userStreak),
-                              ),
-                            ),
+                            ],
                           ],
                         ),
                       ),

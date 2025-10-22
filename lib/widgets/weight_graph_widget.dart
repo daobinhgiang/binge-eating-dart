@@ -312,37 +312,44 @@ class _WeightGraphWidgetState extends ConsumerState<WeightGraphWidget> {
           ),
         ),
         if (widget.showAxisLabels) ...[
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(40.0),
-                ),
-                child: Text(
-                  _formatTick(from, _selectedTimeFrame),
-                  style: TextStyle(
-                    color: Colors.grey[700], 
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(40.0),
+                  ),
+                  child: Text(
+                    _formatTick(from, _selectedTimeFrame),
+                    style: TextStyle(
+                      color: Colors.grey[700], 
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(40.0),
-                ),
-                child: Text(
-                  _formatTick(to, _selectedTimeFrame),
-                  style: TextStyle(
-                    color: Colors.grey[700], 
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
+              const SizedBox(width: 8),
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(40.0),
+                  ),
+                  child: Text(
+                    _formatTick(to, _selectedTimeFrame),
+                    style: TextStyle(
+                      color: Colors.grey[700], 
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ),
