@@ -133,8 +133,17 @@ class TaskRegenerationService {
       print('      🧹 Deleting old incomplete seeds...');
       await _deleteIncompleteSeedsBeforeGeneration(userId);
       
-      // Get seed templates
-      final seedTemplates = TaskTemplatesData.getRandomSeeds(count: 3);
+      // Check if this is the user's first day
+      final isFirstDay = await _isUserFirstDay(userId);
+      
+      // Get seed templates based on whether it's first day or not
+      final seedTemplates = isFirstDay 
+          ? TaskTemplatesData.getFirstDaySeeds()  // 2 seeds for first day
+          : TaskTemplatesData.getRandomSeeds(count: 3);  // 3 seeds normally
+      
+      if (isFirstDay) {
+        print('      🌟 First day detected - generating 2 starter seeds');
+      }
       print('      📋 Selected ${seedTemplates.length} seed templates');
       
       // Generate batch ID
@@ -716,6 +725,53 @@ class TaskRegenerationService {
     } catch (e) {
       print('   ⚠️  Error checking existing growth tasks: $e');
       return false;
+    }
+  }
+
+  /// Check if today is the user's first day
+  /// Compares the user's createdAt date with today's date
+  Future<bool> _isUserFirstDay(String userId) async {
+    try {
+      print('      🔍 Checking if user is on their first day...');
+      final userDoc = await _firestore.collection('users').doc(userId).get();
+      
+      if (!userDoc.exists) {
+        print('      ⚠️  User document not found');
+        return false;
+      }
+      
+      final createdAtValue = userDoc.get('createdAt');
+      DateTime? createdAt;
+      
+      // Handle different timestamp formats
+      if (createdAtValue is Timestamp) {
+        createdAt = createdAtValue.toDate();
+      } else if (createdAtValue is int) {
+        createdAt = DateTime.fromMillisecondsSinceEpoch(createdAtValue);
+      } else if (createdAtValue is double) {
+        createdAt = DateTime.fromMillisecondsSinceEpoch(createdAtValue.toInt());
+      }
+      
+      if (createdAt == null) {
+        print('      ⚠️  Could not parse createdAt field');
+        return false;
+      }
+      
+      // Compare dates only (ignore time)
+      final createdDate = DateTime(createdAt.year, createdAt.month, createdAt.day);
+      final today = DateTime.now();
+      final todayDate = DateTime(today.year, today.month, today.day);
+      
+      final isFirstDay = createdDate.isAtSameMomentAs(todayDate);
+      
+      print('      📅 Created date: ${createdDate.toIso8601String().split('T')[0]}');
+      print('      📅 Today: ${todayDate.toIso8601String().split('T')[0]}');
+      print('      ${isFirstDay ? '🌟 This is user\'s FIRST DAY!' : '✅ Not first day'}');
+      
+      return isFirstDay;
+    } catch (e) {
+      print('      ❌ Error checking first day: $e');
+      return false; // Default to false if error
     }
   }
 

@@ -796,18 +796,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
-  double _getProgressPercentage(int minutes) {
+  String _getProgressPercentage(int minutes) {
     switch (minutes) {
       case 5:
-        return 7.5;
+        return '7.5';
       case 10:
-        return 15;
+        return '15.0';
       case 15:
-        return 22.5;
+        return '22.5';
       case 20:
-        return 30;
+        return '30.0';
       default:
-        return 0;
+        return '0';
     }
   }
 

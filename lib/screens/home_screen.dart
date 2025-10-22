@@ -15,6 +15,7 @@ import '../providers/firebase_analytics_provider.dart';
 import '../core/services/exp_service.dart';
 import '../core/services/navigation_service.dart';
 import '../models/todo_item.dart';
+import '../models/task_template.dart';
 import '../core/services/user_learning_service.dart';
 import '../widgets/level_badge.dart';
 import '../widgets/tree_growth_widget.dart';
@@ -865,16 +866,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildDailyQuestsWidget(BuildContext context, List<TodoItem> todos, WidgetRef ref) {
-    // Get today's todos - include both completed and incomplete
+    // Get today's seeds (daily quests) - include both completed and incomplete
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     
-    final todayTodos = todos.where((todo) {
+    final todaySeeds = todos.where((todo) {
       final due = DateTime(todo.dueDate.year, todo.dueDate.month, todo.dueDate.day);
-      return today.isAtSameMomentAs(due);
+      return today.isAtSameMomentAs(due) && todo.tier == TaskTier.seeds;
     }).toList();
     
-    if (todayTodos.isEmpty) {
+    if (todaySeeds.isEmpty) {
       return const SizedBox.shrink();
     }
 
@@ -931,7 +932,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
             child: Column(
-              children: todayTodos.map((todo) => _buildDailyQuestItem(context, todo, ref)).toList(),
+              children: todaySeeds.map((todo) => _buildDailyQuestItem(context, todo, ref)).toList(),
             ),
             ),
           ],

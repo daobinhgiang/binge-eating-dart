@@ -453,5 +453,15 @@ class TaskTemplatesData {
     growthTasks.shuffle();
     return growthTasks.take(count).toList();
   }
+
+  /// Get the 2 specific seeds for first-day users
+  /// Returns "Nourish Your Mind" and "Daily Reflection"
+  static List<TaskTemplate> getFirstDaySeeds() {
+    final seeds = getDefaultSeeds();
+    return [
+      seeds.firstWhere((s) => s.id == 'seed_lesson_complete'),    // "Nourish Your Mind"
+      seeds.firstWhere((s) => s.id == 'seed_daily_reflection'),   // "Daily Reflection"
+    ];
+  }
 }
 
