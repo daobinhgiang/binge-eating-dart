@@ -738,7 +738,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // Progress dialogue image
-                    Image.asset('assets/onboarding/progress_${progressPercentage}%.png'),
+                    Image.asset('assets/onboarding/progress_$progressPercentage%.png'),
                     const SizedBox(height: 16),
                     // Character image (using the same character from daily routine)
                     Image.asset('assets/onboarding/progress.png'),

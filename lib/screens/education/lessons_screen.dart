@@ -1499,7 +1499,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        _getLessonEmoji(selectedLesson!),
+                        _getLessonEmoji(selectedLesson),
                         style: const TextStyle(fontSize: 36),
                       ),
                       const SizedBox(height: 12),

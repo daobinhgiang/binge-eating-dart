@@ -26,6 +26,7 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
   bool _hasShownExercisesTutorial = false;
   bool _hasShownJournalTutorial = false;
   bool _hasShownWeightDiaryTutorial = false;
+  bool _hasShownStreakTutorial = false;
   bool _hasShownPlantGrowthTutorial = false;
 
   // Global keys for tutorial targets
@@ -220,6 +221,59 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
     );
   }
   
+  void _showStreakTutorial() {
+    print('🔥 _showStreakTutorial called');
+    print('🔥 _hasShownStreakTutorial: $_hasShownStreakTutorial');
+    print('🔥 mounted: $mounted');
+    
+    if (_hasShownStreakTutorial || !mounted) {
+      print('❌ Returning early: hasShown=$_hasShownStreakTutorial, mounted=$mounted');
+      return;
+    }
+    
+    _hasShownStreakTutorial = true;
+    print('✅ Setting _hasShownStreakTutorial = true');
+    
+    // Mark that user has seen the streak tutorial
+    ref.read(authNotifierProvider.notifier).updateTutorialStatus(
+      hasSeenStreakTutorial: true,
+    );
+    print('✅ Marked streak tutorial status in Firebase');
+    
+    // Use post-frame callback to ensure the streak extended popup is fully displayed
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      print('🔥 Post-frame callback executing for streak tutorial');
+      if (!mounted) {
+        print('❌ Not mounted in post-frame callback');
+        return;
+      }
+      
+      print('🔥 Calling AppTutorialService.showStreakTutorial');
+      AppTutorialService().showStreakTutorial(
+        context: context,
+        onFinish: () {
+          print('✅ Streak tutorial completed');
+          // After streak tutorial, navigate to home if not already there
+          if (mounted && _currentIndex != 0) {
+            context.go('/home');
+          }
+          // Show plant growth tutorial after a short delay
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (mounted && _currentIndex == 0) {
+              print('✅ Proceeding to plant growth tutorial');
+              _showPlantGrowthTutorial();
+            }
+          });
+        },
+        onReady: () {
+          print('✅ User clicked "I\'m ready!" on streak tutorial');
+          // The streak extended popup will be dismissed by the service
+          // Tutorial will call onFinish after this
+        },
+      );
+    });
+  }
+  
   void _showPlantGrowthTutorial() {
     print('🌱 _showPlantGrowthTutorial called');
     print('🌱 _hasShownPlantGrowthTutorial: $_hasShownPlantGrowthTutorial');
@@ -384,30 +438,56 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
     final location = GoRouterState.of(context).uri.path;
     _updateCurrentIndex(location);
     
-    // Check if we should show plant growth tutorial (when on home tab)
+    // Check if we should show streak tutorial (when on home tab after weight logging)
     final user = ref.watch(authNotifierProvider).valueOrNull;
-    print('🔍 Checking plant tutorial conditions:');
+    print('🔍 Checking tutorial conditions:');
     print('   user != null: ${user != null}');
     if (user != null) {
       print('   hasSeenJournalTutorial: ${user.hasSeenJournalTutorial}');
       print('   hasLoggedWeightDuringTutorial: ${user.hasLoggedWeightDuringTutorial}');
+      print('   hasSeenStreakTutorial: ${user.hasSeenStreakTutorial}');
       print('   hasSeenPlantGrowthTutorial: ${user.hasSeenPlantGrowthTutorial}');
+      print('   _hasShownStreakTutorial: $_hasShownStreakTutorial');
       print('   _hasShownPlantGrowthTutorial: $_hasShownPlantGrowthTutorial');
       print('   _currentIndex: $_currentIndex');
     }
     
+    // Show streak tutorial when user has logged weight but hasn't seen streak tutorial
     if (user != null &&
         user.hasSeenJournalTutorial &&
         user.hasLoggedWeightDuringTutorial &&
+        !user.hasSeenStreakTutorial &&
+        !_hasShownStreakTutorial &&
+        _currentIndex == 0) {
+      print('✅ All conditions met, scheduling streak tutorial');
+      // Trigger tutorial after frame is built (this happens when streak extended popup appears)
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        print('📅 Post-frame callback for streak tutorial trigger');
+        Future.delayed(const Duration(milliseconds: 500), () {
+          print('⏰ Delayed trigger executing for streak tutorial');
+          if (mounted && _currentIndex == 0) {
+            print('✅ Calling _showStreakTutorial');
+            _showStreakTutorial();
+          } else {
+            print('❌ Not calling tutorial: mounted=$mounted, index=$_currentIndex');
+          }
+        });
+      });
+    }
+    // Show plant growth tutorial when user has seen streak tutorial
+    else if (user != null &&
+        user.hasSeenJournalTutorial &&
+        user.hasLoggedWeightDuringTutorial &&
+        user.hasSeenStreakTutorial &&
         !user.hasSeenPlantGrowthTutorial &&
         !_hasShownPlantGrowthTutorial &&
         _currentIndex == 0) {
       print('✅ All conditions met, scheduling plant tutorial');
       // Trigger tutorial after frame is built
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        print('📅 Post-frame callback for tutorial trigger');
+        print('📅 Post-frame callback for plant tutorial trigger');
         Future.delayed(const Duration(milliseconds: 500), () {
-          print('⏰ Delayed trigger executing');
+          print('⏰ Delayed trigger executing for plant tutorial');
           if (mounted && _currentIndex == 0) {
             print('✅ Calling _showPlantGrowthTutorial');
             _showPlantGrowthTutorial();
@@ -417,7 +497,7 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
         });
       });
     } else {
-      print('❌ Plant tutorial conditions not met');
+      print('❌ Tutorial conditions not met');
     }
     
     return Scaffold(

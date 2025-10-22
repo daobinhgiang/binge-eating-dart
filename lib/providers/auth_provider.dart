@@ -262,6 +262,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
     bool? hasLoggedWeightDuringTutorial,
     bool? hasSeenWeightDiaryTutorial,
     bool? hasVisitedWeightDiary,
+    bool? hasSeenStreakTutorial,
     bool? hasSeenPlantGrowthTutorial,
   }) async {
     try {
@@ -273,6 +274,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         hasLoggedWeightDuringTutorial: hasLoggedWeightDuringTutorial,
         hasSeenWeightDiaryTutorial: hasSeenWeightDiaryTutorial,
         hasVisitedWeightDiary: hasVisitedWeightDiary,
+        hasSeenStreakTutorial: hasSeenStreakTutorial,
         hasSeenPlantGrowthTutorial: hasSeenPlantGrowthTutorial,
       );
       

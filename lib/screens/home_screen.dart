@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../providers/auth_provider.dart';
 import '../providers/todo_provider.dart';
-import '../providers/education_provider.dart';
 import '../providers/exp_provider.dart';
-import '../../data/stage_1_data.dart';
-import '../../data/stage_2_data.dart';
-import '../../data/stage_3_data.dart';
 import '../../models/stage.dart';
 import '../../models/lesson.dart';
 import '../providers/firebase_analytics_provider.dart';
@@ -16,9 +11,7 @@ import '../core/services/exp_service.dart';
 import '../core/services/navigation_service.dart';
 import '../models/todo_item.dart';
 import '../models/task_template.dart';
-import '../core/services/user_learning_service.dart';
 import '../widgets/level_badge.dart';
-import '../widgets/tree_growth_widget.dart';
 import '../widgets/binge_free_timer_carousel_widget.dart';
 import '../widgets/streak_display.dart';
 import '../widgets/streak_animation_popup.dart';
@@ -924,13 +917,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     minimumSize: const Size(0, 0),
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
-                  child: Text(
-                    'See All',
-                    style: TextStyle(
-                      color: const Color(0xFF4CAF50),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'See All',
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        color: Colors.black87,
+                        size: 12,
+                      ),
+                    ],
                   ),
           ),
         ],

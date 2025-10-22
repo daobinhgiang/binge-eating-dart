@@ -122,7 +122,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                       ),
-                      icon: Container(
+                      icon: SizedBox(
                         width: 22,
                         height: 22,
                         child: Image.asset(

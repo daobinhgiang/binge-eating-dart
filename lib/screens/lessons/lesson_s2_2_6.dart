@@ -4,7 +4,6 @@ import '../../core/services/lesson_service.dart';
 import '../../models/lesson.dart';
 import '../../widgets/lesson_slide_widget.dart';
 import '../../data/stage_2_data.dart';
-import '../../core/services/quest_completion_service.dart';
 import '../../widgets/quest_completion_dialog.dart';
 import '../../providers/todo_provider.dart';
 import '../../providers/auth_provider.dart';

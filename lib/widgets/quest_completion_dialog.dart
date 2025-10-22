@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../core/services/quest_completion_service.dart';
+import '../providers/auth_provider.dart';
 import '../providers/exp_provider.dart';
 import 'streak_animation_popup.dart';
 
@@ -10,10 +11,12 @@ import 'streak_animation_popup.dart';
 class QuestCompletionDialog extends ConsumerStatefulWidget {
   final QuestCompletionResult result;
   final VoidCallback onDismiss;
+  final VoidCallback? onStreakAnimationShown;
 
   const QuestCompletionDialog({
     required this.result,
     required this.onDismiss,
+    this.onStreakAnimationShown,
     super.key,
   });
 
@@ -260,17 +263,22 @@ class _QuestCompletionDialogState extends ConsumerState<QuestCompletionDialog>
                   child: SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         Navigator.of(context).pop();
                         widget.onDismiss();
+                        
+                        // Always refresh auth provider after quest completion to update EXP/streak in UI
+                        print('   🔄 Refreshing auth provider after quest dialog dismissed...');
+                        await ref.read(authNotifierProvider.notifier).refreshUserData();
+                        print('   ✅ Auth provider refreshed');
                         
                         // Check if we need to show streak animation after dismissal
                         final suppressionState = ref.read(streakAnimationSuppressionProvider);
                         if (suppressionState.isSuppressed && 
                             suppressionState.oldStreak != null && 
                             suppressionState.newStreak != null) {
-                          print('   🔥 Showing streak animation after quest dialog dismissed');
-                          // Show streak animation in next frame
+                          print('   🔥 Showing streak animation after auth refresh');
+                          // Show streak animation in next frame after UI updates
                           WidgetsBinding.instance.addPostFrameCallback((_) {
                             if (mounted) {
                               showStreakAnimation(
@@ -281,6 +289,16 @@ class _QuestCompletionDialogState extends ConsumerState<QuestCompletionDialog>
                               );
                               // Clear the suppression flag after showing animation
                               ref.read(streakAnimationSuppressionProvider.notifier).clearSuppression();
+                              
+                              // Trigger callback after streak animation is shown (if provided)
+                              if (widget.onStreakAnimationShown != null) {
+                                // Wait for streak animation to complete before triggering callback
+                                Future.delayed(const Duration(milliseconds: 2000), () {
+                                  if (mounted) {
+                                    widget.onStreakAnimationShown!();
+                                  }
+                                });
+                              }
                             }
                           });
                         }
@@ -318,6 +336,7 @@ void showQuestCompletionDialog(
   BuildContext context,
   QuestCompletionResult result, {
   VoidCallback? onDismiss,
+  VoidCallback? onStreakAnimationShown,
 }) {
   showDialog(
     context: context,
@@ -326,6 +345,7 @@ void showQuestCompletionDialog(
     builder: (context) => QuestCompletionDialog(
       result: result,
       onDismiss: onDismiss ?? () {},
+      onStreakAnimationShown: onStreakAnimationShown,
     ),
   );
 }

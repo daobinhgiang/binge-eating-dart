@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/todo_item.dart';
-import '../../providers/auth_provider.dart';
 import '../../providers/exp_provider.dart';
 import 'todo_service.dart';
 import 'streak_service.dart';
@@ -86,6 +85,7 @@ class QuestCompletionService {
             print('   ✅ Streak updated to: $currentStreak days');
             
             // Set suppression flag to prevent automatic streak animation in home screen
+            // Auth provider will be refreshed AFTER quest dialog is dismissed
             if (ref != null) {
               print('   🔒 Suppressing automatic streak animation (will show after quest dialog)');
               ref.read(streakAnimationSuppressionProvider.notifier).suppressStreakAnimation(
@@ -93,10 +93,7 @@ class QuestCompletionService {
                 newStreak: currentStreak,
                 isReset: currentStreak == 0,
               );
-              
-              print('   🔄 Refreshing auth provider to update UI...');
-              await ref.read(authNotifierProvider.notifier).refreshUserData();
-              print('   ✅ Auth provider refreshed');
+              print('   ℹ️  Auth provider will be refreshed after quest dialog dismissal');
             }
           }
         } else {
@@ -284,13 +281,7 @@ class QuestCompletionService {
           print('\n💰 Step 3: Awarding quest rewards...');
           final expAwarded = await _awardQuestEXP(userId, quest);
           print('   ✅ Awarded $expAwarded EXP');
-          
-          // Refresh auth provider to update UI immediately
-          if (ref != null) {
-            print('   🔄 Refreshing auth provider to update UI...');
-            await ref.read(authNotifierProvider.notifier).refreshUserData();
-            print('   ✅ Auth provider refreshed');
-          }
+          print('   ℹ️  Auth provider will be refreshed after quest dialog dismissal');
           
           print('\n📝 Step 4: Marking quest as completed...');
           // Mark quest as completed

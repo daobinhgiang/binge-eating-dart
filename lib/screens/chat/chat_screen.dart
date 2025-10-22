@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../models/chat_message.dart';
 import '../../core/services/openai_service.dart';
 import '../../core/services/user_context_service.dart';
-import '../../widgets/comforting_background.dart';
 import '../../providers/auth_provider.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
@@ -264,7 +263,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           children: [
             // Subtle loading indicator
             if (_isLoadingContext)
-              Container(
+              SizedBox(
                 height: 3,
                 child: const LinearProgressIndicator(
                   backgroundColor: Colors.transparent,

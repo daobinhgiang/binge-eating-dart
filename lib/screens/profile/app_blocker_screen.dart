@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:binge_eating_recovery/core/services/screen_time_service.dart';
 import 'package:go_router/go_router.dart';

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/stage_1_data.dart';
 import '../../models/lesson.dart';
 import '../../core/services/lesson_service.dart';
-import '../../core/services/quest_completion_service.dart';
 import '../../widgets/quest_completion_dialog.dart';
 import '../../widgets/lesson_slide_widget.dart';
 import '../../providers/auth_provider.dart';

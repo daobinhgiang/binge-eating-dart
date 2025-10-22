@@ -5,9 +5,6 @@ import '../../models/lesson.dart';
 import '../../screens/exercises/problem_solving_main_screen.dart';
 import '../../core/services/lesson_service.dart';
 import '../../widgets/exercise_prep_slide_widget.dart';
-import '../../core/services/quest_completion_service.dart';
-import '../../widgets/quest_completion_dialog.dart';
-import '../../providers/todo_provider.dart';
 
 class LessonS243Screen extends ConsumerStatefulWidget {
   const LessonS243Screen({super.key});

@@ -8,6 +8,7 @@ import '../../models/todo_item.dart';
 import '../../providers/weight_diary_provider.dart';
 import '../../widgets/weight_graph_widget.dart';
 import '../../widgets/quest_completion_dialog.dart';
+import '../../core/services/app_tutorial_service.dart';
 
 class WeightDiarySurveyScreen extends ConsumerStatefulWidget {
   const WeightDiarySurveyScreen({super.key});
@@ -313,7 +314,10 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
   }
 
   /// Handle quest completion for weight diary activity
-  Future<void> _handleActivityCompletion({VoidCallback? onDismiss}) async {
+  Future<void> _handleActivityCompletion({
+    VoidCallback? onDismiss,
+    VoidCallback? onStreakAnimationShown,
+  }) async {
     try {
       final user = ref.read(currentUserDataProvider);
       if (user == null) return;
@@ -331,6 +335,7 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
           context, 
           result,
           onDismiss: onDismiss ?? () {},
+          onStreakAnimationShown: onStreakAnimationShown,
         );
       } else if (onDismiss != null) {
         // No quest completed, but we have a callback to execute
@@ -395,8 +400,38 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
           // Check for quest completion with callback for tutorial flow
           await _handleActivityCompletion(
             onDismiss: () async {
-              // Update tutorial status after quest dialog is dismissed (or immediately if no quest)
-              await _updateTutorialStatusAndNavigate();
+              // This callback is called when quest dialog dismisses
+              // If no streak animation shows, we need to proceed with tutorial flow
+              // Wait a bit to see if streak animation will trigger
+              await Future.delayed(const Duration(milliseconds: 500));
+              
+              // Check if we're still mounted and haven't navigated yet
+              final currentUser = ref.read(currentUserDataProvider);
+              if (mounted && currentUser != null && !currentUser.hasLoggedWeightDuringTutorial) {
+                // No streak animation showed, skip streak tutorial and proceed
+                await _updateTutorialStatusAndNavigate();
+              }
+            },
+            onStreakAnimationShown: () async {
+              // This callback is triggered after the streak animation completes
+              final currentUser = ref.read(currentUserDataProvider);
+              if (currentUser != null && !currentUser.hasSeenStreakTutorial && mounted) {
+                // Show streak tutorial
+                AppTutorialService().showStreakExplanationTutorial(
+                  context: context,
+                  onFinish: () async {
+                    // Mark that user has seen streak tutorial
+                    await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
+                      hasSeenStreakTutorial: true,
+                    );
+                    // Then proceed with navigation
+                    await _updateTutorialStatusAndNavigate();
+                  },
+                );
+              } else {
+                // User already saw streak tutorial, proceed with navigation
+                await _updateTutorialStatusAndNavigate();
+              }
             },
           );
         } else {
