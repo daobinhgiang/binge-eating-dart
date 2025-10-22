@@ -7,6 +7,8 @@ import '../core/services/tree_service.dart';
 import 'mound_painter_widget.dart';
 import 'sprout_painter_widget.dart';
 import 'youngtree.dart';
+import 'leafy_tree.dart';
+import 'small_grove.dart';
 
 class TreeGrowthWidget extends ConsumerStatefulWidget {
   final GlobalKey? treeImageKey;
@@ -309,6 +311,22 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
       );
     }
     
+    // Use custom leafy tree painter for Level 4 (Leafy Tree)
+    if (treeData.displayName == 'Leafy Tree') {
+      return const LeafyTreePainterWidget(
+        width: 200,
+        height: 200,
+      );
+    }
+    
+    // Use custom small grove painter for Level 5 (Small Grove)
+    if (treeData.displayName == 'Small Grove') {
+      return const SmallGrovePainterWidget(
+        width: 200,
+        height: 200,
+      );
+    }
+    
     return SizedBox(
       height: 200,
       width: 200,
@@ -375,6 +393,28 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
       return FadeTransition(
         opacity: _crossFadeAnimation,
         child: const YoungTreePainterWidget(
+          width: 200,
+          height: 200,
+        ),
+      );
+    }
+    
+    // Use custom leafy tree painter for Level 4 (Leafy Tree)
+    if (treeData.displayName == 'Leafy Tree') {
+      return FadeTransition(
+        opacity: _crossFadeAnimation,
+        child: const LeafyTreePainterWidget(
+          width: 200,
+          height: 200,
+        ),
+      );
+    }
+    
+    // Use custom small grove painter for Level 5 (Small Grove)
+    if (treeData.displayName == 'Small Grove') {
+      return FadeTransition(
+        opacity: _crossFadeAnimation,
+        child: const SmallGrovePainterWidget(
           width: 200,
           height: 200,
         ),
