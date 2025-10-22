@@ -84,7 +84,8 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         }
       }
       
-      // The stream will automatically update the state when user data changes
+      // Update state explicitly after all async operations complete
+      state = AsyncValue.data(user);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
@@ -124,7 +125,8 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         }
       }
       
-      // The stream will automatically update the state when user data changes
+      // Update state explicitly after all async operations complete
+      state = AsyncValue.data(user);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
@@ -156,7 +158,8 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         print('Error during daily quest check on Google login: $e');
       }
       
-      // The stream will automatically update the state when user data changes
+      // Update state explicitly after all async operations complete
+      state = AsyncValue.data(user);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
@@ -188,7 +191,8 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         print('Error during daily quest check on Apple login: $e');
       }
       
-      // The stream will automatically update the state when user data changes
+      // Update state explicitly after all async operations complete
+      state = AsyncValue.data(user);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
