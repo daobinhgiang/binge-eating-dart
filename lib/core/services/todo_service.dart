@@ -66,6 +66,11 @@ class TodoService {
     _clearCache(userId);
   }
 
+  void clearAllCaches() {
+    _cache.clear();
+    _cacheTimestamps.clear();
+  }
+
   // Get todos for a specific user with real-time updates
   Stream<List<TodoItem>> getUserTodosStream(String userId) {
     return _getTodosCollection(userId)

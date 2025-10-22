@@ -156,3 +156,44 @@ final quizSubmissionProvider = StateNotifierProvider<QuizSubmissionNotifier, Asy
   return QuizSubmissionNotifier(ref.watch(expServiceProvider));
 });
 
+// Streak animation suppression notifier
+// Used to prevent automatic streak animation when showing quest completion dialog
+class StreakAnimationSuppressionNotifier extends StateNotifier<StreakSuppressionState> {
+  StreakAnimationSuppressionNotifier() : super(StreakSuppressionState());
+
+  void suppressStreakAnimation({
+    required int oldStreak,
+    required int newStreak,
+    required bool isReset,
+  }) {
+    state = StreakSuppressionState(
+      isSuppressed: true,
+      oldStreak: oldStreak,
+      newStreak: newStreak,
+      isReset: isReset,
+    );
+  }
+
+  void clearSuppression() {
+    state = StreakSuppressionState();
+  }
+}
+
+class StreakSuppressionState {
+  final bool isSuppressed;
+  final int? oldStreak;
+  final int? newStreak;
+  final bool isReset;
+
+  StreakSuppressionState({
+    this.isSuppressed = false,
+    this.oldStreak,
+    this.newStreak,
+    this.isReset = false,
+  });
+}
+
+final streakAnimationSuppressionProvider = StateNotifierProvider<StreakAnimationSuppressionNotifier, StreakSuppressionState>((ref) {
+  return StreakAnimationSuppressionNotifier();
+});
+

@@ -1,0 +1,72 @@
+================================================================================
+ACCOUNT DELETION - STALE QUEST DATA FIX
+================================================================================
+
+PROBLEM:
+--------
+After deleting an account and recreating it, users were seeing old completed
+quests from the previous account alongside new quests.
+
+ROOT CAUSE:
+-----------
+In-memory service caches were not being cleared during account deletion:
+  1. TodoService cached quests for 5 minutes
+  2. TaskRegenerationService cached regeneration logs
+  3. New account would load with stale cached data instead of fresh data
+
+SOLUTION:
+---------
+Clear both service caches during account deletion.
+
+FILES CHANGED:
+--------------
+
+1. lib/core/services/todo_service.dart
+   - Added: clearAllCaches() method
+   - Clears: _cache and _cacheTimestamps maps
+   - Impact: Ensures no stale quest data persists
+
+2. lib/core/services/task_regeneration_service.dart
+   - Added: clearCache() method
+   - Clears: _lastRegenerationCache map
+   - Impact: Forces new account to regenerate tasks fresh
+
+3. lib/providers/auth_provider.dart
+   - Updated: deleteAccount() method
+   - Added: import for TodoService
+   - Calls: TodoService().clearAllCaches()
+   - Calls: TaskRegenerationService().clearCache()
+   - Impact: Clears all caches before deleting account
+
+4. lib/core/services/auth_service.dart
+   - Status: NO CHANGES (already properly implemented)
+
+TESTING:
+--------
+1. Create account → Complete some quests
+2. Delete account (Settings → Delete Account)
+3. Create new account
+4. Verify: No old quests appear, only fresh quests
+
+IMPACT:
+-------
+✓ LOW RISK - Only affects account deletion flow
+✓ NO DATABASE CHANGES needed
+✓ NO DEPENDENCIES added
+✓ BACKWARD COMPATIBLE - Doesn't affect existing accounts
+✓ SIMPLE CHANGES - Clear, focused, easy to review
+
+LINES CHANGED:
+--------------
+- TodoService: +5 lines
+- TaskRegenerationService: +6 lines
+- AuthProvider: +4 lines + 1 import
+- Total: ~20 lines added, 0 lines deleted
+
+READY FOR:
+----------
+✓ Testing in development
+✓ Staging deployment
+✓ Production release
+
+================================================================================

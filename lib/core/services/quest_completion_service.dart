@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/todo_item.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/exp_provider.dart';
 import 'todo_service.dart';
 import 'streak_service.dart';
 import 'lesson_progress_service.dart';
@@ -77,13 +78,22 @@ class QuestCompletionService {
         print('   📝 Quest is a seed - checking if all daily tasks completed');
         final allTasksCompleted = await _streakService.getAllDailyTasksCompleted(userId);
         if (allTasksCompleted) {
+          // Get old streak before incrementing
+          final oldStreak = await _streakService.getCurrentStreak(userId);
           currentStreak = await _streakService.incrementStreak(userId);
           streakUpdated = true;
           if (currentStreak > 0) {
             print('   ✅ Streak updated to: $currentStreak days');
             
-            // Refresh auth provider to update UI immediately
+            // Set suppression flag to prevent automatic streak animation in home screen
             if (ref != null) {
+              print('   🔒 Suppressing automatic streak animation (will show after quest dialog)');
+              ref.read(streakAnimationSuppressionProvider.notifier).suppressStreakAnimation(
+                oldStreak: oldStreak,
+                newStreak: currentStreak,
+                isReset: currentStreak == 0,
+              );
+              
               print('   🔄 Refreshing auth provider to update UI...');
               await ref.read(authNotifierProvider.notifier).refreshUserData();
               print('   ✅ Auth provider refreshed');

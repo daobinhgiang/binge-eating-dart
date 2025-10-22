@@ -869,5 +869,11 @@ class TaskRegenerationService {
       print('Error cleaning up auto-generated tasks: $e');
     }
   }
+
+  /// Clear the in-memory cache of regeneration logs
+  void clearCache() {
+    _lastRegenerationCache.clear();
+    print('In-memory regeneration cache cleared.');
+  }
 }
 

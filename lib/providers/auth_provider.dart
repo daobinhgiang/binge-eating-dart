@@ -4,6 +4,7 @@ import '../core/services/auth_service.dart';
 import '../core/services/firebase_analytics_service.dart';
 import '../core/services/app_initialization_service.dart';
 import '../core/services/task_regeneration_service.dart';
+import '../core/services/todo_service.dart';
 import '../models/user_model.dart';
 
 // Auth service provider
@@ -321,6 +322,9 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
       final currentUser = state.value;
       if (currentUser != null) {
         AppInitializationService().clearUserInitialization(currentUser.id);
+        // Clear all service caches to prevent stale data after account deletion
+        TodoService().clearAllCaches();
+        TaskRegenerationService().clearCache();
       }
       
       await _authService.deleteAccount();

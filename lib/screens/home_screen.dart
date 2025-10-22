@@ -343,6 +343,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ref.listen(userStreakProvider, (previous, next) {
       if (previous != null && next != null && previous != next) {
         print('🔥 Streak changed: $previous → $next');
+        
+        // Check if we should suppress the animation (quest dialog will handle it)
+        final suppressionState = ref.read(streakAnimationSuppressionProvider);
+        if (suppressionState.isSuppressed) {
+          print('   ℹ️  Streak animation suppressed - will show after quest dialog');
+          return;
+        }
+        
         // Show animation in next frame to ensure context is ready
         WidgetsBinding.instance.addPostFrameCallback((_) {
           showStreakAnimation(
@@ -1674,59 +1682,59 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildUrgeHelpButton() {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: const Color(0xFFE53E3E), // Bright red background
-        borderRadius: BorderRadius.circular(40.0),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFFE53E3E).withOpacity(0.6), // Red glow effect
-            spreadRadius: 2,
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-          BoxShadow(
-            color: const Color(0xFFE53E3E).withOpacity(0.3), // Additional glow layer
-            spreadRadius: 4,
-            blurRadius: 30,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            // Track analytics for urge-relapse button usage
-            final trackUrgeButton = ref.read(urgeRelapseButtonTrackingProvider);
-            trackUrgeButton();
-            _showUrgeHelpDialog();
-          },
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 200), // Limit maximum width
+        decoration: BoxDecoration(
+          color: const Color(0xFFE53E3E), // Bright red background
           borderRadius: BorderRadius.circular(40.0),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.warning, // Alert/warning icon
-                  color: Colors.white,
-                  size: 18,
-                ),
-                const SizedBox(width: 6),
-                Flexible(
-                  child: Text(
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFFE53E3E).withOpacity(0.6), // Red glow effect
+              spreadRadius: 2,
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+            ),
+            BoxShadow(
+              color: const Color(0xFFE53E3E).withOpacity(0.3), // Additional glow layer
+              spreadRadius: 4,
+              blurRadius: 30,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              // Track analytics for urge-relapse button usage
+              final trackUrgeButton = ref.read(urgeRelapseButtonTrackingProvider);
+              trackUrgeButton();
+              _showUrgeHelpDialog();
+            },
+            borderRadius: BorderRadius.circular(40.0),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Row(
+                mainAxisSize: MainAxisSize.min, // Make row only as wide as needed
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.warning, // Alert/warning icon
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 6),
+                  const Text(
                     'Urge Help',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white, // White text
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
-                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

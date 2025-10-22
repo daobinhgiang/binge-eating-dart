@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../core/services/quest_completion_service.dart';
+import '../providers/exp_provider.dart';
+import 'streak_animation_popup.dart';
 
 /// Dialog shown when user completes a quest
 /// Displays celebration animation, EXP earned, and quest details
-class QuestCompletionDialog extends StatefulWidget {
+class QuestCompletionDialog extends ConsumerStatefulWidget {
   final QuestCompletionResult result;
   final VoidCallback onDismiss;
 
@@ -15,10 +18,10 @@ class QuestCompletionDialog extends StatefulWidget {
   });
 
   @override
-  State<QuestCompletionDialog> createState() => _QuestCompletionDialogState();
+  ConsumerState<QuestCompletionDialog> createState() => _QuestCompletionDialogState();
 }
 
-class _QuestCompletionDialogState extends State<QuestCompletionDialog>
+class _QuestCompletionDialogState extends ConsumerState<QuestCompletionDialog>
     with TickerProviderStateMixin {
   late AnimationController _scaleController;
   late AnimationController _slideController;
@@ -260,6 +263,27 @@ class _QuestCompletionDialogState extends State<QuestCompletionDialog>
                       onPressed: () {
                         Navigator.of(context).pop();
                         widget.onDismiss();
+                        
+                        // Check if we need to show streak animation after dismissal
+                        final suppressionState = ref.read(streakAnimationSuppressionProvider);
+                        if (suppressionState.isSuppressed && 
+                            suppressionState.oldStreak != null && 
+                            suppressionState.newStreak != null) {
+                          print('   🔥 Showing streak animation after quest dialog dismissed');
+                          // Show streak animation in next frame
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (mounted) {
+                              showStreakAnimation(
+                                context,
+                                oldStreak: suppressionState.oldStreak!,
+                                newStreak: suppressionState.newStreak!,
+                                isReset: suppressionState.isReset,
+                              );
+                              // Clear the suppression flag after showing animation
+                              ref.read(streakAnimationSuppressionProvider.notifier).clearSuppression();
+                            }
+                          });
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
