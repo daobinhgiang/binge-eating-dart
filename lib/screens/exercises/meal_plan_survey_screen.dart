@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/meal_plan_provider.dart';
 import '../../providers/todo_provider.dart';
@@ -1115,7 +1116,8 @@ class _MealPlanSurveyScreenState extends ConsumerState<MealPlanSurveyScreen> {
             margin: const EdgeInsets.all(16),
           ),
         );
-        Navigator.of(context).pop();
+        // Navigate back to exercises tab
+        context.go('/exercises');
       }
     } catch (e) {
       if (mounted) {

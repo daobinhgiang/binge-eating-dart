@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/todo_provider.dart';
 import '../../models/money_diary.dart';
@@ -526,7 +527,6 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
       // No need to invalidate - real-time streams will auto-update!
 
       if (mounted) {
-        Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Spending entry saved successfully'),
@@ -537,6 +537,8 @@ class _MoneyDiarySurveyScreenState extends ConsumerState<MoneyDiarySurveyScreen>
             ),
           ),
         );
+        // Navigate back to journal tab
+        context.go('/journal');
       }
     } catch (e) {
       if (mounted) {

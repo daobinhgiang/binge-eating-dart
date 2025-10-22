@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/body_image_diary_provider.dart';
 import '../../providers/todo_provider.dart';
@@ -553,7 +554,7 @@ class _BodyImageDiarySurveyScreenState extends ConsumerState<BodyImageDiarySurve
           ),
         );
         // Navigate back to the journal tab after successful submission
-        Navigator.of(context).pop();
+        context.go('/journal');
       }
     } catch (e) {
       if (mounted) {

@@ -4,8 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/problem_solving_provider.dart';
 import '../../models/problem_solving.dart';
-import '../../models/todo_item.dart';
-import '../../core/services/navigation_service.dart';
 import 'problem_solving_survey_screen.dart';
 import 'problem_solving_history_screen.dart';
 import 'problem_solving_detail_screen.dart';
@@ -24,11 +22,6 @@ class ProblemSolvingMainScreen extends ConsumerWidget {
         ),
       );
     }
-
-    // Mark any pending todo for this tool as completed when user accesses it
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      NavigationService.markActivityCompleted(ref, 'problem_solving', TodoType.tool);
-    });
 
     final allExercises = ref.watch(userProblemSolvingExercisesProvider(user.id));
 

@@ -32,8 +32,17 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
     
     // Listen to real-time user data changes
     _userStreamSubscription = _authService.currentUserStream.listen(
-      (user) {
+      (user) async {
         state = AsyncValue.data(user);
+        
+        // Check and regenerate quests when user session is restored
+        if (user != null) {
+          try {
+            await TaskRegenerationService().checkAndRegenerateTasks(user.id);
+          } catch (e) {
+            print('Error during daily quest check on session restore: $e');
+          }
+        }
       },
       onError: (error, stackTrace) {
         state = AsyncValue.error(error, stackTrace);
@@ -66,6 +75,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         onboardingCompleted: user?.onboardingCompleted,
       );
       // Check and regenerate daily quests on login
+      // This must complete before login to ensure onboarding flow has tasks
       if (user != null) {
         try {
           await TaskRegenerationService().checkAndRegenerateTasks(user.id);
@@ -105,6 +115,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         onboardingCompleted: user?.onboardingCompleted,
       );
       // Check and regenerate daily quests on sign up
+      // This must complete before sign up to ensure onboarding flow has tasks
       if (user != null) {
         try {
           await TaskRegenerationService().checkAndRegenerateTasks(user.id);
@@ -138,6 +149,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         onboardingCompleted: user.onboardingCompleted,
       );
       // Check and regenerate daily quests on login
+      // This must complete before login to ensure onboarding flow has tasks
       try {
         await TaskRegenerationService().checkAndRegenerateTasks(user.id);
       } catch (e) {
@@ -169,6 +181,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         onboardingCompleted: user.onboardingCompleted,
       );
       // Check and regenerate daily quests on login
+      // This must complete before login to ensure onboarding flow has tasks
       try {
         await TaskRegenerationService().checkAndRegenerateTasks(user.id);
       } catch (e) {

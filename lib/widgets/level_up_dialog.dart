@@ -34,7 +34,7 @@ class _LevelUpDialogState extends State<LevelUpDialog>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 0),
+      duration: const Duration(milliseconds: 800),
       vsync: this,
     );
 

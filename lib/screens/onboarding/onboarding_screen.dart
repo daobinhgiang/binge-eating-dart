@@ -372,18 +372,19 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         )
                       else
                         const SizedBox(width: 48),
+                      const SizedBox(width: 16),
                       Expanded(
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(4),
                           child: LinearProgressIndicator(
                             value: progress,
-                            minHeight: 6,
+                            minHeight: 12,
                             backgroundColor: Colors.grey[200],
                             valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF4CAF50)),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 48),
+                      const SizedBox(width: 32),
                     ],
                   ),
                 ],

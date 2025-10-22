@@ -474,21 +474,136 @@ class AuthService {
     }
   }
 
-  // Delete user account
+  // Delete user account and all associated data
   Future<void> deleteAccount() async {
     try {
       final user = _auth.currentUser;
       if (user == null) throw 'No user signed in';
 
-      // Delete user document from Firestore
-      await _firestore.collection('users').doc(user.uid).delete();
+      print('Starting account deletion for user: ${user.uid}');
+
+      // Clean up FCM token before deletion
+      try {
+        await _fcmTokenService.cleanupForUser(user.uid);
+        print('FCM token cleaned up');
+      } catch (e) {
+        print('Error cleaning up FCM token during account deletion: $e');
+        // Continue with deletion even if FCM cleanup fails
+      }
+
+      // Delete all user data from Firestore
+      // IMPORTANT: Deleting a document does NOT delete its subcollections in Firestore
+      // We must manually delete all subcollections
+      await _deleteAllUserData(user.uid);
+      print('All user data deleted from Firestore');
+
+      // Disconnect from Google Sign-In to clear all cached credentials
+      // This ensures a fresh sign-in flow if the user signs up again with the same Google account
+      try {
+        await _googleSignIn.disconnect();
+        print('Google Sign-In disconnected');
+      } catch (e) {
+        print('Error disconnecting from Google during account deletion: $e');
+        // Continue with deletion even if Google disconnect fails
+      }
 
       // Delete Firebase Auth user
       await user.delete();
+      print('Firebase Auth user deleted');
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
     } catch (e) {
       throw 'Failed to delete account. Please try again.';
+    }
+  }
+
+  // Helper method to delete all user data including subcollections
+  Future<void> _deleteAllUserData(String userId) async {
+    try {
+      final userDocRef = _firestore.collection('users').doc(userId);
+
+      // Delete todos subcollection
+      await _deleteSubcollection(userDocRef, 'todos');
+
+      // Delete regeneration logs subcollection
+      // This is critical - if not deleted, recreating the account will use stale logs
+      await _deleteSubcollection(userDocRef, 'regenerationLog');
+
+      // Delete assessments subcollection
+      await _deleteSubcollection(userDocRef, 'assessments');
+
+      // Delete exercises subcollection
+      await _deleteSubcollection(userDocRef, 'exercises');
+
+      // Delete onboarding document (top-level collection)
+      try {
+        await _firestore.collection('onboarding').doc(userId).delete();
+        print('Deleted onboarding document');
+      } catch (e) {
+        print('Error deleting onboarding document: $e');
+        // Continue with other deletions
+      }
+
+      // Delete all week-based data
+      // Get all weeks documents
+      final weeksSnapshot = await userDocRef.collection('weeks').get();
+      
+      for (final weekDoc in weeksSnapshot.docs) {
+        final weekRef = weekDoc.reference;
+        
+        // Delete all diary subcollections within each week
+        await _deleteSubcollection(weekRef, 'foodDiaries');
+        await _deleteSubcollection(weekRef, 'weightDiaries');
+        await _deleteSubcollection(weekRef, 'moneyDiaries');
+        await _deleteSubcollection(weekRef, 'bodyImageDiaries');
+        await _deleteSubcollection(weekRef, 'thoughtDumps');
+        
+        // Delete the week document itself
+        await weekRef.delete();
+      }
+
+      // Finally, delete the main user document
+      await userDocRef.delete();
+    } catch (e) {
+      print('Error deleting user data: $e');
+      throw 'Failed to delete user data from database.';
+    }
+  }
+
+  // Helper method to delete all documents in a subcollection
+  Future<void> _deleteSubcollection(
+    DocumentReference docRef,
+    String subcollectionName,
+  ) async {
+    try {
+      final snapshot = await docRef.collection(subcollectionName).get();
+      
+      // Delete in batches of 500 (Firestore batch limit)
+      final batch = _firestore.batch();
+      int count = 0;
+      
+      for (final doc in snapshot.docs) {
+        batch.delete(doc.reference);
+        count++;
+        
+        // Commit batch if we reach 500 documents
+        if (count >= 500) {
+          await batch.commit();
+          count = 0;
+        }
+      }
+      
+      // Commit any remaining deletions
+      if (count > 0) {
+        await batch.commit();
+      }
+      
+      if (snapshot.docs.isNotEmpty) {
+        print('Deleted ${snapshot.docs.length} documents from $subcollectionName');
+      }
+    } catch (e) {
+      print('Error deleting subcollection $subcollectionName: $e');
+      // Don't throw - continue with other deletions
     }
   }
 

@@ -47,49 +47,49 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
 
     // Growth animation controller for tree evolution
     _growthAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 3700), // 1200ms old tree fade + 2500ms new tree growth
+      duration: const Duration(milliseconds: 4500), // 2000ms old tree display + 2500ms new tree growth
       vsync: this,
     );
 
     _growthScaleAnimation = TweenSequence<double>([
       TweenSequenceItem(
-        tween: Tween<double>(begin: 1.0, end: 0.7)
-            .chain(CurveTween(curve: Curves.easeInCubic)),
-        weight: 32.4, // Phase 0 (0-1200ms): Old tree shrinks down
+        tween: Tween<double>(begin: 1.0, end: 1.0)
+            .chain(CurveTween(curve: Curves.linear)),
+        weight: 44.4, // Phase 0 (0-2000ms): Old tree stays visible longer
       ),
       TweenSequenceItem(
         tween: Tween<double>(begin: 1.0, end: 0.85)
             .chain(CurveTween(curve: Curves.easeInCubic)),
-        weight: 16.2, // Phase 1 (1200-1800ms): New tree slight shrink (anticipation)
+        weight: 11.1, // Phase 1 (2000-2500ms): New tree slight shrink (anticipation)
       ),
       TweenSequenceItem(
         tween: Tween<double>(begin: 0.85, end: 1.25)
             .chain(CurveTween(curve: Curves.easeOutBack)),
-        weight: 32.4, // Phase 2 (1800-3200ms): New tree burst out
+        weight: 33.3, // Phase 2 (2500-4000ms): New tree burst out
       ),
       TweenSequenceItem(
         tween: Tween<double>(begin: 1.25, end: 1.0)
             .chain(CurveTween(curve: Curves.easeInOut)),
-        weight: 18.9, // Phase 3 (3200-3700ms): New tree settles
+        weight: 11.1, // Phase 3 (4000-4500ms): New tree settles
       ),
     ]).animate(_growthAnimationController);
 
     _crossFadeAnimation = TweenSequence<double>([
       TweenSequenceItem(
-        tween: Tween<double>(begin: 1.0, end: 0.0),
-        weight: 32.4, // Phase 0 (0-1200ms): Old tree fades out
+        tween: Tween<double>(begin: 1.0, end: 1.0),
+        weight: 44.4, // Phase 0 (0-2000ms): Old tree stays visible longer
       ),
       TweenSequenceItem(
-        tween: Tween<double>(begin: 0.0, end: 0.0),
-        weight: 16.2, // Phase 1 (1200-1800ms): New tree invisible during anticipation
+        tween: Tween<double>(begin: 1.0, end: 0.0),
+        weight: 11.1, // Phase 1 (2000-2500ms): Old tree fades out during anticipation
       ),
       TweenSequenceItem(
         tween: Tween<double>(begin: 0.0, end: 1.0),
-        weight: 32.4, // Phase 2 (1800-3200ms): New tree fades in during burst
+        weight: 33.3, // Phase 2 (2500-4000ms): New tree fades in during burst
       ),
       TweenSequenceItem(
         tween: Tween<double>(begin: 1.0, end: 1.0),
-        weight: 18.9, // Phase 3 (3200-3700ms): New tree fully visible
+        weight: 11.1, // Phase 3 (4000-4500ms): New tree fully visible
       ),
     ]).animate(_growthAnimationController);
 
@@ -130,16 +130,16 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
     print('🌱 [TreeGrowthWidget] Display level set to old level: $fromLevel');
     
     // Use animation listener to switch tree at the right moment
-    // Phase 0 is 32.4% of total animation (1200ms out of 3700ms)
+    // Phase 0 is 44.4% of total animation (2000ms out of 4500ms)
     bool hasDisplayedNewTree = false;
     
     _growthAnimationController.addListener(() {
       final progress = _growthAnimationController.value;
       
-      // At 32.4% progress (end of phase 0), switch to new tree
-      if (progress >= 0.324 && !hasDisplayedNewTree) {
+      // At 44.4% progress (end of phase 0), switch to new tree
+      if (progress >= 0.444 && !hasDisplayedNewTree) {
         hasDisplayedNewTree = true;
-        print('⏱️  [TreeGrowthWidget] Animation reached 32.4%, switching to new tree');
+        print('⏱️  [TreeGrowthWidget] Animation reached 44.4%, switching to new tree');
         if (mounted) {
           setState(() {
             _displayLevel = toLevel;
@@ -151,7 +151,7 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
     
     // Start the growth animation
     _growthAnimationController.forward(from: 0.0);
-    print('▶️  [TreeGrowthWidget] Growth animation controller started (3700ms)');
+    print('▶️  [TreeGrowthWidget] Growth animation controller started (4500ms)');
   }
 
   @override

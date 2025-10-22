@@ -31,7 +31,7 @@ class _StreakAnimationPopupState extends State<StreakAnimationPopup>
     super.initState();
 
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
 
@@ -58,7 +58,7 @@ class _StreakAnimationPopupState extends State<StreakAnimationPopup>
     _controller.forward();
 
     // Close dialog after animation completes
-    Future.delayed(const Duration(milliseconds: 1600), () {
+    Future.delayed(const Duration(milliseconds: 2500), () {
       if (mounted) {
         Navigator.of(context).pop();
       }

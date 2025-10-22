@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/todo_item.dart';
 import '../../models/regeneration_log.dart';
@@ -350,31 +351,58 @@ class TaskRegenerationService {
       print('   No cache found, querying Firestore...');
       print('   Path: users/$userId/regenerationLog');
       
-      QuerySnapshot<Map<String, dynamic>> querySnapshot;
+      QuerySnapshot<Map<String, dynamic>>? querySnapshot;
       
       try {
-        // Try with orderBy first
+        // Try with orderBy first with a timeout to prevent hanging on recently deleted accounts
         querySnapshot = await _firestore
             .collection('users')
             .doc(userId)
             .collection('regenerationLog')
             .orderBy('regeneratedAt', descending: true)
             .limit(1)
-            .get();
+            .get()
+            .timeout(
+              const Duration(seconds: 3),
+              onTimeout: () {
+                print('   ⏱️  OrderBy query timed out after 3 seconds');
+                throw TimeoutException('Query timed out');
+              },
+            );
         
         print('   Query with orderBy completed - returned ${querySnapshot.docs.length} document(s)');
       } catch (orderByError) {
-        print('   ⚠️  OrderBy query failed (might need index): $orderByError');
-        print('   Falling back to getting all documents and sorting manually...');
+        print('   ⚠️  OrderBy query failed: $orderByError');
         
-        // Fallback: get all documents and sort manually
-        querySnapshot = await _firestore
-            .collection('users')
-            .doc(userId)
-            .collection('regenerationLog')
-            .get();
-        
-        print('   Retrieved ${querySnapshot.docs.length} documents for manual sorting');
+        // Only try fallback if it's not a timeout
+        if (orderByError is! TimeoutException) {
+          print('   Falling back to getting all documents and sorting manually...');
+          
+          try {
+            // Fallback: get all documents and sort manually (with timeout)
+            querySnapshot = await _firestore
+                .collection('users')
+                .doc(userId)
+                .collection('regenerationLog')
+                .get()
+                .timeout(
+                  const Duration(seconds: 3),
+                  onTimeout: () {
+                    print('   ⏱️  Fallback query timed out after 3 seconds');
+                    throw TimeoutException('Fallback query timed out');
+                  },
+                );
+            
+            print('   Retrieved ${querySnapshot.docs.length} documents for manual sorting');
+          } catch (fallbackError) {
+            print('   ❌ Fallback query also failed: $fallbackError');
+            print('   Returning null - will regenerate tasks as if this is a new account');
+            return null;
+          }
+        } else {
+          print('   Timeout occurred - returning null to trigger regeneration');
+          return null;
+        }
       }
       
       if (querySnapshot.docs.isEmpty) {
@@ -634,7 +662,15 @@ class TaskRegenerationService {
   /// Check if seeds already exist for today
   Future<bool> _existingSeedsForTodayExist(String userId) async {
     try {
-      final allTodos = await _todoService.getUserTodos(userId);
+      // Add timeout to prevent hanging on recently deleted accounts
+      final allTodos = await _todoService.getUserTodos(userId).timeout(
+        const Duration(seconds: 3),
+        onTimeout: () {
+          print('   ⏱️  getUserTodos timed out - assuming no seeds exist');
+          return <TodoItem>[];
+        },
+      );
+      
       final today = DateTime.now();
       final todayString = today.toIso8601String().split('T')[0];
       
@@ -656,7 +692,15 @@ class TaskRegenerationService {
   /// Check if growth tasks already exist for this week
   Future<bool> _existingGrowthTasksForThisWeekExist(String userId) async {
     try {
-      final allTodos = await _todoService.getUserTodos(userId);
+      // Add timeout to prevent hanging on recently deleted accounts
+      final allTodos = await _todoService.getUserTodos(userId).timeout(
+        const Duration(seconds: 3),
+        onTimeout: () {
+          print('   ⏱️  getUserTodos timed out - assuming no growth tasks exist');
+          return <TodoItem>[];
+        },
+      );
+      
       final now = DateTime.now();
       final weekNumber = _getISOWeekNumber(now);
       

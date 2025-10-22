@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/food_diary_provider.dart';
@@ -1278,7 +1279,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
           ),
         );
         // Navigate back to the journal tab after successful submission
-        Navigator.of(context).pop();
+        context.go('/journal');
       }
     } catch (e) {
       if (mounted) {

@@ -5,6 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/addressing_overconcern_provider.dart';
 import '../../models/addressing_overconcern.dart';
+import '../../models/todo_item.dart';
+import '../../providers/todo_provider.dart';
+import '../../widgets/quest_completion_dialog.dart';
 
 class AddressingOverconcernScreen extends ConsumerStatefulWidget {
   const AddressingOverconcernScreen({super.key});
@@ -873,6 +876,28 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
     );
   }
 
+  /// Handle quest completion for addressing overconcern exercise
+  Future<void> _handleActivityCompletion() async {
+    try {
+      final user = ref.read(currentUserDataProvider);
+      if (user == null) return;
+      
+      final questCompletionService = ref.read(questCompletionServiceProvider);
+      final result = await questCompletionService.handleActivityCompletion(
+        userId: user.id,
+        activityId: 'addressing_overconcern',
+        type: TodoType.tool,
+        ref: ref,
+      );
+      
+      if (result.questCompleted && mounted) {
+        showQuestCompletionDialog(context, result);
+      }
+    } catch (e) {
+      print('Error checking quest completion: $e');
+    }
+  }
+
   Future<void> _saveImportanceItems(String userId, {bool showSuccessMessage = true}) async {
     if (_isLoading) return; // Prevent multiple simultaneous saves
     
@@ -882,6 +907,7 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
 
     try {
       final exercisesAsync = ref.read(userAddressingOverconcernExercisesProvider(userId));
+      bool isNewExercise = false;
       
       await exercisesAsync.when(
         data: (exercises) async {
@@ -891,11 +917,13 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
               exerciseId: exercises.first.id,
               importanceItems: _importanceItems,
             );
+            isNewExercise = false;
           } else {
             // Create new exercise
             await ref.read(userAddressingOverconcernExercisesProvider(userId).notifier).createExercise(
               importanceItems: _importanceItems,
             );
+            isNewExercise = true;
           }
         },
         loading: () async {
@@ -903,32 +931,41 @@ class _AddressingOverconcernScreenState extends ConsumerState<AddressingOverconc
           await ref.read(userAddressingOverconcernExercisesProvider(userId).notifier).createExercise(
             importanceItems: _importanceItems,
           );
+          isNewExercise = true;
         },
         error: (error, stackTrace) async {
           // Create new exercise on error
           await ref.read(userAddressingOverconcernExercisesProvider(userId).notifier).createExercise(
             importanceItems: _importanceItems,
           );
+          isNewExercise = true;
         },
       );
 
-      if (mounted && showSuccessMessage) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.white),
-                const SizedBox(width: 12),
-                Expanded(child: Text('Items saved successfully!')),
-              ],
+      if (mounted) {
+        // Check for quest completion only for new exercises
+        if (isNewExercise) {
+          await _handleActivityCompletion();
+        }
+        
+        if (showSuccessMessage) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.check_circle, color: Colors.white),
+                  const SizedBox(width: 12),
+                  Expanded(child: Text('Items saved successfully!')),
+                ],
+              ),
+              backgroundColor: Colors.green[600],
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
+              margin: const EdgeInsets.all(16),
+              duration: const Duration(seconds: 2),
             ),
-            backgroundColor: Colors.green[600],
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
-            margin: const EdgeInsets.all(16),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+          );
+        }
       }
     } catch (e) {
       if (mounted) {

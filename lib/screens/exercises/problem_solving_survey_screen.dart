@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/problem_solving_provider.dart';
 import '../../providers/todo_provider.dart';
@@ -1446,7 +1447,8 @@ class _ProblemSolvingSurveyScreenState extends ConsumerState<ProblemSolvingSurve
             margin: const EdgeInsets.all(16),
           ),
         );
-        Navigator.of(context).pop();
+        // Navigate back to exercises tab
+        context.go('/exercises');
       }
     } catch (e) {
       if (mounted) {

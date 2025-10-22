@@ -376,7 +376,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 
                 // Content
                 SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 100), // Added 100px bottom padding for Urge Help button
                   sliver: SliverToBoxAdapter(
                       child: Column(
                         children: [
