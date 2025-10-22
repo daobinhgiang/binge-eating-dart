@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:superwallkit_flutter/superwallkit_flutter.dart';
+import 'dart:io';
 import 'firebase_options.dart';
 import 'screens/main_navigation.dart';
 import 'screens/education/article_detail_screen.dart';
@@ -16,6 +18,7 @@ import 'screens/admin/admin_screen.dart';
 import 'screens/onboarding/intro_screen.dart';
 import 'screens/onboarding/onboarding_screen.dart';
 import 'screens/onboarding/onboarding_review_screen.dart';
+import 'screens/onboarding/tutorial_closing_slides_screen.dart';
 import 'screens/exercises/problem_solving_main_screen.dart';
 import 'screens/exercises/meal_planning_screen.dart';
 import 'screens/exercises/urge_surfing_screen.dart';
@@ -150,6 +153,10 @@ void main() async {
       rethrow;
     }
   }
+  
+  // Initialize Superwall
+  String apiKey = Platform.isIOS ? "pk_d97c69e785c502e76d6d0d4180c53afd769f3449ed70236d" : "pk_d97c69e785c502e76d6d0d4180c53afd769f3449ed70236d";
+  Superwall.configure(apiKey);
   
   final localNotificationsService = LocalNotificationsService.instance();
   await localNotificationsService.init();
@@ -365,6 +372,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/onboarding/review',
       builder: (context, state) => const AuthGuard(child: OnboardingReviewScreen()),
+    ),
+    GoRoute(
+      path: '/tutorial-closing-slides',
+      builder: (context, state) => const AuthGuard(child: TutorialClosingSlidesScreen()),
     ),
     GoRoute(
       path: '/education/article/:id',

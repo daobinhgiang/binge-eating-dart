@@ -449,6 +449,7 @@ class AuthService {
     bool? hasSeenWeightDiaryTutorial,
     bool? hasVisitedWeightDiary,
     bool? hasSeenPlantGrowthTutorial,
+    bool? hasSeenTimerClosingSlides,
   }) async {
     try {
       final user = _auth.currentUser;
@@ -465,6 +466,7 @@ class AuthService {
       if (hasSeenWeightDiaryTutorial != null) updateData['hasSeenWeightDiaryTutorial'] = hasSeenWeightDiaryTutorial;
       if (hasVisitedWeightDiary != null) updateData['hasVisitedWeightDiary'] = hasVisitedWeightDiary;
       if (hasSeenPlantGrowthTutorial != null) updateData['hasSeenPlantGrowthTutorial'] = hasSeenPlantGrowthTutorial;
+      if (hasSeenTimerClosingSlides != null) updateData['hasSeenTimerClosingSlides'] = hasSeenTimerClosingSlides;
 
       if (updateData.isNotEmpty) {
         await userDoc.update(updateData);
