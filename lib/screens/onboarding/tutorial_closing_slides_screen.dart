@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -281,15 +282,22 @@ class _TutorialClosingSlidesScreenState extends ConsumerState<TutorialClosingSli
         hasSeenTimerClosingSlides: true,
       );
       
-      // Present Superwall paywall using placement registration
-      if (mounted) {
-        Superwall.shared.registerPlacement('campaign_trigger', feature: () {
-          // This feature callback executes after paywall is dismissed
-          // (whether user subscribes or not, since it's Non-Gated)
-          if (mounted) {
-            context.go('/home');
-          }
-        });
+      // Web: skip Superwall paywall and go directly to home
+      if (kIsWeb) {
+        if (mounted) {
+          context.go('/home');
+        }
+      } else {
+        // Native platforms: Present Superwall paywall using placement registration
+        if (mounted) {
+          Superwall.shared.registerPlacement('campaign_trigger', feature: () {
+            // This feature callback executes after paywall is dismissed
+            // (whether user subscribes or not, since it's Non-Gated)
+            if (mounted) {
+              context.go('/home');
+            }
+          });
+        }
       }
     } catch (e) {
       if (mounted) {
