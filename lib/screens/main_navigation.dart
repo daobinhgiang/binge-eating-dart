@@ -473,31 +473,8 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
           }
         });
       });
-    }
-    // Show plant growth tutorial when user has seen streak tutorial
-    else if (user != null &&
-        user.hasSeenJournalTutorial &&
-        user.hasLoggedWeightDuringTutorial &&
-        user.hasSeenStreakTutorial &&
-        !user.hasSeenPlantGrowthTutorial &&
-        !_hasShownPlantGrowthTutorial &&
-        _currentIndex == 0) {
-      print('✅ All conditions met, scheduling plant tutorial');
-      // Trigger tutorial after frame is built
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        print('📅 Post-frame callback for plant tutorial trigger');
-        Future.delayed(const Duration(milliseconds: 500), () {
-          print('⏰ Delayed trigger executing for plant tutorial');
-          if (mounted && _currentIndex == 0) {
-            print('✅ Calling _showPlantGrowthTutorial');
-            _showPlantGrowthTutorial();
-          } else {
-            print('❌ Not calling tutorial: mounted=$mounted, index=$_currentIndex');
-          }
-        });
-      });
     } else {
-      print('❌ Tutorial conditions not met');
+      print('❌ Streak tutorial conditions not met');
     }
     
     return Scaffold(
