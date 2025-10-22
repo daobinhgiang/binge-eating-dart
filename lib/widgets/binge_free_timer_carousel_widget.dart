@@ -224,7 +224,8 @@ class _TimerDisplayWidgetState extends State<_TimerDisplayWidget> {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
+      constraints: const BoxConstraints(minHeight: 360),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(40.0),
@@ -238,10 +239,10 @@ class _TimerDisplayWidgetState extends State<_TimerDisplayWidget> {
         ],
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           // Circular progress indicator
           _buildIOSTimerLayout(timeUnits, days, hours, minutes, seconds),
-          const SizedBox(height: 16),
           // Reset Timer button
           ElevatedButton.icon(
             key: widget.timerButtonKey,
@@ -271,85 +272,91 @@ class _TimerDisplayWidgetState extends State<_TimerDisplayWidget> {
 
   Widget _buildIOSTimerLayout(List<Map<String, dynamic>> timeUnits, int days,
       int hours, int minutes, int seconds) {
-    return Column(
-      children: [
-        // Circular progress rings - larger size
-        SizedBox(
-          width: 240,
-          height: 240,
-          child: CustomPaint(
-            size: const Size(240, 240),
-            painter: CircularTimerPainter(
-              days: days,
-              hours: hours,
-              minutes: minutes,
-              seconds: seconds,
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          // Circular progress rings - reduced size to fit better
+          SizedBox(
+            width: 180,
+            height: 180,
+            child: CustomPaint(
+              size: const Size(180, 180),
+              painter: CircularTimerPainter(
+                days: days,
+                hours: hours,
+                minutes: minutes,
+                seconds: seconds,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 12),
-        // Text above the time units
-        Text(
-          "You've been binge-free for:",
-          style: GoogleFonts.quicksand(
-            color: Colors.black87,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
+          // Text above the time units
+          Text(
+            "You've been binge-free for:",
+            style: GoogleFonts.quicksand(
+              color: Colors.black87,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 2),
-        // Time units displayed in a row below the circle with minimal gap
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: timeUnits.map((unit) {
-            final fontSize = 28.0;
+          // Time units displayed in a row below the circle with minimal gap
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: timeUnits.map((unit) {
+                    final double fontSize = (unit['size'] as double?) ?? 28.0;
 
-            // Determine color based on the time unit type - matching the bright progress ring colors
-            Color unitColor;
-            final label = unit['label'] as String;
-            if (label.contains('day')) {
-              unitColor = const Color(0xFF00FF88); // Electric lime green for days
-            } else if (label.contains('hrs')) {
-              unitColor = const Color(0xFFFF1744); // Electric pink/red for hours
-            } else if (label.contains('min')) {
-              unitColor = const Color(0xFFFFAB00); // Electric amber for minutes
-            } else {
-              unitColor = const Color(0xFF00E5FF); // Electric cyan for seconds
-            }
+                    // Determine color based on the time unit type - matching the bright progress ring colors
+                    Color unitColor;
+                    final label = unit['label'] as String;
+                    if (label.contains('day')) {
+                      unitColor = const Color(0xFF00FF88); // Electric lime green for days
+                    } else if (label.contains('hrs')) {
+                      unitColor = const Color(0xFFFF1744); // Electric pink/red for hours
+                    } else if (label.contains('min')) {
+                      unitColor = const Color(0xFFFFAB00); // Electric amber for minutes
+                    } else {
+                      unitColor = const Color(0xFF00E5FF); // Electric cyan for seconds
+                    }
 
-            return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 5), // Added space between time units
-              child: RichText(
-                text: TextSpan(
-                  children: [
-                    // Time value
-                    TextSpan(
-                      text: unit['value'] as String,
-                      style: GoogleFonts.quicksand(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                        color: unitColor,
+                    return Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 5),
+                      child: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: unit['value'] as String,
+                              style: GoogleFonts.quicksand(
+                                fontSize: fontSize,
+                                fontWeight: FontWeight.bold,
+                                color: unitColor,
+                              ),
+                            ),
+                            const TextSpan(text: ' '),
+                            TextSpan(
+                              text: unit['label'] as String,
+                              style: GoogleFonts.quicksand(
+                                fontSize: fontSize,
+                                fontWeight: FontWeight.bold,
+                                color: unitColor,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    // Very small space between value and unit
-                    const TextSpan(text: ' '),
-                    // Time unit
-                    TextSpan(
-                      text: unit['label'] as String,
-                      style: GoogleFonts.quicksand(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                        color: unitColor,
-                      ),
-                    ),
-                  ],
+                    );
+                  }).toList(),
                 ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }
@@ -475,9 +482,9 @@ class BingeFreeTimerCarouselWidgetState
       children: [
         // PageView carousel
         SizedBox(
-          height: 480, // Increased height to accommodate shadows (400 + 80 for top/bottom shadows)
+          height: 420, // Reduced height to prevent overflow
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 30), // Increased vertical padding for shadows
+            padding: const EdgeInsets.symmetric(vertical: 20), // Reduced vertical padding
             child: GestureDetector(
               onPanUpdate: (details) {
                 // Handle mouse drag for web compatibility
@@ -724,7 +731,7 @@ class CircularTimerPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final strokeWidth = 16.0;
+    final strokeWidth = 12.0;
 
     // Calculate progress values (normalized to 0-1)
     // Seconds: Progress through current minute (resets every 60 seconds)
@@ -739,11 +746,11 @@ class CircularTimerPainter extends CustomPainter {
     // Days: Progress through current month (resets every 30 days)
     final daysProgress = (days % 30 / 30).clamp(0.0, 1.0);
 
-    // Define ring radii (from outer to inner)
+    // Define ring radii (from outer to inner) - adjusted for smaller size
     final daysRadius = size.width / 2 - strokeWidth / 2;
-    final hoursRadius = daysRadius - strokeWidth - 8;
-    final minutesRadius = hoursRadius - strokeWidth - 8;
-    final secondsRadius = minutesRadius - strokeWidth - 8;
+    final hoursRadius = daysRadius - strokeWidth - 6;
+    final minutesRadius = hoursRadius - strokeWidth - 6;
+    final secondsRadius = minutesRadius - strokeWidth - 6;
 
     // Bright, youthful, energetic colors that match the app's theme
     final daysColor = const Color(0xFF00FF88); // Electric lime green for days
