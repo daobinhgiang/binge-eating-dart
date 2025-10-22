@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/money_diary_provider.dart';
 import '../../providers/thought_dump_provider.dart';
@@ -66,13 +67,18 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
-                      // Weight Progress Graph and Spending Diary Row
+                      // Weight Progress Graph Row
                       _buildTopRowCards(context, user.id),
 
                       const SizedBox(height: 24),
 
                       // Diary Access Cards
                       _buildDiaryAccessCards(context),
+
+                      const SizedBox(height: 24),
+
+                      // Recovery Exercises Section
+                      _buildRecoveryExercisesRow(context, user.id),
 
                       const SizedBox(height: 24),
 
@@ -248,38 +254,27 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
   }
 
   Widget _buildTopRowCards(BuildContext context, String userId) {
-    // Calculate the available width and create square buttons
     final screenWidth = MediaQuery.of(context).size.width;
     final padding = 40.0; // 20px padding on each side
-    final spacing = 16.0; // Space between buttons
     final availableWidth = screenWidth - padding;
+    
+    // For other buttons, half width is used as height reference
+    final spacing = 16.0;
     final buttonWidth = (availableWidth - spacing) / 2;
-    final buttonSize = buttonWidth; // Make it square
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        // Weight Graph Widget
-        SizedBox(
-          key: widget.weightDiaryKey,
-          width: buttonSize,
-          height: buttonSize,
-          child: WeightGraphWidget(
-            userId: userId,
-            onTap: () => _navigateToWeightDiarySurvey(context),
-            height: buttonSize,
-            showTitle: true,
-            showAxisLabels: false,
-            showTimeFrameSelector: false,
-          ),
-        ),
-        // Spending Diary Card
-        SizedBox(
-          width: buttonSize,
-          height: buttonSize,
-          child: _buildSpendingDiaryCard(context, userId, height: buttonSize),
-        ),
-      ],
+    final buttonHeight = buttonWidth; // Use this as height reference
+    
+    return SizedBox(
+      width: availableWidth,
+      height: buttonHeight,
+      child: WeightGraphWidget(
+        key: widget.weightDiaryKey,
+        userId: userId,
+        onTap: () => _navigateToWeightDiarySurvey(context),
+        height: buttonHeight,
+        showTitle: true,
+        showAxisLabels: false,
+        showTimeFrameSelector: false,
+      ),
     );
   }
 
@@ -439,6 +434,8 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
       return 'assets/journal/body_image2.png';
     } else if (title.toLowerCase().contains('spending') || title.toLowerCase().contains('money')) {
       return 'assets/journal/spending_diary2.png';
+    } else if (title.toLowerCase().contains('recovery')) {
+      return 'assets/journal/food_diary.png'; // Placeholder - using food diary image for now
     }
     return 'assets/journal/food_diary.png'; // Default fallback
   }
@@ -784,6 +781,40 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
       MaterialPageRoute(
         builder: (context) => const ThoughtDumpMainScreen(),
       ),
+    );
+  }
+
+  Widget _buildRecoveryExercisesRow(BuildContext context, String userId) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final padding = 40.0;
+    final spacing = 16.0;
+    final availableWidth = screenWidth - padding;
+    final buttonWidth = (availableWidth - spacing) / 2;
+    final buttonSize = buttonWidth;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        // Recovery Exercises Card
+        SizedBox(
+          width: buttonSize,
+          height: buttonSize,
+          child: _buildDiaryCard(
+            context,
+            title: 'Recovery Exercises',
+            subtitle: 'Your recovery tools',
+            icon: Icons.psychology_outlined,
+            color: const Color(0xFF4CAF50),
+            onTap: () => context.push('/recovery-exercises'),
+          ),
+        ),
+        // Spending Diary Card
+        SizedBox(
+          width: buttonSize,
+          height: buttonSize,
+          child: _buildSpendingDiaryCard(context, userId, height: buttonSize),
+        ),
+      ],
     );
   }
 }

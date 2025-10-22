@@ -772,22 +772,459 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
                 // Calculate position (0 = center, -1 = left, 1 = right)
                 final position = _getLessonPosition(index);
                 
-                return Column(
-                  children: [
-                    _buildDuolingoLessonButton(
-                      lesson: lesson,
-                      lessonNumber: lessonNumber,
-                      isCompleted: isCompleted,
-                      isLocked: isLocked,
-                      position: position,
-                      stageColor: _getStageColor(stage.stageNumber),
-                      // Attach the first lesson key for tutorial highlighting
-                      lessonKey: lesson.id == 'lesson_1_1' ? _firstLessonKey : null,
-                    ),
-                    if (index < chapter.lessons.length - 1)
-                      _buildConnectingPath(position, _getLessonPosition(index + 1)),
-                  ],
-                );
+                // Special handling for lesson_1_2_1 to add avatar
+                if (lesson.id == 'lesson_1_2_1') {
+                  return Column(
+                    children: [
+                      SizedBox(
+                        height: 200, // Adequate height to show full larger avatar
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            // Lesson button positioned normally
+                            _buildDuolingoLessonButton(
+                              lesson: lesson,
+                              lessonNumber: lessonNumber,
+                              isCompleted: isCompleted,
+                              isLocked: isLocked,
+                              position: position,
+                              stageColor: _getStageColor(stage.stageNumber),
+                              lessonKey: lesson.id == 'lesson_1_1' ? _firstLessonKey : null,
+                            ),
+                            // Avatar positioned at right edge, not constrained by lesson button
+                            Positioned(
+                              right: 20,
+                              top: 10, // Position from top of the SizedBox
+                              child: Container(
+                                width: 180,
+                                height: 180,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  // No shadows - clean, flat appearance
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(90),
+                                  child: Opacity(
+                                    opacity: 0.3, // Further increased transparency (30% opacity)
+                                    child: Image.asset(
+                                      'assets/lessons/avatars/avatar_1.png',
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        // Fallback to a simple icon if image fails to load
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFF4CAF50).withOpacity(0.1),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.person,
+                                            color: Color(0xFF4CAF50),
+                                            size: 50,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (index < chapter.lessons.length - 1)
+                        _buildConnectingPath(position, _getLessonPosition(index + 1)),
+                    ],
+                  );
+                } else if (lesson.id == 'lesson_2_3') {
+                  return Column(
+                    children: [
+                      SizedBox(
+                        height: 200, // Adequate height to show full larger avatar
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            // Lesson button positioned normally
+                            _buildDuolingoLessonButton(
+                              lesson: lesson,
+                              lessonNumber: lessonNumber,
+                              isCompleted: isCompleted,
+                              isLocked: isLocked,
+                              position: position,
+                              stageColor: _getStageColor(stage.stageNumber),
+                              lessonKey: lesson.id == 'lesson_1_1' ? _firstLessonKey : null,
+                            ),
+                            // Avatar positioned at right edge, not constrained by lesson button
+                            Positioned(
+                              right: 20,
+                              top: 10, // Position from top of the SizedBox
+                              child: Container(
+                                width: 180,
+                                height: 180,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  // No shadows - clean, flat appearance
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(90),
+                                  child: Opacity(
+                                    opacity: 0.3, // Same transparency as avatar_1 (30% opacity)
+                                    child: Image.asset(
+                                      'assets/lessons/avatars/avatar_2.png',
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        // Fallback to a simple icon if image fails to load
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFF4CAF50).withOpacity(0.1),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.person,
+                                            color: Color(0xFF4CAF50),
+                                            size: 50,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (index < chapter.lessons.length - 1)
+                        _buildConnectingPath(position, _getLessonPosition(index + 1)),
+                    ],
+                  );
+                } else if (lesson.id == 'lesson_3_3') {
+                  return Column(
+                    children: [
+                      SizedBox(
+                        height: 200, // Adequate height to show full larger avatar
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            // Lesson button positioned normally
+                            _buildDuolingoLessonButton(
+                              lesson: lesson,
+                              lessonNumber: lessonNumber,
+                              isCompleted: isCompleted,
+                              isLocked: isLocked,
+                              position: position,
+                              stageColor: _getStageColor(stage.stageNumber),
+                              lessonKey: lesson.id == 'lesson_1_1' ? _firstLessonKey : null,
+                            ),
+                            // Avatar positioned at right edge, not constrained by lesson button
+                            Positioned(
+                              right: 20,
+                              top: 10, // Position from top of the SizedBox
+                              child: Container(
+                                width: 180,
+                                height: 180,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  // No shadows - clean, flat appearance
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(90),
+                                  child: Opacity(
+                                    opacity: 0.3, // Same transparency as avatar_1 (30% opacity)
+                                    child: Image.asset(
+                                      'assets/lessons/avatars/avatar_3.png',
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        // Fallback to a simple icon if image fails to load
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFF4CAF50).withOpacity(0.1),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.person,
+                                            color: Color(0xFF4CAF50),
+                                            size: 50,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (index < chapter.lessons.length - 1)
+                        _buildConnectingPath(position, _getLessonPosition(index + 1)),
+                    ],
+                  );
+                } else if (lesson.id == 'lesson_s2_2_3') {
+                  return Column(
+                    children: [
+                      SizedBox(
+                        height: 200, // Adequate height to show full larger avatar
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            // Lesson button positioned normally
+                            _buildDuolingoLessonButton(
+                              lesson: lesson,
+                              lessonNumber: lessonNumber,
+                              isCompleted: isCompleted,
+                              isLocked: isLocked,
+                              position: position,
+                              stageColor: _getStageColor(stage.stageNumber),
+                              lessonKey: lesson.id == 'lesson_1_1' ? _firstLessonKey : null,
+                            ),
+                            // Avatar positioned at right edge, not constrained by lesson button
+                            Positioned(
+                              right: 20,
+                              top: 10, // Position from top of the SizedBox
+                              child: Container(
+                                width: 180,
+                                height: 180,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  // No shadows - clean, flat appearance
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(90),
+                                  child: Opacity(
+                                    opacity: 0.3, // Same transparency as other avatars (30% opacity)
+                                    child: Image.asset(
+                                      'assets/lessons/avatars/avatar_4.png',
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        // Fallback to a simple icon if image fails to load
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFF4CAF50).withOpacity(0.1),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.person,
+                                            color: Color(0xFF4CAF50),
+                                            size: 50,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (index < chapter.lessons.length - 1)
+                        _buildConnectingPath(position, _getLessonPosition(index + 1)),
+                    ],
+                  );
+                } else if (lesson.id == 'lesson_s2_4_2_1') {
+                  return Column(
+                    children: [
+                      SizedBox(
+                        height: 200, // Adequate height to show full larger avatar
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            // Lesson button positioned normally
+                            _buildDuolingoLessonButton(
+                              lesson: lesson,
+                              lessonNumber: lessonNumber,
+                              isCompleted: isCompleted,
+                              isLocked: isLocked,
+                              position: position,
+                              stageColor: _getStageColor(stage.stageNumber),
+                              lessonKey: lesson.id == 'lesson_1_1' ? _firstLessonKey : null,
+                            ),
+                            // Avatar positioned at right edge, not constrained by lesson button
+                            Positioned(
+                              right: 20,
+                              top: 10, // Position from top of the SizedBox
+                              child: Container(
+                                width: 180,
+                                height: 180,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  // No shadows - clean, flat appearance
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(90),
+                                  child: Opacity(
+                                    opacity: 0.3, // Same transparency as other avatars (30% opacity)
+                                    child: Image.asset(
+                                      'assets/lessons/avatars/avatar_5.png',
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        // Fallback to a simple icon if image fails to load
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFF4CAF50).withOpacity(0.1),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.person,
+                                            color: Color(0xFF4CAF50),
+                                            size: 50,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (index < chapter.lessons.length - 1)
+                        _buildConnectingPath(position, _getLessonPosition(index + 1)),
+                    ],
+                  );
+                } else if (lesson.id == 'lesson_s2_7_5') {
+                  return Column(
+                    children: [
+                      SizedBox(
+                        height: 200, // Adequate height to show full larger avatar
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            // Lesson button positioned normally
+                            _buildDuolingoLessonButton(
+                              lesson: lesson,
+                              lessonNumber: lessonNumber,
+                              isCompleted: isCompleted,
+                              isLocked: isLocked,
+                              position: position,
+                              stageColor: _getStageColor(stage.stageNumber),
+                              lessonKey: lesson.id == 'lesson_1_1' ? _firstLessonKey : null,
+                            ),
+                            // Avatar positioned at left edge, not constrained by lesson button
+                            Positioned(
+                              left: 20,
+                              top: 10, // Position from top of the SizedBox
+                              child: Container(
+                                width: 180,
+                                height: 180,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  // No shadows - clean, flat appearance
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(90),
+                                  child: Opacity(
+                                    opacity: 0.3, // Same transparency as other avatars (30% opacity)
+                                    child: Image.asset(
+                                      'assets/lessons/avatars/avatar_6.png',
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        // Fallback to a simple icon if image fails to load
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFF4CAF50).withOpacity(0.1),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.person,
+                                            color: Color(0xFF4CAF50),
+                                            size: 50,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (index < chapter.lessons.length - 1)
+                        _buildConnectingPath(position, _getLessonPosition(index + 1)),
+                    ],
+                  );
+                } else if (lesson.id == 'lesson_s3_0_2_1') {
+                  return Column(
+                    children: [
+                      SizedBox(
+                        height: 200, // Adequate height to show full larger avatar
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            // Lesson button positioned normally
+                            _buildDuolingoLessonButton(
+                              lesson: lesson,
+                              lessonNumber: lessonNumber,
+                              isCompleted: isCompleted,
+                              isLocked: isLocked,
+                              position: position,
+                              stageColor: _getStageColor(stage.stageNumber),
+                              lessonKey: lesson.id == 'lesson_1_1' ? _firstLessonKey : null,
+                            ),
+                            // Avatar positioned at right edge, not constrained by lesson button
+                            Positioned(
+                              right: 20,
+                              top: 10, // Position from top of the SizedBox
+                              child: Container(
+                                width: 180,
+                                height: 180,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  // No shadows - clean, flat appearance
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(90),
+                                  child: Opacity(
+                                    opacity: 0.3, // Same transparency as other avatars (30% opacity)
+                                    child: Image.asset(
+                                      'assets/lessons/avatars/avatar_7.png',
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        // Fallback to a simple icon if image fails to load
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFF4CAF50).withOpacity(0.1),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.person,
+                                            color: Color(0xFF4CAF50),
+                                            size: 50,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (index < chapter.lessons.length - 1)
+                        _buildConnectingPath(position, _getLessonPosition(index + 1)),
+                    ],
+                  );
+                } else {
+                  return Column(
+                    children: [
+                      _buildDuolingoLessonButton(
+                        lesson: lesson,
+                        lessonNumber: lessonNumber,
+                        isCompleted: isCompleted,
+                        isLocked: isLocked,
+                        position: position,
+                        stageColor: _getStageColor(stage.stageNumber),
+                        // Attach the first lesson key for tutorial highlighting
+                        lessonKey: lesson.id == 'lesson_1_1' ? _firstLessonKey : null,
+                      ),
+                      if (index < chapter.lessons.length - 1)
+                        _buildConnectingPath(position, _getLessonPosition(index + 1)),
+                    ],
+                  );
+                }
               }),
             );
           },

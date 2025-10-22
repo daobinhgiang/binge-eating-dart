@@ -101,6 +101,7 @@ flutter:
     - assets/google_icon.png
     - assets/background.png
     - assets/lessons/stages/
+    - assets/lessons/avatars/
     - assets/exercises/
     - assets/journal/
     - assets/audio_lessons/
@@ -109,6 +110,13 @@ flutter:
     - assets/lessons/stages/stage_1.png
     - assets/lessons/stages/stage_2.png
     - assets/lessons/stages/stage_3.png
+    - assets/lessons/avatars/avatar_1.png
+    - assets/lessons/avatars/avatar_2.png
+    - assets/lessons/avatars/avatar_3.png
+    - assets/lessons/avatars/avatar_4.png
+    - assets/lessons/avatars/avatar_5.png
+    - assets/lessons/avatars/avatar_6.png
+    - assets/lessons/avatars/avatar_7.png
     - assets/exercises/addressing_overconcern.png
     - assets/exercises/addressing_setbacks.png
     - assets/exercises/meal_planning.png
