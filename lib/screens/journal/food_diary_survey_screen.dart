@@ -136,21 +136,6 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
           
           const SizedBox(height: 12),
           
-          // Progress indicator
-          Row(
-            children: [
-              Text(
-                'Question ${_currentPage + 1} of 6',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                ),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: 8),
-          
           // Progress bar
           LinearProgressIndicator(
             value: (_currentPage + 1) / 6,
@@ -282,9 +267,10 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
           Text(
             'What food and drinks did you have?',
             style: const TextStyle(
@@ -514,6 +500,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
             ),
           ],
         ],
+        ),
       ),
     );
   }
@@ -952,9 +939,10 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
           Text(
             'Context and comments',
             style: const TextStyle(
@@ -1007,6 +995,7 @@ class _FoodDiarySurveyScreenState extends ConsumerState<FoodDiarySurveyScreen> {
             ),
           ),
         ],
+        ),
       ),
     );
   }

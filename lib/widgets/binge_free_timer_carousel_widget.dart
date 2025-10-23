@@ -32,7 +32,8 @@ class _TreeContainerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
+      constraints: const BoxConstraints(minHeight: 360),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(40.0),
@@ -333,7 +334,7 @@ class _TimerDisplayWidgetState extends State<_TimerDisplayWidget> {
                               text: unit['value'] as String,
                               style: GoogleFonts.quicksand(
                                 fontSize: fontSize,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w900,
                                 color: unitColor,
                               ),
                             ),
@@ -342,7 +343,7 @@ class _TimerDisplayWidgetState extends State<_TimerDisplayWidget> {
                               text: unit['label'] as String,
                               style: GoogleFonts.quicksand(
                                 fontSize: fontSize,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w900,
                                 color: unitColor,
                               ),
                             ),
