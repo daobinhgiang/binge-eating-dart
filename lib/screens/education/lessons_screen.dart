@@ -2017,6 +2017,13 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
       return const SizedBox.shrink();
     }
     
+    // Determine XP amount based on whether this is a quiz or lesson
+    final isQuiz = selectedLesson.id.startsWith('quiz_');
+    final expService = ExpService();
+    final xpAmount = isQuiz 
+        ? expService.getBaseExpForQuiz(selectedLesson.id)
+        : 10; // Lessons award 10 XP
+    
     return Consumer(
       builder: (context, ref, child) {
         final user = FirebaseAuth.instance.currentUser;
@@ -2103,7 +2110,7 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
                             ],
                           ),
                           child: Text(
-                            isCompleted ? 'REVIEW +10 XP' : 'START +10 XP',
+                            isCompleted ? 'REVIEW +$xpAmount XP' : 'START +$xpAmount XP',
                             style: TextStyle(
                               color: stageColor,
                               fontSize: 16,

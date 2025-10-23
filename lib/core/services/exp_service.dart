@@ -14,7 +14,7 @@ class ExpService {
   // Base EXP configuration (client-side reference, actual calculation is server-side)
   static const Map<String, int> _baseExpMap = {
     // Stage 1 quizzes
-    'quiz_1_chapter_1': 150,
+    'quiz_1_chapter_1': 50,
     'quiz_3_chapter_3': 50,
     // Stage 2 quizzes
     'quiz_0_chapter_0': 75,
