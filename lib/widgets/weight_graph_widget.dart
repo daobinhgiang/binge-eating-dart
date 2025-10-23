@@ -162,7 +162,7 @@ class _WeightGraphWidgetState extends ConsumerState<WeightGraphWidget> {
     if (_selectedTimeFrame != WeightGraphTimeFrame.day) return const SizedBox.shrink();
     
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -172,18 +172,24 @@ class _WeightGraphWidgetState extends ConsumerState<WeightGraphWidget> {
                 _selectedDate = _selectedDate.subtract(const Duration(days: 1));
               });
             },
-            icon: Icon(Icons.chevron_left, color: Colors.orange[600]),
+            icon: Icon(Icons.chevron_left, color: Colors.orange[600], size: 20),
             style: IconButton.styleFrom(
               backgroundColor: Colors.orange[50],
               shape: const CircleBorder(),
+              minimumSize: const Size(32, 32),
+              padding: EdgeInsets.zero,
             ),
           ),
-          Text(
-            _formatDate(_selectedDate),
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey[800],
+          Flexible(
+            child: Text(
+              _formatDate(_selectedDate),
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[800],
+              ),
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           IconButton(
@@ -192,10 +198,12 @@ class _WeightGraphWidgetState extends ConsumerState<WeightGraphWidget> {
                 _selectedDate = _selectedDate.add(const Duration(days: 1));
               });
             },
-            icon: Icon(Icons.chevron_right, color: Colors.orange[600]),
+            icon: Icon(Icons.chevron_right, color: Colors.orange[600], size: 20),
             style: IconButton.styleFrom(
               backgroundColor: Colors.orange[50],
               shape: const CircleBorder(),
+              minimumSize: const Size(32, 32),
+              padding: EdgeInsets.zero,
             ),
           ),
         ],
@@ -211,30 +219,32 @@ class _WeightGraphWidgetState extends ConsumerState<WeightGraphWidget> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.orange[50],
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.monitor_weight_outlined,
-                size: 32,
+                size: 24,
                 color: Colors.orange[400],
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             Text(
               'No weight entries yet',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 color: Colors.grey[800],
                 fontWeight: FontWeight.w600,
+                fontSize: 12,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Text(
               'Tap to add your first entry',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Colors.grey[600],
+                fontSize: 10,
               ),
             ),
           ],
@@ -252,30 +262,32 @@ class _WeightGraphWidgetState extends ConsumerState<WeightGraphWidget> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.grey[50],
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.timeline,
-                size: 32,
+                size: 24,
                 color: Colors.grey[400],
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             Text(
               'No entries in this time frame',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 color: Colors.grey[800],
                 fontWeight: FontWeight.w600,
+                fontSize: 12,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Text(
               'Try a different time frame',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Colors.grey[600],
+                fontSize: 10,
               ),
             ),
           ],
@@ -298,6 +310,7 @@ class _WeightGraphWidgetState extends ConsumerState<WeightGraphWidget> {
     final to = normalized.last.time;
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         _buildDayNavigation(),
         Expanded(
@@ -312,13 +325,13 @@ class _WeightGraphWidgetState extends ConsumerState<WeightGraphWidget> {
           ),
         ),
         if (widget.showAxisLabels) ...[
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Flexible(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                   decoration: BoxDecoration(
                     color: Colors.grey[100],
                     borderRadius: BorderRadius.circular(40.0),
@@ -327,17 +340,17 @@ class _WeightGraphWidgetState extends ConsumerState<WeightGraphWidget> {
                     _formatTick(from, _selectedTimeFrame),
                     style: TextStyle(
                       color: Colors.grey[700], 
-                      fontSize: 11,
+                      fontSize: 10,
                       fontWeight: FontWeight.w500,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 6),
               Flexible(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                   decoration: BoxDecoration(
                     color: Colors.grey[100],
                     borderRadius: BorderRadius.circular(40.0),
@@ -346,7 +359,7 @@ class _WeightGraphWidgetState extends ConsumerState<WeightGraphWidget> {
                     _formatTick(to, _selectedTimeFrame),
                     style: TextStyle(
                       color: Colors.grey[700], 
-                      fontSize: 11,
+                      fontSize: 10,
                       fontWeight: FontWeight.w500,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -390,23 +403,24 @@ class _WeightGraphWidgetState extends ConsumerState<WeightGraphWidget> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: Colors.red[50],
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.error_outline,
-              size: 28,
+              size: 20,
               color: Colors.red[400],
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
             'Failed to load graph',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
               color: Colors.red[600],
               fontWeight: FontWeight.w600,
+              fontSize: 12,
             ),
           ),
           const SizedBox(height: 2),
@@ -414,7 +428,7 @@ class _WeightGraphWidgetState extends ConsumerState<WeightGraphWidget> {
             'Please try again',
             style: TextStyle(
               color: Colors.grey[600],
-              fontSize: 11,
+              fontSize: 10,
             ),
           ),
         ],
@@ -423,8 +437,6 @@ class _WeightGraphWidgetState extends ConsumerState<WeightGraphWidget> {
   }
 
   List<dynamic> _filterEntriesByTimeFrame(List<dynamic> entries) {
-    final now = DateTime.now();
-    
     switch (_selectedTimeFrame) {
       case WeightGraphTimeFrame.day:
         final startOfDay = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day);
