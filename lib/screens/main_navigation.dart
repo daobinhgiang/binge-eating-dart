@@ -528,12 +528,13 @@ class _NavigationButtonState extends State<_NavigationButton> {
           _isPressed = false;
         });
       },
+      behavior: HitTestBehavior.opaque,
       child: AnimatedScale(
         scale: _isPressed ? 0.70 : 1.0,
         duration: const Duration(milliseconds: 100),
         curve: Curves.easeInOut,
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 4),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
