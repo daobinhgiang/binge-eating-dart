@@ -135,11 +135,22 @@ void main() async {
     };
   }
   
-  // Load environment variables from .env file
-  await dotenv.load(fileName: '.env');
+  // Load environment variables from .env file (optional)
+  try {
+    await dotenv.load(fileName: '.env');
+    print('✅ Environment variables loaded');
+  } catch (e) {
+    print('⚠️ .env file not found, using default Firebase configuration: $e');
+    // Continue without .env - the app can still work with default/hardcoded values
+  }
   
-  // Use path-based routing instead of hash-based routing
-  usePathUrlStrategy();
+  // Use path-based routing instead of hash-based routing (web only)
+  if (kIsWeb) {
+    usePathUrlStrategy();
+    print('✅ Path-based routing enabled (for web)');
+  } else {
+    print('✅ Hash-based routing enabled (for native platforms)');
+  }
   
   // Initialize Firebase (handle duplicate initialization gracefully)
   try {
@@ -178,7 +189,7 @@ void _initializeBackgroundServices() {
             Superwall.configure(apiKey);
             _superwallConfigured = true; // Mark as configured
           }).timeout(
-            const Duration(seconds: 5),
+            const Duration(seconds: 10),
             onTimeout: () {
               print('⚠️ Superwall initialization timeout - continuing without it');
               _superwallConfigured = true; // Still mark as configured to prevent retries

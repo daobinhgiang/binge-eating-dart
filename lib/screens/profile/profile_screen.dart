@@ -316,10 +316,11 @@ class ProfileScreen extends ConsumerWidget {
                         ),
                         _buildCompactStatItem(
                           context,
-                          const Icon(
-                            Icons.star,
-                            color: Colors.white,
-                            size: 28,
+                          const Text(
+                            '💧',
+                            style: TextStyle(
+                              fontSize: 28,
+                            ),
                           ),
                           '${userExp.exp} EXP',
                         ),

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'local_notifications_service.dart';
 import 'fcm_token_service.dart';
@@ -47,18 +48,43 @@ class FirebaseMessagingService {
 
   /// Retrieves and manages the FCM token for push notifications
   Future<void> _handlePushNotificationsToken() async {
-    // Get the FCM token for the device
-    final token = await FirebaseMessaging.instance.getToken();
-    print('Push notifications/FCM token: $token');
+    try {
+      // On iOS, wait for APNS token to be available before requesting FCM token
+      if (Platform.isIOS) {
+        // Get APNS token first (this ensures it's available)
+        final apnsToken = await FirebaseMessaging.instance.getAPNSToken();
+        if (apnsToken != null) {
+          print('APNS token available: ${apnsToken.substring(0, 10)}...');
+        } else {
+          print('APNS token not available yet, will retry when token refresh occurs');
+          // Don't throw error, just wait for token refresh event
+          FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
+            print('FCM token refreshed: $fcmToken');
+            // Note: Token will be saved to user document when user signs in
+          }).onError((error) {
+            print('Error refreshing FCM token: $error');
+          });
+          return;
+        }
+      }
 
-    // Listen for token refresh events
-    FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
-      print('FCM token refreshed: $fcmToken');
-      // Note: Token will be saved to user document when user signs in
-    }).onError((error) {
-      // Handle errors during token refresh
-      print('Error refreshing FCM token: $error');
-    });
+      // Get the FCM token for the device
+      final token = await FirebaseMessaging.instance.getToken();
+      print('Push notifications/FCM token: $token');
+
+      // Listen for token refresh events
+      FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
+        print('FCM token refreshed: $fcmToken');
+        // Note: Token will be saved to user document when user signs in
+      }).onError((error) {
+        // Handle errors during token refresh
+        print('Error refreshing FCM token: $error');
+      });
+    } catch (e) {
+      // Handle any errors gracefully - don't let FCM token issues crash the app
+      print('Error getting FCM token: $e');
+      print('Push notifications may not work until the app is restarted');
+    }
   }
 
   /// Requests notification permission from the user

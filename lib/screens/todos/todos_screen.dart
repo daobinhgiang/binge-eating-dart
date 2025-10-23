@@ -544,7 +544,12 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(Icons.star_rounded, size: 14, color: Color(0xFFFFB951)),
+                                    const Text(
+                                      '💧',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                      ),
+                                    ),
                                     const SizedBox(width: 4),
                                     Text(
                                       '+${todo.expReward} EXP',

@@ -129,10 +129,11 @@ class _QuestCompletionDialogState extends ConsumerState<QuestCompletionDialog>
                             child: child,
                           );
                         },
-                        child: const Icon(
-                          Icons.star_rounded,
-                          size: 60,
-                          color: Colors.white,
+                        child: const Text(
+                          '💧',
+                          style: TextStyle(
+                            fontSize: 60,
+                          ),
                         ),
                       ),
                     ),
@@ -195,10 +196,11 @@ class _QuestCompletionDialogState extends ConsumerState<QuestCompletionDialog>
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(
-                                  Icons.star_rounded,
-                                  color: Color(0xFFFFB951),
-                                  size: 24,
+                                const Text(
+                                  '💧',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                  ),
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
