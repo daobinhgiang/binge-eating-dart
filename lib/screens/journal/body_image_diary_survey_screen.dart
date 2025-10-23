@@ -97,34 +97,12 @@ class _BodyImageDiarySurveyScreenState extends ConsumerState<BodyImageDiarySurve
           // Progress indicator
           Container(
             padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Question ${_currentPage + 1} of 4',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    Text(
-                      '${((_currentPage + 1) / 4 * 100).round()}%',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                LinearProgressIndicator(
-                  value: (_currentPage + 1) / 4,
-                  backgroundColor: Colors.grey[300],
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    Colors.teal[600]!,
-                  ),
-                ),
-              ],
+            child: LinearProgressIndicator(
+              value: (_currentPage + 1) / 4,
+              backgroundColor: Colors.grey[300],
+              valueColor: AlwaysStoppedAnimation<Color>(
+                Colors.teal[600]!,
+              ),
             ),
           ),
           
@@ -248,25 +226,25 @@ class _BodyImageDiarySurveyScreenState extends ConsumerState<BodyImageDiarySurve
   Widget _buildWhenCheckedQuestion() {
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'When did you check your shape?',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'When did you check your shape?',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Select the time when you checked your body shape.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[600],
+            const SizedBox(height: 16),
+            Text(
+              'Select the time when you checked your body shape.',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.grey[600],
+              ),
             ),
-          ),
-          const SizedBox(height: 24),
-          Expanded(
-            child: Center(
+            const SizedBox(height: 24),
+            Center(
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
@@ -312,8 +290,8 @@ class _BodyImageDiarySurveyScreenState extends ConsumerState<BodyImageDiarySurve
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -381,41 +359,43 @@ class _BodyImageDiarySurveyScreenState extends ConsumerState<BodyImageDiarySurve
   Widget _buildContextQuestion() {
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Context, thoughts, and feelings',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Please describe the context around checking your body shape - what you were thinking, how you were feeling, what triggered it, etc.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
-          ),
-          const SizedBox(height: 24),
-          Expanded(
-            child: TextField(
-              controller: _contextController,
-              maxLines: null,
-              expands: true,
-              textInputAction: TextInputAction.done,
-              onEditingComplete: () {
-                FocusScope.of(context).unfocus();
-              },
-              textAlignVertical: TextAlignVertical.top,
-              decoration: const InputDecoration(
-                hintText: 'e.g., I was feeling anxious about how I looked before going out. I noticed my reflection in the mirror and started examining my stomach area. I felt disappointed and kept checking for several minutes...',
-                border: OutlineInputBorder(),
-                alignLabelWithHint: true,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Context, thoughts, and feelings',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 16),
+            Text(
+              'Please describe the context around checking your body shape - what you were thinking, how you were feeling, what triggered it, etc.',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.grey[600],
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              height: 300,
+              child: TextField(
+                controller: _contextController,
+                maxLines: null,
+                textInputAction: TextInputAction.done,
+                onEditingComplete: () {
+                  FocusScope.of(context).unfocus();
+                },
+                textAlignVertical: TextAlignVertical.top,
+                decoration: const InputDecoration(
+                  hintText: 'e.g., I was feeling anxious about how I looked before going out. I noticed my reflection in the mirror and started examining my stomach area. I felt disappointed and kept checking for several minutes...',
+                  border: OutlineInputBorder(),
+                  alignLabelWithHint: true,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

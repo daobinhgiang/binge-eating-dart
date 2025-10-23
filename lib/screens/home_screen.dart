@@ -1565,7 +1565,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                   const SizedBox(width: 6),
                   const Text(
-                    'Urge Help',
+                    'Craving!',
                     style: TextStyle(
                       color: Colors.white, // White text
                       fontSize: 14,

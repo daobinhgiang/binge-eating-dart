@@ -219,70 +219,111 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
     final nextTreeName = treeService.getNextTreeDisplayName(userExpData.level);
     final isMaxLevel = userExpData.level >= 5;
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        // Tree display with animation - apply the key here to avoid duplicate key errors
-        Container(
-          key: widget.treeImageKey, // Apply the GlobalKey once at this level
-          child: _isAnimating
-              ? ScaleTransition(
-                  scale: _growthScaleAnimation,
-                  child: _buildTreeImageWithCrossFade(currentTreeData),
-                )
-              : ScaleTransition(
-                  scale: _scaleAnimation,
-                  child: FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: _buildTreeImage(currentTreeData),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Calculate available height for responsive sizing
+        final availableHeight = constraints.maxHeight;
+        final hasLimitedSpace = availableHeight < 350;
+        
+        // Adjust spacing based on available space
+        final mainSpacing = hasLimitedSpace ? 12.0 : 20.0;
+        final subSpacing = hasLimitedSpace ? 4.0 : 8.0;
+        final hintSpacing = hasLimitedSpace ? 8.0 : 12.0;
+        
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Tree display - flexible instead of fixed
+            Flexible(
+              flex: 3,
+              child: Container(
+                key: widget.treeImageKey, // Apply the GlobalKey once at this level
+                child: _isAnimating
+                    ? ScaleTransition(
+                        scale: _growthScaleAnimation,
+                        child: _buildTreeImageWithCrossFade(currentTreeData),
+                      )
+                    : ScaleTransition(
+                        scale: _scaleAnimation,
+                        child: FadeTransition(
+                          opacity: _fadeAnimation,
+                          child: _buildTreeImage(currentTreeData),
+                        ),
+                      ),
+              ),
+            ),
+            SizedBox(height: mainSpacing),
+            // Current level display - flexible text
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  'Level ${userExpData.level}: ${currentTreeData.displayName}',
+                  style: GoogleFonts.quicksand(
+                    color: Colors.black87,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+            SizedBox(height: subSpacing),
+            // Description - flexible text
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    currentTreeData.description,
+                    style: GoogleFonts.quicksand(
+                      color: Colors.grey[600],
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
                   ),
                 ),
-        ),
-        const SizedBox(height: 20),
-        // Current level display
-        Text(
-          'Level ${userExpData.level}: ${currentTreeData.displayName}',
-          style: GoogleFonts.quicksand(
-            color: Colors.black87,
-            fontSize: 30,
-            fontWeight: FontWeight.w700,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 8),
-        // Description
-        Text(
-          currentTreeData.description,
-          style: GoogleFonts.quicksand(
-            color: Colors.grey[600],
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 12),
-        // Next level hint or max level message
-        if (isMaxLevel)
-          Text(
-            'You\'ve reached the maximum level!',
-            style: GoogleFonts.quicksand(
-              color: const Color(0xFF4CAF50),
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
+              ),
             ),
-            textAlign: TextAlign.center,
-          )
-        else if (nextTreeName != null)
-          Text(
-            'Next Level: $nextTreeName',
-            style: GoogleFonts.quicksand(
-              color: Colors.grey[500],
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-            ),
-            textAlign: TextAlign.center,
-          ),
-      ],
+            SizedBox(height: hintSpacing),
+            // Next level hint or max level message - flexible text
+            if (isMaxLevel)
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    'You\'ve reached the maximum level!',
+                    style: GoogleFonts.quicksand(
+                      color: const Color(0xFF4CAF50),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              )
+            else if (nextTreeName != null)
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    'Next Level: $nextTreeName',
+                    style: GoogleFonts.quicksand(
+                      color: Colors.grey[500],
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 
@@ -327,40 +368,41 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
       );
     }
     
-    return SizedBox(
-      height: 200,
-      width: 200,
-      child: Image.asset(
-        treeData.imagePath,
-        fit: BoxFit.contain,
-        errorBuilder: (context, error, stackTrace) {
-          return Container(
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.image_not_supported,
-                    color: Colors.grey[400],
-                    size: 48,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Tree image not found',
-                    style: GoogleFonts.quicksand(
-                      color: Colors.grey[600],
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
+    return Expanded(
+      child: AspectRatio(
+        aspectRatio: 1.0,
+        child: Image.asset(
+          treeData.imagePath,
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(8),
               ),
-            ),
-          );
-        },
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.image_not_supported,
+                      color: Colors.grey[400],
+                      size: 48,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Tree image not found',
+                      style: GoogleFonts.quicksand(
+                        color: Colors.grey[600],
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -421,71 +463,87 @@ class _TreeGrowthWidgetState extends ConsumerState<TreeGrowthWidget>
       );
     }
     
-    return SizedBox(
-      height: 200,
-      width: 200,
-      child: FadeTransition(
-        opacity: _crossFadeAnimation,
-        child: Image.asset(
-          treeData.imagePath,
-          fit: BoxFit.contain,
-          errorBuilder: (context, error, stackTrace) {
-            return Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.image_not_supported,
-                      color: Colors.grey[400],
-                      size: 48,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Tree image not found',
-                      style: GoogleFonts.quicksand(
-                        color: Colors.grey[600],
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
+    return Expanded(
+      child: AspectRatio(
+        aspectRatio: 1.0,
+        child: FadeTransition(
+          opacity: _crossFadeAnimation,
+          child: Image.asset(
+            treeData.imagePath,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(8),
                 ),
-              ),
-            );
-          },
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.image_not_supported,
+                        color: Colors.grey[400],
+                        size: 48,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Tree image not found',
+                        style: GoogleFonts.quicksand(
+                          color: Colors.grey[600],
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
   }
 
   Widget _buildLoadingState() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(
-          height: 200,
-          width: 200,
-          child: Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(
-                Colors.grey[400]!,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final availableHeight = constraints.maxHeight;
+        final hasLimitedSpace = availableHeight < 350;
+        final spacing = hasLimitedSpace ? 12.0 : 20.0;
+        
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: AspectRatio(
+                aspectRatio: 1.0,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Colors.grey[400]!,
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-        const SizedBox(height: 20),
-        Text(
-          'Loading your tree...',
-          style: GoogleFonts.quicksand(
-            color: Colors.grey[600],
-            fontSize: 14,
-          ),
-        ),
-      ],
+            SizedBox(height: spacing),
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  'Loading your tree...',
+                  style: GoogleFonts.quicksand(
+                    color: Colors.grey[600],
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
