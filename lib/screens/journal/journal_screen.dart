@@ -338,7 +338,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
         return Container(
           // Remove fixed height to make it responsive to parent container
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(40.0),
+            borderRadius: BorderRadius.circular(12.0),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.2),
@@ -349,12 +349,12 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
             ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(40.0),
+            borderRadius: BorderRadius.circular(12.0),
             child: Material(
               color: Colors.transparent,
               child: InkWell(
                 onTap: onTap,
-                borderRadius: BorderRadius.circular(40.0),
+                borderRadius: BorderRadius.circular(12.0),
                 child: Column(
                   children: [
                     // Top image section - takes up remaining space
@@ -454,7 +454,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
         return Container(
           // Remove fixed height to make it responsive to parent container
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(40.0),
+            borderRadius: BorderRadius.circular(12.0),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.2),
@@ -465,12 +465,12 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
             ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(40.0),
+            borderRadius: BorderRadius.circular(12.0),
             child: Material(
               color: Colors.transparent,
               child: InkWell(
                 onTap: () => _navigateToMoneyDiary(context),
-                borderRadius: BorderRadius.circular(40.0),
+                borderRadius: BorderRadius.circular(12.0),
                 child: Column(
                   children: [
                     // Top section - shows only dollar amount

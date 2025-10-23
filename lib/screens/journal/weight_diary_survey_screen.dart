@@ -144,14 +144,6 @@ class _WeightDiarySurveyScreenState extends ConsumerState<WeightDiarySurveyScree
                 color: Colors.black87,
               ),
             ),
-            const SizedBox(height: 12),
-            Text(
-              'Enter your weight and select the unit. This will be saved with the current time.',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
-            ),
             const SizedBox(height: 24),
             Row(
               children: [
