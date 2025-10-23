@@ -21,6 +21,7 @@ class UserModel {
   final String email;
   final String firstName;
   final String lastName;
+  final String? phoneNumber;
   final UserRole role;
   final DateTime createdAt;
   final DateTime? lastLoginAt;
@@ -56,6 +57,7 @@ class UserModel {
     required this.email,
     required this.firstName,
     required this.lastName,
+    this.phoneNumber,
     required this.role,
     required this.createdAt,
     this.lastLoginAt,
@@ -135,6 +137,7 @@ class UserModel {
         email: data['email'] ?? '',
         firstName: data['firstName'] ?? '',
         lastName: data['lastName'] ?? '',
+        phoneNumber: data['phoneNumber'],
         role: UserRole.values.firstWhere(
           (role) => role.name == data['role'],
           orElse: () => UserRole.patient,
@@ -178,6 +181,7 @@ class UserModel {
       'email': email,
       'firstName': firstName,
       'lastName': lastName,
+      'phoneNumber': phoneNumber,
       'role': role.name,
       'createdAt': createdAt.millisecondsSinceEpoch,
       'lastLoginAt': lastLoginAt?.millisecondsSinceEpoch,
@@ -215,6 +219,7 @@ class UserModel {
     String? email,
     String? firstName,
     String? lastName,
+    String? phoneNumber,
     UserRole? role,
     DateTime? createdAt,
     DateTime? lastLoginAt,
@@ -250,6 +255,7 @@ class UserModel {
       email: email ?? this.email,
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
       role: role ?? this.role,
       createdAt: createdAt ?? this.createdAt,
       lastLoginAt: lastLoginAt ?? this.lastLoginAt,

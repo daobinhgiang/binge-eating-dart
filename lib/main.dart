@@ -27,6 +27,7 @@ import 'screens/todos/todos_screen.dart';
 import 'screens/profile/regular_eating_screen.dart';
 import 'screens/profile/app_blocker_screen.dart';
 import 'screens/profile/web_blocker_screen.dart';
+import 'screens/profile/profile_settings_screen.dart';
 import 'screens/chat/chat_screen.dart';
 import 'screens/chat/realtime_journaling_screen.dart';
 import 'screens/chat/accountability_partner_screen.dart';
@@ -435,6 +436,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/profile/web-blocker',
       builder: (context, state) => const AuthGuard(child: WebBlockerScreen()),
+    ),
+    GoRoute(
+      path: '/profile/settings',
+      builder: (context, state) => const AuthGuard(child: ProfileSettingsScreen()),
     ),
     GoRoute(
       path: '/chat',

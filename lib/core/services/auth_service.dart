@@ -414,6 +414,7 @@ class AuthService {
   Future<void> updateUserProfile({
     String? firstName,
     String? lastName,
+    String? phoneNumber,
     String? photoUrl,
   }) async {
     try {
@@ -425,6 +426,7 @@ class AuthService {
 
       if (firstName != null) updateData['firstName'] = firstName.trim();
       if (lastName != null) updateData['lastName'] = lastName.trim();
+      if (phoneNumber != null) updateData['phoneNumber'] = phoneNumber.trim();
       if (photoUrl != null) updateData['photoUrl'] = photoUrl;
 
       if (updateData.isNotEmpty) {
