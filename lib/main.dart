@@ -162,10 +162,13 @@ void main() async {
   runApp(const ProviderScope(child: BEDApp()));
 }
 
+/// Track if Superwall has been configured to prevent duplicate initialization
+bool _superwallConfigured = false;
+
 /// Initialize non-critical services in the background
 void _initializeBackgroundServices() {
   // Initialize Superwall and Subscription Service (with timeout to prevent hanging)
-  if (!kIsWeb) {
+  if (!kIsWeb && !_superwallConfigured) {
     Future.microtask(() async {
       String apiKey = "pk_d97c69e785c502e76d6d0d4180c53afd769f3449ed70236d";
       try {
@@ -173,10 +176,12 @@ void _initializeBackgroundServices() {
         await Future.delayed(Duration.zero).then((_) {
           return Future(() {
             Superwall.configure(apiKey);
+            _superwallConfigured = true; // Mark as configured
           }).timeout(
             const Duration(seconds: 5),
             onTimeout: () {
               print('⚠️ Superwall initialization timeout - continuing without it');
+              _superwallConfigured = true; // Still mark as configured to prevent retries
             },
           );
         });
@@ -188,9 +193,12 @@ void _initializeBackgroundServices() {
         print('✅ Subscription service initialized');
       } catch (e) {
         print('⚠️ Superwall initialization error: $e');
+        _superwallConfigured = true; // Mark as configured to prevent retries
         // Continue running the app even if Superwall fails to initialize
       }
     });
+  } else if (_superwallConfigured && !kIsWeb) {
+    print('✅ Superwall already configured, skipping initialization');
   }
   
   // Initialize local notifications service

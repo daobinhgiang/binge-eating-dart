@@ -10,8 +10,10 @@ import 'journal/weight_diary_survey_screen.dart';
 import 'profile/profile_screen.dart';
 import '../core/services/app_tutorial_service.dart';
 import '../providers/auth_provider.dart';
+import '../providers/exp_provider.dart';
 import '../models/user_model.dart';
 import '../widgets/binge_free_timer_carousel_widget.dart';
+import '../widgets/level_up_dialog.dart';
 
 class MainNavigation extends ConsumerStatefulWidget {
   const MainNavigation({super.key});
@@ -409,6 +411,31 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
           }
         }
       });
+    });
+
+    // GLOBAL LEVEL UP LISTENER - Works everywhere in the app
+    // Listen for level changes and show level up celebration
+    ref.listen(userExpProvider, (previous, next) {
+      if (previous != null && next != null && next.level > previous.level) {
+        print('🎉 [MainNavigation] Level up detected: ${previous.level} → ${next.level}');
+        
+        // Show level up celebration dialog in next frame
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => LevelUpDialog(
+                oldLevel: previous.level,
+                newLevel: next.level,
+                expEarned: next.exp - previous.exp,
+                totalExp: next.exp,
+                shouldNavigateToHome: false, // Don't navigate, stay on current screen
+              ),
+            );
+          }
+        });
+      }
     });
     
     // Get current location and update index

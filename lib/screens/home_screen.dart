@@ -321,6 +321,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       }
     });
 
+    // Note: Level up celebration is now handled globally in MainNavigation
+    // This ensures it works everywhere in the app, not just on home screen
+
     return Scaffold(
       body: Stack(
         children: [
