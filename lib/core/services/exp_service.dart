@@ -14,7 +14,7 @@ class ExpService {
   // Base EXP configuration (client-side reference, actual calculation is server-side)
   static const Map<String, int> _baseExpMap = {
     // Stage 1 quizzes
-    'quiz_1_chapter_1': 50,
+    'quiz_1_chapter_1': 150,
     'quiz_3_chapter_3': 50,
     // Stage 2 quizzes
     'quiz_0_chapter_0': 75,
@@ -207,6 +207,16 @@ class ExpService {
   /// Get total EXP required for a level (cumulative)
   int getTotalExpForLevel(int level) {
     return _levelThresholds[level] ?? 0;
+  }
+
+  /// Calculate what level a user should be at given their total EXP
+  /// This matches the backend logic in functions/src/config/exp-config.ts
+  int calculateLevel(int totalExp) {
+    if (totalExp < _levelThresholds[2]!) return 1;  // < 50
+    if (totalExp < _levelThresholds[3]!) return 2;  // < 150
+    if (totalExp < _levelThresholds[4]!) return 3;  // < 350
+    if (totalExp < _levelThresholds[5]!) return 4;  // < 750
+    return 5; // Max level
   }
 }
 

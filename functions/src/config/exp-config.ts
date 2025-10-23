@@ -13,8 +13,8 @@ export interface ExpConfig {
  * Base EXP per quiz (before score multiplier)
  */
 export const QUIZ_BASE_EXP: Record<string, ExpConfig> = {
-  // Stage 1 quizzes - 50 base EXP (easier content)
-  'quiz_1_chapter_1': { baseExp: 50, difficulty: 'easy' },
+  // Stage 1 quizzes - 150 base EXP (easier content)
+  'quiz_1_chapter_1': { baseExp: 150, difficulty: 'easy' },
   'quiz_3_chapter_3': { baseExp: 50, difficulty: 'easy' },
 
   // Stage 2 Chapter 0 - 75 base EXP (foundational)

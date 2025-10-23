@@ -17,8 +17,8 @@ exports.checkLevelUp = checkLevelUp;
  * Base EXP per quiz (before score multiplier)
  */
 exports.QUIZ_BASE_EXP = {
-    // Stage 1 quizzes - 50 base EXP (easier content)
-    'quiz_1_chapter_1': { baseExp: 50, difficulty: 'easy' },
+    // Stage 1 quizzes - 150 base EXP (easier content)
+    'quiz_1_chapter_1': { baseExp: 150, difficulty: 'easy' },
     'quiz_3_chapter_3': { baseExp: 50, difficulty: 'easy' },
     // Stage 2 Chapter 0 - 75 base EXP (foundational)
     'quiz_0_chapter_0': { baseExp: 75, difficulty: 'easy' },

@@ -57,22 +57,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   // Unified header cell content builders
 
-  Widget _buildHeaderLevelContent(int level) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          'Level $level',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w900,
-                color: Colors.black87,
-                fontSize: 20,
-              ),
-        ),
-      ],
-    );
-  }
 
   Widget _buildHeaderXpContent(int exp) {
     return Row(
@@ -298,50 +282,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            AnimatedDefaultTextStyle(
-                              duration: const Duration(milliseconds: 400),
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.w900,
-                                    color: textColor,
-                                    fontSize: 20,
-                                  ) ?? const TextStyle(),
-                              child: Text('💎 ${userExp.exp}'),
-                            ),
-                            if (!isMaxLevel) ...[
-                            ] else ...[
-                              Padding(
-                                padding: const EdgeInsets.only(top: 2),
-                                child: Text(
-                                  'Max Level! 🎉',
-                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                        color: const Color(0xFF4CAF50),
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 11,
-                                      ),
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                 ],
@@ -467,10 +407,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
                         child: Row(
                           children: [
-                            // Level box on the left
+                            // Level box with progress bar on the left
                             if (userExp != null) ...[
-                              _HeaderCell(
-                                child: _buildHeaderLevelContent(userExp.level),
+                              Expanded(
+                                flex: 2,
+                                child: _buildLevelExpDisplay(false),
                               ),
                               const SizedBox(width: 8),
                             ],

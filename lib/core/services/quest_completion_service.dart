@@ -6,6 +6,7 @@ import 'todo_service.dart';
 import 'streak_service.dart';
 import 'lesson_progress_service.dart';
 import 'task_regeneration_service.dart';
+import 'exp_service.dart';
 
 /// Data class representing the result of a quest completion
 class QuestCompletionResult {
@@ -134,7 +135,7 @@ class QuestCompletionService {
   }
 
   /// Award EXP for completing a quest
-  /// Directly updates user document with new EXP
+  /// Directly updates user document with new EXP and calculates new level
   Future<int> _awardQuestEXP(String userId, TodoItem quest) async {
     try {
       final expAmount = quest.expReward;
@@ -147,15 +148,22 @@ class QuestCompletionService {
       }
 
       final currentExp = (userDoc.get('exp') ?? 0) as int;
+      final currentLevel = (userDoc.get('level') ?? 1) as int;
       final newExp = currentExp + expAmount;
 
-      // Update user document with new EXP
+      // Calculate new level based on new EXP (same logic as backend)
+      final expService = ExpService();
+      final newLevel = expService.calculateLevel(newExp);
+
+      // Update user document with new EXP and level
       await _firestore.collection('users').doc(userId).update({
         'exp': newExp,
+        'level': newLevel,
         'updatedAt': FieldValue.serverTimestamp(),
       });
 
       print('   Updated user exp: $currentExp → $newExp');
+      print('   Updated user level: $currentLevel → $newLevel');
 
       return expAmount;
     } catch (e) {
