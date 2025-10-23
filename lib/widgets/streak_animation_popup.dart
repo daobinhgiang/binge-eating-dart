@@ -82,23 +82,9 @@ class _StreakAnimationPopupState extends State<StreakAnimationPopup>
       }
     });
 
-    // Close dialog after animation completes (only if not in tutorial mode)
-    // Support both new isTutorialMode and deprecated pauseAutoDismiss for backward compatibility
-    final shouldPauseAutoDismiss = widget.isTutorialMode || widget.pauseAutoDismiss;
-    if (!shouldPauseAutoDismiss) {
-      print('   ⏰ Scheduling auto-dismiss in 2500ms');
-      Future.delayed(const Duration(milliseconds: 2500), () {
-        if (mounted) {
-          print('   🚪 Auto-dismissing streak popup');
-          Navigator.of(context).pop();
-        } else {
-          print('   ⚠️  Auto-dismiss skipped - widget not mounted');
-        }
-      });
-    } else {
-      print('   🎓 Tutorial mode enabled - auto-dismiss DISABLED');
-      print('   ⏸️  Popup will stay visible until tutorial overlay dismisses it');
-    }
+    // Note: Auto-dismiss is now handled in the showStreakAnimation function
+    // by scheduling a pop from the dialog's context
+    print('   ℹ️  Auto-dismiss will be handled by showStreakAnimation function');
   }
 
   @override
@@ -252,17 +238,44 @@ GlobalKey showStreakAnimation(
   print('   🎭 Showing dialog...');
   showDialog(
     context: context,
-    barrierDismissible: false,
-    builder: (context) => StreakAnimationPopup(
-      key: popupKey,
-      oldStreak: oldStreak,
-      newStreak: newStreak,
-      isReset: isReset,
-      // Support both for backward compatibility
-      pauseAutoDismiss: pauseAutoDismiss,
-      isTutorialMode: isTutorialMode,
-      onAnimationComplete: onAnimationComplete,
-    ),
+    barrierDismissible: !isTutorialMode && !pauseAutoDismiss, // Allow dismiss by tapping outside (except in tutorial mode)
+    builder: (dialogContext) {
+      print('   📍 Dialog context created');
+      
+      // Schedule auto-dismiss outside the builder to ensure proper dismissal
+      final shouldPauseAutoDismiss = isTutorialMode || pauseAutoDismiss;
+      if (!shouldPauseAutoDismiss) {
+        Future.delayed(const Duration(milliseconds: 3000), () {
+          print('   🚪 Auto-dismiss delay reached (3000ms)');
+          try {
+            Navigator.of(dialogContext).pop();
+            print('   ✅ Successfully popped dialog from outer context');
+          } catch (e) {
+            print('   ❌ Error popping dialog: $e');
+          }
+        });
+      }
+      
+      // Wrap with GestureDetector to allow tapping on the dialog itself to dismiss
+      return GestureDetector(
+        onTap: () {
+          if (!shouldPauseAutoDismiss) {
+            print('   👆 User tapped to dismiss streak popup');
+            Navigator.of(dialogContext).pop();
+          }
+        },
+        child: StreakAnimationPopup(
+          key: popupKey,
+          oldStreak: oldStreak,
+          newStreak: newStreak,
+          isReset: isReset,
+          // Support both for backward compatibility
+          pauseAutoDismiss: pauseAutoDismiss,
+          isTutorialMode: isTutorialMode,
+          onAnimationComplete: onAnimationComplete,
+        ),
+      );
+    },
   );
   print('   ✅ Dialog shown, returning GlobalKey');
   

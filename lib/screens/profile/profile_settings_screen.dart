@@ -238,7 +238,7 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
                   ],
                 ),
                 child: IconButton(
-                  onPressed: () => context.pop(),
+                  onPressed: () => context.go('/profile'),
                   icon: const Icon(Icons.arrow_back),
                   color: const Color(0xFF2D5016),
                 ),
