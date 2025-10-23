@@ -245,8 +245,8 @@ GlobalKey showStreakAnimation(
       // Schedule auto-dismiss outside the builder to ensure proper dismissal
       final shouldPauseAutoDismiss = isTutorialMode || pauseAutoDismiss;
       if (!shouldPauseAutoDismiss) {
-        Future.delayed(const Duration(milliseconds: 3000), () {
-          print('   🚪 Auto-dismiss delay reached (3000ms)');
+        Future.delayed(const Duration(milliseconds: 3700), () {
+          print('   🚪 Auto-dismiss delay reached (3700ms)');
           try {
             Navigator.of(dialogContext).pop();
             print('   ✅ Successfully popped dialog from outer context');

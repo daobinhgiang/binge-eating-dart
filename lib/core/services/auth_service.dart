@@ -512,6 +512,25 @@ class AuthService {
     }
   }
 
+  // Update subscription status
+  Future<void> updateSubscriptionStatus({
+    required bool isPremium,
+  }) async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) throw 'No user signed in';
+
+      await _firestore.collection('users').doc(user.uid).update({
+        'isPremium': isPremium,
+      });
+      
+      print('✅ Subscription status updated to: $isPremium');
+    } catch (e) {
+      print('❌ Error updating subscription status: $e');
+      throw 'Failed to update subscription status. Please try again.';
+    }
+  }
+
   // Delete user account and all associated data
   Future<void> deleteAccount() async {
     try {

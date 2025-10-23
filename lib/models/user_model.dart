@@ -51,6 +51,7 @@ class UserModel {
   final DateTime? lastGrowthTasksGeneratedAt; // Full timestamp
   final int streak;                      // Current streak count
   final DateTime? lastStreakDate;        // Date of last streak update
+  final bool isPremium;                  // Whether user has active subscription
 
   const UserModel({
     required this.id,
@@ -87,6 +88,7 @@ class UserModel {
     this.lastGrowthTasksGeneratedAt,
     this.streak = 0,
     this.lastStreakDate,
+    this.isPremium = false,
   });
 
   String get fullName => '$firstName $lastName';
@@ -169,6 +171,7 @@ class UserModel {
         lastGrowthTasksGeneratedAt: parsedLastGrowthTasksGeneratedAt,
         streak: data['streak'] ?? 0,
         lastStreakDate: parsedLastStreakDate,
+        isPremium: data['isPremium'] ?? false,
       );
     } catch (e) {
       print('CRITICAL ERROR in UserModel.fromFirestore: $e');
@@ -211,6 +214,7 @@ class UserModel {
       'lastGrowthTasksGeneratedAt': lastGrowthTasksGeneratedAt?.millisecondsSinceEpoch,
       'streak': streak,
       'lastStreakDate': lastStreakDate?.millisecondsSinceEpoch,
+      'isPremium': isPremium,
     };
   }
 
@@ -249,6 +253,7 @@ class UserModel {
     DateTime? lastGrowthTasksGeneratedAt,
     int? streak,
     DateTime? lastStreakDate,
+    bool? isPremium,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -285,6 +290,7 @@ class UserModel {
       lastGrowthTasksGeneratedAt: lastGrowthTasksGeneratedAt ?? this.lastGrowthTasksGeneratedAt,
       streak: streak ?? this.streak,
       lastStreakDate: lastStreakDate ?? this.lastStreakDate,
+      isPremium: isPremium ?? this.isPremium,
     );
   }
 

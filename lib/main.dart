@@ -18,6 +18,7 @@ import 'screens/onboarding/intro_screen.dart';
 import 'screens/onboarding/onboarding_screen.dart';
 import 'screens/onboarding/onboarding_review_screen.dart';
 import 'screens/onboarding/tutorial_closing_slides_screen.dart';
+import 'screens/subscription/paywall_screen.dart';
 import 'screens/exercises/problem_solving_main_screen.dart';
 import 'screens/exercises/meal_planning_screen.dart';
 import 'screens/exercises/urge_surfing_screen.dart';
@@ -108,6 +109,7 @@ import 'core/services/local_notifications_service.dart';
 import 'core/services/firebase_messaging_service.dart';
 import 'widgets/notification_popup_overlay.dart';
 import 'core/services/app_initialization_service.dart';
+import 'core/services/subscription_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -154,37 +156,77 @@ void main() async {
     }
   }
   
-  // Initialize Superwall
-  if (!kIsWeb) {
-    String apiKey = "pk_d97c69e785c502e76d6d0d4180c53afd769f3449ed70236d";
-    try {
-      Superwall.configure(apiKey);
-      print('✅ Superwall initialized successfully');
-    } catch (e) {
-      print('⚠️ Superwall initialization error: $e');
-      // Continue running the app even if Superwall fails to initialize
-      // This prevents platform channel errors from crashing the app
-    }
-  }
-  
-  final localNotificationsService = LocalNotificationsService.instance();
-  await localNotificationsService.init();
-  
-  // Initialize Firebase Messaging (suppress errors on web in development)
-  if (kIsWeb && kDebugMode) {
-    try {
-      final firebaseMessagingService = FirebaseMessagingService.instance();
-      await firebaseMessagingService.init(localNotificationsService: localNotificationsService);
-    } catch (e) {
-      // Silently suppress Firebase Messaging errors on web (service worker issues)
-      print('⚠️ Firebase Messaging disabled on web (development mode)');
-    }
-  } else {
-    final firebaseMessagingService = FirebaseMessagingService.instance();
-    await firebaseMessagingService.init(localNotificationsService: localNotificationsService);
-  }
+  // Initialize services in the background (non-blocking)
+  _initializeBackgroundServices();
   
   runApp(const ProviderScope(child: BEDApp()));
+}
+
+/// Initialize non-critical services in the background
+void _initializeBackgroundServices() {
+  // Initialize Superwall and Subscription Service (with timeout to prevent hanging)
+  if (!kIsWeb) {
+    Future.microtask(() async {
+      String apiKey = "pk_d97c69e785c502e76d6d0d4180c53afd769f3449ed70236d";
+      try {
+        // Set a timeout to prevent Superwall from hanging the app
+        await Future.delayed(Duration.zero).then((_) {
+          return Future(() {
+            Superwall.configure(apiKey);
+          }).timeout(
+            const Duration(seconds: 5),
+            onTimeout: () {
+              print('⚠️ Superwall initialization timeout - continuing without it');
+            },
+          );
+        });
+        print('✅ Superwall initialized successfully');
+        
+        // Initialize subscription service to listen to Superwall events
+        final subscriptionService = SubscriptionService();
+        await subscriptionService.initialize();
+        print('✅ Subscription service initialized');
+      } catch (e) {
+        print('⚠️ Superwall initialization error: $e');
+        // Continue running the app even if Superwall fails to initialize
+      }
+    });
+  }
+  
+  // Initialize local notifications service
+  Future.microtask(() async {
+    try {
+      final localNotificationsService = LocalNotificationsService.instance();
+      await localNotificationsService.init();
+      print('✅ Local notifications service initialized');
+    } catch (e) {
+      print('⚠️ Local notifications initialization error: $e');
+    }
+  });
+  
+  // Initialize Firebase Messaging
+  Future.microtask(() async {
+    try {
+      // Suppress errors on web in development
+      if (kIsWeb && kDebugMode) {
+        try {
+          final firebaseMessagingService = FirebaseMessagingService.instance();
+          final localNotificationsService = LocalNotificationsService.instance();
+          await firebaseMessagingService.init(localNotificationsService: localNotificationsService);
+        } catch (e) {
+          // Silently suppress Firebase Messaging errors on web (service worker issues)
+          print('⚠️ Firebase Messaging disabled on web (development mode)');
+        }
+      } else {
+        final firebaseMessagingService = FirebaseMessagingService.instance();
+        final localNotificationsService = LocalNotificationsService.instance();
+        await firebaseMessagingService.init(localNotificationsService: localNotificationsService);
+      }
+      print('✅ Firebase Messaging initialized');
+    } catch (e) {
+      print('⚠️ Firebase Messaging initialization error: $e');
+    }
+  });
 }
 
 class BEDApp extends ConsumerStatefulWidget {
@@ -385,6 +427,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/tutorial-closing-slides',
       builder: (context, state) => const AuthGuard(child: TutorialClosingSlidesScreen()),
+    ),
+    GoRoute(
+      path: '/paywall',
+      builder: (context, state) => const PaywallScreen(),
     ),
     GoRoute(
       path: '/education/article/:id',
@@ -773,6 +819,21 @@ class AuthGuard extends ConsumerWidget {
         if (!user.onboardingCompleted && !user.onboardingPartiallyCompleted) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             context.go('/onboarding');
+          });
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        // Check subscription status (only for native platforms, not web)
+        // If user has completed onboarding but hasn't subscribed, redirect to closing slides (which shows paywall)
+        if (!kIsWeb && !user.isPremium && user.hasSeenTimerClosingSlides) {
+          // User has seen closing slides but hasn't subscribed yet
+          // Redirect them to a paywall screen
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context.go('/paywall');
           });
           return const Scaffold(
             body: Center(

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:superwallkit_flutter/superwallkit_flutter.dart';
 import '../../providers/auth_provider.dart';
+import '../../core/services/subscription_service.dart';
 
 class TutorialClosingSlidesScreen extends ConsumerStatefulWidget {
   const TutorialClosingSlidesScreen({super.key});
@@ -288,15 +289,9 @@ class _TutorialClosingSlidesScreenState extends ConsumerState<TutorialClosingSli
           context.go('/home');
         }
       } else {
-        // Native platforms: Present Superwall paywall using placement registration
+        // Native platforms: Present GATED Superwall paywall
         if (mounted) {
-          Superwall.shared.registerPlacement('campaign_trigger', feature: () {
-            // This feature callback executes after paywall is dismissed
-            // (whether user subscribes or not, since it's Non-Gated)
-            if (mounted) {
-              context.go('/home');
-            }
-          });
+          await _showGatedPaywall();
         }
       }
     } catch (e) {
@@ -308,6 +303,65 @@ class _TutorialClosingSlidesScreenState extends ConsumerState<TutorialClosingSli
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  /// Shows a gated paywall that requires subscription before proceeding
+  Future<void> _showGatedPaywall() async {
+    print('🔒 Showing gated paywall...');
+    
+    try {
+      // Check if user already has subscription
+      final subscriptionService = SubscriptionService();
+      bool isPremium = await subscriptionService.hasActiveSubscription();
+      
+      if (isPremium) {
+        print('✅ User already has subscription, proceeding to home');
+        if (mounted) {
+          context.go('/home');
+        }
+        return;
+      }
+
+      // Show paywall and wait for result
+      print('📱 Presenting paywall to user...');
+      Superwall.shared.registerPlacement('campaign_trigger', feature: () async {
+        print('📱 Paywall dismissed, checking subscription status...');
+        
+        // Sync subscription status from Superwall to Firestore
+        await subscriptionService.syncSubscriptionStatus();
+        
+        // Check if user subscribed
+        isPremium = await subscriptionService.hasActiveSubscription();
+        
+        if (isPremium) {
+          print('✅ User subscribed! Proceeding to home');
+          if (mounted) {
+            context.go('/home');
+          }
+        } else {
+          print('⚠️ User has not subscribed, showing paywall again');
+          if (mounted) {
+            // User dismissed paywall without subscribing - show it again
+            await _showGatedPaywall();
+          }
+        }
+      });
+    } catch (e) {
+      print('❌ Error showing gated paywall: $e');
+      // If there's an error, show a message and let user try again
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Unable to load subscription. Please try again.'),
             backgroundColor: Colors.red,
           ),
         );

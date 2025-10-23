@@ -32,6 +32,49 @@ struct FamilyActivityPickerWrapper: View {
     }
 }
 
+// MARK: - Custom FlutterViewController for platform channel setup
+class ScreenTimeFlutterViewController: FlutterViewController {
+  private var appDelegate: AppDelegate?
+  
+  override func awakeFromNib() {
+    super.awakeFromNib()
+    setupScreenTimeChannel()
+  }
+  
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    // Also setup in viewDidLoad as a fallback for programmatic initialization
+    setupScreenTimeChannel()
+  }
+  
+  private func setupScreenTimeChannel() {
+    let screenTimeChannel = FlutterMethodChannel(
+      name: "com.bingeeating/screentime",
+      binaryMessenger: binaryMessenger
+    )
+    screenTimeChannel.setMethodCallHandler { [weak self] (call: FlutterMethodCall, result: @escaping FlutterResult) in
+      guard let self = self else { return }
+      guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+      
+      switch call.method {
+      case "showFamilyActivityPicker":
+        appDelegate.showFamilyActivityPicker(result: result)
+      case "blockWebsites":
+        if let arguments = call.arguments as? [String: Any],
+           let websites = arguments["websites"] as? [String] {
+          appDelegate.blockWebsites(websites: websites, result: result)
+        } else {
+          result(FlutterError(code: "INVALID_ARGUMENTS",
+                            message: "Expected websites array",
+                            details: nil))
+        }
+      default:
+        result(FlutterMethodNotImplemented)
+      }
+    }
+  }
+}
+
 @main
 @objc class AppDelegate: FlutterAppDelegate {
   private var selectionObserver: Any?
@@ -62,35 +105,12 @@ struct FamilyActivityPickerWrapper: View {
       
     GeneratedPluginRegistrant.register(with: self)
     
-    // Set up the Screen Time MethodChannel
-    if let controller = window?.rootViewController as? FlutterViewController {
-      let screenTimeChannel = FlutterMethodChannel(name: "com.bingeeating/screentime", binaryMessenger: controller.binaryMessenger)
-      screenTimeChannel.setMethodCallHandler { [weak self] (call: FlutterMethodCall, result: @escaping FlutterResult) in
-        guard let self = self else { return }
-        switch call.method {
-        case "showFamilyActivityPicker":
-          self.showFamilyActivityPicker(result: result)
-        case "blockWebsites":
-          if let arguments = call.arguments as? [String: Any],
-             let websites = arguments["websites"] as? [String] {
-            self.blockWebsites(websites: websites, result: result)
-          } else {
-            result(FlutterError(code: "INVALID_ARGUMENTS", 
-                              message: "Expected websites array", 
-                              details: nil))
-          }
-        default:
-          result(FlutterMethodNotImplemented)
-        }
-      }
-    }
-    
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
   
   // MARK: - Screen Time Methods
   
-  private func showFamilyActivityPicker(result: @escaping FlutterResult) {
+  func showFamilyActivityPicker(result: @escaping FlutterResult) {
     // Check if running on iOS 16 or later (required for requestAuthorization)
     if #available(iOS 16.0, *) {
       guard let observer = self.selectionObserver as? FamilyActivitySelectionObserver else {
@@ -129,26 +149,27 @@ struct FamilyActivityPickerWrapper: View {
             // Create a SwiftUI hosting controller
             let hostingController = UIHostingController(rootView: familyPickerView)
             
-            if let controller = self.window?.rootViewController {
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let controller = windowScene.windows.first?.rootViewController {
               // Present the hosting controller
               controller.present(hostingController, animated: true) {
                 result(true)
               }
             } else {
-              result(FlutterError(code: "NO_CONTROLLER", 
-                                message: "Could not get root view controller", 
+              result(FlutterError(code: "NO_CONTROLLER",
+                                message: "Could not get root view controller",
                                 details: nil))
             }
           }
         } catch {
-          result(FlutterError(code: "AUTHORIZATION_ERROR", 
-                            message: error.localizedDescription, 
+          result(FlutterError(code: "AUTHORIZATION_ERROR",
+                            message: error.localizedDescription,
                             details: nil))
         }
       }
     } else {
-      result(FlutterError(code: "UNSUPPORTED_VERSION", 
-                        message: "Screen Time API requires iOS 16 or later", 
+      result(FlutterError(code: "UNSUPPORTED_VERSION",
+                        message: "Screen Time API requires iOS 16 or later",
                         details: nil))
     }
   }
@@ -159,7 +180,7 @@ struct FamilyActivityPickerWrapper: View {
     store.shield.applications = apps.isEmpty ? nil : apps
   }
   
-  private func blockWebsites(websites: [String], result: @escaping FlutterResult) {
+  func blockWebsites(websites: [String], result: @escaping FlutterResult) {
     if #available(iOS 16.0, *) {
       // Request authorization
       let authorizationCenter = AuthorizationCenter.shared
@@ -182,15 +203,15 @@ struct FamilyActivityPickerWrapper: View {
           }
         } catch {
           DispatchQueue.main.async {
-            result(FlutterError(code: "AUTHORIZATION_ERROR", 
-                              message: error.localizedDescription, 
+            result(FlutterError(code: "AUTHORIZATION_ERROR",
+                              message: error.localizedDescription,
                               details: nil))
           }
         }
       }
     } else {
-      result(FlutterError(code: "UNSUPPORTED_VERSION", 
-                        message: "Screen Time API requires iOS 16 or later", 
+      result(FlutterError(code: "UNSUPPORTED_VERSION",
+                        message: "Screen Time API requires iOS 16 or later",
                         details: nil))
     }
   }
