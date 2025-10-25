@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:go_router/go_router.dart';
 import '../../data/stage_1_data.dart';
 import '../../data/stage_2_data.dart';
 import '../../data/stage_3_data.dart';
@@ -645,6 +646,23 @@ class _LessonsScreenState extends ConsumerState<LessonsScreen> {
                             ),
                           );
                         },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    // Contact container
+                    GestureDetector(
+                      onTap: () => context.push('/contact'),
+                      child: Expanded(
+                        child: _HeaderCell(
+                          child: Text(
+                            'Contact us!',
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w900,
+                              color: textColor,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ],

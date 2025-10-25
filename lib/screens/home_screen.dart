@@ -90,6 +90,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  Widget _buildHeaderContactContent() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'Contact us!',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w900,
+                color: Colors.black87,
+                fontSize: 16,
+              ),
+        ),
+      ],
+    );
+  }
+
   
   @override
   void dispose() {
@@ -417,7 +433,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ],
                             // Spacer to push remaining content to the right
                             const Spacer(),
-                            // XP and Streak on the right
+                            // XP, Streak, and Contact on the right
                             if (userExp != null) ...[
                               _HeaderCell(
                                 child: _buildHeaderXpContent(userExp.exp),
@@ -428,7 +444,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               _HeaderCell(
                                 child: _buildHeaderStreakContent(userStreak),
                               ),
+                              const SizedBox(width: 8),
                             ],
+                            // Contact container
+                            GestureDetector(
+                              onTap: () => context.push('/contact'),
+                              child: _HeaderCell(
+                                child: _buildHeaderContactContent(),
+                              ),
+                            ),
                           ],
                         ),
                       ),
