@@ -32,6 +32,7 @@ import 'screens/chat/realtime_journaling_screen.dart';
 import 'screens/chat/accountability_partner_screen.dart';
 import 'screens/insights/insights_screen.dart';
 import 'screens/recovery_exercises_screen.dart';
+import 'screens/subscription/paywall_screen.dart';
 // Journal imports
 import 'screens/journal/food_diary_survey_screen.dart';
 import 'screens/journal/weight_diary_survey_screen.dart';
@@ -195,6 +196,7 @@ class BEDApp extends ConsumerStatefulWidget {
 
 class _BEDAppState extends ConsumerState<BEDApp> {
   bool _initialized = false;
+  bool _tutorialCheckComplete = false;
 
   @override
   void initState() {
@@ -208,8 +210,71 @@ class _BEDAppState extends ConsumerState<BEDApp> {
     });
   }
 
+  /// Check if user has completed ALL tutorials at app start
+  /// If not all completed, reset all tutorial flags to force complete redo
+  /// Tutorial completion includes: all tutorial flags + closing slides
+  Future<void> _checkAndResetTutorialsIfIncomplete(UserModel user) async {
+    // Skip if already checked or user is premium (premium users skip tutorials)
+    if (_tutorialCheckComplete || user.isPremium) {
+      return;
+    }
+
+    // Only check if user has completed onboarding (tutorials come after onboarding)
+    if (!user.onboardingCompleted) {
+      _tutorialCheckComplete = true;
+      return;
+    }
+
+    // Check if ALL tutorial flags are completed (NOT including closing slides)
+    // Closing slides come AFTER basic tutorials and BEFORE subscription check
+    final bool allBasicTutorialsCompleted = user.hasSeenAppTutorial &&
+        user.hasCompletedFirstLesson &&
+        user.hasSeenExercisesTutorial &&
+        user.hasSeenJournalTutorial &&
+        user.hasLoggedWeightDuringTutorial &&
+        user.hasSeenWeightDiaryTutorial &&
+        user.hasVisitedWeightDiary &&
+        user.hasSeenStreakTutorial &&
+        user.hasSeenPlantGrowthTutorial;
+
+    if (!allBasicTutorialsCompleted) {
+      print('⚠️ APP START: Incomplete basic tutorials detected - resetting all tutorial flags');
+      print('   Tutorial completion status:');
+      print('   - hasSeenAppTutorial: ${user.hasSeenAppTutorial}');
+      print('   - hasCompletedFirstLesson: ${user.hasCompletedFirstLesson}');
+      print('   - hasSeenExercisesTutorial: ${user.hasSeenExercisesTutorial}');
+      print('   - hasSeenJournalTutorial: ${user.hasSeenJournalTutorial}');
+      print('   - hasLoggedWeightDuringTutorial: ${user.hasLoggedWeightDuringTutorial}');
+      print('   - hasSeenWeightDiaryTutorial: ${user.hasSeenWeightDiaryTutorial}');
+      print('   - hasVisitedWeightDiary: ${user.hasVisitedWeightDiary}');
+      print('   - hasSeenStreakTutorial: ${user.hasSeenStreakTutorial}');
+      print('   - hasSeenPlantGrowthTutorial: ${user.hasSeenPlantGrowthTutorial}');
+      
+      // Reset ALL tutorial flags to false to force complete redo
+      await ref.read(authNotifierProvider.notifier).resetAllTutorialFlags();
+      
+      print('✅ APP START: All tutorial flags reset - user will redo tutorials from beginning');
+      print('   User will be redirected to home screen to start tutorial flow');
+    } else {
+      print('✅ APP START: All basic tutorials completed');
+    }
+
+    _tutorialCheckComplete = true;
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Listen to auth state changes to trigger tutorial check at app start
+    final authState = ref.watch(authNotifierProvider);
+    authState.whenData((user) {
+      if (user != null && !_tutorialCheckComplete) {
+        // Run tutorial check only once at app start
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _checkAndResetTutorialsIfIncomplete(user);
+        });
+      }
+    });
+
     return AnalyticsTracker(
       child: NotificationPopupOverlay(
         child: MaterialApp.router(
@@ -383,7 +448,11 @@ final _router = GoRouter(
     ),
     GoRoute(
       path: '/tutorial-closing-slides',
-      builder: (context, state) => const AuthGuard(child: TutorialClosingSlidesScreen()),
+      builder: (context, state) => const TutorialClosingSlidesScreen(),
+    ),
+    GoRoute(
+      path: '/paywall',
+      builder: (context, state) => const PaywallScreen(),
     ),
     GoRoute(
       path: '/education/article/:id',
@@ -752,8 +821,11 @@ class AuthGuard extends ConsumerWidget {
           );
         }
 
+        print('✅ AUTH GUARD: User authenticated: ${user.email}');
+
         // Check if user has seen intro
         if (!user.hasSeenIntro) {
+          print('📖 AUTH GUARD: User has not seen intro, redirecting to /intro');
           WidgetsBinding.instance.addPostFrameCallback((_) {
             context.go('/intro');
           });
@@ -766,6 +838,7 @@ class AuthGuard extends ConsumerWidget {
 
         // Check if user has completed or partially completed onboarding
         if (!user.onboardingCompleted && !user.onboardingPartiallyCompleted) {
+          print('📝 AUTH GUARD: User has not completed onboarding, redirecting to /onboarding');
           WidgetsBinding.instance.addPostFrameCallback((_) {
             context.go('/onboarding');
           });
@@ -776,8 +849,56 @@ class AuthGuard extends ConsumerWidget {
           );
         }
 
+        // Skip tutorial/subscription checks for premium users
+        if (!user.isPremium && user.onboardingCompleted) {
+          // Check if ALL basic tutorials are completed
+          final bool allBasicTutorialsCompleted = user.hasSeenAppTutorial &&
+              user.hasCompletedFirstLesson &&
+              user.hasSeenExercisesTutorial &&
+              user.hasSeenJournalTutorial &&
+              user.hasLoggedWeightDuringTutorial &&
+              user.hasSeenWeightDiaryTutorial &&
+              user.hasVisitedWeightDiary &&
+              user.hasSeenStreakTutorial &&
+              user.hasSeenPlantGrowthTutorial;
+
+          // If basic tutorials are complete, proceed with closing slides and subscription flow
+          if (allBasicTutorialsCompleted) {
+            // STEP 1: Check if user has seen the 3 closing slides
+            // Closing slides must be shown before subscription check
+            if (!user.hasSeenTimerClosingSlides) {
+              print('📖 AUTH GUARD: Basic tutorials complete, routing to closing slides');
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                context.go('/tutorial-closing-slides');
+              });
+              return const Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+
+            // STEP 2: Check subscription status
+            // If user has seen closing slides but not subscribed, show paywall
+            if (user.hasSeenTimerClosingSlides) {
+              print('💳 AUTH GUARD: Closing slides complete, user not subscribed, routing to paywall');
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                context.go('/paywall');
+              });
+              return const Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+          }
+          // If basic tutorials are NOT complete, user stays on current route
+          // (app start check will have reset flags if needed, and tutorial flow will start from home)
+        }
+
         // Check role requirement if specified
         if (requiredRole != null && user.role != requiredRole) {
+          print('🔐 AUTH GUARD: User does not have required role: ${requiredRole?.name}');
           WidgetsBinding.instance.addPostFrameCallback((_) {
             context.go('/');
             ScaffoldMessenger.of(context).showSnackBar(

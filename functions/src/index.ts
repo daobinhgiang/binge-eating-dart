@@ -27,6 +27,9 @@ export { awardExerciseExp, awardMealPlanUpdateExp } from './awardExerciseExp';
 // Import and export lesson completion EXP function
 export { awardLessonExp } from './awardLessonExp';
 
+// Import and export Superwall webhook handler
+export { superwallWebhook, updateUserPremium } from './superwallWebhook';
+
 // Helper function to format time as HH:mm in Central Time
 function formatTime(date: Date): string {
   // Convert to Central Time (handles both CST and CDT automatically)

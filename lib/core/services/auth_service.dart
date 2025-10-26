@@ -93,6 +93,9 @@ class AuthService {
       );
 
       if (credential.user != null) {
+        // Check subscription history to determine trial eligibility
+        final hasSubscriptionHistory = await _hasSubscriptionHistory(email.trim());
+        
         // Create user document in Firestore
         final userModel = UserModel(
           id: credential.user!.uid,
@@ -113,6 +116,16 @@ class AuthService {
         userData['lessonsCompletedThisWeek'] = 0;
         userData['lastLessonCompletionDate'] = null;
         userData['lastLessonCompletionWeek'] = null;
+        
+        // Set trial eligibility based on subscription history
+        // Users who previously had subscriptions are not eligible for trials
+        userData['trialEligible'] = !hasSubscriptionHistory;
+        
+        if (!hasSubscriptionHistory) {
+          print('✅ New user is trial eligible');
+        } else {
+          print('⚠️ User has previous subscription history - not trial eligible');
+        }
 
         await _firestore
             .collection('users')
@@ -203,6 +216,11 @@ class AuthService {
           
         if (!userDoc.exists) {
           print('User does not exist, creating new user...');
+          
+          // Check subscription history to determine trial eligibility
+          final userEmail = userCredential.user!.email ?? '';
+          final hasSubscriptionHistory = await _hasSubscriptionHistory(userEmail);
+          
           // Extract name parts from display name
           final displayName = userCredential.user!.displayName ?? '';
           print('Display name: $displayName');
@@ -215,7 +233,7 @@ class AuthService {
           // Create new user with default role as patient
           final userModel = UserModel(
             id: userCredential.user!.uid,
-            email: userCredential.user!.email ?? '',
+            email: userEmail,
             firstName: firstName,
             lastName: lastName,
             role: UserRole.patient, // Default role for Google sign-in
@@ -234,6 +252,15 @@ class AuthService {
           userData['lessonsCompletedThisWeek'] = 0;
           userData['lastLessonCompletionDate'] = null;
           userData['lastLessonCompletionWeek'] = null;
+          
+          // Set trial eligibility based on subscription history
+          userData['trialEligible'] = !hasSubscriptionHistory;
+          
+          if (!hasSubscriptionHistory) {
+            print('✅ New user is trial eligible');
+          } else {
+            print('⚠️ User has previous subscription history - not trial eligible');
+          }
           
           await _firestore
               .collection('users')
@@ -332,6 +359,11 @@ class AuthService {
           
         if (!userDoc.exists) {
           print('User does not exist, creating new user...');
+          
+          // Check subscription history to determine trial eligibility
+          final userEmail = userCredential.user!.email ?? '';
+          final hasSubscriptionHistory = await _hasSubscriptionHistory(userEmail);
+          
           // Extract name parts from display name or additional user info
           final displayName = userCredential.user!.displayName ?? '';
           final nameParts = displayName.split(' ');
@@ -343,7 +375,7 @@ class AuthService {
           // Create new user with default role as patient
           final userModel = UserModel(
             id: userCredential.user!.uid,
-            email: userCredential.user!.email ?? '',
+            email: userEmail,
             firstName: firstName,
             lastName: lastName,
             role: UserRole.patient, // Default role for Apple sign-in
@@ -362,6 +394,15 @@ class AuthService {
           userData['lessonsCompletedThisWeek'] = 0;
           userData['lastLessonCompletionDate'] = null;
           userData['lastLessonCompletionWeek'] = null;
+          
+          // Set trial eligibility based on subscription history
+          userData['trialEligible'] = !hasSubscriptionHistory;
+          
+          if (!hasSubscriptionHistory) {
+            print('✅ New user is trial eligible');
+          } else {
+            print('⚠️ User has previous subscription history - not trial eligible');
+          }
           
           await _firestore
               .collection('users')
@@ -510,6 +551,88 @@ class AuthService {
     }
   }
 
+  // Check if initial tutorial is complete (inttro + onboarding + closing slides)
+  bool isInitialTutorialComplete(UserModel user) {
+    return user.hasSeenIntro && 
+           user.onboardingCompleted && 
+           user.hasSeenTimerClosingSlides;
+  }
+
+  // Reset initial tutorial progress
+  // This resets the intro, onboarding, and closing slides to force user to redo the tutorial
+  Future<void> resetInitialTutorialProgress() async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) throw 'No user signed in';
+
+      print('🔄 TUTORIAL RESET: Resetting initial tutorial progress for user...');
+      
+      final userDoc = _firestore.collection('users').doc(user.uid);
+      await userDoc.update({
+        'hasSeenIntro': false,
+        'onboardingCompleted': false,
+        'onboardingPartiallyCompleted': false,
+        'hasSeenTimerClosingSlides': false,
+      });
+      
+      print('✅ TUTORIAL RESET: Initial tutorial progress reset to false');
+    } catch (e) {
+      print('❌ TUTORIAL RESET ERROR: $e');
+      throw 'Failed to reset tutorial progress. Please try again.';
+    }
+  }
+
+  // Reset only the tutorial closing slides
+  // This allows users to resume from the tutorial slides without redoing intro/onboarding
+  Future<void> resetTutorialClosingSlides() async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) throw 'No user signed in';
+
+      print('🔄 TUTORIAL RESET: Resetting tutorial closing slides for user...');
+      
+      final userDoc = _firestore.collection('users').doc(user.uid);
+      await userDoc.update({
+        'hasSeenTimerClosingSlides': false,
+      });
+      
+      print('✅ TUTORIAL RESET: Tutorial closing slides reset to false');
+    } catch (e) {
+      print('❌ TUTORIAL RESET ERROR: $e');
+      throw 'Failed to reset tutorial slides. Please try again.';
+    }
+  }
+
+  // Reset ALL tutorial flags to force user to redo tutorials from beginning
+  // This is called at app start if tutorials are incomplete
+  Future<void> resetAllTutorialFlags() async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) throw 'No user signed in';
+
+      print('🔄 TUTORIAL RESET: Resetting ALL tutorial flags for user...');
+      
+      final userDoc = _firestore.collection('users').doc(user.uid);
+      await userDoc.update({
+        'hasSeenAppTutorial': false,
+        'hasCompletedFirstLesson': false,
+        'hasSeenExercisesTutorial': false,
+        'hasSeenJournalTutorial': false,
+        'hasLoggedWeightDuringTutorial': false,
+        'hasSeenWeightDiaryTutorial': false,
+        'hasVisitedWeightDiary': false,
+        'hasSeenStreakTutorial': false,
+        'hasSeenPlantGrowthTutorial': false,
+        'hasSeenTimerClosingSlides': false,
+      });
+      
+      print('✅ TUTORIAL RESET: ALL tutorial flags reset to false - user will redo tutorials from beginning');
+    } catch (e) {
+      print('❌ TUTORIAL RESET ERROR: $e');
+      throw 'Failed to reset tutorial flags. Please try again.';
+    }
+  }
+
   // Delete user account and all associated data
   Future<void> deleteAccount() async {
     try {
@@ -517,6 +640,47 @@ class AuthService {
       if (user == null) throw 'No user signed in';
 
       print('Starting account deletion for user: ${user.uid}');
+
+      // Get user data before deletion for subscription tracking
+      final userDocRef = _firestore.collection('users').doc(user.uid);
+      final userDoc = await userDocRef.get();
+      final userData = userDoc.data();
+      final userEmail = userData?['email'] as String?;
+      final hadSubscription = userData?['isPremium'] == true || 
+                              userData?['subscriptionStore'] != null ||
+                              userData?['subscriptionProductId'] != null;
+
+      // Track subscription history to prevent trial eligibility on re-registration
+      // This persists even after account deletion
+      if (userEmail != null && hadSubscription) {
+        try {
+          await _firestore.collection('subscription_history').doc(userEmail.toLowerCase()).set({
+            'email': userEmail.toLowerCase(),
+            'hadSubscription': true,
+            'lastDeletedAt': DateTime.now().millisecondsSinceEpoch,
+            'previousUserId': user.uid,
+            'trialEligible': false,
+          });
+          print('📝 Subscription history recorded for email: $userEmail');
+        } catch (e) {
+          print('⚠️ Error recording subscription history: $e');
+          // Continue with deletion even if this fails
+        }
+      }
+
+      // Reset subscription status before deletion
+      // This ensures Firestore has the correct final state
+      try {
+        await userDocRef.update({
+          'isPremium': false,
+          'lastSubscriptionUpdate': DateTime.now().millisecondsSinceEpoch,
+          'accountDeletionInitiated': true,
+        });
+        print('✅ isPremium reset to false');
+      } catch (e) {
+        print('⚠️ Error resetting isPremium: $e');
+        // Continue with deletion even if this fails
+      }
 
       // Clean up FCM token before deletion
       try {
@@ -584,6 +748,10 @@ class AuthService {
 
       // Delete exercises subcollection
       await _deleteSubcollection(userDocRef, 'exercises');
+
+      // Delete subscription events subcollection
+      // Remove all subscription history for this account
+      await _deleteSubcollection(userDocRef, 'subscription_events');
 
       // Delete onboarding document (top-level collection)
       try {
@@ -688,6 +856,33 @@ class AuthService {
       });
     } catch (e) {
       // Silently fail for last login update
+    }
+  }
+
+  // Helper method to check if email has previous subscription history
+  // Returns true if email has had a subscription before (no trial eligibility)
+  Future<bool> _hasSubscriptionHistory(String email) async {
+    try {
+      final historyDoc = await _firestore
+          .collection('subscription_history')
+          .doc(email.toLowerCase())
+          .get();
+      
+      if (historyDoc.exists) {
+        final data = historyDoc.data();
+        final hadSubscription = data?['hadSubscription'] == true;
+        final notTrialEligible = data?['trialEligible'] == false;
+        
+        if (hadSubscription || notTrialEligible) {
+          print('📋 Found subscription history for email: $email (not trial eligible)');
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      print('⚠️ Error checking subscription history: $e');
+      // Return false to err on the side of allowing trials if check fails
+      return false;
     }
   }
 

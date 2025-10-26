@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/foundation.dart';
+import 'package:superwallkit_flutter/superwallkit_flutter.dart';
 import '../core/services/auth_service.dart';
 import '../core/services/firebase_analytics_service.dart';
 import '../core/services/app_initialization_service.dart';
@@ -25,6 +27,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
   final AuthService _authService;
   final FirebaseAnalyticsService _analytics = FirebaseAnalyticsService();
   bool _hasInitialized = false;
+  bool _hasDoneTutorialCheck = false; // Track if we've done the tutorial check this session
   StreamSubscription<UserModel?>? _userStreamSubscription;
 
   // Initialize auth state with real-time streaming
@@ -37,6 +40,46 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
     // Listen to real-time user data changes
     _userStreamSubscription = _authService.currentUserStream.listen(
       (user) async {
+        // Check and reset incomplete tutorial on app launch (ONLY ONCE per session)
+        // This happens when user data is first loaded (sign-in OR session restore)
+        if (user != null && !_hasDoneTutorialCheck) {
+          _hasDoneTutorialCheck = true; // Mark as checked for this session
+          
+          // Check if user completed onboarding but not the tutorial closing slides
+          if (user.onboardingCompleted && 
+          user.hasSeenAppTutorial && 
+          user.hasCompletedFirstLesson 
+          && user.hasSeenExercisesTutorial 
+          && user.hasSeenJournalTutorial 
+          && user.hasLoggedWeightDuringTutorial 
+          && user.hasSeenWeightDiaryTutorial 
+          && user.hasVisitedWeightDiary && 
+          user.hasSeenStreakTutorial && 
+          user.hasSeenPlantGrowthTutorial && 
+          !user.hasSeenTimerClosingSlides) {
+            print('⚠️ TUTORIAL CHECK (APP LAUNCH): User completed onboarding but not tutorial slides');
+            print('   hasSeenIntro: ${user.hasSeenIntro}');
+            print('   onboardingCompleted: ${user.onboardingCompleted}');
+            print('   hasSeenTimerClosingSlides: ${user.hasSeenTimerClosingSlides}');
+            
+            // Reset only the tutorial closing slides flag
+            // User will be redirected to tutorial slides by AuthGuard
+            try {
+              await _authService.resetTutorialClosingSlides();
+              print('✅ TUTORIAL CHECK (APP LAUNCH): Tutorial slides reset - user will resume from slides');
+              
+              // Don't set state here - let the stream update handle it
+              // The reset will trigger a Firestore update, which will flow through the stream
+              return;
+            } catch (e) {
+              print('❌ TUTORIAL CHECK ERROR: $e');
+              // Continue with setting state even if reset fails
+            }
+          } else {
+            print('✅ TUTORIAL CHECK (APP LAUNCH): Tutorial is complete or not yet started');
+          }
+        }
+        
         state = AsyncValue.data(user);
         
         // Check and regenerate quests when user session is restored
@@ -67,7 +110,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
   }) async {
     state = const AsyncValue.loading();
     try {
-      final user = await _authService.signInWithEmailAndPassword(
+      var user = await _authService.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -78,6 +121,12 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         userRole: user?.role.name,
         onboardingCompleted: user?.onboardingCompleted,
       );
+      
+      // Identify user with Superwall for paywall targeting
+      if (user != null && !kIsWeb) {
+        await _identifyUserWithSuperwall(user);
+      }
+      
       // Check and regenerate daily quests on login
       // This must complete before login to ensure onboarding flow has tasks
       if (user != null) {
@@ -119,6 +168,11 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         userRole: user?.role.name,
         onboardingCompleted: user?.onboardingCompleted,
       );
+      
+      // Identify user with Superwall for paywall targeting
+      if (user != null && !kIsWeb) {
+        await _identifyUserWithSuperwall(user);
+      }
       // Check and regenerate daily quests on sign up
       // This must complete before sign up to ensure onboarding flow has tasks
       if (user != null) {
@@ -140,7 +194,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
   Future<void> signInWithGoogle() async {
     state = const AsyncValue.loading();
     try {
-      final user = await _authService.signInWithGoogle();
+      var user = await _authService.signInWithGoogle();
       
       // If user is null, it means sign-in was cancelled - reset to data state
       if (user == null) {
@@ -154,6 +208,12 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         userRole: user.role.name,
         onboardingCompleted: user.onboardingCompleted,
       );
+      
+      // Identify user with Superwall for paywall targeting
+      if (!kIsWeb) {
+        await _identifyUserWithSuperwall(user);
+      }
+      
       // Check and regenerate daily quests on login
       // This must complete before login to ensure onboarding flow has tasks
       try {
@@ -173,7 +233,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
   Future<void> signInWithApple() async {
     state = const AsyncValue.loading();
     try {
-      final user = await _authService.signInWithApple();
+      var user = await _authService.signInWithApple();
       
       // If user is null, it means sign-in was cancelled - reset to data state
       if (user == null) {
@@ -187,6 +247,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         userRole: user.role.name,
         onboardingCompleted: user.onboardingCompleted,
       );
+      
       // Check and regenerate daily quests on login
       // This must complete before login to ensure onboarding flow has tasks
       try {
@@ -211,6 +272,9 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
       if (currentUser != null) {
         AppInitializationService().clearUserInitialization(currentUser.id);
       }
+      
+      // Reset tutorial check flag so next user (or same user on re-login) gets checked
+      _hasDoneTutorialCheck = false;
       
       await _authService.signOut();
       state = const AsyncValue.data(null);
@@ -291,6 +355,20 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
     }
   }
 
+  // Reset ALL tutorial flags to force user to redo tutorials from beginning
+  // Called at app start if tutorials are incomplete
+  Future<void> resetAllTutorialFlags() async {
+    try {
+      await _authService.resetAllTutorialFlags();
+      
+      // Refresh current user state
+      final user = await _authService.currentUser;
+      state = AsyncValue.data(user);
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
+    }
+  }
+
   // Reset password
   Future<void> resetPassword({required String email}) async {
     try {
@@ -342,7 +420,22 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         StreakService().clearCache();
         
         print('✅ All service caches cleared');
+        
+        // Reset Superwall to clear subscription state and user identity
+        // This removes subscription entitlements and paywall assignments
+        if (!kIsWeb) {
+          try {
+            await Superwall.shared.reset();
+            print('✅ Superwall reset - subscription data and user identity cleared');
+          } catch (e) {
+            print('⚠️ Error resetting Superwall: $e');
+            // Continue with account deletion even if Superwall reset fails
+          }
+        }
       }
+      
+      // Reset tutorial check flag so next user gets checked
+      _hasDoneTutorialCheck = false;
       
       await _authService.deleteAccount();
       state = const AsyncValue.data(null);
@@ -367,6 +460,70 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
       state = AsyncValue.data(state.value);
     }
   }
+
+  // Update Superwall subscription status when user's premium status changes
+  Future<void> updateSuperwallSubscriptionStatus(UserModel user) async {
+    if (kIsWeb) return; // Skip on web
+    
+    try {
+      print('🔄 SUPERWALL: Updating subscription status...');
+      print('   User: ${user.email}');
+      print('   isPremium: ${user.isPremium}');
+      
+      if (user.isPremium) {
+        Superwall.shared.setSubscriptionStatus(SubscriptionStatusActive(entitlements: {}));
+        print('✅ SUPERWALL: Subscription status updated to ACTIVE');
+      } else {
+        Superwall.shared.setSubscriptionStatus(SubscriptionStatus.inactive);
+        print('✅ SUPERWALL: Subscription status updated to INACTIVE');
+      }
+    } catch (e) {
+      print('❌ SUPERWALL ERROR: Failed to update subscription status: $e');
+    }
+  }
+
+  // Identify user with Superwall for paywall targeting
+  Future<void> _identifyUserWithSuperwall(UserModel user) async {
+    try {
+      print('🔍 SUPERWALL: Identifying user with Superwall...');
+      print('   User ID: ${user.id}');
+      print('   Email: ${user.email}');
+      print('   isPremium: ${user.isPremium}');
+      print('   trialEligible: ${user.trialEligible}');
+      print('   Role: ${user.role.name}');
+      print('   Onboarding Completed: ${user.onboardingCompleted}');
+      
+      // Set subscription status to prevent "No such key: has_active_subscription" error
+      if (user.isPremium) {
+        Superwall.shared.setSubscriptionStatus(SubscriptionStatusActive(entitlements: {}));
+        print('✅ SUPERWALL: Subscription status set to ACTIVE');
+      } else {
+        Superwall.shared.setSubscriptionStatus(SubscriptionStatus.inactive);
+        print('✅ SUPERWALL: Subscription status set to INACTIVE');
+      }
+      
+      // Set user attributes for Superwall rule matching
+      await Superwall.shared.setUserAttributes({
+        'user_id': user.id,
+        'email': user.email,
+        'is_premium': user.isPremium,
+        'has_active_subscription': user.isPremium,  // Add this - Superwall looks for this key
+        'trial_eligible': user.trialEligible,
+        'user_role': user.role.name,
+        'onboarding_completed': user.onboardingCompleted,
+        'has_seen_timer_closing_slides': user.hasSeenTimerClosingSlides,
+        'level': user.level,
+        'exp': user.exp,
+        'streak': user.streak,
+      });
+      
+      print('✅ SUPERWALL: User attributes set successfully');
+    } catch (e) {
+      print('❌ SUPERWALL ERROR: Failed to identify user: $e');
+      // Don't throw - this shouldn't block authentication
+    }
+  }
+
 }
 
 // Auth notifier provider

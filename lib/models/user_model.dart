@@ -50,6 +50,13 @@ class UserModel {
   final DateTime? lastGrowthTasksGeneratedAt; // Full timestamp
   final int streak;                      // Current streak count
   final DateTime? lastStreakDate;        // Date of last streak update
+  final bool isPremium;                  // Premium subscription status
+  final DateTime? lastSubscriptionUpdate; // Last time subscription status was updated
+  final String? subscriptionStore;       // Store where subscription was purchased (App Store, Play Store)
+  final String? subscriptionProductId;   // Product ID of the subscription
+  final DateTime? subscriptionStartedAt; // When subscription started
+  final DateTime? subscriptionExpiresAt; // When subscription expires
+  final bool trialEligible;              // Whether user is eligible for trial (false if had previous subscription)
 
   const UserModel({
     required this.id,
@@ -85,6 +92,13 @@ class UserModel {
     this.lastGrowthTasksGeneratedAt,
     this.streak = 0,
     this.lastStreakDate,
+    this.isPremium = false,
+    this.lastSubscriptionUpdate,
+    this.subscriptionStore,
+    this.subscriptionProductId,
+    this.subscriptionStartedAt,
+    this.subscriptionExpiresAt,
+    this.trialEligible = true,
   });
 
   String get fullName => '$firstName $lastName';
@@ -137,7 +151,7 @@ class UserModel {
         lastName: data['lastName'] ?? '',
         role: UserRole.values.firstWhere(
           (role) => role.name == data['role'],
-          orElse: () => UserRole.patient,
+          orElse: () => UserRole.patient, 
         ),
         createdAt: parsedCreatedAt,
         lastLoginAt: parsedLastLoginAt,
@@ -166,6 +180,13 @@ class UserModel {
         lastGrowthTasksGeneratedAt: parsedLastGrowthTasksGeneratedAt,
         streak: data['streak'] ?? 0,
         lastStreakDate: parsedLastStreakDate,
+        isPremium: data['isPremium'] ?? false,
+        lastSubscriptionUpdate: _parseDateTime(data['lastSubscriptionUpdate']),
+        subscriptionStore: data['subscriptionStore'],
+        subscriptionProductId: data['subscriptionProductId'],
+        subscriptionStartedAt: _parseDateTime(data['subscriptionStartedAt']),
+        subscriptionExpiresAt: _parseDateTime(data['subscriptionExpiresAt']),
+        trialEligible: data['trialEligible'] ?? true,
       );
     } catch (e) {
       print('CRITICAL ERROR in UserModel.fromFirestore: $e');
@@ -207,6 +228,13 @@ class UserModel {
       'lastGrowthTasksGeneratedAt': lastGrowthTasksGeneratedAt?.millisecondsSinceEpoch,
       'streak': streak,
       'lastStreakDate': lastStreakDate?.millisecondsSinceEpoch,
+      'isPremium': isPremium,
+      'lastSubscriptionUpdate': lastSubscriptionUpdate?.millisecondsSinceEpoch,
+      'subscriptionStore': subscriptionStore,
+      'subscriptionProductId': subscriptionProductId,
+      'subscriptionStartedAt': subscriptionStartedAt?.millisecondsSinceEpoch,
+      'subscriptionExpiresAt': subscriptionExpiresAt?.millisecondsSinceEpoch,
+      'trialEligible': trialEligible,
     };
   }
 
@@ -244,6 +272,13 @@ class UserModel {
     DateTime? lastGrowthTasksGeneratedAt,
     int? streak,
     DateTime? lastStreakDate,
+    bool? isPremium,
+    DateTime? lastSubscriptionUpdate,
+    String? subscriptionStore,
+    String? subscriptionProductId,
+    DateTime? subscriptionStartedAt,
+    DateTime? subscriptionExpiresAt,
+    bool? trialEligible,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -279,6 +314,13 @@ class UserModel {
       lastGrowthTasksGeneratedAt: lastGrowthTasksGeneratedAt ?? this.lastGrowthTasksGeneratedAt,
       streak: streak ?? this.streak,
       lastStreakDate: lastStreakDate ?? this.lastStreakDate,
+      isPremium: isPremium ?? this.isPremium,
+      lastSubscriptionUpdate: lastSubscriptionUpdate ?? this.lastSubscriptionUpdate,
+      subscriptionStore: subscriptionStore ?? this.subscriptionStore,
+      subscriptionProductId: subscriptionProductId ?? this.subscriptionProductId,
+      subscriptionStartedAt: subscriptionStartedAt ?? this.subscriptionStartedAt,
+      subscriptionExpiresAt: subscriptionExpiresAt ?? this.subscriptionExpiresAt,
+      trialEligible: trialEligible ?? this.trialEligible,
     );
   }
 

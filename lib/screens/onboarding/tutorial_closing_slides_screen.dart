@@ -16,6 +16,14 @@ class TutorialClosingSlidesScreen extends ConsumerStatefulWidget {
 class _TutorialClosingSlidesScreenState extends ConsumerState<TutorialClosingSlidesScreen> {
   bool _isLoading = false;
   int _currentPage = 0;
+  final Set<int> _viewedSlides = {0}; // Track which slides have been viewed (start with slide 0)
+
+  @override
+  void initState() {
+    super.initState();
+    print('📖 TUTORIAL SLIDES: Starting tutorial closing slides (3 slides total)');
+    print('   User must view all 3 slides to complete tutorial');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -206,51 +214,86 @@ class _TutorialClosingSlidesScreenState extends ConsumerState<TutorialClosingSli
   }
 
   Widget _buildContinueFooter() {
+    final totalPages = 3; // We have 3 pages
+    final hasViewedAllSlides = _viewedSlides.length >= totalPages;
+    
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
       child: Center(
-        child: SizedBox(
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: _isLoading ? null : () {
-              final totalPages = 3; // We have 3 pages
-              
-              if (_currentPage < totalPages - 1) {
-                // Not the last page, go to next
-                setState(() {
-                  _currentPage++;
-                });
-              } else {
-                // Last page, complete tutorial
-                _completeTutorial(context);
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF4CAF50),
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              elevation: 2,
-            ),
-            child: _isLoading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  )
-                : Text(
-                    _getButtonText(),
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Progress text showing which slide user is on
+            if (_currentPage < totalPages - 1)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Text(
+                  'Slide ${_currentPage + 1} of $totalPages',
+                  style: GoogleFonts.quicksand(
+                    fontSize: 14,
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w500,
                   ),
-          ),
+                ),
+              ),
+            
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : () {
+                  if (_currentPage < totalPages - 1) {
+                    // Not the last page, go to next
+                    setState(() {
+                      _currentPage++;
+                      _viewedSlides.add(_currentPage);
+                      print('📖 TUTORIAL SLIDES: Moved to slide ${_currentPage + 1}/$totalPages');
+                      print('   Viewed slides: $_viewedSlides');
+                    });
+                  } else {
+                    // Last page - check if all slides have been viewed
+                    if (hasViewedAllSlides) {
+                      print('✅ TUTORIAL SLIDES: All slides viewed, completing tutorial...');
+                      _completeTutorial(context);
+                    } else {
+                      print('⚠️ TUTORIAL SLIDES: Not all slides viewed yet');
+                      // This shouldn't happen with linear navigation, but just in case
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please view all slides to continue'),
+                          backgroundColor: Colors.orange,
+                        ),
+                      );
+                    }
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF4CAF50),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 2,
+                ),
+                child: _isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : Text(
+                        _getButtonText(),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -277,25 +320,44 @@ class _TutorialClosingSlidesScreenState extends ConsumerState<TutorialClosingSli
     });
 
     try {
+      print('🎯 TUTORIAL SLIDES: Marking tutorial closing slides as complete...');
+      
       // Mark that user has seen the timer closing slides
+      // This happens BEFORE the paywall, so users have completed the tutorial
       await ref.read(authNotifierProvider.notifier).updateTutorialStatus(
         hasSeenTimerClosingSlides: true,
       );
       
+      print('✅ TUTORIAL SLIDES: Tutorial closing slides marked complete');
+      
       // Web: skip Superwall paywall and go directly to home
       if (kIsWeb) {
+        print('🌐 TUTORIAL SLIDES: Web platform - skipping paywall, going to home');
         if (mounted) {
           context.go('/home');
         }
       } else {
-        // Native platforms: Present Superwall paywall using placement registration
+        // Native platforms: Check premium status and present gated paywall
         if (mounted) {
+          final user = ref.read(currentUserDataProvider);
+          
+          if (user != null && user.isPremium) {
+            // User already has premium, go directly to home
+            print('✅ PAYWALL: User already has premium subscription, proceeding to home');
+            context.go('/home');
+            return;
+          }
+          
+          // User needs subscription, present gated Superwall paywall
+          print('📱 PAYWALL: User needs subscription, presenting gated Superwall paywall...');
+          print('   Placement ID: campaign_trigger');
+          
           Superwall.shared.registerPlacement('campaign_trigger', feature: () {
             // This feature callback executes after paywall is dismissed
-            // (whether user subscribes or not, since it's Non-Gated)
-            if (mounted) {
-              context.go('/home');
-            }
+            print('📱 PAYWALL: Feature callback triggered - paywall was shown and dismissed');
+            
+            // Check if user subscribed after paywall dismissal
+            _checkSubscriptionAndProceed();
           });
         }
       }
@@ -308,6 +370,72 @@ class _TutorialClosingSlidesScreenState extends ConsumerState<TutorialClosingSli
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _checkSubscriptionAndProceed() async {
+    try {
+      print('🔄 PAYWALL: Checking subscription status after paywall dismissal...');
+      
+      // Refresh auth state to get latest subscription status
+      await ref.read(authNotifierProvider.notifier).refreshUserData();
+      
+      // Get updated user data
+      final user = ref.read(currentUserDataProvider);
+      
+      if (user != null) {
+        print('   Result: isPremium = ${user.isPremium}');
+        
+        if (user.isPremium) {
+          print('✅ PAYWALL SUCCESS: User subscribed! Proceeding to home');
+          if (mounted) {
+            context.go('/home');
+          }
+        } else {
+          print('⚠️ PAYWALL: User dismissed without subscribing - staying on tutorial');
+          if (mounted) {
+            setState(() {
+              _isLoading = false;
+            });
+            
+            // Show message that subscription is required
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Text(
+                  'A subscription is required to continue. Please subscribe to access the full app.',
+                  style: TextStyle(color: Colors.white),
+                ),
+                backgroundColor: Colors.orange[700],
+                duration: const Duration(seconds: 4),
+                action: SnackBarAction(
+                  label: 'Try Again',
+                  textColor: Colors.white,
+                  onPressed: () {
+                    // User can tap "Try Again" to show paywall again
+                    _completeTutorial(context);
+                  },
+                ),
+              ),
+            );
+          }
+        }
+      }
+    } catch (e, stackTrace) {
+      print('❌ PAYWALL ERROR: Exception during subscription check: $e');
+      print('   Stack trace: $stackTrace');
+      
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error checking subscription: $e'),
             backgroundColor: Colors.red,
           ),
         );
